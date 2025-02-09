@@ -140,8 +140,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Media files
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
-print(f'Media root: {MEDIA_ROOT}')
-print(f'BASE_DIR: {BASE_DIR}')
 
 if os.environ.get("SKUNKMONKEY_VPS_HOST", False):
     STATIC_URL = 'http://188.245.107.205/~skunkmonkey/devel/skunkmonkey/static/'
