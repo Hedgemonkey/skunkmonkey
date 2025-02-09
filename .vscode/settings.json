@@ -1,0 +1,19 @@
+{
+    "sqltools.connections": [
+        {
+            "pgOptions": {
+                "ssl": {
+                    "rejectUnauthorized": true
+                }
+            },
+            "previewLimit": 50,
+            "server": " ep-blue-mouse-a2wukk26.eu-central-1.aws.neon.tech",
+            "driver": "PostgreSQL",
+            "name": "CodeInstitute Skunkmonkey",
+            "database": "year_motor_thumb_159204",
+            "username": "neondb_owner",
+            "connectString": " postgresql://neondb_owner:9PJZirMgh1IB@ep-blue-mouse-a2wukk26.eu-central-1.aws.neon.tech/year_motor_thumb_159204",
+            "password": " 9PJZirMgh1IB"
+        }
+    ]
+}
