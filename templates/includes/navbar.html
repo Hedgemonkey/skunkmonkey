@@ -14,7 +14,7 @@
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             My Account ({{ user.username|default:user.email }}) </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="#">Account Management</a> </head>
+                            <a class="dropdown-item" href="{% url 'users_manage' %}">Account Management</a> </head>
                             <a class="dropdown-item" href="{% url 'account_logout' %}">Log Out</a> </head>
                         </div>
                     </li>
