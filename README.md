@@ -101,22 +101,160 @@ The SkunkMonkey site will be structured around the following pages:
 - **User Dashboard** – Manage orders, profile, and preferences.
 - **Admin Panel** – Control products, users, and orders.
 
-### 🗄 Database Schema
+## 🗄️ Database Schema & Migration Strategy
 
-Below is a **simplified schema** for the project. The database will be built using **PostgreSQL**, optimized for performance and scalability.
+### 🔹 Database Schema Overview  
+The database is designed using **PostgreSQL** and follows Django’s **ORM** structure. Below is an overview of how data is structured:
 
 ```
 +------------------+       +------------------+       +------------------+
-| User             |       | Product          |       | Order            |
+| Users            |       | Orders           |       | Products         |
 +------------------+       +------------------+       +------------------+
 | id (PK)          |<----->| id (PK)          |<----->| id (PK)          |
-| username         |       | name             |       | user_id (FK)     |
-| email            |       | description      |       | total_price      |
-| password         |       | price            |       | status           |
-+------------------+       | stock_quantity   |       | created_at       |
-                           | category_id (FK) |       +------------------+
-                           +------------------+
+| username         |       | user_id (FK)     |       | name             |
+| email            |       | product_id (FK)  |       | price            |
+| password         |       | status           |       | stock            |
++------------------+       +------------------+       +------------------+
 ```
+
+The database consists of relational tables that store information about users, products, and orders. **Django's ORM** is used to interact with the database efficiently.
+
+[Back to top](#contents)
+
+---
+
+### 🔹 Strategy for Schema Changes in Production  
+Managing **schema changes** in a production environment requires careful planning to **minimize downtime** and **prevent data loss**. Below is the strategy we follow:
+
+#### **1️⃣ Plan & Assess the Change**
+- Identify **which tables and fields** will be modified.
+- Determine **dependencies & constraints** (e.g., foreign keys).
+- Choose an **appropriate migration strategy** (Zero-Downtime, Rolling Migration, etc.).
+
+#### **2️⃣ Use Django Migrations**
+All schema changes are managed through Django’s built-in migration framework:
+```
+python manage.py makemigrations
+python manage.py migrate
+```
+- Always **review** the generated migration file before applying it.
+- Test migrations in a **staging environment** before running them in production.
+
+#### **3️⃣ Ensure Safe Deployment**
+**For small changes** (adding new columns):  
+- **Deploy application changes first** before running the migration.
+- Set **default values** for new columns to avoid breaking queries.
+
+**For large changes** (removing columns, renaming tables):  
+- Use a **rolling migration**:
+  - Create a **new table** with the updated structure.
+  - Gradually **migrate data**.
+  - Update the **application to use the new table**.
+  - Drop the old table once migration is complete.
+
+#### **4️⃣ Backup Before Running Migrations**
+Before applying schema changes, always **backup the database**:
+```sh
+pg_dump -U myuser -h mydbhost -d mydatabase -f backup.sql
+```
+- In case of failure, **restore the backup**:
+  ```sh
+  psql -U myuser -h mydbhost -d mydatabase -f backup.sql
+  ```
+
+#### **5️⃣ Apply Migrations in Production**
+Once the migration is tested and confirmed:
+```sh
+python manage.py migrate
+```
+- Use `--fake-initial` if migrations were manually applied before:
+  ```sh
+  python manage.py migrate --fake-initial
+  ```
+
+#### **6️⃣ Monitor & Rollback if Needed**
+- Monitor **database logs** and check for errors.
+- If needed, **rollback the migration**:
+  ```sh
+  python manage.py migrate myapp 000x_previous_migration
+  ```
+- Keep rollback **scripts ready** for critical changes.
+
+[Back to top](#contents)
+
+---
+
+## 📜 Database Change Log
+All schema changes are documented in a structured manner for tracking purposes.
+
+### 🔹 Template for Logging Database Changes
+Each change is logged in `DATABASE_CHANGELOG.md` to keep track of modifications.
+
+```
+# 🛠️ Database Change Log
+
+## 📅 [YYYY-MM-DD] - Migration 00XX_auto
+### 📝 Summary:
+- Added `new_field` to `users` table.
+- Renamed `old_column` in `orders` table.
+- Created new `payments` table.
+
+### 🔄 Migration Commands:
+python manage.py makemigrations
+python manage.py migrate
+
+### 🔄 Rollback Commands:
+python manage.py migrate myapp 000x_previous_migration
+
+### 🛠️ Reason for Change:
+> The changes were introduced to improve scalability and add support for new features.
+
+### 🔍 Impact & Dependencies:
+- This affects **User Authentication** and **Order Processing** modules.
+- Old API endpoints should be **deprecated** by next release.
+```
+
+[Back to top](#contents)
+
+---
+
+## 🔍 Querying Migration History
+To check applied migrations in PostgreSQL:
+```
+SELECT * FROM django_migrations ORDER BY applied DESC;
+```
+
+To check **last migration applied**:
+```
+python manage.py showmigrations myapp
+```
+
+[Back to top](#contents)
+
+---
+
+## 🔄 Version Control & Documentation
+- All migration files are **version-controlled** in Git.
+- Commit messages follow this format:
+  ```
+  [DB] Added new payments table & updated user schema (#245)
+  ```
+- Release tags are used for **tracking major schema changes**:
+  ```
+  git tag -a v1.5.0 -m "Database migration for payments table"
+  git push origin v1.5.0
+  ```
+
+[Back to top](#contents)
+
+---
+
+## ✅ Best Practices for Database Changes
+✔ Always **plan and test** schema changes in a **staging environment**.  
+✔ Use **Django migrations** instead of manual SQL changes.  
+✔ Follow **zero-downtime or rolling migrations** for production databases.  
+✔ Maintain a **backup before applying any changes**.  
+✔ Keep detailed **logs & rollback strategies** for each migration.  
 
 [Back to top](#contents)
 
