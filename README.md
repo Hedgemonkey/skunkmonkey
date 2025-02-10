@@ -18,8 +18,8 @@ Test Credentials: **[To be added]**
   - [Epics](#epics)
   - [User Stories](#user-stories)
   - [Site Structure](#site-structure)
-    - [Database Schema](#database-schema)
     - [Wireframes](#wireframes)
+    - [Database Schema](#database-schema)
   - [Design Choices](#design-choices)
 - [Agile Project Management](#agile-project-management)
 - [Features](#features)
@@ -89,6 +89,22 @@ Here are a few **example user stories**:
 
 ## 🏗️ Site Structure
 
+### **📐 Wireframes**
+To plan the layout and user interface of the SkunkMonkey site, wireframes were designed using **Figma**. These wireframes outline the **mobile and desktop layouts**, ensuring a user-friendly experience across different devices.
+
+📌 **View the full wireframe design on Figma:**  
+🔗 [**SkunkMonkey Wireframes - Figma**](https://www.figma.com/design/NtLORpnMv7M6mVMJa75GGX/SkunkMonkey?node-id=1-589&t=N44x2kvD9axQSaAY-1)
+
+#### **📱 Mobile Wireframe**
+![Mobile Wireframe](readme/assets/mobile_wireframe.jpg)
+
+#### **💻 Desktop Wireframe**
+![Desktop Wireframe](readme/assets/desktop_wireframe.jpg)
+
+[Back to top](#contents)
+
+---
+
 ### 📄 Overview  
 
 The SkunkMonkey site will be structured around the following pages:
@@ -100,6 +116,10 @@ The SkunkMonkey site will be structured around the following pages:
 - **Checkout** – Secure payment processing and order confirmation.
 - **User Dashboard** – Manage orders, profile, and preferences.
 - **Admin Panel** – Control products, users, and orders.
+
+[Back to top](#contents)
+
+---
 
 ## 🗄️ Database Schema & Migration Strategy
 
