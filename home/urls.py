@@ -5,5 +5,5 @@ from . import views
 # Register your models here.
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('', views.index, name='home'),
 ]

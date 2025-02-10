@@ -14,6 +14,7 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 import dj_database_url
+from django.urls import reverse
 
 load_dotenv()
 
@@ -145,6 +146,18 @@ ACCOUNT_UNIQUE_USERNAME = True
 ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
+ACCOUNT_ACTIVATION_URL = lambda: reverse('account_confirm_email') + '?code='
+
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+if 'EMAIL_HOST' in os.environ:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = os.environ.get('EMAIL_HOST') # From environemnt variable
+    EMAIL_PORT = os.environ.get('EMAIL_PORT', 587)  # Or the correct port for TLS/SSL
+    EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', True)  # Or EMAIL_USE_SSL = True if your server uses SSL
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER') # From environemnt variable
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD') # From environemnt variable
+    DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL') # From environemnt variable
 
 
 
@@ -171,10 +184,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Media files
 MEDIA_URL = 'media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 if os.environ.get("SKUNKMONKEY_VPS_HOST", False):
-    STATIC_URL = 'http://188.245.107.205/~skunkmonkey/devel/skunkmonkey/static/'
+#    STATIC_URL = 'http://188.245.107.205/~skunkmonkey/devel/skunkmonkey/static/'
     MEDIA_URL = 'http://188.245.107.205/~skunkmonkey/devel/skunkmonkey/media/'
 
 
