@@ -10834,3 +10834,39 @@ textarea.form-control-lg {
   max-width: 20vw;
   height: auto;
 }
+a.list-group-item-danger.fw-bold {  /* Target the specific link */
+  font-weight: 900 !important;  /* Or a specific font-weight value */
+  background-color: var(--bs-danger);
+  color: var(--bs-white);
+  padding: 0rem 0.5rem;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+#user-manage-logout {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  padding: 0.5rem 1rem;
+}
+
+.top-card {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.middle-card {
+  margin: 0 !important;
+  margin-top: 0 !important;
+  border-top: none !important;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.bottom-card {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+#manage-details {
+  margin-top: 0 !important;
+}

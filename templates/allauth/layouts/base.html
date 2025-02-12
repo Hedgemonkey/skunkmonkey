@@ -3,6 +3,8 @@
 {% load crispy_forms_tags %}
 {% load account socialaccount %}
 
+{% block title %}{% endblock %}
+
 {% block header %}
     <div class="container">
         <div class="row justify-content-center">
@@ -27,70 +29,9 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6 text-center">
-
-                    <div class="mt-4">
-                        <h2>{% trans "Account Management" %}</h2>
-
-                        <p>{% blocktrans %}Welcome,  {% endblocktrans %}{{ user.username|default:user.email }}!</p>
-
-                        <div class="list-group">
-
-                            {% url 'account_email' as email_url %}
-                            {% if email_url %}
-                                <a href="{{ email_url }}" class="list-group-item list-group-item-action">{% trans "Change Email" %}</a>
-                            {% endif %}
-
-                            {% url 'account_change_password' as change_password_url %}
-                            {% if change_password_url %}
-                                <a href="{{ change_password_url }}" class="list-group-item list-group-item-action">{% trans "Change Password" %}</a>
-                            {% endif %}
-
-                            {% url 'socialaccount_connections' as connections_url %}
-                            {% if connections_url %}
-                                <a href="{{ connections_url }}" class="list-group-item list-group-item-action">{% trans "Social Account Connections" %}</a>
-                            {% endif %}
-
-                           <a href="#" id="view-details" class="list-group-item list-group-item-action">View Account Details</a>
-
-
-                        </div>  {# Close the list group #}
-
-                        <div id="account-details" class="card mt-3" style="display: none;">
-                            <div class="card-body">
-
-                            </div>
-                        </div>
-
-                    </div>
-
-                    {% if user.is_authenticated %}
-                        <a href="{% url 'account_logout' %}" class="list-group-item list-group-item-action">{% trans "Sign Out" %}</a>
-                    {% endif %}
-
-            </div>
-        </div>
-    </div>
-
 
 {% endblock %}
 
 {% block postloadjs %}
     {{ block.super }}
-    <script>
-        $(document).ready(function() {
-            $("#view-details").click(function(event) {
-                event.preventDefault(); 
-
-                if ($("#account-details").is(":hidden")) {
-                    $("#account-details .card-body").load("{% url 'users_details' %}");
-                    $("#account-details").show();
-                } else {
-                    $("#account-details").hide();
-                }
-            });
-        });
-    </script>
 {% endblock postloadjs %}

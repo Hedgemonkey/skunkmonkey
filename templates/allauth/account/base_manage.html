@@ -1,1 +1,55 @@
 {% extends "allauth/layouts/manage.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{% trans "SkunkMonkey - Account Management" %}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+
+            <div class="mt-4">
+                <h2>{% trans "Account Management" %}</h2>
+
+                <p>{% blocktrans %}Welcome,  {% endblocktrans %}{{ user.username|default:user.email }}!</p>
+
+                <div class="list-group top-card">
+
+                    <a href="#" id="change-email-link" class="list-group-item list-group-item-action" data-url="{% url 'manage_email' %}">{% trans "Change Email" %}</a>
+
+                    <a href="#" id="change-password-link" class="list-group-item list-group-item-action" data-url="{% url 'manage_password' %}">{% trans "Change Password" %}</a>
+
+                    <a href="#" id="social-connections-link" class="list-group-item list-group-item-action" data-url="{% url 'manage_social' %}">{% trans "Social Account Connections" %}</a>
+
+                    <a href="#" id="view-details" class="list-group-item list-group-item-action" data-url="{% url 'manage_details' %}">View Account Details</a>
+
+
+                </div>
+
+                <div id="manage-details" class="card mt-3 middle-card" style="display: none;">
+                    <div class="card-body">
+
+                    </div>
+                </div>
+            </div>
+
+            {% if user.is_authenticated %}
+            <div class="card mt-0 bg-danger bottom-card"> <div class="card-body bg-danger text-white" id="user-manage-logout">
+                <a href="{% url 'account_logout' %}" class="list-group-item list-group-item-action list-group-item-danger fw-bold">{% trans "Sign Out" %}</a>
+            </div> </div>
+
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+{% block postloadjs %}
+    {{ block.super }}
+    <script src="{% static 'js/users/manage.js' %}"></script>
+{% endblock postloadjs %}
