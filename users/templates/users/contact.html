@@ -1,0 +1,29 @@
+{% extends "account/base_entrance.html" %}
+{% load i18n crispy_forms_tags %}
+{% load static %}
+
+{% block head_title %}{% trans "Contact Us" %}{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="mt-4">  <!-- Add some top margin for spacing -->
+                    <h2>{% trans "Contact Us" %}</h2>
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post">
+                        {% csrf_token %}
+                        {% crispy form %}
+                        <button type="submit" class="btn btn-primary mt-3">{% trans "Send Message" %}</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

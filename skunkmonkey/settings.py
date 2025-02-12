@@ -33,7 +33,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 DEBUG = 'DEVELOPMENT' in os.environ
 
 
-ALLOWED_HOSTS = [ '*' ]
+ALLOWED_HOSTS = ['skunk.devel.hedge-monkey.co.uk', 'localhost', '127.0.0.1', '*' ]
 
 
 # Application definition
@@ -89,7 +89,9 @@ TEMPLATES = [
 ]
 
 # Configure crispy_forms template pack
-CRISPY_TEMPLATE_PACK = 'bootstrap5'
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 WSGI_APPLICATION = 'skunkmonkey.wsgi.application'
 
@@ -142,13 +144,31 @@ LOGOUT_REDIRECT_URL = '/'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = True
 ACCOUNT_LOGIN_METHODS = ['email', 'username']
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_NOTIFICATIONS = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_UNIQUE_USERNAME = True
 ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
+ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE = True
 ACCOUNT_ACTIVATION_URL = lambda: reverse('account_confirm_email') + '?code='
+ACCOUNT_ADAPTER = 'users.adapters.CustomAccountAdapter' # Custom adapter to handle if email not verified
+ACCOUNT_LOGIN_ON_PASSWORD_RESET = True
+ACCOUNT_REAUTHENTICATION_REQUIRED = True
+ACCOUNT_FORMS = {
+    'add_email': 'allauth.account.forms.AddEmailForm',
+    'change_password': 'allauth.account.forms.ChangePasswordForm',
+    'confirm_login_code': 'allauth.account.forms.ConfirmLoginCodeForm',
+    'login': 'allauth.account.forms.LoginForm',
+    'request_login_code': 'allauth.account.forms.RequestLoginCodeForm',
+    'reset_password': 'allauth.account.forms.ResetPasswordForm',
+    'reset_password_from_key': 'allauth.account.forms.ResetPasswordKeyForm',
+    'set_password': 'allauth.account.forms.SetPasswordForm',
+    'signup': 'allauth.account.forms.SignupForm',
+    'user_token': 'allauth.account.forms.UserTokenForm',
+}
 
 # Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

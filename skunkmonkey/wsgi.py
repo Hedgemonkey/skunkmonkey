@@ -12,6 +12,9 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
+import sys
+sys.stderr.write("WSGI script has been executed.\n")
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'skunkmonkey.settings')
 
 application = get_wsgi_application()

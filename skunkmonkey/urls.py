@@ -17,9 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.urls.conf import include
+from users import views as user_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('accounts/verify-email/', user_views.email_verification_required, name='account_email_verification_required'),
+    path('accounts/login/', user_views.login, name='account_login'),  # Your custom login view
     path('accounts/', include('allauth.urls')),
     path('users/', include('users.urls')),
     path('', include('home.urls')),
