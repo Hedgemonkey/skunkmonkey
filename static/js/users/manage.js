@@ -26,21 +26,18 @@ $(document).ready(function () {
     function attachFormSubmitHandler(targetDiv) {
         $(targetDiv + " form").submit(function (event) {
             event.preventDefault();
-            const form = $(this); console.log("Submitted Form Element:", form);
+            const form = $(this);
 
             const url = form.attr("action");
             const formData = form.serialize();
 
             console.log("Form submitting to URL:", url);
-            console.log("Form Data Before Serialization:", form.serializeArray());
-            console.log("Serialized Form Data:", formData);
 
             $.ajax({
                 type: "POST",
                 url: url,
                 data: formData,
                 success: function (response) {
-                    console.log("AJAX success - Response:", response);
                     $(targetDiv + " .card-body").html(response);
                     attachFormSubmitHandler(targetDiv); // Reattach the handler after content update
 
@@ -113,8 +110,8 @@ $(document).ready(function () {
                 url: url,
                 data: formData,
                 success: function (response) {
-                    $("#manage-details").html(response);  // Replace content of #user-details
-                    attachFormSubmitHandler("#manage-details"); // Reattach
+                    $("#manage-details .card-body").html(response);  // Replace content of #user-details
+                    attachFormSubmitHandler("#manage-details .card-body"); // Reattach
 
                 },
                 error: function (xhr, status, error) {
