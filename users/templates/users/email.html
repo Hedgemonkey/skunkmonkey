@@ -28,13 +28,6 @@
                 </span>
 
                 <span>
-                    <form method="post" action="{% url 'manage_email' %}" style="display: inline;">
-                        {% csrf_token %}
-                        <button name="make_primary" value="make_primary" class="btn btn-primary" type="submit">Make Primary</button>
-                        <input type="hidden" name="email" value="{{ email.email }}">
-                    </form>
-
-
                     {% if not email.verified %}
                     <form method="post" action="{% url 'manage_email' %}" style="display: inline;">
                         {% csrf_token %}
@@ -42,12 +35,13 @@
                         <button name="resend" value="Resend" class="btn btn-info" type="submit">Resend Verification</button>
                     </form>
                     {% endif %}
-
+                    {% if not email.primary %}
                     <form method="post" action="{% url 'manage_email' %}" style="display: inline;">
                         {% csrf_token %}
                         <input type="hidden" name="email" value="{{ email.email }}">
                         <button name="remove" value="Remove" class="btn btn-danger" type="submit">Remove</button>
                     </form>
+                    {% endif %}
 
 
                 </span>
