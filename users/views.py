@@ -5,13 +5,13 @@ from allauth.account.models import EmailAddress
 from allauth.socialaccount.models import SocialAccount
 from allauth.account.utils import send_email_confirmation
 from allauth.account import app_settings as account_settings
-from allauth.account.forms import ChangePasswordForm
 from allauth.socialaccount.forms import DisconnectForm
-from .forms import ContactForm, ConfirmAddEmailForm
+from .forms import ContactForm, CustomAddEmailForm, CustomChangePasswordForm
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse_lazy
+from django.http import JsonResponse
 
 
 
@@ -92,7 +92,7 @@ def manage_details(request):
 
 def manage_email(request):
     """Email management view"""
-    form = ConfirmAddEmailForm()
+    form = CustomAddEmailForm()
     if request.method == "POST":
         if 'resend' in request.POST:  # Resend verification
             email_to_verify = request.POST.get('resend_email')
@@ -128,7 +128,7 @@ def manage_email(request):
             if not request.user.is_authenticated: #check if user is authenticated
                 return redirect('account_login')
             
-            form = ConfirmAddEmailForm(request, request.POST) # Create form with request and initial data
+            form = CustomAddEmailForm(request, request.POST) # Create form with request and initial data
             if form.is_valid():
                 email_address = form.save(request) # Save the email address
 
@@ -139,13 +139,13 @@ def manage_email(request):
                 else:
                     messages.success(request, f"{email_address} added.")
 
-                form = ConfirmAddEmailForm(request) # Create a new blank form
+                form = CustomAddEmailForm(request) # Create a new blank form
             else:
                 messages.error(request, "Error adding email address")
 
 
     else:  # GET request (initial load)
-        form = ConfirmAddEmailForm(request)
+        form = CustomAddEmailForm(request)
 
 
     email_addresses = EmailAddress.objects.filter(user=request.user) # Get email addresses *after* form processing
@@ -154,15 +154,15 @@ def manage_email(request):
 @login_required
 def manage_password(request):
     if request.method == "POST":
-        form = ChangePasswordForm(data=request.POST, user=request.user) # Changed to correct form
+        form = CustomChangePasswordForm(data=request.POST, user=request.user) # Changed to correct form
         if form.is_valid():
             form.save()
-            messages.success(request, "Password changed successfully.")
-            return redirect(reverse_lazy('users_manage'))
+            messages.success(request, "Your password has been changed successfully.") # Send success message for regular POST
+            return render(request, 'users/password_change_done.html') # Redirect after success
+
 
     else:
-        form = ChangePasswordForm(user=request.user) # Changed to correct form
-
+        form = CustomChangePasswordForm(request)  # Correct: request and user
 
     return render(request, 'users/password_change.html', {'form': form, 'title': "Change Password"})
 
