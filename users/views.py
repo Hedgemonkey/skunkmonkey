@@ -6,7 +6,7 @@ from allauth.socialaccount.models import SocialAccount
 from allauth.account.utils import send_email_confirmation
 from allauth.account import app_settings as account_settings
 from allauth.socialaccount.forms import DisconnectForm
-from .forms import ContactForm, CustomAddEmailForm, CustomChangePasswordForm
+from .forms import ContactForm, CustomAddEmailForm, CustomChangePasswordForm, UserForm
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -170,22 +170,19 @@ def manage_password(request):
 
 @login_required
 def manage_social(request):
-    if request.method == "POST":
-        form = DisconnectForm(request.POST, user=request.user) # changed to correct form
-
-        if form.is_valid():
-
-            messages.success(request, "Successfully disconnected")
-            data = form.cleaned_data
-            account_id = data.get("account")
-
-            if account_id:
-                account = SocialAccount.objects.get(id=account_id)
-                account.delete()
-            return redirect("users_social") # Reload page
-
-    else:
-        form = DisconnectForm(user=request.user)
+    return render(request, 'users/social.html', {'title': "Manage Social Connections"})  # Correct template
 
 
-    return render(request, 'users/social.html', {'form': form, 'title': "Manage Social Connections"})  # Correct template
+@login_required
+def manage_details_update(request):  # View to render the form
+    form = UserForm(instance=request.user) #Instantiate with current user data
+    if request.method == 'POST': # Check if the form has been submitted
+        form = UserForm(request.POST, instance=request.user) #Get data from POST
+        if form.is_valid(): # Validate form
+            form.save() # Save form
+            messages.success(request, 'Your profile details have been updated successfully.')
+            return redirect('users_details') # Redirect to view details page
+        elif request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            errors = form.errors.as_json()
+            return JsonResponse({'errors': errors, 'form': form.as_p()}, status=400)    
+    return render(request, 'users/user_form.html', {'form': form})  # Render the form template

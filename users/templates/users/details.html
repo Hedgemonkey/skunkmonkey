@@ -1,14 +1,25 @@
-<dl>
-    <dt>Username:</dt>
-    <dd>{{ user.username }}</dd>
+<div id="user-details"> {# Add ID for JavaScript targeting #}
+    <dl>
+        <dt>Username:</dt>
+        <dd>{{ user.username }}</dd>
 
-    <dt>Email:</dt>
-    {% for email in email_addresses %}
-    <dd>{{ email.email }} {% if email.verified %} (Verified){% endif %}</dd>
-    {% endfor %}
-
-    <dt>First name:</dt> <dd>{{ user.first_name }}</dd>
-    <dt>Last name:</dt> <dd>{{ user.last_name }}</dd>
-
-    {# Add more details as needed #}
-</dl>
+        <dt>Email:</dt>
+        {% for email in email_addresses %}
+        <dd>{{ email.email }} {% if email.verified %}(Verified){% endif %}</dd>
+        {% endfor %}
+        <dt>First name:</dt>
+        <dd>{{ user.first_name }}</dd>
+        <dt>Last name:</dt>
+        <dd>{{ user.last_name }}</dd>
+    </dl>
+</div>
+<div class="card mt-4">
+    <h5 class="card-header">Profile Management</h5>
+    <div class="card-body" id="profile-management-buttons">
+        <a href="#" data-url="#" id="save-user-link" class="btn btn-success btn-block mb-2" style="display: none;">Save</a>
+        <a href="#" data-url="{% url 'manage_details' %}" id="cancel-edit" class="btn btn-secondary btn-block mb-2" style="display: none;">Cancel</a>
+        <a href="{% url 'manage_details_update' %}" data-url="{% url 'manage_details_update' %}" id="edit-user-link" class="btn btn-primary btn-block mb-2">Edit</a>
+        <a href="#" class="btn btn-danger btn-block">Delete Account</a>
+    </div>
+</div>
+</div>

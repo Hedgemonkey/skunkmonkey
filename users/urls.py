@@ -9,4 +9,5 @@ urlpatterns = [
     path("email/", views.manage_email, name="manage_email"), # Add url for manage email
     path("password/", views.manage_password, name="manage_password"), # Add url for manage password
     path("social/", views.manage_social, name="manage_social"), # Add url for manage social
+    path('details/update/', views.manage_details_update, name='manage_details_update'), # Add url for updating user details
 ]
