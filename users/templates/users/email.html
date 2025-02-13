@@ -1,11 +1,60 @@
 {# users/email.html #}
 {% load i18n %}
 {% load crispy_forms_tags %}
-<h2>{% trans "Change E-mail" %}</h2>
-<form method="post" action="{% url 'account_email' %}" class="email_change">
-    {% csrf_token %}
-    {% crispy form %}
-
-    <button type="submit" class="btn btn-success mt-3">{% trans 'Change E-mail Address' %}</button>
+<h2>{{ title }}</h2>
+<form method="post" action="{% url 'manage_email' %}" class="email_change"> {# form action empty so it posts to the same page. #}
+  {% csrf_token %}
+  {% crispy form %}
+  <button type="submit" class="btn btn-success mt-3">{% trans 'Add Email Address' %}</button>
 </form>
+
+
+{% if email_addresses %}
+    <p>Your email addresses:</p>
+    <ul class="list-group">
+
+        {% for email in email_addresses %}
+            <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                <span>
+                    {{ email.email }}
+                    {% if email.verified %}
+                        <span class="badge bg-success">Verified</span>
+                    {% else %}
+                        <span class="badge bg-warning">Unverified</span>
+                    {% endif %}
+                    {% if email.primary %}
+                        <span class="badge bg-primary">Primary</span>
+                    {% endif %}
+                </span>
+
+                <span>
+                    <form method="post" action="{% url 'manage_email' %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button name="make_primary" value="make_primary" class="btn btn-primary" type="submit">Make Primary</button>
+                        <input type="hidden" name="email" value="{{ email.email }}">
+                    </form>
+
+
+                    {% if not email.verified %}
+                    <form method="post" action="{% url 'manage_email' %}" style="display: inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="resend_email" value="{{ email.email }}">
+                        <button name="resend" value="Resend" class="btn btn-info" type="submit">Resend Verification</button>
+                    </form>
+                    {% endif %}
+
+                    <form method="post" action="{% url 'manage_email' %}" style="display: inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="email" value="{{ email.email }}">
+                        <button name="remove" value="Remove" class="btn btn-danger" type="submit">Remove</button>
+                    </form>
+
+
+                </span>
+            </li>
+        {% endfor %}
+    </ul>
+
+
+{% endif %}
 

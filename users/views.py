@@ -3,12 +3,11 @@
 from allauth.account.views import LoginView
 from allauth.account.models import EmailAddress
 from allauth.socialaccount.models import SocialAccount
-from allauth.utils import get_form_class
 from allauth.account.utils import send_email_confirmation
 from allauth.account import app_settings as account_settings
-from allauth.account.forms import AddEmailForm, ChangePasswordForm
+from allauth.account.forms import ChangePasswordForm
 from allauth.socialaccount.forms import DisconnectForm
-from .forms import ContactForm
+from .forms import ContactForm, ConfirmAddEmailForm
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -91,30 +90,66 @@ def manage_details(request):
 
     return render(request, "users/details.html", {'email_addresses': email_addresses})  # New template
 
-@login_required
 def manage_email(request):
     """Email management view"""
+    form = ConfirmAddEmailForm()
     if request.method == "POST":
-        form = AddEmailForm(request.POST, user=request.user)  # Use form directly
-        if form.is_valid():
-            # Check if email verification is necessary
-            verification_required = account_settings.EMAIL_VERIFICATION == account_settings.EmailVerificationMethod.MANDATORY
+        if 'resend' in request.POST:  # Resend verification
+            email_to_verify = request.POST.get('resend_email')
+            try:
+                email_address = EmailAddress.objects.get(user=request.user, email__iexact=email_to_verify)
+                if email_address.verified:
+                    messages.info(request, "Email is already verified")
+                else:
+                    send_email_confirmation(request, email_address, signup=False) # Resend verification email. email_address.verified = False done automatically.
+                    messages.success(request, f"Verification email resent to {email_to_verify}")
+            except EmailAddress.DoesNotExist:
+                messages.error(request, "Email address not found")
 
-            email_address = form.save(request) # Save the new email address
-            if verification_required: # Check if verification is required
-                send_email_confirmation(request, email_address, signup=False)
-                return redirect("account_email_verification_sent")
-                # redirect("account_email") # Original
+        
+        elif 'make_primary' in request.POST:
+            email_to_primary = request.POST.get('email') # get the address
+            try:
+                email_address = EmailAddress.objects.get(user=request.user, email__iexact=email_to_primary) # add user to the query
+                if email_address.verified == True: # check email is verified
+                    email_address.set_as_primary() # Set as primary
+                    messages.success(request, f"{email_to_primary} set as your primary email address.")
+                else:
+                    messages.warning(request, f"Please verify {email_to_primary} before attempting to set as your primary email address.")
+            except EmailAddress.DoesNotExist:
+                messages.error(request, "Email address not found")
 
-            return redirect("account_email")
+
+        elif 'remove' in request.POST:
+            # ... (remove logic)
+            pass
+
+        elif 'email' in request.POST: # Add email form submission
+            if not request.user.is_authenticated: #check if user is authenticated
+                return redirect('account_login')
+            
+            form = ConfirmAddEmailForm(request, request.POST) # Create form with request and initial data
+            if form.is_valid():
+                email_address = form.save(request) # Save the email address
+
+                if account_settings.EMAIL_VERIFICATION == account_settings.EmailVerificationMethod.MANDATORY:
+                    # send_email_confirmation(request, request.user, signup=False)
+                    messages.info(request, f"Confirmation email sent to {email_address}. Please verify.")
+
+                else:
+                    messages.success(request, f"{email_address} added.")
+
+                form = ConfirmAddEmailForm(request) # Create a new blank form
+            else:
+                messages.error(request, "Error adding email address")
 
 
-    else:
+    else:  # GET request (initial load)
+        form = ConfirmAddEmailForm(request)
 
-        form = AddEmailForm(user=request.user)  # Use form directly
 
-
-    return render(request, 'users/email.html', {'form': form, 'title': "Manage Email Addresses"})
+    email_addresses = EmailAddress.objects.filter(user=request.user) # Get email addresses *after* form processing
+    return render(request, 'users/email.html', {'form': form, 'title': "Manage Email Addresses", 'email_addresses': email_addresses})  # Pass email_addresses to template
 
 @login_required
 def manage_password(request):
