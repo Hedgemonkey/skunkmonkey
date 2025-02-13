@@ -102,5 +102,35 @@ $(document).ready(function () {
             });
 
         });
+        $(document).on("submit", "#user-details form", function (event) {
+            event.preventDefault();
+            const form = $(this);
+            const url = form.attr("action");
+            const formData = form.serialize();
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: formData,
+                success: function (response) {
+                    $("#manage-details").html(response);  // Replace content of #user-details
+                    attachFormSubmitHandler("#manage-details"); // Reattach
+
+                },
+                error: function (xhr, status, error) {
+                    if (xhr.status === 400) { //Handle form errors
+                        const errors = JSON.parse(xhr.responseText);
+                        $("#user-details").html(errors.form);  // Update the form with errors
+                        console.log(errors.errors)
+                        attachFormSubmitHandler("#user-details"); // Reattach event listeners
+                    } else {
+                        var msg = "Sorry but there was an error: ";
+                        $("#user-details .card-body").html(msg + xhr.status + " " + error);
+
+                    }
+
+                }
+            });
+        });
     });
 });

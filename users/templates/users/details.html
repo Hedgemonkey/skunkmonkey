@@ -5,18 +5,41 @@
 
         <dt>Email:</dt>
         {% for email in email_addresses %}
-        <dd>{{ email.email }} {% if email.verified %}(Verified){% endif %}</dd>
+        <dd>{{ email.email }} {% if email.verified %}<span class="badge bg-success">Verified</span>{% endif %}</dd>
         {% endfor %}
         <dt>First name:</dt>
         <dd>{{ user.first_name }}</dd>
         <dt>Last name:</dt>
         <dd>{{ user.last_name }}</dd>
+
+        <dt>Member Since:</dt> <dd>{{ user.date_joined|date }}</dd>  </head> {# Format date as needed #}
+        <dt>Last Login:</dt> <dd>{{ user.last_login|date }}</dd> {# Format date as needed #}
+
+        {% if user.is_staff or user.is_superuser %} 
+            <dt>Role(s):</dt>  {# More descriptive label #}
+            <dd>
+                {% if user.is_staff %}
+                    <span class="badge bg-info">Staff</span>
+                {% endif %}
+                {% if user.is_superuser %}
+                    <span class="badge bg-primary">Manager</span>
+                {% endif %}
+            </dd>
+            <dt>Permissions:</dt>
+            <dd>
+                <ul>
+                    {% for permission in user.user_permissions.all %}  </head>
+                        <li>{{ permission.name }}</li>  </head>
+                    {% endfor %}
+                </ul>
+            </dd>
+        {% endif %}
     </dl>
 </div>
 <div class="card mt-4">
     <h5 class="card-header">Profile Management</h5>
     <div class="card-body" id="profile-management-buttons">
-        <a href="#" data-url="#" id="save-user-link" class="btn btn-success btn-block mb-2" style="display: none;">Save</a>
+        <a href="#" data-url="{% url 'manage_details_update' %}" id="save-user-link" class="btn btn-success btn-block mb-2" style="display: none;">Save</a>
         <a href="#" data-url="{% url 'manage_details' %}" id="cancel-edit" class="btn btn-secondary btn-block mb-2" style="display: none;">Cancel</a>
         <a href="{% url 'manage_details_update' %}" data-url="{% url 'manage_details_update' %}" id="edit-user-link" class="btn btn-primary btn-block mb-2">Edit</a>
         <a href="#" class="btn btn-danger btn-block">Delete Account</a>

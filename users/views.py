@@ -177,12 +177,15 @@ def manage_social(request):
 def manage_details_update(request):  # View to render the form
     form = UserForm(instance=request.user) #Instantiate with current user data
     if request.method == 'POST': # Check if the form has been submitted
+        print(request.POST)
         form = UserForm(request.POST, instance=request.user) #Get data from POST
         if form.is_valid(): # Validate form
+            print('Valid')
             form.save() # Save form
             messages.success(request, 'Your profile details have been updated successfully.')
-            return redirect('users_details') # Redirect to view details page
+            return redirect('manage_details') # Redirect to view details page
         elif request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            print('Ajax')
             errors = form.errors.as_json()
             return JsonResponse({'errors': errors, 'form': form.as_p()}, status=400)    
     return render(request, 'users/user_form.html', {'form': form})  # Render the form template

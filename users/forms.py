@@ -4,6 +4,7 @@ from allauth.account.models import EmailAddress
 from django import forms
 from crispy_forms.helper import FormHelper
 from django.contrib.auth import get_user_model
+from allauth.account.forms import UserForm as AllauthUserForm 
 
 class ContactForm(forms.Form):  # Correct: defined at top level
     email = forms.EmailField(required=True)
@@ -42,10 +43,10 @@ class CustomChangePasswordForm(ChangePasswordForm):
         self.helper = FormHelper()
         self.helper.form_tag = False
 
-class UserForm(forms.ModelForm):
+class UserForm(forms.ModelForm):  # Inherit directly from forms.ModelForm
     class Meta:
-        model = get_user_model()
-        fields = ['first_name', 'last_name']
+        model = get_user_model() # Use get_user_model() here
+        fields = ['first_name', 'last_name']  # Or other fields you want
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
