@@ -1,6 +1,7 @@
 {# users/email.html #}
 {% load i18n %}
 {% load crispy_forms_tags %}
+{% include "users/includes/_messages.html" %}
 <h2>{{ title }}</h2>
 <form method="post" action="{% url 'manage_email' %}" class="email_change"> {# form action empty so it posts to the same page. #}
   {% csrf_token %}

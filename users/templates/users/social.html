@@ -1,6 +1,7 @@
 {# users/social.html #}
 {% load i18n %}
 {% load crispy_forms_tags %}
+{% include "users/includes/_messages.html" %}
 <h2>{% trans "Social Account Connections" %}</h2>
     {% if user.socialaccount_set.all %}
 

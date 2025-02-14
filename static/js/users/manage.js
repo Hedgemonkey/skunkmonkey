@@ -1,3 +1,6 @@
+import $ from 'jquery'; // Import jQuery
+// import { displayMessages } from '../messages'; // Import displayMessages function from main.js
+
 $(function () {
 
     let currentUrl = null;
@@ -16,6 +19,7 @@ $(function () {
                 } else {
                     console.log("Content loaded successfully from:", url);
                     currentUrl = url; // Update currentUrl after successful load
+                    // displayMessages(window.messages); // Display new messages
                     attachFormSubmitHandler(targetDiv); // Attach form handler
                     $(targetDiv).show();
                 }
@@ -24,7 +28,7 @@ $(function () {
     }
 
     function attachFormSubmitHandler(targetDiv) {
-        $(targetDiv + " form").submit(function (event) {
+        $(targetDiv + " form").on( 'submit', function (event) {
             event.preventDefault();
             const form = $(this);
 
@@ -83,7 +87,7 @@ $(function () {
 
             });
             //Click handler for cancel button
-            $("#cancel-edit").click(function (event) {
+            $("#cancel-edit").on( 'click', function (event) {
                 event.preventDefault();
                 const url = $(this).data("url");
                 $("#user-details").load(url, function (response, status, xhr) {

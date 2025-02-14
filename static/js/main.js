@@ -5,18 +5,11 @@
 */
 import $ from 'jquery'; // Import jQuery
 import 'bootstrap/dist/js/bootstrap.bundle.js';   // Import Bootstrap JS Bundle
-import Swal from 'sweetalert2';  // Import SweetAlert2
+import { displayMessages } from './messages'; // Assuming messages.js contains displayMessages
 
-function displayMessages(messages) { // updated to accept parameter
-    messages.forEach(message => {
-        Swal.fire({
-            title: message.tags === "error" ? "Error" : message.tags === "success" ? "Success" : "Message",
-            text: message.message,
-            icon: message.tags === "error" ? "error" : message.tags === "success" ? "success" : "info",
-            confirmButtonText: 'OK'
-        });
-    });
-}
+$(function() {
+    displayMessages(window.messages || []); // Display initial messages on page load
+});
 
 
 $(function() {

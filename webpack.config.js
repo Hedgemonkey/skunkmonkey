@@ -6,6 +6,7 @@ module.exports = {
   entry: {
     main: './static/js/main.js',      // Site-wide JS (including SweetAlert2)
     user_manage: './static/js/users/manage.js',  // User management JS (excluding SweetAlert2)
+    messages: './static/js/messages.js', // Entry for message handling
     styles: './static/css/main.css'  // Your main CSS entry point
   },
   output: {
