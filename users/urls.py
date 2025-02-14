@@ -3,6 +3,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('accounts/login/', views.CustomLoginView.as_view(), name='account_login'),
     path('manage/', views.manage_account, name='users_manage'),
     path('details/', views.manage_details, name='manage_details'),
     path('contact/', views.contact, name='users_contact'),

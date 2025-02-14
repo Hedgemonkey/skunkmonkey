@@ -6,7 +6,7 @@ from allauth.socialaccount.models import SocialAccount
 from allauth.account.utils import send_email_confirmation
 from allauth.account import app_settings as account_settings
 from allauth.socialaccount.forms import DisconnectForm
-from .forms import ContactForm, CustomAddEmailForm, CustomChangePasswordForm, UserForm
+from .forms import ContactForm, CustomAddEmailForm, CustomChangePasswordForm, UserForm, CustomLoginForm
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -37,6 +37,12 @@ def contact(request):
 
 class CustomLoginView(LoginView):
     success_url = reverse_lazy('home')  # Or your desired post-login URL
+    form_class = CustomLoginForm  # Use custom form
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        print('CustomLoginView')
+        print(type(context['form']))  # Print the form class
+        return context
 
     def form_valid(self, form):
         user = form.user

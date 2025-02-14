@@ -3,8 +3,9 @@ from allauth.account.forms import AddEmailForm, ChangePasswordForm
 from allauth.account.models import EmailAddress
 from django import forms
 from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Field, Submit
 from django.contrib.auth import get_user_model
-from allauth.account.forms import UserForm as AllauthUserForm 
+from allauth.account.forms import LoginForm
 
 class ContactForm(forms.Form):  # Correct: defined at top level
     email = forms.EmailField(required=True)
@@ -52,3 +53,22 @@ class UserForm(forms.ModelForm):  # Inherit directly from forms.ModelForm
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
+
+class CustomLoginForm(LoginForm):
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None) 
+        super().__init__(*args, **kwargs)
+        # Add remember field to fields
+        self.fields['remember'] = forms.BooleanField(required=False, label='Remember Me')
+
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            'login',
+            'password',
+            Field('remember', wrapper_class='form-check'),
+            Submit('submit', 'Log In', css_class='btn btn-primary')
+        )
+        self.helper.form_tag = False
+

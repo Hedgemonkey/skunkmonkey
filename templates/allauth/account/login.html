@@ -16,30 +16,30 @@
                     <p>{% blocktranslate %}If you have not created an account yet, then please
                         <a href="{{ signup_url }}">sign up</a> first.{% endblocktranslate %}</p>
 
-                    <form method="post" action="{% url 'account_login' %}" class="login"> </head> {# Add class for styling if needed #}
+                    <form method="post" action="{% url 'account_login' %}" class="login"> {# Add class for styling if needed #}
                         {% csrf_token %}
-                        {{ form|crispy }} </head> {# Use crispy forms #}
-                        {{ redirect_field }}  </head>
-                        <button class="btn btn-primary" type="submit">{% trans "Sign In" %}</button> </head>
+                        {% crispy form %} {# Use crispy forms #}
+                        {{ redirect_field }}  
+                        <!-- <button class="btn btn-primary" type="submit">{% trans "Sign In" %}</button> -->
                     </form>
                 {% endif %}
 
                 {% if LOGIN_BY_CODE_ENABLED or PASSKEY_LOGIN_ENABLED %}
                     <hr>
-                    <div class="btn-group-vertical">  </head> <div> {# Use Bootstrap button group #}
+                    <div class="btn-group-vertical">  <div> {# Use Bootstrap button group #}
                         {% if PASSKEY_LOGIN_ENABLED %}
-                            <button type="submit" form="mfa_login" id="passkey_login" class="btn btn-outline-primary">{% trans "Sign in with a passkey" %}</button> </head>
+                            <button type="submit" form="mfa_login" id="passkey_login" class="btn btn-outline-primary">{% trans "Sign in with a passkey" %}</button>
                         {% endif %}
 
                         {% if LOGIN_BY_CODE_ENABLED %}
-                            <a href="{{ request_login_code_url }}" class="btn btn-outline-primary">{% trans "Mail me a sign-in code" %}</a> </head>
+                            <a href="{{ request_login_code_url }}" class="btn btn-outline-primary">{% trans "Mail me a sign-in code" %}</a>
                         {% endif %}
                     </div>
                 {% endif %}
 
 
                 {% if SOCIALACCOUNT_ENABLED %}
-                    {% include "socialaccount/snippets/login.html" with page_layout="entrance" %} </head>
+                    {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
                 {% endif %}
 
             </div>
