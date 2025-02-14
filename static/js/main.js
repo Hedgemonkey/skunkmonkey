@@ -7,8 +7,19 @@ import $ from 'jquery'; // Import jQuery
 import 'bootstrap/dist/js/bootstrap.bundle.js';   // Import Bootstrap JS Bundle
 import Swal from 'sweetalert2';  // Import SweetAlert2
 
+function displayMessages(messages) { // updated to accept parameter
+    messages.forEach(message => {
+        Swal.fire({
+            title: message.tags === "error" ? "Error" : message.tags === "success" ? "Success" : "Message",
+            text: message.message,
+            icon: message.tags === "error" ? "error" : message.tags === "success" ? "success" : "info",
+            confirmButtonText: 'OK'
+        });
+    });
+}
 
-$(document).ready(function() {
+
+$(function() {
 
     // Add any JavaScript code here that requires SweetAlert2
     // For example, you can put the message toast code here:
@@ -16,6 +27,5 @@ $(document).ready(function() {
     // ... rest of your JavaScript code for the page
 
     //Example:
-    Swal.fire('Any fool can use a computer')
-    console.log("Hello World");
+    displayMessages(messages); // Call the function to display messages on page load
 });

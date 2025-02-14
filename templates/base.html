@@ -16,6 +16,19 @@
     {% block js %}
         <script src="{% static 'bundles/js/main.js' %}"></script>
     {% endblock %}
+    {% block messages-js %}
+    <script>
+        const messages = []; // Initialize an empty array
+        {% for message in messages %}
+            messages.push({
+                message: "{{ message|escapejs }}",
+                tags: "{{ message.tags|escapejs }}"
+            });
+        {% endfor %}
+    
+        // Now you can use the 'messages' array in your JavaScript
+    </script>
+    {% endblock %}
 
 </head>
 <body>
@@ -24,26 +37,6 @@
     {% endblock %}
     <!-- Messages -->
     {% block messages %}
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-6">
-
-                    {% if messages %}
-                        <div class="card">
-                            <div class="card-body">
-                                <strong>Messages:</strong>
-                                <ul>
-                                {% for message in messages %}
-                                    <li>{{ message }}</li>
-                                {% endfor %}
-                                </ul>
-                            </div>
-                        </div>
-                    {% endif %}
-
-                </div>
-            </div>
-        </div>
     {% endblock %}
     <!-- Header - set the background image for the header in the line below-->
     {% block header %}
