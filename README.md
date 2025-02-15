@@ -126,16 +126,42 @@ The SkunkMonkey site will be structured around the following pages:
 ### 🔹 Database Schema Overview  
 The database is designed using **PostgreSQL** and follows Django’s **ORM** structure. Below is an overview of how data is structured:
 
+```plaintext
++--------------------+         +--------------------+
+|     Category       |         |      Product       |
++--------------------+         +--------------------+
+| id (PK)            |         | id (PK)            |
+| name               |         | name               |
+| slug               |         | description        |
++--------------------+         | price              |
+                               | category_id (FK)   |
+                               | stock_quantity     |
+                               | image              |
+                               | created_at         |
+                               | updated_at         |
+                               | slug               |
+                               +--------------------+
+                                        |
+                                        | 1:M
+                                        v
++--------------------+         +--------------------+
+|      Review        |         |   InventoryLog     |
++--------------------+         +--------------------+
+| id (PK)            |         | id (PK)            |
+| product_id (FK)    |         | product_id (FK)    |
+| user_id (FK)       |         | change             |
+| rating             |         | reason             |
+| comment            |         | created_at         |
+| created_at         |         +--------------------+
++--------------------+
+
 ```
-+------------------+       +------------------+       +------------------+
-| Users            |       | Orders           |       | Products         |
-+------------------+       +------------------+       +------------------+
-| id (PK)          |<----->| id (PK)          |<----->| id (PK)          |
-| username         |       | user_id (FK)     |       | name             |
-| email            |       | product_id (FK)  |       | price            |
-| password         |       | status           |       | stock            |
-+------------------+       +------------------+       +------------------+
-```
+
+Relationships:
+- `Category` ↔️ `Product`: One-to-Many (a category can have many products)  
+- `Product` ↔️ `Review`: One-to-Many (a product can have many reviews)  
+- `Product` ↔️ `InventoryLog`: One-to-Many (tracks stock changes over time)  
+- `Review` ↔️ `User`: Many-to-One (a user can leave many reviews)  
 
 The database consists of relational tables that store information about users, products, and orders. **Django's ORM** is used to interact with the database efficiently.
 
