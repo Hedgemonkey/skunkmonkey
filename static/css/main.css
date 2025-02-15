@@ -10826,6 +10826,10 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
+
+/* Custom CSS */
+
+/* base */
 .bg-image-full {
   background-repeat: no-repeat;
   background-attachment: scroll;
@@ -10844,6 +10848,8 @@ a.list-group-item-danger.fw-bold {  /* Target the specific link */
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+
+/* user management */
 
 #user-manage-logout {
   border-top-left-radius: 0;
@@ -10871,4 +10877,13 @@ a.list-group-item-danger.fw-bold {  /* Target the specific link */
 }
 #manage-details {
   margin-top: 0 !important;
+}
+
+#profile-management-buttons {
+  display: flex;
+  flex-direction: column; /* Stack buttons vertically */
+}
+
+#profile-management-buttons button {  /* Target all buttons within the container */
+  width: 100%; /* Make buttons occupy full container width */
 }

@@ -1,5 +1,15 @@
 import $ from 'jquery'; // Import jQuery
+import Swal from 'sweetalert2';  // Import SweetAlert2
 // import { displayMessages } from '../messages'; // Import displayMessages function from main.js
+
+function displayMessage(title, text, icon) {
+    Swal.fire({
+        title: title,
+        text: text,
+        icon: icon,
+        confirmButtonText: 'OK'
+    });
+}
 
 $(function () {
 
@@ -28,7 +38,7 @@ $(function () {
     }
 
     function attachFormSubmitHandler(targetDiv) {
-        $(targetDiv + " form").on( 'submit', function (event) {
+        $(targetDiv + " form").on('submit', function (event) {
             event.preventDefault();
             const form = $(this);
 
@@ -87,7 +97,7 @@ $(function () {
 
             });
             //Click handler for cancel button
-            $("#cancel-edit").on( 'click', function (event) {
+            $("#cancel-edit").on('click', function (event) {
                 event.preventDefault();
                 const url = $(this).data("url");
                 $("#user-details").load(url, function (response, status, xhr) {
@@ -134,4 +144,135 @@ $(function () {
             });
         });
     });
+
+    $(document).on('click', '#deactivate-delete-link', function (event) {
+        event.preventDefault();
+
+        Swal.fire({
+            title: 'Manage Account',
+            html: `
+                <p>Choose an action:</p>
+                <p><strong>Deactivate:</strong> To temporarily deactivate your account.</p>
+                <p><strong>OR</strong></p>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="permanent-delete-checkbox">
+                    <label class="form-check-label" for="permanent-delete-checkbox">
+                        <p><strong>Delete:</strong> Select this box to permanently delete your account.</p>
+                    </label>
+                    <p style="color:red; display: none;" id="permanent-warning">WARNING: THIS CANNOT BE UNDONE!</p>
+
+                </div>
+
+            `,
+            icon: 'info',
+            showCancelButton: true,
+            showDenyButton: true, // Add deny button
+            confirmButtonColor: '#ffc107', // Yellow for Deactivate
+            cancelButtonColor: '#6c757d',  // Gray for Cancel
+            denyButtonColor: '#d33',     // Red for Delete
+            confirmButtonText: 'Deactivate',
+            denyButtonText: `Delete`, // Text for delete button
+            
+            // Function to disable/enable delete button based on checkbox
+            didOpen: () => {
+                const deleteCheckbox = document.getElementById('permanent-delete-checkbox');
+                const denyButton = Swal.getDenyButton(); // Get deny button element
+                const warning = document.getElementById("permanent-warning");
+
+                denyButton.disabled = !deleteCheckbox.checked;  // Disable initially
+
+                deleteCheckbox.addEventListener('change', () => {
+                    denyButton.disabled = !deleteCheckbox.checked; // Disable/enable delete button.
+                    warning.style.display = deleteCheckbox.checked ? "block" : "none"; // Show/hide warning on checkbox change.
+                });
+
+
+            },// didOpen function ends here
+        }).then((result) => {
+            if (result.isConfirmed) {  // Deactivate
+                // ... your deactivate logic ...
+                const deactivateUrl = $(this).data('deactivate-url');
+                const actionText = 'deactivate';
+                const successMessage = 'Deactivated';
+                const method = 'POST';
+                sendAccountActionRequest(deactivateUrl, method, actionText, successMessage);
+            } else if (result.isDenied) { // Delete (only if checkbox is checked)
+
+                const deleteUrl = $(this).data('delete-url');
+                const actionText = 'delete permanently';
+                const successMessage = 'Deleted';
+                const method = 'POST';
+                Swal.fire({ //Second Swal Alert to make sure!
+                    title: 'Are you sure you want to permanently delete your account?',
+                    text: "This action cannot be undone!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: `Yes, ${actionText}!`
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        sendAccountActionRequest(deleteUrl, method, actionText, successMessage)
+
+                    }
+                });
+
+            }
+        });
+    });
+
+
+
+
+
+    function sendAccountActionRequest(actionUrl, method, actionText, successMessage) {
+
+        fetch(actionUrl, {
+            method: method,
+            credentials: "same-origin",
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+            .then(response => {
+                if (response.ok) {
+                    Swal.fire(
+                        `${successMessage}!`,
+                        `Your account has been ${actionText}d.`,
+                        'success'
+                    ).then(() => {
+                        window.location.href = '/'; // Redirect
+                    });
+
+                } else {
+                    response.json().then(data => {
+                        displayMessages(data.messages || []);  // Display error messages
+                    }).catch(() => {
+                        displayMessage("Error", `There was a problem ${actionText}ing your account. Please try again.`, "error");
+
+                    });
+                }
+            });
+    }
+
+    $("#permanent-delete-checkbox").on('change', function (event) {
+        $("#perminant-warning").toggle($(this).prop("checked"))
+
+    });
+
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
 });

@@ -57,7 +57,7 @@ class UserForm(forms.ModelForm):  # Inherit directly from forms.ModelForm
 class CustomLoginForm(LoginForm):
 
     def __init__(self, *args, **kwargs):
-        self.request = kwargs.pop('request', None) 
+        self.request = kwargs.get('request', None)
         super().__init__(*args, **kwargs)
         # Add remember field to fields
         self.fields['remember'] = forms.BooleanField(required=False, label='Remember Me')

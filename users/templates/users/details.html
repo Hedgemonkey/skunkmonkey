@@ -40,10 +40,37 @@
 <div class="card mt-4">
     <h5 class="card-header">Profile Management</h5>
     <div class="card-body" id="profile-management-buttons">
-        <a href="#" data-url="{% url 'manage_details_update' %}" id="save-user-link" class="btn btn-success btn-block mb-2" style="display: none;">Save</a>
-        <a href="#" data-url="{% url 'manage_details' %}" id="cancel-edit" class="btn btn-secondary btn-block mb-2" style="display: none;">Cancel</a>
-        <a href="{% url 'manage_details_update' %}" data-url="{% url 'manage_details_update' %}" id="edit-user-link" class="btn btn-primary btn-block mb-2">Edit</a>
-        <a href="#" class="btn btn-danger btn-block">Delete Account</a>
+        <button 
+            data-url="{% url 'manage_details_update' %}" 
+            id="save-user-link" 
+            class="btn btn-success btn-block mb-2" 
+            style="display: none;">
+            Save
+        </button>
+        <button 
+            data-url="{% url 'manage_details' %}" 
+            id="cancel-edit" 
+            class="btn btn-secondary btn-block mb-2" 
+            style="display: none;">
+            Cancel
+        </button>
+        <button 
+            data-url="{% url 'manage_details_update' %}" 
+            id="edit-user-link" 
+            class="btn btn-primary btn-block mb-2">
+            Edit Account
+        </button>
+        <div id="manage-account-actions">
+            <button
+                data-account-action="manage"  
+                data-deactivate-url="#"  
+                data-delete-url="#"  
+                id="deactivate-delete-link"
+                class="btn btn-warning btn-block mb-2">
+                Deactivate/Delete Account
+            </button>
+        
+        </div>
     </div>
 </div>
 </div>

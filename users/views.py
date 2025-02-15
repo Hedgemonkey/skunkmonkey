@@ -36,23 +36,37 @@ def contact(request):
 
 
 class CustomLoginView(LoginView):
-    success_url = reverse_lazy('home')  # Or your desired post-login URL
-    form_class = CustomLoginForm  # Use custom form
+    success_url = reverse_lazy('home')
+    form_class = CustomLoginForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request  # Pass the request to the form
+        return kwargs
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        print('CustomLoginView')
-        print(type(context['form']))  # Print the form class
         return context
 
     def form_valid(self, form):
-        user = form.user
+        # Set 'remember' session key based on checkbox value BEFORE super().form_valid(form)
+        if form.cleaned_data.get('remember'):
+            self.request.session.set_expiry(60 * 60 * 24 * 7 * 1) # 1 week
+        else:
+            self.request.session.set_expiry(0) # Expire on browser close
 
+        # Perform email verification checks *after* setting session expiry
+
+        response = super().form_valid(form)
+
+
+        user = self.request.user  # Access user from the request
         if user and not user.emailaddress_set.filter(verified=True, primary=True).exists():
-            messages.info(self.request, "Please verify your email address to log in.")  # User message
-            return redirect(reverse('account_email_verification_required') + f'?email={user.email}')  # Redirect
+            messages.info(self.request, "Please verify your email address to log in.")
+            # Modify the message so that the url can be retrieved from the message variable if you wish to pass the email address to the page.
+            return redirect(reverse('account_email_verification_required'))
 
-        self.request.session.flush()  # Clear any stale session data
-        return super().form_valid(form)  # Continue the login process
+        return response
 
 
 login = CustomLoginView.as_view()
