@@ -145,8 +145,79 @@ $(function () {
         });
     });
 
+    async function handleAccountAction(action) {
+        let actionUrl, actionText, successMessage, method;
+    
+        if (action === 'deactivate') {
+            actionUrl = $("#deactivate-delete-link").data('deactivate-url');
+            actionText = 'deactivate';
+            successMessage = 'Deactivated';
+            method = 'POST';
+        } else if (action === 'delete') {
+            actionUrl = $("#deactivate-delete-link").data('delete-url');
+            actionText = 'permanently delete';
+            successMessage = 'Deleted';
+            method = 'DELETE';
+        } else {
+            return; // Invalid action, do nothing
+        }
+    
+    
+        try {
+            const response = await fetch(actionUrl, {
+                method: method,
+                credentials: "same-origin",
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            });
+    
+            if (!response.ok) { //check for server errors first
+                const data = await response.json();  // Attempt to parse server error response as JSON
+                    if (data && data.messages){
+                        displayMessages(data.messages);
+    
+                    } else {
+                        const errorText = (data && data.error) ? data.error : `Server responded with status ${response.status} (${response.statusText})`; //Check for error messages from server
+                        throw new Error(errorText);
+    
+                    }
+    
+    
+            } else {
+                Swal.fire(
+                    `${successMessage}!`,
+                    `Your account has been ${actionText}d.`,
+                    'success'
+                ).then(() => {
+                    if (action === 'delete'){
+                        setTimeout(() => { window.location.href = redirectUrl; }, 2000) //Redirect after slight delay to allow message to be seen
+    
+                    } else {
+                        window.location.href = redirectUrl; // Redirect immediately after deactivation
+    
+                    }
+    
+                });
+    
+            }
+    
+    
+    
+    
+        } catch (error) {  // Catch any errors during the fetch or processing
+    
+           displayMessage('Error', error.message, 'error'); // Show error message from server if received, or the generic message.
+        }
+    
+    }
+    
+
     $(document).on('click', '#deactivate-delete-link', function (event) {
         event.preventDefault();
+
+        const deactivateRedirectUrl = $(this).data('deactivate-url');
+        const deleteRedirectUrl = $(this).data('delete-url');
 
         Swal.fire({
             title: 'Manage Account',
@@ -195,13 +266,15 @@ $(function () {
                 const actionText = 'deactivate';
                 const successMessage = 'Deactivated';
                 const method = 'POST';
-                sendAccountActionRequest(deactivateUrl, method, actionText, successMessage);
+                const redirectUrl = deactivateRedirectUrl;
+                sendAccountActionRequest(deactivateUrl, method, actionText, successMessage, redirectUrl);
             } else if (result.isDenied) { // Delete (only if checkbox is checked)
 
                 const deleteUrl = $(this).data('delete-url');
-                const actionText = 'delete permanently';
+                const actionText = 'permanently delete';
                 const successMessage = 'Deleted';
-                const method = 'POST';
+                const method = 'DELETE';
+                const redirectUrl = deleteRedirectUrl;
                 Swal.fire({ //Second Swal Alert to make sure!
                     title: 'Are you sure you want to permanently delete your account?',
                     text: "This action cannot be undone!",
@@ -212,7 +285,7 @@ $(function () {
                     confirmButtonText: `Yes, ${actionText}!`
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        sendAccountActionRequest(deleteUrl, method, actionText, successMessage)
+                        sendAccountActionRequest(deleteUrl, method, actionText, successMessage, redirectUrl)
 
                     }
                 });
@@ -225,7 +298,7 @@ $(function () {
 
 
 
-    function sendAccountActionRequest(actionUrl, method, actionText, successMessage) {
+    function sendAccountActionRequest(actionUrl, method, actionText, successMessage, redirectUrl) {
 
         fetch(actionUrl, {
             method: method,
@@ -241,7 +314,7 @@ $(function () {
                         `Your account has been ${actionText}d.`,
                         'success'
                     ).then(() => {
-                        window.location.href = '/'; // Redirect
+                        window.location.href = redirectUrl; // Redirect
                     });
 
                 } else {

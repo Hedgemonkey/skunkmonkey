@@ -63,8 +63,10 @@
         <div id="manage-account-actions">
             <button
                 data-account-action="manage"  
-                data-deactivate-url="#"  
-                data-delete-url="#"  
+                data-deactivate-url="{% url 'deactivate_account' %}"  
+                data-deactivate-redirect-url="{% url 'account_inactive_message' %}"
+                data-delete-url="{% url 'delete_account' %}"
+                data-delete-redirect-url="{% url 'account_deleted' %}"
                 id="deactivate-delete-link"
                 class="btn btn-warning btn-block mb-2">
                 Deactivate/Delete Account

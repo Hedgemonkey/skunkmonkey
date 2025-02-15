@@ -1,14 +1,35 @@
 {% extends "allauth/layouts/entrance.html" %}
 {% load i18n %}
 {% load allauth %}
-{% block head_title %}
-    {% translate "Account Inactive" %}
-{% endblock head_title %}
+{% block head_title %}{% translate "Account Inactive" %}{% endblock %}
+
 {% block content %}
-    {% element h1 %}
-        {% translate "Account Inactive" %}
-    {% endelement %}
-    {% element p %}
-        {% translate "This account is inactive." %}
-    {% endelement %}
-{% endblock content %}
+
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-white border-bottom-0 text-center">
+                    <h2 class="mb-0">{% translate "Account Inactive" %}</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-center">This account is inactive. Please check your email or contact an administrator for assistance.</p>
+                    {% if messages %}
+                        <div class="messages">
+                            {% for message in messages %}
+                                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">{{ message }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

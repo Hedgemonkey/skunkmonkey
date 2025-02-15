@@ -9,6 +9,7 @@ from allauth.socialaccount.forms import DisconnectForm
 from .forms import ContactForm, CustomAddEmailForm, CustomChangePasswordForm, UserForm, CustomLoginForm
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout, REDIRECT_FIELD_NAME
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.http import JsonResponse
@@ -61,10 +62,17 @@ class CustomLoginView(LoginView):
 
 
         user = self.request.user  # Access user from the request
-        if user and not user.emailaddress_set.filter(verified=True, primary=True).exists():
-            messages.info(self.request, "Please verify your email address to log in.")
-            # Modify the message so that the url can be retrieved from the message variable if you wish to pass the email address to the page.
-            return redirect(reverse('account_email_verification_required'))
+        if user: #checks if a user object exists
+            if not user.is_active: #checks for active status, inactive is False
+                logout(self.request) #logout
+                messages.info(self.request, "Your account is inactive. Please contact support or check your email for reactivation instructions.")
+                next_url = self.request.GET.get(REDIRECT_FIELD_NAME, self.get_success_url()) #get next url, if exists
+                return redirect(reverse('account_inactive') + f'?{REDIRECT_FIELD_NAME}=' + next_url) #redirect with next parameter
+            
+            elif not user.emailaddress_set.filter(verified=True, primary=True).exists():
+                messages.info(self.request, "Please verify your email address to log in.")
+                # Modify the message so that the url can be retrieved from the message variable if you wish to pass the email address to the page.
+                return redirect(reverse('account_email_verification_required'))
 
         return response
 
@@ -209,3 +217,40 @@ def manage_details_update(request):  # View to render the form
             errors = form.errors.as_json()
             return JsonResponse({'errors': errors, 'form': form.as_p()}, status=400)    
     return render(request, 'users/user_form.html', {'form': form})  # Render the form template
+
+
+@login_required
+def deactivate_account(request):
+    if request.method == 'POST':
+        request.user.is_active = False
+        request.user.save()
+        messages.success(request, "Your account has been deactivated.")
+
+        logout(request) # Automatically log the user out after deactivation.
+
+
+        return JsonResponse({'success': True, 'redirect_url': reverse('account_inactive_message')})
+    return JsonResponse({'success': False, 'error': 'Invalid request.'})
+
+
+@login_required
+def delete_account(request):
+    if request.method == 'DELETE': 
+        request.user.delete()
+
+        username = request.user.username #Get username before logging out
+        logout(request)
+        messages.success(request, f"Account '{username}' has been permanently deleted.")
+
+        return JsonResponse({'messages': [{"message": m.message, "tags": m.tags}for m in messages.get_messages(request)], 'deleted': True})  # Indicates successful deletion
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+def deleted_account(request):
+    return render(request, 'users/account_deleted.html')
+
+
+def account_inactive_message(request):
+    messages.info(request, 'Your account is currently inactive. Please login or reactivate your account.')  # Or a custom message
+    return render(request, 'allauth/account/account_inactive.html') 
