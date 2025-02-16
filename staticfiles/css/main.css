@@ -10,6 +10,8 @@
  * Copyright 2011-2022 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
+@import "~bootstrap/dist/css/bootstrap.min.css";
+@import "~sweetalert2/dist/sweetalert2.min.css";
 :root {
   --bs-blue: #0d6efd;
   --bs-indigo: #6610f2;
@@ -10824,6 +10826,10 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
+
+/* Custom CSS */
+
+/* base */
 .bg-image-full {
   background-repeat: no-repeat;
   background-attachment: scroll;
@@ -10833,4 +10839,51 @@ textarea.form-control-lg {
 .main-logo {
   max-width: 20vw;
   height: auto;
+}
+a.list-group-item-danger.fw-bold {  /* Target the specific link */
+  font-weight: 900 !important;  /* Or a specific font-weight value */
+  background-color: var(--bs-danger);
+  color: var(--bs-white);
+  padding: 0rem 0.5rem;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+/* user management */
+
+#user-manage-logout {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  padding: 0.5rem 1rem;
+}
+
+.top-card {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.middle-card {
+  margin: 0 !important;
+  margin-top: 0 !important;
+  border-top: none !important;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.bottom-card {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+#manage-details {
+  margin-top: 0 !important;
+}
+
+#profile-management-buttons {
+  display: flex;
+  flex-direction: column; /* Stack buttons vertically */
+}
+
+#profile-management-buttons button {  /* Target all buttons within the container */
+  width: 100%; /* Make buttons occupy full container width */
 }

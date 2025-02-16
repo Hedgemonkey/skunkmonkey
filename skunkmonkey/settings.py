@@ -15,6 +15,9 @@ import os
 from dotenv import load_dotenv
 import dj_database_url
 from django.urls import reverse
+import logging
+
+# Load environment variables from .env file
 
 load_dotenv()
 
@@ -209,8 +212,8 @@ MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 if os.environ.get("SKUNKMONKEY_VPS_HOST", False):
-#    STATIC_URL = 'http://188.245.107.205/~skunkmonkey/devel/skunkmonkey/static/'
-    MEDIA_URL = 'http://188.245.107.205/~skunkmonkey/devel/skunkmonkey/media/'
+   STATIC_URL = 'http://devel.skunkmonkey.co.uk/static/'
+   MEDIA_URL = 'http://devel.skunkmonkey.co.uk/media/'
 
 
 
@@ -218,3 +221,47 @@ if os.environ.get("SKUNKMONKEY_VPS_HOST", False):
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Logging configuration
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,  # Important: keep this False
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',  # Use str.format() style formatting
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'skunkmonkey.log'), # Log file path
+            'formatter': 'verbose',  # Use the 'verbose' formatter
+        },
+        'console': {  # Add a console handler for development
+            'level': 'DEBUG',  # Adjust as needed
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+
+    },
+    'loggers': {
+        '': {  # Root logger (catch-all if no other logger matches)
+            'handlers': ['file', 'console'], #  Output to both file and console
+            'level': 'DEBUG',  # Adjust log level as needed
+        },
+        'django.request': {  # Log HTTP requests (optional)
+             'handlers': ['file', 'console'], 
+             'level': 'INFO',
+             'propagate': False,  # Prevents these messages from being logged twice
+        }
+
+
+    },
+}
