@@ -1,33 +1,44 @@
 # products/forms.py
 from django import forms
-from .models import Product, Category  # Import your models
+from .models import Product, Category
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Submit, Row, Column, Field
 
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = ['name', 'category', 'description', 'price', 'stock_quantity', 'image', 'is_active']
         widgets = {
-            'description': forms.Textarea(attrs={'rows': 4}),  # Customize the description field to be a larger textarea
-            'category': forms.Select(attrs={'class': 'form-select'}), # Style the category dropdown
-            'image': forms.ClearableFileInput(attrs={'class': 'form-control'}),  # add some styling to the file upload input.
+            'description': forms.Textarea(attrs={'rows': 4}),
+            'category': forms.Select(attrs={'class': 'form-select'}),
+            'image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
-
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Add Bootstrap classes to form fields
+        self.helper = FormHelper()
+        self.helper.form_tag = False  # Remove the enclosing <form> tag
+        self.helper.form_show_labels = True # Ensure labels are shown (or handle in template if preferred)
+        self.helper.layout = Layout(
+            Row(
+                Column('name', css_class='form-group col-md-6 mb-0'),
+                Column('category', css_class='form-group col-md-6 mb-0'),
+                css_class='form-row'
+            ),
+            'description',
+            Row(
+                Column('price', css_class='form-group col-md-4 mb-0'),
+                Column('stock_quantity', css_class='form-group col-md-4 mb-0'),
+                Column('image', css_class='form-group col-md-4 mb-0'),
+                css_class='form-row'
+            ),
+            'is_active',  # Checkbox will be rendered as form-check by default with Bootstrap 5
+            Submit('submit', 'Save', css_class='btn btn-primary mt-3')
+
+        )
+
         for field_name, field in self.fields.items():
-
-            if type(field.widget) == forms.BooleanField:
-                # field.widget.attrs['class'] = 'form-check-input' # Uncomment to add this styling to the checkbox/radio buttons.
-                pass # For now, we are skipping checkbox styling
-            else:
-
-                field.widget.attrs['class'] = 'form-control'  # Apply form-control class for styling
-
-
-            # Add 'form-label' class to labels if Bootstrap 5 or higher.
-            field.label_suffix = ""  # Remove the trailing colon (adjust if needed for your Bootstrap version)
-
-        self.fields['is_active'].widget.attrs['class'] = 'form-check-input' # Add correct styling for checkboxes
-
+            field.widget.attrs['class'] = 'form-control'   # Apply Bootstrap form-control class to all fields.
+            field.label_suffix = ""   # Removes the trailing colon on labels (adjust for your Bootstrap version).
+            if field_name == 'category':
+                field.queryset = Category.objects.all().order_by('name')  # Ensure categories are ordered by name.

@@ -1,0 +1,6 @@
+{# products/staff/product_form_partial.html #}
+{% load crispy_forms_tags %}
+<form method="post" id="product-form" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit" class="btn btn-primary mt-3">Save</button>  </form>

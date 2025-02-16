@@ -4,15 +4,15 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   entry: {
-    main: './static/js/main.js',      // Site-wide JS (including SweetAlert2)
-    user_manage: './static/js/users/manage.js',  // User management JS (excluding SweetAlert2)
-    messages: './static/js/messages.js', // Entry for message handling
+    'js/main': './static/js/main.js',      // Site-wide JS (including SweetAlert2)
+    'js/user_manage': './static/js/users/manage.js',  // User management JS (excluding SweetAlert2)
+    'js/messages': './static/js/messages.js', // Entry for message handling
     styles: './static/css/main.css',  // Your main CSS entry point
-    'products/js/products': './products/static/products/js/products.js',
+    'js/products/products': './products/static/products/js/products.js',
   },
   output: {
     path: path.resolve(__dirname, 'static/bundles/'),  // Output path - MUST BE ABSOLUTE
-    filename: 'js/[name].js',
+    filename: '[name].js',
     publicPath: '/static/bundles/',
   },
   module: {

@@ -17,51 +17,15 @@
     <div class="row">
         <div class="col-md-12">
             <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                <a href="{% url 'products:product_create' %}" class="btn btn-primary mb-3">Create New Product</a>
+                <a id="create-product-button" href="#" class="btn btn-primary mb-3"
+                    data-create-form-url="{% url 'products:product_create_form' %}"
+                    data-create-url="{% url 'products:product_create' %}"
+                    data-product-management-url="{% url 'products:product_management' %}">
+                    Create New Product
+                </a>
             </div>
 
-            {% if products %}
-            <div class="row">
-                {% for product in products %}
-                <div class="col-md-4 mb-4">
-                    <div class="card">
-                        {% if product.image %}
-                        <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
-                        {% endif %}
-                        <div class="card-body">
-                            <h5 class="card-title">{{ product.name }}</h5>
-                            <p class="card-text">
-                                <strong>Category:</strong> {{ product.category }}<br>
-                                <strong>Price:</strong> ${{ product.price }}<br>
-                                <strong>Stock:</strong> {{ product.stock_quantity }}<br>
-                                <strong>Active:</strong> {% if product.is_active %}Yes{% else %}No{% endif %}
-                            </p>
-                            <div class="btn-group" role="group">
-                                <a href="{% url 'products:product_update' product.slug %}" class="btn btn-sm btn-secondary">Edit</a>
-                                <a href="{% url 'products:product_delete' product.slug %}" class="btn btn-sm btn-danger delete-product" onclick="return false;">Delete</a> 
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% if forloop.counter|divisibleby:3 %}
-            </div>
-            <div class="row">
-                {% endif %}
-                {% endfor %}
-            </div>
-            {% else %}
-            <div class="col-md-12 mb-4 d-flex justify-content-center">
-                <div class="card">
-                    <div class="card-header text-center">
-                        <h5 class="card-title">No Products Found</h5>
-                    </div>
-                    <div class="card-body">
-                        <p class="card-text text-center">There are currently no products in the database. Click 'Create New Product' to begin
-                            adding some to the database.</p>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
+            {% include 'products/manage/product_manage_partial.html' %}
 
         </div>
     </div>
@@ -70,5 +34,5 @@
 {% endblock %}
 
 {% block postloadjs %}
-<script src="{% static 'bundles/products/js/products.js' %}"></script>
+<script src="{% static 'bundles/js/products/products.js' %}"></script>
 {% endblock %}
