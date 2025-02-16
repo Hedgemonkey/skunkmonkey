@@ -140,6 +140,7 @@ The database is designed using **PostgreSQL** and follows Django’s **ORM** str
                                | created_at         |
                                | updated_at         |
                                | slug               |
+                               | is_active          | 
                                +--------------------+
                                         |
                                         | 1:M

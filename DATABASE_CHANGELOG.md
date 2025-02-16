@@ -54,6 +54,21 @@ python manage.py migrate socialaccount zero
 
 ---
 
+### Version: v1.2.0 (or your initial version number)
+📅 **Date**: 2025-02-16 (The date from the migration file)
+📝 **Description**: Initial migration for the `products` app. This migration creates the `Category`, `Product`, `Review`, and `InventoryLog` models and their associated database tables.
+
+📂 **Migration File**: `products/migrations/0001_initial.py`
+
+🛠 **Impact**: Creates the `products_category`, `products_product`, `products_review`, and `products_inventorylog` tables in the database.
+
+🔄 **Rollback Plan**:
+```bash
+python manage.py migrate products zero   # Reverts the initial migration
+```
+
+---
+
 ## 🔍 Guidelines for Future Changes  
 
 ✔ **Always document changes here before running `migrate` in production.**  
