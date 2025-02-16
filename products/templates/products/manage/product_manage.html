@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}SkunkMonkey - Product Management{% endblock %}
+
+{% block header %}
+<header class="py-0 bg-image-full" style="background-image: url('https://source.unsplash.com/wfh8dDlNFOk/1600x900')">
+    <div class="text-center my-2">
+        <img class="img-fluid rounded-circle mb-4 main-logo" style="max-width: 150px;"
+            src="{{ MEDIA_URL }}skunkmonkey_logo.jpg" alt="SkunkMonkey Logo" />
+        <h1 class="fs-3 fw-bolder">Product Management</h1>
+    </div>
+</header>
+{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                <a href="{% url 'products:product_create' %}" class="btn btn-primary mb-3">Create New Product</a>
+            </div>
+
+            {% if products %}
+            <div class="row">
+                {% for product in products %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        {% if product.image %}
+                        <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text">
+                                <strong>Category:</strong> {{ product.category }}<br>
+                                <strong>Price:</strong> ${{ product.price }}<br>
+                                <strong>Stock:</strong> {{ product.stock_quantity }}<br>
+                                <strong>Active:</strong> {% if product.is_active %}Yes{% else %}No{% endif %}
+                            </p>
+                            <div class="btn-group" role="group">
+                                <a href="{% url 'products:product_update' product.slug %}" class="btn btn-sm btn-secondary">Edit</a>
+                                <a href="{% url 'products:product_delete' product.slug %}" class="btn btn-sm btn-danger delete-product" onclick="return false;">Delete</a> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% if forloop.counter|divisibleby:3 %}
+            </div>
+            <div class="row">
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="col-md-12 mb-4 d-flex justify-content-center">
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h5 class="card-title">No Products Found</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text text-center">There are currently no products in the database. Click 'Create New Product' to begin
+                            adding some to the database.</p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block postloadjs %}
+<script src="{% static 'bundles/products/js/products.js' %}"></script>
+{% endblock %}

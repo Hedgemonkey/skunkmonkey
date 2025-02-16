@@ -1,179 +1,150 @@
-INFO 2025-02-16 02:26:03,685 autoreload 775917 140410334036032 /home/skunkmonkey/public_html/devel/skunkmonkey/products/models.py changed, reloading.
-INFO 2025-02-16 02:26:04,063 autoreload 776485 140023430008896 Watching for file changes with StatReloader
-INFO 2025-02-16 02:26:05,225 autoreload 776485 140023430008896 /home/skunkmonkey/public_html/devel/skunkmonkey/products/models.py changed, reloading.
-INFO 2025-02-16 02:26:05,538 autoreload 776499 140484046745664 Watching for file changes with StatReloader
-INFO 2025-02-16 02:26:11,819 autoreload 776499 140484046745664 /home/skunkmonkey/public_html/devel/skunkmonkey/products/models.py changed, reloading.
-INFO 2025-02-16 02:26:12,167 autoreload 776556 140649991561280 Watching for file changes with StatReloader
-INFO 2025-02-16 02:26:15,374 autoreload 776556 140649991561280 /home/skunkmonkey/public_html/devel/skunkmonkey/products/models.py changed, reloading.
-INFO 2025-02-16 02:26:15,696 autoreload 776611 139793261293632 Watching for file changes with StatReloader
-INFO 2025-02-16 02:26:16,874 autoreload 776611 139793261293632 /home/skunkmonkey/public_html/devel/skunkmonkey/products/models.py changed, reloading.
-INFO 2025-02-16 02:26:17,213 autoreload 776648 139866860027968 Watching for file changes with StatReloader
-INFO 2025-02-16 02:26:51,239 autoreload 776648 139866860027968 /home/skunkmonkey/public_html/devel/skunkmonkey/products/models.py changed, reloading.
-INFO 2025-02-16 02:26:51,541 autoreload 776694 140591893737536 Watching for file changes with StatReloader
-INFO 2025-02-16 02:26:57,788 autoreload 776694 140591893737536 /home/skunkmonkey/public_html/devel/skunkmonkey/products/models.py changed, reloading.
-INFO 2025-02-16 02:26:58,130 autoreload 776813 140138131894336 Watching for file changes with StatReloader
-INFO 2025-02-16 02:27:05,389 autoreload 776813 140138131894336 /home/skunkmonkey/public_html/devel/skunkmonkey/products/models.py changed, reloading.
-INFO 2025-02-16 02:27:05,712 autoreload 776872 139921291808832 Watching for file changes with StatReloader
-INFO 2025-02-16 02:27:13,976 autoreload 776872 139921291808832 /home/skunkmonkey/public_html/devel/skunkmonkey/products/models.py changed, reloading.
-INFO 2025-02-16 02:27:14,343 autoreload 776909 140458807087168 Watching for file changes with StatReloader
-INFO 2025-02-16 02:27:20,589 autoreload 776909 140458807087168 /home/skunkmonkey/public_html/devel/skunkmonkey/products/models.py changed, reloading.
-INFO 2025-02-16 02:27:20,953 autoreload 776971 139762114187328 Watching for file changes with StatReloader
-INFO 2025-02-16 02:27:34,286 autoreload 776971 139762114187328 /home/skunkmonkey/public_html/devel/skunkmonkey/products/models.py changed, reloading.
-INFO 2025-02-16 02:27:34,600 autoreload 777047 140708787556416 Watching for file changes with StatReloader
-INFO 2025-02-16 02:27:51,973 autoreload 777047 140708787556416 /home/skunkmonkey/public_html/devel/skunkmonkey/products/models.py changed, reloading.
-INFO 2025-02-16 02:27:52,291 autoreload 777145 139681125642304 Watching for file changes with StatReloader
-INFO 2025-02-16 02:27:59,550 autoreload 777145 139681125642304 /home/skunkmonkey/public_html/devel/skunkmonkey/products/models.py changed, reloading.
-INFO 2025-02-16 02:27:59,878 autoreload 777215 139705610743872 Watching for file changes with StatReloader
-INFO 2025-02-16 02:28:03,095 autoreload 777215 139705610743872 /home/skunkmonkey/public_html/devel/skunkmonkey/products/models.py changed, reloading.
-INFO 2025-02-16 02:28:03,481 autoreload 777261 139745763835968 Watching for file changes with StatReloader
-INFO 2025-02-16 02:28:11,751 autoreload 777261 139745763835968 /home/skunkmonkey/public_html/devel/skunkmonkey/products/models.py changed, reloading.
-INFO 2025-02-16 02:28:12,055 autoreload 777332 140268337700928 Watching for file changes with StatReloader
-INFO 2025-02-16 02:29:08,874 autoreload 777332 140268337700928 /home/skunkmonkey/public_html/devel/skunkmonkey/products/models.py changed, reloading.
-INFO 2025-02-16 02:29:09,229 autoreload 777420 140716088229952 Watching for file changes with StatReloader
-INFO 2025-02-16 02:29:10,388 autoreload 777420 140716088229952 /home/skunkmonkey/public_html/devel/skunkmonkey/products/models.py changed, reloading.
-INFO 2025-02-16 02:29:10,699 autoreload 777448 140441964486720 Watching for file changes with StatReloader
-INFO 2025-02-16 02:29:11,634 wsgi 777448 140441896875712 WSGI script has been executed.
-INFO 2025-02-16 02:29:11,635 wsgi 777448 140441896875712 SHELL=/bin/bash
-INFO 2025-02-16 02:29:11,635 wsgi 777448 140441896875712 COLORTERM=truecolor
-INFO 2025-02-16 02:29:11,635 wsgi 777448 140441896875712 TERM_PROGRAM_VERSION=1.97.2
-INFO 2025-02-16 02:29:11,636 wsgi 777448 140441896875712 DATABASE_URL=postgresql://neondb_owner:9PJZirMgh1IB@ep-blue-mouse-a2wukk26.eu-central-1.aws.neon.tech/year_motor_thumb_159204
-INFO 2025-02-16 02:29:11,636 wsgi 777448 140441896875712 DJANGO_SECRET_KEY=django-insecure-ufb(q*rf)353ns2lxk$qds!+$aqf)=$+8ip4vz25mxnj^ui-qi
-INFO 2025-02-16 02:29:11,636 wsgi 777448 140441896875712 PYDEVD_DISABLE_FILE_VALIDATION=1
-INFO 2025-02-16 02:29:11,636 wsgi 777448 140441896875712 PWD=/home/skunkmonkey/public_html/devel/skunkmonkey
-INFO 2025-02-16 02:29:11,636 wsgi 777448 140441896875712 LOGNAME=skunkmonkey
-INFO 2025-02-16 02:29:11,636 wsgi 777448 140441896875712 XDG_SESSION_TYPE=tty
-INFO 2025-02-16 02:29:11,636 wsgi 777448 140441896875712 BUNDLED_DEBUGPY_PATH=/home/skunkmonkey/.vscode-server/extensions/ms-python.debugpy-2025.0.1-linux-x64/bundled/libs/debugpy
-INFO 2025-02-16 02:29:11,637 wsgi 777448 140441896875712 VSCODE_GIT_ASKPASS_NODE=/home/skunkmonkey/.vscode-server/cli/servers/Stable-e54c774e0add60467559eb0d1e229c6452cf8447/server/node
-INFO 2025-02-16 02:29:11,637 wsgi 777448 140441896875712 MOTD_SHOWN=pam
-INFO 2025-02-16 02:29:11,637 wsgi 777448 140441896875712 HOME=/home/skunkmonkey
-INFO 2025-02-16 02:29:11,637 wsgi 777448 140441896875712 LANG=en_US.UTF-8
-INFO 2025-02-16 02:29:11,637 wsgi 777448 140441896875712 LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.swp=00;90:*.tmp=00;90:*.dpkg-dist=00;90:*.dpkg-old=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:
-INFO 2025-02-16 02:29:11,637 wsgi 777448 140441896875712 VIRTUAL_ENV=/home/skunkmonkey/public_html/devel/skunkmonkey/.venv
-INFO 2025-02-16 02:29:11,637 wsgi 777448 140441896875712 SSL_CERT_DIR=/usr/lib/ssl/certs
-INFO 2025-02-16 02:29:11,637 wsgi 777448 140441896875712 GIT_ASKPASS=/home/skunkmonkey/.vscode-server/cli/servers/Stable-e54c774e0add60467559eb0d1e229c6452cf8447/server/extensions/git/dist/askpass.sh
-INFO 2025-02-16 02:29:11,638 wsgi 777448 140441896875712 SSH_CONNECTION=146.200.38.25 57572 188.245.107.205 22
-INFO 2025-02-16 02:29:11,638 wsgi 777448 140441896875712 VSCODE_GIT_ASKPASS_EXTRA_ARGS=
-INFO 2025-02-16 02:29:11,638 wsgi 777448 140441896875712 XDG_SESSION_CLASS=user
-INFO 2025-02-16 02:29:11,638 wsgi 777448 140441896875712 TERM=xterm-256color
-INFO 2025-02-16 02:29:11,638 wsgi 777448 140441896875712 DEBUGPY_ADAPTER_ENDPOINTS=/home/skunkmonkey/.vscode-server/extensions/ms-python.debugpy-2025.0.1-linux-x64/.noConfigDebugAdapterEndpoints/endpoint-d80d550a1cc1832f.txt
-INFO 2025-02-16 02:29:11,638 wsgi 777448 140441896875712 USER=skunkmonkey
-INFO 2025-02-16 02:29:11,638 wsgi 777448 140441896875712 VSCODE_GIT_IPC_HANDLE=/run/user/1000/vscode-git-5ff5c672c5.sock
-INFO 2025-02-16 02:29:11,638 wsgi 777448 140441896875712 SHLVL=2
-INFO 2025-02-16 02:29:11,638 wsgi 777448 140441896875712 XDG_SESSION_ID=802
-INFO 2025-02-16 02:29:11,639 wsgi 777448 140441896875712 VIRTUAL_ENV_PROMPT=(.venv) 
-INFO 2025-02-16 02:29:11,639 wsgi 777448 140441896875712 XDG_RUNTIME_DIR=/run/user/1000
-INFO 2025-02-16 02:29:11,639 wsgi 777448 140441896875712 SSL_CERT_FILE=/usr/lib/ssl/cert.pem
-INFO 2025-02-16 02:29:11,639 wsgi 777448 140441896875712 PS1=\[]633;A\](.venv) \[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ \[]633;B\]
-INFO 2025-02-16 02:29:11,639 wsgi 777448 140441896875712 SSH_CLIENT=146.200.38.25 57572 22
-INFO 2025-02-16 02:29:11,639 wsgi 777448 140441896875712 VSCODE_GIT_ASKPASS_MAIN=/home/skunkmonkey/.vscode-server/cli/servers/Stable-e54c774e0add60467559eb0d1e229c6452cf8447/server/extensions/git/dist/askpass-main.js
-INFO 2025-02-16 02:29:11,639 wsgi 777448 140441896875712 XDG_DATA_DIRS=/usr/share/gnome:/usr/local/share/:/usr/share/
-INFO 2025-02-16 02:29:11,639 wsgi 777448 140441896875712 BROWSER=/home/skunkmonkey/.vscode-server/cli/servers/Stable-e54c774e0add60467559eb0d1e229c6452cf8447/server/bin/helpers/browser.sh
-INFO 2025-02-16 02:29:11,640 wsgi 777448 140441896875712 PATH=/home/skunkmonkey/.vscode-server/extensions/ms-python.python-2025.0.0-linux-x64/python_files/deactivate/bash:/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/bin:/home/skunkmonkey/.vscode-server/extensions/ms-python.python-2025.0.0-linux-x64/python_files/deactivate/bash:/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/bin:/home/skunkmonkey/.vscode-server/cli/servers/Stable-e54c774e0add60467559eb0d1e229c6452cf8447/server/bin/remote-cli:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/opt/thinlinc/bin:/opt/thinlinc/sbin
-INFO 2025-02-16 02:29:11,640 wsgi 777448 140441896875712 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
-INFO 2025-02-16 02:29:11,640 wsgi 777448 140441896875712 TERM_PROGRAM=vscode
-INFO 2025-02-16 02:29:11,640 wsgi 777448 140441896875712 VSCODE_IPC_HOOK_CLI=/run/user/1000/vscode-ipc-1bafb365-6664-444b-8029-0bf65295990c.sock
-INFO 2025-02-16 02:29:11,640 wsgi 777448 140441896875712 _=/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/bin/python
-INFO 2025-02-16 02:29:11,640 wsgi 777448 140441896875712 DJANGO_SETTINGS_MODULE=skunkmonkey.settings
-INFO 2025-02-16 02:29:11,640 wsgi 777448 140441896875712 DEVELOPMENT=1
-INFO 2025-02-16 02:29:11,640 wsgi 777448 140441896875712 SKUNKMONKEY_VPS_HOST=1
-INFO 2025-02-16 02:29:11,640 wsgi 777448 140441896875712 TZ=UTC
-INFO 2025-02-16 02:29:11,641 wsgi 777448 140441896875712 RUN_MAIN=true
-INFO 2025-02-16 02:29:11,641 wsgi 777448 140441896875712 WSGI script has been executed.
-INFO 2025-02-16 02:41:37,066 autoreload 777448 140441964486720 /home/skunkmonkey/public_html/devel/skunkmonkey/products/admin.py changed, reloading.
-INFO 2025-02-16 02:41:37,411 autoreload 778836 139789139083328 Watching for file changes with StatReloader
-INFO 2025-02-16 02:41:37,656 wsgi 778836 139789072332480 WSGI script has been executed.
-INFO 2025-02-16 02:41:37,656 wsgi 778836 139789072332480 SHELL=/bin/bash
-INFO 2025-02-16 02:41:37,656 wsgi 778836 139789072332480 COLORTERM=truecolor
-INFO 2025-02-16 02:41:37,656 wsgi 778836 139789072332480 TERM_PROGRAM_VERSION=1.97.2
-INFO 2025-02-16 02:41:37,656 wsgi 778836 139789072332480 DATABASE_URL=postgresql://neondb_owner:9PJZirMgh1IB@ep-blue-mouse-a2wukk26.eu-central-1.aws.neon.tech/year_motor_thumb_159204
-INFO 2025-02-16 02:41:37,656 wsgi 778836 139789072332480 DJANGO_SECRET_KEY=django-insecure-ufb(q*rf)353ns2lxk$qds!+$aqf)=$+8ip4vz25mxnj^ui-qi
-INFO 2025-02-16 02:41:37,657 wsgi 778836 139789072332480 PYDEVD_DISABLE_FILE_VALIDATION=1
-INFO 2025-02-16 02:41:37,657 wsgi 778836 139789072332480 PWD=/home/skunkmonkey/public_html/devel/skunkmonkey
-INFO 2025-02-16 02:41:37,657 wsgi 778836 139789072332480 LOGNAME=skunkmonkey
-INFO 2025-02-16 02:41:37,657 wsgi 778836 139789072332480 XDG_SESSION_TYPE=tty
-INFO 2025-02-16 02:41:37,657 wsgi 778836 139789072332480 BUNDLED_DEBUGPY_PATH=/home/skunkmonkey/.vscode-server/extensions/ms-python.debugpy-2025.0.1-linux-x64/bundled/libs/debugpy
-INFO 2025-02-16 02:41:37,657 wsgi 778836 139789072332480 VSCODE_GIT_ASKPASS_NODE=/home/skunkmonkey/.vscode-server/cli/servers/Stable-e54c774e0add60467559eb0d1e229c6452cf8447/server/node
-INFO 2025-02-16 02:41:37,657 wsgi 778836 139789072332480 MOTD_SHOWN=pam
-INFO 2025-02-16 02:41:37,657 wsgi 778836 139789072332480 HOME=/home/skunkmonkey
-INFO 2025-02-16 02:41:37,657 wsgi 778836 139789072332480 LANG=en_US.UTF-8
-INFO 2025-02-16 02:41:37,657 wsgi 778836 139789072332480 LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.swp=00;90:*.tmp=00;90:*.dpkg-dist=00;90:*.dpkg-old=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:
-INFO 2025-02-16 02:41:37,657 wsgi 778836 139789072332480 VIRTUAL_ENV=/home/skunkmonkey/public_html/devel/skunkmonkey/.venv
-INFO 2025-02-16 02:41:37,658 wsgi 778836 139789072332480 SSL_CERT_DIR=/usr/lib/ssl/certs
-INFO 2025-02-16 02:41:37,658 wsgi 778836 139789072332480 GIT_ASKPASS=/home/skunkmonkey/.vscode-server/cli/servers/Stable-e54c774e0add60467559eb0d1e229c6452cf8447/server/extensions/git/dist/askpass.sh
-INFO 2025-02-16 02:41:37,658 wsgi 778836 139789072332480 SSH_CONNECTION=146.200.38.25 57572 188.245.107.205 22
-INFO 2025-02-16 02:41:37,658 wsgi 778836 139789072332480 VSCODE_GIT_ASKPASS_EXTRA_ARGS=
-INFO 2025-02-16 02:41:37,658 wsgi 778836 139789072332480 XDG_SESSION_CLASS=user
-INFO 2025-02-16 02:41:37,658 wsgi 778836 139789072332480 TERM=xterm-256color
-INFO 2025-02-16 02:41:37,658 wsgi 778836 139789072332480 DEBUGPY_ADAPTER_ENDPOINTS=/home/skunkmonkey/.vscode-server/extensions/ms-python.debugpy-2025.0.1-linux-x64/.noConfigDebugAdapterEndpoints/endpoint-d80d550a1cc1832f.txt
-INFO 2025-02-16 02:41:37,658 wsgi 778836 139789072332480 USER=skunkmonkey
-INFO 2025-02-16 02:41:37,658 wsgi 778836 139789072332480 VSCODE_GIT_IPC_HANDLE=/run/user/1000/vscode-git-5ff5c672c5.sock
-INFO 2025-02-16 02:41:37,658 wsgi 778836 139789072332480 SHLVL=2
-INFO 2025-02-16 02:41:37,658 wsgi 778836 139789072332480 XDG_SESSION_ID=802
-INFO 2025-02-16 02:41:37,659 wsgi 778836 139789072332480 VIRTUAL_ENV_PROMPT=(.venv) 
-INFO 2025-02-16 02:41:37,659 wsgi 778836 139789072332480 XDG_RUNTIME_DIR=/run/user/1000
-INFO 2025-02-16 02:41:37,659 wsgi 778836 139789072332480 SSL_CERT_FILE=/usr/lib/ssl/cert.pem
-INFO 2025-02-16 02:41:37,659 wsgi 778836 139789072332480 PS1=\[]633;A\](.venv) \[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ \[]633;B\]
-INFO 2025-02-16 02:41:37,659 wsgi 778836 139789072332480 SSH_CLIENT=146.200.38.25 57572 22
-INFO 2025-02-16 02:41:37,659 wsgi 778836 139789072332480 VSCODE_GIT_ASKPASS_MAIN=/home/skunkmonkey/.vscode-server/cli/servers/Stable-e54c774e0add60467559eb0d1e229c6452cf8447/server/extensions/git/dist/askpass-main.js
-INFO 2025-02-16 02:41:37,659 wsgi 778836 139789072332480 XDG_DATA_DIRS=/usr/share/gnome:/usr/local/share/:/usr/share/
-INFO 2025-02-16 02:41:37,659 wsgi 778836 139789072332480 BROWSER=/home/skunkmonkey/.vscode-server/cli/servers/Stable-e54c774e0add60467559eb0d1e229c6452cf8447/server/bin/helpers/browser.sh
-INFO 2025-02-16 02:41:37,659 wsgi 778836 139789072332480 PATH=/home/skunkmonkey/.vscode-server/extensions/ms-python.python-2025.0.0-linux-x64/python_files/deactivate/bash:/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/bin:/home/skunkmonkey/.vscode-server/extensions/ms-python.python-2025.0.0-linux-x64/python_files/deactivate/bash:/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/bin:/home/skunkmonkey/.vscode-server/cli/servers/Stable-e54c774e0add60467559eb0d1e229c6452cf8447/server/bin/remote-cli:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/opt/thinlinc/bin:/opt/thinlinc/sbin
-INFO 2025-02-16 02:41:37,659 wsgi 778836 139789072332480 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
-INFO 2025-02-16 02:41:37,659 wsgi 778836 139789072332480 TERM_PROGRAM=vscode
-INFO 2025-02-16 02:41:37,659 wsgi 778836 139789072332480 VSCODE_IPC_HOOK_CLI=/run/user/1000/vscode-ipc-1bafb365-6664-444b-8029-0bf65295990c.sock
-INFO 2025-02-16 02:41:37,660 wsgi 778836 139789072332480 _=/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/bin/python
-INFO 2025-02-16 02:41:37,660 wsgi 778836 139789072332480 DJANGO_SETTINGS_MODULE=skunkmonkey.settings
-INFO 2025-02-16 02:41:37,660 wsgi 778836 139789072332480 DEVELOPMENT=1
-INFO 2025-02-16 02:41:37,660 wsgi 778836 139789072332480 SKUNKMONKEY_VPS_HOST=1
-INFO 2025-02-16 02:41:37,660 wsgi 778836 139789072332480 TZ=UTC
-INFO 2025-02-16 02:41:37,660 wsgi 778836 139789072332480 RUN_MAIN=true
-INFO 2025-02-16 02:41:37,660 wsgi 778836 139789072332480 WSGI script has been executed.
-INFO 2025-02-16 02:41:44,824 autoreload 778836 139789139083328 /home/skunkmonkey/public_html/devel/skunkmonkey/products/admin.py changed, reloading.
-INFO 2025-02-16 02:41:45,167 autoreload 778899 139858502963264 Watching for file changes with StatReloader
-INFO 2025-02-16 02:41:45,354 wsgi 778899 139858435634880 WSGI script has been executed.
-INFO 2025-02-16 02:41:45,355 wsgi 778899 139858435634880 SHELL=/bin/bash
-INFO 2025-02-16 02:41:45,355 wsgi 778899 139858435634880 COLORTERM=truecolor
-INFO 2025-02-16 02:41:45,355 wsgi 778899 139858435634880 TERM_PROGRAM_VERSION=1.97.2
-INFO 2025-02-16 02:41:45,355 wsgi 778899 139858435634880 DATABASE_URL=postgresql://neondb_owner:9PJZirMgh1IB@ep-blue-mouse-a2wukk26.eu-central-1.aws.neon.tech/year_motor_thumb_159204
-INFO 2025-02-16 02:41:45,356 wsgi 778899 139858435634880 DJANGO_SECRET_KEY=django-insecure-ufb(q*rf)353ns2lxk$qds!+$aqf)=$+8ip4vz25mxnj^ui-qi
-INFO 2025-02-16 02:41:45,356 wsgi 778899 139858435634880 PYDEVD_DISABLE_FILE_VALIDATION=1
-INFO 2025-02-16 02:41:45,357 wsgi 778899 139858435634880 PWD=/home/skunkmonkey/public_html/devel/skunkmonkey
-INFO 2025-02-16 02:41:45,357 wsgi 778899 139858435634880 LOGNAME=skunkmonkey
-INFO 2025-02-16 02:41:45,357 wsgi 778899 139858435634880 XDG_SESSION_TYPE=tty
-INFO 2025-02-16 02:41:45,357 wsgi 778899 139858435634880 BUNDLED_DEBUGPY_PATH=/home/skunkmonkey/.vscode-server/extensions/ms-python.debugpy-2025.0.1-linux-x64/bundled/libs/debugpy
-INFO 2025-02-16 02:41:45,358 wsgi 778899 139858435634880 VSCODE_GIT_ASKPASS_NODE=/home/skunkmonkey/.vscode-server/cli/servers/Stable-e54c774e0add60467559eb0d1e229c6452cf8447/server/node
-INFO 2025-02-16 02:41:45,358 wsgi 778899 139858435634880 MOTD_SHOWN=pam
-INFO 2025-02-16 02:41:45,358 wsgi 778899 139858435634880 HOME=/home/skunkmonkey
-INFO 2025-02-16 02:41:45,358 wsgi 778899 139858435634880 LANG=en_US.UTF-8
-INFO 2025-02-16 02:41:45,358 wsgi 778899 139858435634880 LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.swp=00;90:*.tmp=00;90:*.dpkg-dist=00;90:*.dpkg-old=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:
-INFO 2025-02-16 02:41:45,358 wsgi 778899 139858435634880 VIRTUAL_ENV=/home/skunkmonkey/public_html/devel/skunkmonkey/.venv
-INFO 2025-02-16 02:41:45,359 wsgi 778899 139858435634880 SSL_CERT_DIR=/usr/lib/ssl/certs
-INFO 2025-02-16 02:41:45,359 wsgi 778899 139858435634880 GIT_ASKPASS=/home/skunkmonkey/.vscode-server/cli/servers/Stable-e54c774e0add60467559eb0d1e229c6452cf8447/server/extensions/git/dist/askpass.sh
-INFO 2025-02-16 02:41:45,359 wsgi 778899 139858435634880 SSH_CONNECTION=146.200.38.25 57572 188.245.107.205 22
-INFO 2025-02-16 02:41:45,359 wsgi 778899 139858435634880 VSCODE_GIT_ASKPASS_EXTRA_ARGS=
-INFO 2025-02-16 02:41:45,359 wsgi 778899 139858435634880 XDG_SESSION_CLASS=user
-INFO 2025-02-16 02:41:45,359 wsgi 778899 139858435634880 TERM=xterm-256color
-INFO 2025-02-16 02:41:45,360 wsgi 778899 139858435634880 DEBUGPY_ADAPTER_ENDPOINTS=/home/skunkmonkey/.vscode-server/extensions/ms-python.debugpy-2025.0.1-linux-x64/.noConfigDebugAdapterEndpoints/endpoint-d80d550a1cc1832f.txt
-INFO 2025-02-16 02:41:45,360 wsgi 778899 139858435634880 USER=skunkmonkey
-INFO 2025-02-16 02:41:45,360 wsgi 778899 139858435634880 VSCODE_GIT_IPC_HANDLE=/run/user/1000/vscode-git-5ff5c672c5.sock
-INFO 2025-02-16 02:41:45,360 wsgi 778899 139858435634880 SHLVL=2
-INFO 2025-02-16 02:41:45,361 wsgi 778899 139858435634880 XDG_SESSION_ID=802
-INFO 2025-02-16 02:41:45,361 wsgi 778899 139858435634880 VIRTUAL_ENV_PROMPT=(.venv) 
-INFO 2025-02-16 02:41:45,362 wsgi 778899 139858435634880 XDG_RUNTIME_DIR=/run/user/1000
-INFO 2025-02-16 02:41:45,362 wsgi 778899 139858435634880 SSL_CERT_FILE=/usr/lib/ssl/cert.pem
-INFO 2025-02-16 02:41:45,362 wsgi 778899 139858435634880 PS1=\[]633;A\](.venv) \[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ \[]633;B\]
-INFO 2025-02-16 02:41:45,363 wsgi 778899 139858435634880 SSH_CLIENT=146.200.38.25 57572 22
-INFO 2025-02-16 02:41:45,363 wsgi 778899 139858435634880 VSCODE_GIT_ASKPASS_MAIN=/home/skunkmonkey/.vscode-server/cli/servers/Stable-e54c774e0add60467559eb0d1e229c6452cf8447/server/extensions/git/dist/askpass-main.js
-INFO 2025-02-16 02:41:45,363 wsgi 778899 139858435634880 XDG_DATA_DIRS=/usr/share/gnome:/usr/local/share/:/usr/share/
-INFO 2025-02-16 02:41:45,363 wsgi 778899 139858435634880 BROWSER=/home/skunkmonkey/.vscode-server/cli/servers/Stable-e54c774e0add60467559eb0d1e229c6452cf8447/server/bin/helpers/browser.sh
-INFO 2025-02-16 02:41:45,363 wsgi 778899 139858435634880 PATH=/home/skunkmonkey/.vscode-server/extensions/ms-python.python-2025.0.0-linux-x64/python_files/deactivate/bash:/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/bin:/home/skunkmonkey/.vscode-server/extensions/ms-python.python-2025.0.0-linux-x64/python_files/deactivate/bash:/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/bin:/home/skunkmonkey/.vscode-server/cli/servers/Stable-e54c774e0add60467559eb0d1e229c6452cf8447/server/bin/remote-cli:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/opt/thinlinc/bin:/opt/thinlinc/sbin
-INFO 2025-02-16 02:41:45,363 wsgi 778899 139858435634880 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
-INFO 2025-02-16 02:41:45,363 wsgi 778899 139858435634880 TERM_PROGRAM=vscode
-INFO 2025-02-16 02:41:45,363 wsgi 778899 139858435634880 VSCODE_IPC_HOOK_CLI=/run/user/1000/vscode-ipc-1bafb365-6664-444b-8029-0bf65295990c.sock
-INFO 2025-02-16 02:41:45,363 wsgi 778899 139858435634880 _=/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/bin/python
-INFO 2025-02-16 02:41:45,363 wsgi 778899 139858435634880 DJANGO_SETTINGS_MODULE=skunkmonkey.settings
-INFO 2025-02-16 02:41:45,364 wsgi 778899 139858435634880 DEVELOPMENT=1
-INFO 2025-02-16 02:41:45,364 wsgi 778899 139858435634880 SKUNKMONKEY_VPS_HOST=1
-INFO 2025-02-16 02:41:45,364 wsgi 778899 139858435634880 TZ=UTC
-INFO 2025-02-16 02:41:45,364 wsgi 778899 139858435634880 RUN_MAIN=true
-INFO 2025-02-16 02:41:45,364 wsgi 778899 139858435634880 WSGI script has been executed.
+WARNING 2025-02-16 04:57:08,804 log 785557 140108057540288 Not Found: /favicon.ico
+ERROR 2025-02-16 04:57:12,140 log 785557 140108057540288 Internal Server Error: /products/staff/management/
+Traceback (most recent call last):
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/contrib/auth/decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py", line 47, in product_management
+    return render(request, 'products/staff/product_management.html', {'products': products})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: products/staff/product_management.html
+INFO 2025-02-16 04:57:55,334 autoreload 785557 140108137549888 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-16 04:57:55,725 autoreload 785959 140146563518528 Watching for file changes with StatReloader
+INFO 2025-02-16 04:57:55,909 wsgi 785959 140146496239296 WSGI script has been executed.
+INFO 2025-02-16 04:57:59,008 autoreload 785959 140146563518528 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-16 04:57:59,386 autoreload 786015 139719026311232 Watching for file changes with StatReloader
+INFO 2025-02-16 04:57:59,581 wsgi 786015 139718958249664 WSGI script has been executed.
+INFO 2025-02-16 04:58:04,759 autoreload 786015 139719026311232 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-16 04:58:05,081 autoreload 786071 140002036785216 Watching for file changes with StatReloader
+INFO 2025-02-16 04:58:05,222 wsgi 786071 140001968912064 WSGI script has been executed.
+ERROR 2025-02-16 04:58:20,321 log 786071 140001956329152 Internal Server Error: /products/staff/management/
+Traceback (most recent call last):
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/contrib/auth/decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py", line 47, in product_management
+    return render(request, 'products/manage/product_managem.html', {'products': products})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: products/manage/product_managem.html
+WARNING 2025-02-16 04:58:20,750 log 786071 140001956329152 Not Found: /favicon.ico
+INFO 2025-02-16 04:58:30,030 autoreload 786071 140002036785216 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-16 04:58:30,431 autoreload 786192 140661117825088 Watching for file changes with StatReloader
+INFO 2025-02-16 04:58:30,623 wsgi 786192 140661049259712 WSGI script has been executed.
+ERROR 2025-02-16 04:58:31,689 log 786192 140661036676800 Internal Server Error: /products/staff/management/
+Traceback (most recent call last):
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 510, in parse
+    compile_func = self.tags[command]
+                   ~~~~~~~~~^^^^^^^^^
+KeyError: 'static'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/contrib/auth/decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py", line 47, in product_management
+    return render(request, 'products/manage/product_manage.html', {'products': products})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/backends/django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loaders/cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loaders/base.py", line 28, in get_template
+    return Template(
+           ^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader_tags.py", line 295, in do_extends
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader_tags.py", line 234, in do_block
+    nodelist = parser.parse(("endblock",))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 512, in parse
+    self.invalid_block_tag(token, command, parse_until)
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 563, in invalid_block_tag
+    raise self.error(
+django.template.exceptions.TemplateSyntaxError: Invalid block tag on line 42: 'static', expected 'endblock'. Did you forget to register or load this tag?
+WARNING 2025-02-16 04:58:32,385 log 786192 140661036676800 Not Found: /favicon.ico
+WARNING 2025-02-16 04:59:29,172 log 786192 140661036676800 Not Found: /favicon.ico
+WARNING 2025-02-16 05:02:11,606 log 786192 140661036676800 Not Found: /favicon.ico
+WARNING 2025-02-16 05:02:38,265 log 786192 140661036676800 Not Found: /favicon.ico
+WARNING 2025-02-16 05:02:45,733 log 786192 140661036676800 Not Found: /favicon.ico
+WARNING 2025-02-16 05:02:54,876 log 786192 140661036676800 Not Found: /favicon.ico
+WARNING 2025-02-16 05:03:20,168 log 786192 140661036676800 Not Found: /favicon.ico
+WARNING 2025-02-16 05:04:10,398 log 786192 140661036676800 Not Found: /favicon.ico
+WARNING 2025-02-16 05:04:25,361 log 786192 140661036676800 Not Found: /favicon.ico
+WARNING 2025-02-16 05:05:24,660 log 786192 140661036676800 Not Found: /favicon.ico
+WARNING 2025-02-16 05:05:27,430 log 786192 140661036676800 Not Found: /favicon.ico
+WARNING 2025-02-16 05:05:44,842 log 786192 140661036676800 Not Found: /favicon.ico
+WARNING 2025-02-16 05:08:14,732 log 786192 140661036676800 Not Found: /favicon.ico
+WARNING 2025-02-16 05:08:56,899 log 786192 140661036676800 Not Found: /favicon.ico
+WARNING 2025-02-16 05:10:19,896 log 786192 140661036676800 Not Found: /favicon.ico
+WARNING 2025-02-16 05:12:08,900 log 786192 140661036676800 Not Found: /favicon.ico
+WARNING 2025-02-16 05:12:23,372 log 786192 140661036676800 Not Found: /favicon.ico

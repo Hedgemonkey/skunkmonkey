@@ -25,5 +25,6 @@ urlpatterns = [
     path('accounts/login/', user_views.login, name='account_login'),  # Your custom login view
     path('accounts/', include('allauth.urls')),
     path('users/', include('users.urls')),
+    path('products/', include('products.urls')),
     path('', include('home.urls')),
 ]

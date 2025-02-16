@@ -9,5 +9,5 @@ node_modules/
 cloudinary_python.txt
 .env
 .env-host
-skunkmonkey/wsgi.py
-skunkmonkey.log
+skunkmonkey/production.py
+skunkmonkey*.log

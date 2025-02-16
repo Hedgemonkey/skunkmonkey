@@ -9,6 +9,18 @@
                 <li class="nav-item"><a class="nav-link" href="#">About</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'users_contact' %}">Contact</a></li>
 
+                {% if user.is_staff or user.is_superuser %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownManagement" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Management
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownManagement">
+                        <li><a class="dropdown-item" href="{% url 'products:product_management' %}">Product Management</a></li>
+                        <!-- Add other management links here as needed -->
+                    </ul>
+                </li>
+                {% endif %}
+                
                 {% if user.is_authenticated %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
