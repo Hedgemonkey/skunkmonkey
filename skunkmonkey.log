@@ -60,3 +60,770 @@ WARNING 2025-02-17 01:52:53,624 log 819572 140663924451008 Not Found: /favicon.i
 DEBUG 2025-02-17 01:53:02,514 views 819572 140663924451008 add_category view called via AJAX POST
 DEBUG 2025-02-17 01:53:02,514 views 819572 140663924451008 Received category name: Testing again
 INFO 2025-02-17 01:53:02,527 views 819572 140663924451008 Created category: Testing again
+WARNING 2025-02-17 02:05:15,466 log 819572 140663924451008 Not Found: /products/staff/management/{% url 'products:get_category_cards' %}
+WARNING 2025-02-17 02:05:15,610 log 819572 140663924451008 Not Found: /favicon.ico
+ERROR 2025-02-17 02:08:44,318 log 819572 140663924451008 Internal Server Error: /products/staff/management/
+Traceback (most recent call last):
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/contrib/auth/decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py", line 71, in product_management
+    return render(request, template_name, {'products': products})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/urls/base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/urls/resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'get_category_cards' not found. 'get_category_cards' is not a valid view function or pattern name.
+WARNING 2025-02-17 02:08:44,849 log 819572 140663924451008 Not Found: /favicon.ico
+INFO 2025-02-17 02:10:28,863 autoreload 819572 140664084508736 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-17 02:10:29,265 autoreload 842381 140215806992448 Watching for file changes with StatReloader
+INFO 2025-02-17 02:10:29,560 wsgi 842381 140215740004032 WSGI script has been executed.
+INFO 2025-02-17 02:10:30,537 autoreload 842381 140215806992448 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-17 02:10:30,887 autoreload 842394 139867575959616 Watching for file changes with StatReloader
+INFO 2025-02-17 02:10:31,075 wsgi 842394 139867507914432 WSGI script has been executed.
+INFO 2025-02-17 02:10:46,415 autoreload 842394 139867575959616 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-17 02:10:46,793 autoreload 842458 139985802719296 Watching for file changes with StatReloader
+INFO 2025-02-17 02:10:47,004 wsgi 842458 139985734858432 WSGI script has been executed.
+INFO 2025-02-17 02:10:48,043 autoreload 842458 139985802719296 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-17 02:10:48,427 autoreload 842474 140423630110784 Watching for file changes with StatReloader
+INFO 2025-02-17 02:10:48,592 wsgi 842474 140423561475776 WSGI script has been executed.
+INFO 2025-02-17 02:11:05,998 autoreload 842474 140423630110784 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-17 02:11:06,322 autoreload 842554 140676891791424 Watching for file changes with StatReloader
+INFO 2025-02-17 02:11:08,484 autoreload 842554 140676891791424 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-17 02:11:08,896 autoreload 842593 140569172680768 Watching for file changes with StatReloader
+INFO 2025-02-17 02:11:09,968 autoreload 842593 140569172680768 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-17 02:11:10,347 autoreload 842613 139827398152256 Watching for file changes with StatReloader
+INFO 2025-02-17 02:11:10,511 wsgi 842613 139827330676416 WSGI script has been executed.
+INFO 2025-02-17 02:11:25,934 autoreload 842613 139827398152256 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-17 02:11:26,277 autoreload 842657 139970184245312 Watching for file changes with StatReloader
+INFO 2025-02-17 02:15:47,789 autoreload 842657 139970184245312 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-17 02:15:48,149 autoreload 843059 140294555836480 Watching for file changes with StatReloader
+INFO 2025-02-17 02:15:48,355 wsgi 843059 140294488061632 WSGI script has been executed.
+INFO 2025-02-17 02:16:01,719 autoreload 843059 140294555836480 /home/skunkmonkey/public_html/devel/skunkmonkey/products/urls.py changed, reloading.
+INFO 2025-02-17 02:16:02,076 autoreload 843176 140682566815808 Watching for file changes with StatReloader
+INFO 2025-02-17 02:16:02,286 wsgi 843176 140682498930368 WSGI script has been executed.
+INFO 2025-02-17 02:16:05,394 autoreload 843176 140682566815808 /home/skunkmonkey/public_html/devel/skunkmonkey/products/urls.py changed, reloading.
+INFO 2025-02-17 02:16:05,741 autoreload 843245 140226650845248 Watching for file changes with StatReloader
+INFO 2025-02-17 02:16:05,939 wsgi 843245 140226582279872 WSGI script has been executed.
+INFO 2025-02-17 02:16:07,024 autoreload 843245 140226650845248 /home/skunkmonkey/public_html/devel/skunkmonkey/products/urls.py changed, reloading.
+INFO 2025-02-17 02:16:07,332 autoreload 843247 139664420507712 Watching for file changes with StatReloader
+INFO 2025-02-17 02:16:07,558 wsgi 843247 139664352605888 WSGI script has been executed.
+WARNING 2025-02-17 02:19:29,592 log 843247 139664340022976 Forbidden (Origin checking failed - null does not match any trusted origins.): /products/staff/management/
+WARNING 2025-02-17 02:19:30,174 log 843247 139664340022976 Not Found: /favicon.ico
+WARNING 2025-02-17 02:19:51,476 log 843247 139664340022976 Not Found: /favicon.ico
+WARNING 2025-02-17 02:33:43,452 log 843247 139664340022976 Not Found: /favicon.ico
+WARNING 2025-02-17 02:42:21,856 log 843247 139664340022976 Not Found: /favicon.ico
+WARNING 2025-02-17 02:46:38,177 log 843247 139664340022976 Not Found: /favicon.ico
+WARNING 2025-02-17 02:46:42,734 log 843247 139664340022976 Not Found: /favicon.ico
+WARNING 2025-02-17 02:46:45,994 log 843247 139664340022976 Not Found: /favicon.ico
+INFO 2025-02-17 02:48:47,227 autoreload 846304 139640089317440 Watching for file changes with StatReloader
+INFO 2025-02-17 02:48:47,467 wsgi 846304 139640021448384 WSGI script has been executed.
+WARNING 2025-02-17 02:48:55,474 log 846304 139640008865472 Not Found: /favicon.ico
+WARNING 2025-02-17 02:50:47,902 log 846304 139640008865472 Not Found: /favicon.ico
+WARNING 2025-02-17 02:51:16,571 log 846304 139640008865472 Not Found: /favicon.ico
+WARNING 2025-02-17 02:51:20,429 log 846304 139640008865472 Not Found: /favicon.ico
+WARNING 2025-02-17 02:55:07,195 log 846304 139640008865472 Not Found: /favicon.ico
+WARNING 2025-02-17 02:56:30,439 log 846304 139640008865472 Not Found: /favicon.ico
+WARNING 2025-02-17 02:59:54,001 log 846304 139640008865472 Not Found: /favicon.ico
+WARNING 2025-02-17 03:02:30,689 log 846304 139640008865472 Not Found: /favicon.ico
+WARNING 2025-02-17 03:04:00,163 log 846304 139640008865472 Not Found: /favicon.ico
+WARNING 2025-02-17 03:04:12,852 log 846304 139640008865472 Not Found: /favicon.ico
+WARNING 2025-02-17 03:05:07,862 log 846304 139640008865472 Not Found: /favicon.ico
+WARNING 2025-02-17 03:10:45,006 log 846304 139640008865472 Not Found: /favicon.ico
+WARNING 2025-02-17 03:11:07,022 log 846304 139640008865472 Not Found: /favicon.ico
+WARNING 2025-02-17 03:15:23,330 log 846304 139640008865472 Not Found: /favicon.ico
+WARNING 2025-02-17 03:15:33,447 log 846304 139640008865472 Not Found: /favicon.ico
+WARNING 2025-02-17 03:16:33,279 log 846304 139640008865472 Not Found: /favicon.ico
+WARNING 2025-02-17 03:16:46,112 log 846304 139640008865472 Not Found: /favicon.ico
+WARNING 2025-02-17 03:20:46,214 log 846304 139640008865472 Not Found: /favicon.ico
+WARNING 2025-02-17 03:20:49,109 log 846304 139640008865472 Not Found: /favicon.ico
+WARNING 2025-02-17 03:21:14,453 log 846304 139640008865472 Not Found: /favicon.ico
+WARNING 2025-02-17 03:21:17,358 log 846304 139640008865472 Not Found: /favicon.ico
+WARNING 2025-02-17 03:21:58,264 log 846304 139640008865472 Not Found: /favicon.ico
+WARNING 2025-02-17 03:22:13,067 log 846304 139640008865472 Not Found: /favicon.ico
+WARNING 2025-02-17 03:33:26,944 log 846304 139640000472768 Not Found: /favicon.ico
+WARNING 2025-02-17 03:33:33,737 log 846304 139640000472768 Not Found: /favicon.ico
+WARNING 2025-02-17 03:39:46,332 log 846304 139640000472768 Not Found: /favicon.ico
+WARNING 2025-02-17 03:42:38,836 log 846304 139640000472768 Not Found: /favicon.ico
+WARNING 2025-02-17 03:43:49,744 log 846304 139640000472768 Not Found: /favicon.ico
+WARNING 2025-02-17 03:44:00,501 log 846304 139640000472768 Not Found: /favicon.ico
+WARNING 2025-02-17 03:44:14,362 log 846304 139640000472768 Not Found: /favicon.ico
+WARNING 2025-02-17 03:48:15,350 log 846304 139640000472768 Not Found: /favicon.ico
+WARNING 2025-02-17 03:49:14,463 log 846304 139640000472768 Not Found: /favicon.ico
+WARNING 2025-02-17 04:32:23,912 log 846304 139640000472768 Not Found: /favicon.ico
+INFO 2025-02-17 05:18:50,949 autoreload 877181 139774796820544 Watching for file changes with StatReloader
+INFO 2025-02-17 05:18:51,862 wsgi 877181 139774729909952 WSGI script has been executed.
+WARNING 2025-02-17 06:29:00,749 log 877181 139774717327040 Not Found: /aaa9
+WARNING 2025-02-17 06:29:07,628 log 877181 139774717327040 Not Found: /aab8
+WARNING 2025-02-17 08:09:43,652 log 877181 139774717327040 Not Found: /login
+WARNING 2025-02-17 10:20:09,268 log 877181 139774717327040 Not Found: /favicon.ico
+WARNING 2025-02-17 13:26:06,114 log 877181 139774717327040 Not Found: /favicon.ico
+WARNING 2025-02-17 18:30:56,129 log 877181 139774708934336 Not Found: /favicon.ico
+WARNING 2025-02-17 18:31:17,205 log 877181 139774708934336 Not Found: /favicon.ico
+DEBUG 2025-02-17 18:34:11,337 views 877181 139774708934336 add_category view called via AJAX POST
+DEBUG 2025-02-17 18:34:11,337 views 877181 139774708934336 Received category name: hedgemonkey
+INFO 2025-02-17 18:34:11,362 views 877181 139774708934336 Created category: hedgemonkey
+WARNING 2025-02-17 19:16:42,252 log 877181 139774708934336 Not Found: /favicon.ico
+ERROR 2025-02-17 19:21:05,792 log 877181 139774700541632 Internal Server Error: /users/contact/
+Traceback (most recent call last):
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader_tags.py", line 134, in render
+    compiled_parent = self.get_parent(context)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader_tags.py", line 131, in get_parent
+    return self.find_template(parent, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader_tags.py", line 109, in find_template
+    template, origin = context.template.engine.find_template(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/engine.py", line 163, in find_template
+    raise TemplateDoesNotExist(name, tried=tried)
+django.template.exceptions.TemplateDoesNotExist: account/base.html
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/users/views.py", line 36, in contact
+    return render(request, 'users/contact.html', {'form': form})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/backends/django.py", line 109, in render
+    reraise(exc, self.backend)
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/backends/django.py", line 130, in reraise
+    raise new from exc
+django.template.exceptions.TemplateDoesNotExist: account/base.html
+ERROR 2025-02-17 19:21:14,721 log 877181 139774700541632 Internal Server Error: /users/contact/
+Traceback (most recent call last):
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader_tags.py", line 134, in render
+    compiled_parent = self.get_parent(context)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader_tags.py", line 131, in get_parent
+    return self.find_template(parent, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader_tags.py", line 109, in find_template
+    template, origin = context.template.engine.find_template(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/engine.py", line 163, in find_template
+    raise TemplateDoesNotExist(name, tried=tried)
+django.template.exceptions.TemplateDoesNotExist: account/base.html
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/users/views.py", line 36, in contact
+    return render(request, 'users/contact.html', {'form': form})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/backends/django.py", line 109, in render
+    reraise(exc, self.backend)
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/backends/django.py", line 130, in reraise
+    raise new from exc
+django.template.exceptions.TemplateDoesNotExist: account/base.html
+WARNING 2025-02-17 21:12:37,434 log 877181 139774708934336 Not Found: /_profiler/phpinfo
+WARNING 2025-02-17 21:12:37,918 log 877181 139774708934336 Not Found: /_profiler/phpinfo
+WARNING 2025-02-17 21:12:38,401 log 877181 139774708934336 Not Found: /phpinfo.php
+WARNING 2025-02-17 21:12:38,883 log 877181 139774708934336 Not Found: /phpinfo.php
+WARNING 2025-02-17 21:12:39,367 log 877181 139774708934336 Not Found: /phpinfo
+WARNING 2025-02-17 21:12:39,850 log 877181 139774708934336 Not Found: /phpinfo
+WARNING 2025-02-17 21:12:40,333 log 877181 139774708934336 Not Found: /info.php
+WARNING 2025-02-17 21:12:40,817 log 877181 139774708934336 Not Found: /info.php
+WARNING 2025-02-17 21:12:41,301 log 877181 139774708934336 Not Found: /php-info.php
+WARNING 2025-02-17 21:12:41,781 log 877181 139774708934336 Not Found: /php-info.php
+WARNING 2025-02-17 21:12:42,265 log 877181 139774708934336 Not Found: /karma.conf.json
+WARNING 2025-02-17 21:12:42,749 log 877181 139774708934336 Not Found: /karma.conf.json
+WARNING 2025-02-17 21:12:43,233 log 877181 139774708934336 Not Found: /.env
+WARNING 2025-02-17 21:12:43,717 log 877181 139774708934336 Not Found: /.env
+WARNING 2025-02-17 21:12:44,200 log 877181 139774708934336 Not Found: /public/.env
+WARNING 2025-02-17 21:12:44,683 log 877181 139774708934336 Not Found: /public/.env
+WARNING 2025-02-17 21:12:45,167 log 877181 139774708934336 Not Found: /public/phpinfo.php
+WARNING 2025-02-17 21:12:45,650 log 877181 139774708934336 Not Found: /public/phpinfo.php
+WARNING 2025-02-17 21:12:46,137 log 877181 139774708934336 Not Found: /api/.env
+WARNING 2025-02-17 21:12:46,620 log 877181 139774708934336 Not Found: /api/.env
+WARNING 2025-02-17 21:12:47,103 log 877181 139774708934336 Not Found: /.aws/credentials
+WARNING 2025-02-17 21:12:47,583 log 877181 139774708934336 Not Found: /.aws/credentials
+WARNING 2025-02-17 21:12:48,066 log 877181 139774708934336 Not Found: /server_info.php
+WARNING 2025-02-17 21:12:48,549 log 877181 139774708934336 Not Found: /server_info.php
+WARNING 2025-02-17 21:12:49,033 log 877181 139774708934336 Not Found: /.git/config
+WARNING 2025-02-17 21:12:49,516 log 877181 139774708934336 Not Found: /.git/config
+WARNING 2025-02-17 21:12:50,000 log 877181 139774708934336 Not Found: /config.js
+WARNING 2025-02-17 21:12:50,480 log 877181 139774708934336 Not Found: /config.js
+WARNING 2025-02-17 21:12:50,963 log 877181 139774708934336 Not Found: /wp-config.php
+WARNING 2025-02-17 21:12:51,447 log 877181 139774708934336 Not Found: /wp-config.php
+WARNING 2025-02-17 21:12:51,932 log 877181 139774708934336 Not Found: /symfony/.env
+WARNING 2025-02-17 21:12:52,416 log 877181 139774708934336 Not Found: /symfony/.env
+WARNING 2025-02-17 21:12:52,897 log 877181 139774708934336 Not Found: /django/.env
+WARNING 2025-02-17 21:12:53,381 log 877181 139774708934336 Not Found: /django/.env
+WARNING 2025-02-17 21:12:53,861 log 877181 139774708934336 Not Found: /flask/.env
+WARNING 2025-02-17 21:12:54,346 log 877181 139774708934336 Not Found: /flask/.env
+WARNING 2025-02-17 21:12:54,828 log 877181 139774708934336 Not Found: /next/.env
+WARNING 2025-02-17 21:12:55,311 log 877181 139774708934336 Not Found: /next/.env
+WARNING 2025-02-17 21:12:55,794 log 877181 139774708934336 Not Found: /nuxt/.env
+WARNING 2025-02-17 21:12:56,279 log 877181 139774708934336 Not Found: /nuxt/.env
+WARNING 2025-02-17 21:12:56,764 log 877181 139774708934336 Not Found: /react/.env
+WARNING 2025-02-17 21:12:57,247 log 877181 139774708934336 Not Found: /react/.env
+WARNING 2025-02-17 21:12:57,730 log 877181 139774708934336 Not Found: /vue/.env
+WARNING 2025-02-17 21:12:58,213 log 877181 139774708934336 Not Found: /vue/.env
+INFO 2025-02-17 21:28:29,190 autoreload 877181 139774796820544 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-17 21:28:30,039 autoreload 901050 140667595178048 Watching for file changes with StatReloader
+INFO 2025-02-17 21:28:31,082 wsgi 901050 140667527362240 WSGI script has been executed.
+INFO 2025-02-17 21:28:36,449 autoreload 901050 140667595178048 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-17 21:28:36,800 autoreload 901107 140414460452928 Watching for file changes with StatReloader
+INFO 2025-02-17 21:28:37,004 wsgi 901107 140414392727232 WSGI script has been executed.
+INFO 2025-02-17 21:28:38,009 autoreload 901107 140414460452928 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-17 21:28:38,352 autoreload 901127 139935406751808 Watching for file changes with StatReloader
+INFO 2025-02-17 21:28:38,566 wsgi 901127 139935338198720 WSGI script has been executed.
+WARNING 2025-02-17 21:28:42,422 log 901127 139935325615808 Not Found: /favicon.ico
+WARNING 2025-02-17 21:31:10,109 log 901127 139935325615808 Not Found: /favicon.ico
+WARNING 2025-02-17 21:32:48,237 log 901127 139935325615808 Not Found: /favicon.ico
+WARNING 2025-02-17 21:36:33,969 log 901127 139935325615808 Not Found: /favicon.ico
+WARNING 2025-02-17 21:36:48,821 log 901127 139935325615808 Not Found: /favicon.ico
+WARNING 2025-02-17 21:38:17,809 log 901127 139935325615808 Not Found: /favicon.ico
+WARNING 2025-02-17 21:38:57,109 log 901127 139935325615808 Not Found: /favicon.ico
+WARNING 2025-02-17 21:56:36,505 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-17 21:58:04,900 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-17 21:59:58,537 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-17 22:00:53,116 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-17 22:01:48,047 log 901127 139935308830400 Not Found: /favicon.ico
+WARNING 2025-02-17 22:01:56,911 log 901127 139935308830400 Not Found: /favicon.ico
+WARNING 2025-02-17 22:04:54,391 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-17 22:05:01,490 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-17 22:07:12,913 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-17 22:09:21,584 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-17 22:09:27,568 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-17 22:09:57,453 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-17 22:10:29,081 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-17 22:11:12,983 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-17 22:11:52,126 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-17 22:12:28,370 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-17 22:13:00,250 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-17 22:15:47,422 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-17 22:22:17,745 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-17 22:22:46,880 log 901127 139935300437696 Not Found: /favicon.ico
+WARNING 2025-02-17 22:23:43,340 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-17 22:24:11,900 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-17 22:25:26,632 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-17 22:25:35,789 log 901127 139935308830400 Not Found: /favicon.ico
+WARNING 2025-02-17 22:25:55,664 log 901127 139935308830400 Not Found: /favicon.ico
+WARNING 2025-02-17 22:26:19,429 log 901127 139935308830400 Not Found: /favicon.ico
+WARNING 2025-02-17 22:26:33,193 log 901127 139935308830400 Not Found: /favicon.ico
+WARNING 2025-02-17 22:31:55,325 log 901127 139935308830400 Not Found: /favicon.ico
+WARNING 2025-02-17 22:33:07,208 log 901127 139935308830400 Not Found: /favicon.ico
+WARNING 2025-02-17 22:34:46,862 log 901127 139935308830400 Not Found: /favicon.ico
+WARNING 2025-02-17 22:37:00,249 log 901127 139935308830400 Not Found: /favicon.ico
+WARNING 2025-02-17 22:53:53,244 log 901127 139935308830400 Not Found: /favicon.ico
+WARNING 2025-02-17 22:55:23,346 log 901127 139935308830400 Not Found: /favicon.ico
+WARNING 2025-02-17 22:56:00,236 log 901127 139935308830400 Not Found: /favicon.ico
+WARNING 2025-02-17 22:56:16,523 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-17 22:57:01,334 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-17 22:59:26,993 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-17 23:10:16,647 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-17 23:18:00,165 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-17 23:18:05,396 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-17 23:18:30,178 log 901127 139935300437696 Not Found: /favicon.ico
+WARNING 2025-02-17 23:23:02,571 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-17 23:23:10,938 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-17 23:35:30,536 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-17 23:35:39,295 log 901127 139935308830400 Not Found: /favicon.ico
+WARNING 2025-02-17 23:51:11,774 log 901127 139935317223104 Not Found: /.env
+WARNING 2025-02-18 00:53:28,341 log 901127 139935317223104 Not Found: /products/staff/category/test/update/
+ERROR 2025-02-18 00:53:39,627 log 901127 139935317223104 Internal Server Error: /products/staff/category/test2/update/
+Traceback (most recent call last):
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/contrib/auth/decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py", line 128, in category_update
+    form = CategoryForm(instance=category)  # Initialize form with category instance
+           ^^^^^^^^^^^^
+NameError: name 'CategoryForm' is not defined
+DEBUG 2025-02-18 00:54:05,463 views 901127 139935317223104 add_category view called via AJAX POST
+DEBUG 2025-02-18 00:54:05,463 views 901127 139935317223104 Received category name: Test
+INFO 2025-02-18 00:54:05,492 views 901127 139935317223104 Created category: Test
+WARNING 2025-02-18 00:55:22,046 log 901127 139935300437696 Not Found: /favicon.ico
+DEBUG 2025-02-18 01:41:01,367 views 901127 139935317223104 add_category view called via AJAX POST
+DEBUG 2025-02-18 01:41:01,367 views 901127 139935317223104 Received category name: New Category11
+INFO 2025-02-18 01:41:01,406 views 901127 139935317223104 Created category: New Category11
+WARNING 2025-02-18 02:55:34,692 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-18 02:55:39,057 log 901127 139935317223104 Not Found: /http:/api.ipify.org/
+WARNING 2025-02-18 02:55:41,778 log 901127 139935317223104 Not Found: /www.shadowserver.org:443
+WARNING 2025-02-18 03:29:00,695 log 901127 139935317223104 Not Found: /favicon.ico
+WARNING 2025-02-18 03:29:28,031 log 901127 139935317223104 Not Found: /favicon.ico
+INFO 2025-02-18 04:11:36,221 autoreload 901127 139935406751808 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-18 04:11:36,658 autoreload 932193 140660776452160 Watching for file changes with StatReloader
+INFO 2025-02-18 04:11:38,831 autoreload 932193 140660776452160 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-18 04:11:39,191 autoreload 932246 140174357438528 Watching for file changes with StatReloader
+INFO 2025-02-18 04:11:40,073 wsgi 932246 140174287697600 WSGI script has been executed.
+INFO 2025-02-18 04:11:52,764 autoreload 932246 140174357438528 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-18 04:11:53,141 autoreload 932301 140335340953664 Watching for file changes with StatReloader
+INFO 2025-02-18 04:11:54,232 autoreload 932301 140335340953664 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-18 04:11:54,638 autoreload 932315 140709568196672 Watching for file changes with StatReloader
+INFO 2025-02-18 04:11:54,840 wsgi 932315 140709499762368 WSGI script has been executed.
+INFO 2025-02-18 04:12:33,821 autoreload 932315 140709568196672 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-18 04:12:34,221 autoreload 932383 140344347189312 Watching for file changes with StatReloader
+INFO 2025-02-18 04:12:34,402 wsgi 932383 140344278644416 WSGI script has been executed.
+INFO 2025-02-18 04:12:42,608 autoreload 932383 140344347189312 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-18 04:12:42,984 autoreload 932470 140330259677248 Watching for file changes with StatReloader
+INFO 2025-02-18 04:12:43,202 wsgi 932470 140330192074432 WSGI script has been executed.
+WARNING 2025-02-18 04:25:19,511 log 932470 140330179491520 Not Found: /login
+WARNING 2025-02-18 05:00:57,468 log 932470 140330179491520 Not Found: /favicon.ico
+WARNING 2025-02-18 05:01:27,391 log 932470 140330171098816 Not Found: /favicon.ico
+INFO 2025-02-18 05:03:52,709 autoreload 932470 140330259677248 /home/skunkmonkey/public_html/devel/skunkmonkey/products/urls.py changed, reloading.
+INFO 2025-02-18 05:03:53,113 autoreload 939355 140262517522496 Watching for file changes with StatReloader
+INFO 2025-02-18 05:03:53,397 wsgi 939355 140262447773376 WSGI script has been executed.
+INFO 2025-02-18 05:03:55,417 autoreload 939355 140262517522496 /home/skunkmonkey/public_html/devel/skunkmonkey/products/urls.py changed, reloading.
+INFO 2025-02-18 05:03:55,788 autoreload 939396 140093140086848 Watching for file changes with StatReloader
+INFO 2025-02-18 05:03:55,983 wsgi 939396 140093073389248 WSGI script has been executed.
+INFO 2025-02-18 05:03:57,071 autoreload 939396 140093140086848 /home/skunkmonkey/public_html/devel/skunkmonkey/products/urls.py changed, reloading.
+INFO 2025-02-18 05:03:57,405 autoreload 939398 139777057128512 Watching for file changes with StatReloader
+INFO 2025-02-18 05:03:57,619 wsgi 939398 139776988542656 WSGI script has been executed.
+WARNING 2025-02-18 05:04:09,494 log 939398 139776975959744 Not Found: /products/staff/product/create-form/
+WARNING 2025-02-18 05:04:15,306 log 939398 139776892073664 Not Found: /favicon.ico
+WARNING 2025-02-18 06:07:30,471 log 939398 139776892073664 Not Found: /.env
+WARNING 2025-02-18 12:48:36,774 log 939398 139776892073664 Not Found: /favicon.ico
+WARNING 2025-02-18 12:48:36,942 log 939398 139776975959744 Not Found: /robots.txt
+WARNING 2025-02-18 12:48:37,094 log 939398 139776883680960 Not Found: /sitemap.xml
+WARNING 2025-02-18 12:48:37,885 log 939398 139776875288256 Not Found: /config.json
+WARNING 2025-02-18 13:45:31,667 log 939398 139776975959744 Not Found: /favicon.ico
+INFO 2025-02-18 14:00:51,331 autoreload 939398 139777057128512 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-18 14:00:52,060 autoreload 953927 140365257752640 Watching for file changes with StatReloader
+INFO 2025-02-18 14:00:54,191 autoreload 953927 140365257752640 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-18 14:00:54,540 autoreload 953980 139731149340736 Watching for file changes with StatReloader
+INFO 2025-02-18 14:01:07,938 autoreload 953980 139731149340736 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-18 14:01:08,274 autoreload 954051 139847531880512 Watching for file changes with StatReloader
+INFO 2025-02-18 14:01:17,583 autoreload 954051 139847531880512 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-18 14:01:17,937 autoreload 954110 140192210243648 Watching for file changes with StatReloader
+INFO 2025-02-18 14:01:23,175 autoreload 954110 140192210243648 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-18 14:01:23,476 autoreload 954165 140135745876032 Watching for file changes with StatReloader
+INFO 2025-02-18 14:01:41,952 autoreload 954165 140135745876032 /home/skunkmonkey/public_html/devel/skunkmonkey/products/urls.py changed, reloading.
+INFO 2025-02-18 14:01:42,410 autoreload 954238 140208654848064 Watching for file changes with StatReloader
+INFO 2025-02-18 14:01:45,554 autoreload 954238 140208654848064 /home/skunkmonkey/public_html/devel/skunkmonkey/products/urls.py changed, reloading.
+INFO 2025-02-18 14:01:45,913 autoreload 954295 140528616460352 Watching for file changes with StatReloader
+INFO 2025-02-18 14:01:56,244 autoreload 954295 140528616460352 /home/skunkmonkey/public_html/devel/skunkmonkey/products/urls.py changed, reloading.
+INFO 2025-02-18 14:01:56,615 autoreload 954366 140304718872640 Watching for file changes with StatReloader
+INFO 2025-02-18 14:01:58,745 autoreload 954366 140304718872640 /home/skunkmonkey/public_html/devel/skunkmonkey/products/urls.py changed, reloading.
+INFO 2025-02-18 14:01:59,100 autoreload 954404 140600474992704 Watching for file changes with StatReloader
+INFO 2025-02-18 14:02:04,307 autoreload 954404 140600474992704 /home/skunkmonkey/public_html/devel/skunkmonkey/products/urls.py changed, reloading.
+INFO 2025-02-18 14:02:04,645 autoreload 954459 140018178216000 Watching for file changes with StatReloader
+INFO 2025-02-18 14:02:05,761 autoreload 954459 140018178216000 /home/skunkmonkey/public_html/devel/skunkmonkey/products/urls.py changed, reloading.
+INFO 2025-02-18 14:02:06,090 autoreload 954477 140333171671104 Watching for file changes with StatReloader
+INFO 2025-02-18 14:02:07,038 wsgi 954477 140333105018560 WSGI script has been executed.
+INFO 2025-02-18 14:02:16,594 autoreload 954477 140333171671104 /home/skunkmonkey/public_html/devel/skunkmonkey/products/urls.py changed, reloading.
+INFO 2025-02-18 14:02:16,928 autoreload 954533 140547648892992 Watching for file changes with StatReloader
+INFO 2025-02-18 14:02:17,157 wsgi 954533 140547580753600 WSGI script has been executed.
+ERROR 2025-02-18 14:14:52,427 log 954533 140547490571968 Internal Server Error: /products/staff/management/
+Traceback (most recent call last):
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/contrib/auth/decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py", line 73, in product_management
+    return render(request, template_name, {'products': products, 'categories': categories})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/urls/base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/urls/resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'product_add_form' not found. 'product_add_form' is not a valid view function or pattern name.
+WARNING 2025-02-18 14:14:53,237 log 954533 140547490571968 Not Found: /favicon.ico
+INFO 2025-02-18 14:15:24,191 autoreload 954533 140547648892992 /home/skunkmonkey/public_html/devel/skunkmonkey/products/urls.py changed, reloading.
+INFO 2025-02-18 14:15:24,567 autoreload 956173 140110973931584 Watching for file changes with StatReloader
+INFO 2025-02-18 14:15:24,894 wsgi 956173 140110905472704 WSGI script has been executed.
+WARNING 2025-02-18 14:15:28,839 log 956173 140110813193920 Not Found: /favicon.ico
+WARNING 2025-02-18 14:22:13,677 log 956173 140110813193920 Not Found: /favicon.ico
+DEBUG 2025-02-18 14:22:27,609 Image 956173 140110813193920 Importing BlpImagePlugin
+DEBUG 2025-02-18 14:22:27,611 Image 956173 140110813193920 Importing BmpImagePlugin
+DEBUG 2025-02-18 14:22:27,611 Image 956173 140110813193920 Importing BufrStubImagePlugin
+DEBUG 2025-02-18 14:22:27,612 Image 956173 140110813193920 Importing CurImagePlugin
+DEBUG 2025-02-18 14:22:27,613 Image 956173 140110813193920 Importing DcxImagePlugin
+DEBUG 2025-02-18 14:22:27,615 Image 956173 140110813193920 Importing DdsImagePlugin
+DEBUG 2025-02-18 14:22:27,622 Image 956173 140110813193920 Importing EpsImagePlugin
+DEBUG 2025-02-18 14:22:27,624 Image 956173 140110813193920 Importing FitsImagePlugin
+DEBUG 2025-02-18 14:22:27,625 Image 956173 140110813193920 Importing FliImagePlugin
+DEBUG 2025-02-18 14:22:27,626 Image 956173 140110813193920 Importing FpxImagePlugin
+DEBUG 2025-02-18 14:22:27,627 Image 956173 140110813193920 Image: failed to import FpxImagePlugin: No module named 'olefile'
+DEBUG 2025-02-18 14:22:27,627 Image 956173 140110813193920 Importing FtexImagePlugin
+DEBUG 2025-02-18 14:22:27,628 Image 956173 140110813193920 Importing GbrImagePlugin
+DEBUG 2025-02-18 14:22:27,629 Image 956173 140110813193920 Importing GifImagePlugin
+DEBUG 2025-02-18 14:22:27,629 Image 956173 140110813193920 Importing GribStubImagePlugin
+DEBUG 2025-02-18 14:22:27,630 Image 956173 140110813193920 Importing Hdf5StubImagePlugin
+DEBUG 2025-02-18 14:22:27,631 Image 956173 140110813193920 Importing IcnsImagePlugin
+DEBUG 2025-02-18 14:22:27,634 Image 956173 140110813193920 Importing IcoImagePlugin
+DEBUG 2025-02-18 14:22:27,635 Image 956173 140110813193920 Importing ImImagePlugin
+DEBUG 2025-02-18 14:22:27,636 Image 956173 140110813193920 Importing ImtImagePlugin
+DEBUG 2025-02-18 14:22:27,637 Image 956173 140110813193920 Importing IptcImagePlugin
+DEBUG 2025-02-18 14:22:27,638 Image 956173 140110813193920 Importing JpegImagePlugin
+DEBUG 2025-02-18 14:22:27,638 Image 956173 140110813193920 Importing Jpeg2KImagePlugin
+DEBUG 2025-02-18 14:22:27,638 Image 956173 140110813193920 Importing McIdasImagePlugin
+DEBUG 2025-02-18 14:22:27,639 Image 956173 140110813193920 Importing MicImagePlugin
+DEBUG 2025-02-18 14:22:27,639 Image 956173 140110813193920 Image: failed to import MicImagePlugin: No module named 'olefile'
+DEBUG 2025-02-18 14:22:27,639 Image 956173 140110813193920 Importing MpegImagePlugin
+DEBUG 2025-02-18 14:22:27,640 Image 956173 140110813193920 Importing MpoImagePlugin
+DEBUG 2025-02-18 14:22:27,647 Image 956173 140110813193920 Importing MspImagePlugin
+DEBUG 2025-02-18 14:22:27,647 Image 956173 140110813193920 Importing PalmImagePlugin
+DEBUG 2025-02-18 14:22:27,650 Image 956173 140110813193920 Importing PcdImagePlugin
+DEBUG 2025-02-18 14:22:27,651 Image 956173 140110813193920 Importing PcxImagePlugin
+DEBUG 2025-02-18 14:22:27,651 Image 956173 140110813193920 Importing PdfImagePlugin
+DEBUG 2025-02-18 14:22:27,666 Image 956173 140110813193920 Importing PixarImagePlugin
+DEBUG 2025-02-18 14:22:27,667 Image 956173 140110813193920 Importing PngImagePlugin
+DEBUG 2025-02-18 14:22:27,667 Image 956173 140110813193920 Importing PpmImagePlugin
+DEBUG 2025-02-18 14:22:27,667 Image 956173 140110813193920 Importing PsdImagePlugin
+DEBUG 2025-02-18 14:22:27,668 Image 956173 140110813193920 Importing QoiImagePlugin
+DEBUG 2025-02-18 14:22:27,669 Image 956173 140110813193920 Importing SgiImagePlugin
+DEBUG 2025-02-18 14:22:27,669 Image 956173 140110813193920 Importing SpiderImagePlugin
+DEBUG 2025-02-18 14:22:27,670 Image 956173 140110813193920 Importing SunImagePlugin
+DEBUG 2025-02-18 14:22:27,671 Image 956173 140110813193920 Importing TgaImagePlugin
+DEBUG 2025-02-18 14:22:27,671 Image 956173 140110813193920 Importing TiffImagePlugin
+DEBUG 2025-02-18 14:22:27,672 Image 956173 140110813193920 Importing WebPImagePlugin
+DEBUG 2025-02-18 14:22:27,679 Image 956173 140110813193920 Importing WmfImagePlugin
+DEBUG 2025-02-18 14:22:27,679 Image 956173 140110813193920 Importing XbmImagePlugin
+DEBUG 2025-02-18 14:22:27,681 Image 956173 140110813193920 Importing XpmImagePlugin
+DEBUG 2025-02-18 14:22:27,682 Image 956173 140110813193920 Importing XVThumbImagePlugin
+DEBUG 2025-02-18 14:22:52,867 PngImagePlugin 956173 140110813193920 STREAM b'IHDR' 16 13
+DEBUG 2025-02-18 14:22:52,868 PngImagePlugin 956173 140110813193920 STREAM b'tEXt' 41 43
+DEBUG 2025-02-18 14:22:52,868 PngImagePlugin 956173 140110813193920 STREAM b'tEXt' 96 18
+DEBUG 2025-02-18 14:22:52,868 PngImagePlugin 956173 140110813193920 STREAM b'tEXt' 126 232
+DEBUG 2025-02-18 14:22:52,868 PngImagePlugin 956173 140110813193920 STREAM b'iTXt' 370 2566
+DEBUG 2025-02-18 14:22:52,868 PngImagePlugin 956173 140110813193920 STREAM b'IDAT' 2948 65536
+WARNING 2025-02-18 14:23:29,867 log 956173 140110813193920 Not Found: /products/staff/product/121212/delete/
+DEBUG 2025-02-18 14:23:51,867 PngImagePlugin 956173 140110821586624 STREAM b'IHDR' 16 13
+DEBUG 2025-02-18 14:23:51,867 PngImagePlugin 956173 140110821586624 STREAM b'tEXt' 41 43
+DEBUG 2025-02-18 14:23:51,868 PngImagePlugin 956173 140110821586624 STREAM b'tEXt' 96 18
+DEBUG 2025-02-18 14:23:51,868 PngImagePlugin 956173 140110821586624 STREAM b'tEXt' 126 232
+DEBUG 2025-02-18 14:23:51,868 PngImagePlugin 956173 140110821586624 STREAM b'iTXt' 370 2566
+DEBUG 2025-02-18 14:23:51,868 PngImagePlugin 956173 140110821586624 STREAM b'IDAT' 2948 65536
+DEBUG 2025-02-18 14:25:22,034 PngImagePlugin 956173 140110821586624 STREAM b'IHDR' 16 13
+DEBUG 2025-02-18 14:25:22,035 PngImagePlugin 956173 140110821586624 STREAM b'tEXt' 41 43
+DEBUG 2025-02-18 14:25:22,035 PngImagePlugin 956173 140110821586624 STREAM b'tEXt' 96 18
+DEBUG 2025-02-18 14:25:22,035 PngImagePlugin 956173 140110821586624 STREAM b'tEXt' 126 232
+DEBUG 2025-02-18 14:25:22,035 PngImagePlugin 956173 140110821586624 STREAM b'iTXt' 370 2566
+DEBUG 2025-02-18 14:25:22,035 PngImagePlugin 956173 140110821586624 STREAM b'IDAT' 2948 65536
+WARNING 2025-02-18 14:33:11,560 log 956173 140110804801216 Not Found: /favicon.ico
+WARNING 2025-02-18 14:33:26,433 log 956173 140110821586624 Not Found: /products/staff/management/true
+DEBUG 2025-02-18 14:37:27,067 PngImagePlugin 956173 140110821586624 STREAM b'IHDR' 16 13
+DEBUG 2025-02-18 14:37:27,068 PngImagePlugin 956173 140110821586624 STREAM b'tEXt' 41 43
+DEBUG 2025-02-18 14:37:27,068 PngImagePlugin 956173 140110821586624 STREAM b'tEXt' 96 18
+DEBUG 2025-02-18 14:37:27,068 PngImagePlugin 956173 140110821586624 STREAM b'tEXt' 126 232
+DEBUG 2025-02-18 14:37:27,068 PngImagePlugin 956173 140110821586624 STREAM b'iTXt' 370 2566
+DEBUG 2025-02-18 14:37:27,068 PngImagePlugin 956173 140110821586624 STREAM b'IDAT' 2948 65536
+WARNING 2025-02-18 14:40:39,519 log 956173 140110821586624 Not Found: /favicon.ico
+INFO 2025-02-18 14:55:52,361 autoreload 956173 140110973931584 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-18 14:55:52,796 autoreload 959909 140367187718208 Watching for file changes with StatReloader
+INFO 2025-02-18 14:55:53,750 wsgi 959909 140367120824000 WSGI script has been executed.
+INFO 2025-02-18 14:55:53,976 autoreload 959909 140367187718208 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-18 14:55:54,334 autoreload 959923 140179873468480 Watching for file changes with StatReloader
+INFO 2025-02-18 14:55:54,555 wsgi 959923 140179805304512 WSGI script has been executed.
+INFO 2025-02-18 14:55:55,581 autoreload 959923 140179873468480 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-18 14:55:55,897 autoreload 959962 140264251101248 Watching for file changes with StatReloader
+INFO 2025-02-18 14:56:19,542 autoreload 959962 140264251101248 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-18 14:56:19,885 autoreload 960006 139898144809024 Watching for file changes with StatReloader
+INFO 2025-02-18 14:58:09,230 autoreload 960333 139921558978624 Watching for file changes with StatReloader
+INFO 2025-02-18 14:58:35,918 autoreload 960333 139921558978624 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-18 14:58:36,248 autoreload 960428 140085446254656 Watching for file changes with StatReloader
+INFO 2025-02-18 14:58:37,321 autoreload 960428 140085446254656 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-18 14:58:37,643 autoreload 960457 140274390794304 Watching for file changes with StatReloader
+INFO 2025-02-18 14:58:37,848 wsgi 960457 140274323945152 WSGI script has been executed.
+WARNING 2025-02-18 14:58:52,138 log 960457 140274235864768 Not Found: /favicon.ico
+WARNING 2025-02-18 15:02:26,400 log 960457 140274235864768 Not Found: /favicon.ico
+WARNING 2025-02-18 15:02:37,977 log 960457 140274219079360 Not Found: /favicon.ico
+WARNING 2025-02-18 15:04:54,466 log 960457 140274235864768 Not Found: /favicon.ico
+DEBUG 2025-02-18 15:05:07,110 PngImagePlugin 960457 140274227472064 STREAM b'IHDR' 16 13
+DEBUG 2025-02-18 15:05:07,110 PngImagePlugin 960457 140274227472064 STREAM b'tEXt' 41 43
+DEBUG 2025-02-18 15:05:07,110 PngImagePlugin 960457 140274227472064 STREAM b'tEXt' 96 18
+DEBUG 2025-02-18 15:05:07,110 PngImagePlugin 960457 140274227472064 STREAM b'tEXt' 126 232
+DEBUG 2025-02-18 15:05:07,110 PngImagePlugin 960457 140274227472064 STREAM b'iTXt' 370 2566
+DEBUG 2025-02-18 15:05:07,110 PngImagePlugin 960457 140274227472064 STREAM b'IDAT' 2948 65536
+DEBUG 2025-02-18 15:05:07,111 Image 960457 140274227472064 Importing BlpImagePlugin
+DEBUG 2025-02-18 15:05:07,113 Image 960457 140274227472064 Importing BmpImagePlugin
+DEBUG 2025-02-18 15:05:07,113 Image 960457 140274227472064 Importing BufrStubImagePlugin
+DEBUG 2025-02-18 15:05:07,113 Image 960457 140274227472064 Importing CurImagePlugin
+DEBUG 2025-02-18 15:05:07,113 Image 960457 140274227472064 Importing DcxImagePlugin
+DEBUG 2025-02-18 15:05:07,114 Image 960457 140274227472064 Importing DdsImagePlugin
+DEBUG 2025-02-18 15:05:07,119 Image 960457 140274227472064 Importing EpsImagePlugin
+DEBUG 2025-02-18 15:05:07,120 Image 960457 140274227472064 Importing FitsImagePlugin
+DEBUG 2025-02-18 15:05:07,121 Image 960457 140274227472064 Importing FliImagePlugin
+DEBUG 2025-02-18 15:05:07,121 Image 960457 140274227472064 Importing FpxImagePlugin
+DEBUG 2025-02-18 15:05:07,121 Image 960457 140274227472064 Image: failed to import FpxImagePlugin: No module named 'olefile'
+DEBUG 2025-02-18 15:05:07,122 Image 960457 140274227472064 Importing FtexImagePlugin
+DEBUG 2025-02-18 15:05:07,122 Image 960457 140274227472064 Importing GbrImagePlugin
+DEBUG 2025-02-18 15:05:07,122 Image 960457 140274227472064 Importing GifImagePlugin
+DEBUG 2025-02-18 15:05:07,122 Image 960457 140274227472064 Importing GribStubImagePlugin
+DEBUG 2025-02-18 15:05:07,123 Image 960457 140274227472064 Importing Hdf5StubImagePlugin
+DEBUG 2025-02-18 15:05:07,123 Image 960457 140274227472064 Importing IcnsImagePlugin
+DEBUG 2025-02-18 15:05:07,124 Image 960457 140274227472064 Importing IcoImagePlugin
+DEBUG 2025-02-18 15:05:07,125 Image 960457 140274227472064 Importing ImImagePlugin
+DEBUG 2025-02-18 15:05:07,126 Image 960457 140274227472064 Importing ImtImagePlugin
+DEBUG 2025-02-18 15:05:07,126 Image 960457 140274227472064 Importing IptcImagePlugin
+DEBUG 2025-02-18 15:05:07,126 Image 960457 140274227472064 Importing JpegImagePlugin
+DEBUG 2025-02-18 15:05:07,127 Image 960457 140274227472064 Importing Jpeg2KImagePlugin
+DEBUG 2025-02-18 15:05:07,127 Image 960457 140274227472064 Importing McIdasImagePlugin
+DEBUG 2025-02-18 15:05:07,127 Image 960457 140274227472064 Importing MicImagePlugin
+DEBUG 2025-02-18 15:05:07,127 Image 960457 140274227472064 Image: failed to import MicImagePlugin: No module named 'olefile'
+DEBUG 2025-02-18 15:05:07,127 Image 960457 140274227472064 Importing MpegImagePlugin
+DEBUG 2025-02-18 15:05:07,128 Image 960457 140274227472064 Importing MpoImagePlugin
+DEBUG 2025-02-18 15:05:07,130 Image 960457 140274227472064 Importing MspImagePlugin
+DEBUG 2025-02-18 15:05:07,131 Image 960457 140274227472064 Importing PalmImagePlugin
+DEBUG 2025-02-18 15:05:07,132 Image 960457 140274227472064 Importing PcdImagePlugin
+DEBUG 2025-02-18 15:05:07,132 Image 960457 140274227472064 Importing PcxImagePlugin
+DEBUG 2025-02-18 15:05:07,132 Image 960457 140274227472064 Importing PdfImagePlugin
+DEBUG 2025-02-18 15:05:07,138 Image 960457 140274227472064 Importing PixarImagePlugin
+DEBUG 2025-02-18 15:05:07,139 Image 960457 140274227472064 Importing PngImagePlugin
+DEBUG 2025-02-18 15:05:07,139 Image 960457 140274227472064 Importing PpmImagePlugin
+DEBUG 2025-02-18 15:05:07,139 Image 960457 140274227472064 Importing PsdImagePlugin
+DEBUG 2025-02-18 15:05:07,139 Image 960457 140274227472064 Importing QoiImagePlugin
+DEBUG 2025-02-18 15:05:07,139 Image 960457 140274227472064 Importing SgiImagePlugin
+DEBUG 2025-02-18 15:05:07,140 Image 960457 140274227472064 Importing SpiderImagePlugin
+DEBUG 2025-02-18 15:05:07,140 Image 960457 140274227472064 Importing SunImagePlugin
+DEBUG 2025-02-18 15:05:07,140 Image 960457 140274227472064 Importing TgaImagePlugin
+DEBUG 2025-02-18 15:05:07,141 Image 960457 140274227472064 Importing TiffImagePlugin
+DEBUG 2025-02-18 15:05:07,141 Image 960457 140274227472064 Importing WebPImagePlugin
+DEBUG 2025-02-18 15:05:07,142 Image 960457 140274227472064 Importing WmfImagePlugin
+DEBUG 2025-02-18 15:05:07,142 Image 960457 140274227472064 Importing XbmImagePlugin
+DEBUG 2025-02-18 15:05:07,143 Image 960457 140274227472064 Importing XpmImagePlugin
+DEBUG 2025-02-18 15:05:07,143 Image 960457 140274227472064 Importing XVThumbImagePlugin
+WARNING 2025-02-18 15:05:40,412 log 960457 140274227472064 Not Found: /favicon.ico
+WARNING 2025-02-18 15:06:09,894 log 960457 140274202293952 Not Found: /favicon.ico
+INFO 2025-02-18 15:09:41,160 autoreload 960457 140274390794304 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-18 15:09:41,575 autoreload 962262 140476724985920 Watching for file changes with StatReloader
+INFO 2025-02-18 15:09:41,779 wsgi 962262 140476657170112 WSGI script has been executed.
+INFO 2025-02-18 15:09:43,839 autoreload 962262 140476724985920 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-18 15:09:44,208 autoreload 962298 139688461250624 Watching for file changes with StatReloader
+INFO 2025-02-18 15:09:44,409 wsgi 962298 139688394356416 WSGI script has been executed.
+WARNING 2025-02-18 15:18:20,725 log 962298 139688291587776 Not Found: /favicon.ico
+DEBUG 2025-02-18 15:18:49,309 PngImagePlugin 962298 139688299980480 STREAM b'IHDR' 16 13
+DEBUG 2025-02-18 15:18:49,309 PngImagePlugin 962298 139688299980480 STREAM b'tEXt' 41 43
+DEBUG 2025-02-18 15:18:49,309 PngImagePlugin 962298 139688299980480 STREAM b'tEXt' 96 18
+DEBUG 2025-02-18 15:18:49,310 PngImagePlugin 962298 139688299980480 STREAM b'tEXt' 126 232
+DEBUG 2025-02-18 15:18:49,310 PngImagePlugin 962298 139688299980480 STREAM b'iTXt' 370 2566
+DEBUG 2025-02-18 15:18:49,310 PngImagePlugin 962298 139688299980480 STREAM b'IDAT' 2948 65536
+DEBUG 2025-02-18 15:18:49,311 Image 962298 139688299980480 Importing BlpImagePlugin
+DEBUG 2025-02-18 15:18:49,312 Image 962298 139688299980480 Importing BmpImagePlugin
+DEBUG 2025-02-18 15:18:49,312 Image 962298 139688299980480 Importing BufrStubImagePlugin
+DEBUG 2025-02-18 15:18:49,313 Image 962298 139688299980480 Importing CurImagePlugin
+DEBUG 2025-02-18 15:18:49,313 Image 962298 139688299980480 Importing DcxImagePlugin
+DEBUG 2025-02-18 15:18:49,314 Image 962298 139688299980480 Importing DdsImagePlugin
+DEBUG 2025-02-18 15:18:49,320 Image 962298 139688299980480 Importing EpsImagePlugin
+DEBUG 2025-02-18 15:18:49,321 Image 962298 139688299980480 Importing FitsImagePlugin
+DEBUG 2025-02-18 15:18:49,322 Image 962298 139688299980480 Importing FliImagePlugin
+DEBUG 2025-02-18 15:18:49,322 Image 962298 139688299980480 Importing FpxImagePlugin
+DEBUG 2025-02-18 15:18:49,323 Image 962298 139688299980480 Image: failed to import FpxImagePlugin: No module named 'olefile'
+DEBUG 2025-02-18 15:18:49,323 Image 962298 139688299980480 Importing FtexImagePlugin
+DEBUG 2025-02-18 15:18:49,323 Image 962298 139688299980480 Importing GbrImagePlugin
+DEBUG 2025-02-18 15:18:49,324 Image 962298 139688299980480 Importing GifImagePlugin
+DEBUG 2025-02-18 15:18:49,324 Image 962298 139688299980480 Importing GribStubImagePlugin
+DEBUG 2025-02-18 15:18:49,324 Image 962298 139688299980480 Importing Hdf5StubImagePlugin
+DEBUG 2025-02-18 15:18:49,325 Image 962298 139688299980480 Importing IcnsImagePlugin
+DEBUG 2025-02-18 15:18:49,326 Image 962298 139688299980480 Importing IcoImagePlugin
+DEBUG 2025-02-18 15:18:49,327 Image 962298 139688299980480 Importing ImImagePlugin
+DEBUG 2025-02-18 15:18:49,328 Image 962298 139688299980480 Importing ImtImagePlugin
+DEBUG 2025-02-18 15:18:49,329 Image 962298 139688299980480 Importing IptcImagePlugin
+DEBUG 2025-02-18 15:18:49,330 Image 962298 139688299980480 Importing JpegImagePlugin
+DEBUG 2025-02-18 15:18:49,330 Image 962298 139688299980480 Importing Jpeg2KImagePlugin
+DEBUG 2025-02-18 15:18:49,330 Image 962298 139688299980480 Importing McIdasImagePlugin
+DEBUG 2025-02-18 15:18:49,330 Image 962298 139688299980480 Importing MicImagePlugin
+DEBUG 2025-02-18 15:18:49,331 Image 962298 139688299980480 Image: failed to import MicImagePlugin: No module named 'olefile'
+DEBUG 2025-02-18 15:18:49,331 Image 962298 139688299980480 Importing MpegImagePlugin
+DEBUG 2025-02-18 15:18:49,331 Image 962298 139688299980480 Importing MpoImagePlugin
+DEBUG 2025-02-18 15:18:49,335 Image 962298 139688299980480 Importing MspImagePlugin
+DEBUG 2025-02-18 15:18:49,336 Image 962298 139688299980480 Importing PalmImagePlugin
+DEBUG 2025-02-18 15:18:49,337 Image 962298 139688299980480 Importing PcdImagePlugin
+DEBUG 2025-02-18 15:18:49,337 Image 962298 139688299980480 Importing PcxImagePlugin
+DEBUG 2025-02-18 15:18:49,338 Image 962298 139688299980480 Importing PdfImagePlugin
+DEBUG 2025-02-18 15:18:49,348 Image 962298 139688299980480 Importing PixarImagePlugin
+DEBUG 2025-02-18 15:18:49,349 Image 962298 139688299980480 Importing PngImagePlugin
+DEBUG 2025-02-18 15:18:49,349 Image 962298 139688299980480 Importing PpmImagePlugin
+DEBUG 2025-02-18 15:18:49,350 Image 962298 139688299980480 Importing PsdImagePlugin
+DEBUG 2025-02-18 15:18:49,350 Image 962298 139688299980480 Importing QoiImagePlugin
+DEBUG 2025-02-18 15:18:49,351 Image 962298 139688299980480 Importing SgiImagePlugin
+DEBUG 2025-02-18 15:18:49,351 Image 962298 139688299980480 Importing SpiderImagePlugin
+DEBUG 2025-02-18 15:18:49,352 Image 962298 139688299980480 Importing SunImagePlugin
+DEBUG 2025-02-18 15:18:49,352 Image 962298 139688299980480 Importing TgaImagePlugin
+DEBUG 2025-02-18 15:18:49,353 Image 962298 139688299980480 Importing TiffImagePlugin
+DEBUG 2025-02-18 15:18:49,353 Image 962298 139688299980480 Importing WebPImagePlugin
+DEBUG 2025-02-18 15:18:49,357 Image 962298 139688299980480 Importing WmfImagePlugin
+DEBUG 2025-02-18 15:18:49,358 Image 962298 139688299980480 Importing XbmImagePlugin
+DEBUG 2025-02-18 15:18:49,360 Image 962298 139688299980480 Importing XpmImagePlugin
+DEBUG 2025-02-18 15:18:49,361 Image 962298 139688299980480 Importing XVThumbImagePlugin

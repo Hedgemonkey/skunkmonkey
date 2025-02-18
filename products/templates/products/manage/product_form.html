@@ -3,7 +3,11 @@
 
 {% block content %}
 <div class="modal-content"> 
-    <form method="post" id="product-form" enctype="multipart/form-data">
+    <form 
+        data-product-add-url="{% url 'products:product_add' %}" 
+        method="post"
+        id="product-form"
+        enctype="multipart/form-data">
         {% csrf_token %}
         {% crispy form %}
         <div class="mt-3">

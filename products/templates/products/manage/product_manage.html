@@ -16,17 +16,53 @@
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-12">
+
             <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                <a id="create-product-button" href="#" class="btn btn-primary mb-3"
-                    data-create-form-url="{% url 'products:product_create_form' %}"
-                    data-create-url="{% url 'products:product_create' %}"
-                    data-product-management-url="{% url 'products:product_management' %}">
-                    Create New Product
-                </a>
+                <button id="product-add-button" class="btn btn-primary mb-3"
+                    data-product-add-form-url="{% url 'products:product_add_form' %}"
+                    data-product-add-url="{% url 'products:product_add' %}"
+                    data-product-management-url="{% url 'products:product_management' %}">add New Product
+                </button>
+                <button id="category-add-button" class="btn btn-success mb-3"
+                    data-category-add-url="{% url 'products:category_add' %}">Add Category
+                </button>
             </div>
 
-            {% include 'products/manage/product_manage_partial.html' %}
+            <div class="accordion" id="management-accordion">
 
+                <div class="accordion-item">
+                    <h2 class="accordion-header text-center" id="categories-header">
+                        <button class="accordion-button collapsed bg-dark-grey text-white text-center" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#category-list" aria-expanded="false"
+                            aria-controls="category-list">
+                            Categories
+                        </button>
+                    </h2>
+                    <div id="category-list" class="accordion-collapse collapse" aria-labelledby="categories-header"
+                        data-bs-parent="#management-accordion">
+                        <div class="accordion-body bg-light-grey">
+                            {% include 'products/manage/category_cards_partial.html' %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item mt-0">
+                    <h2 class="accordion-header text-center" id="products-header">
+                        <button class="accordion-button bg-dark-grey text-white text-center" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#product-list-section" aria-expanded="true"
+                            aria-controls="product-list-section">
+                            Products
+                        </button>
+                    </h2>
+                    <div id="product-list-section" class="accordion-collapse collapse show"
+                        aria-labelledby="products-header" data-bs-parent="#management-accordion">
+                        <div class="accordion-body bg-light-grey">
+                            {% include 'products/manage/product_cards_partial.html' %}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
 </div>
@@ -34,5 +70,8 @@
 {% endblock %}
 
 {% block postloadjs %}
+<script>
+    const getCategoryCardsUrl = "{% url 'products:get_category_cards' %}"; // Render the URL
+</script>
 <script src="{% static 'bundles/js/products/products.js' %}"></script>
 {% endblock %}

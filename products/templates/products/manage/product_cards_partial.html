@@ -1,0 +1,38 @@
+{# products/manage/product_cards_partial.html #}
+{% if products %}
+<div class="row" id="product-list"> {% for product in products %}
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text">
+                    {{ product.description|safe|truncatechars_html:50 }}
+                </p>
+                <p class="card-text">
+                    <strong>Category:</strong> {{ product.category }}<br>
+                    <strong>Price:</strong> ${{ product.price }}<br>
+                    <strong>Stock:</strong> {{ product.stock_quantity }}<br>
+                    <strong>Active:</strong> {% if product.is_active %}Yes{% else %}No{% endif %}
+                </p>
+                <div class="btn-group" role="group">
+                    <a href="{% url 'products:product_update' product.slug %}"
+                        class="btn btn-sm btn-secondary edit-product" data-product-slug="{{ product.slug }}">Edit</a>
+                    <a href="{% url 'products:product_delete' product.slug %}"
+                        class="btn btn-sm btn-danger delete-product" data-product-name="{{ product.name }}"
+                        onclick="return false;">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-custom" role="alert">
+    <div class="text-center">
+        <h3>No products found.</h3>
+    </div>
+</div>
+{% endif %}

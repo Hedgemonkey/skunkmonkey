@@ -4336,7 +4336,7 @@ textarea.form-control-lg {
   --bs-accordion-color: #212529;
   --bs-accordion-bg: #fff;
   --bs-accordion-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, border-radius 0.15s ease;
-  --bs-accordion-border-color: var(--bs-border-color);
+  --bs-accordion-border-color: black;
   --bs-accordion-border-width: 1px;
   --bs-accordion-border-radius: 0.375rem;
   --bs-accordion-inner-border-radius: calc(0.375rem - 1px);
@@ -10886,4 +10886,117 @@ a.list-group-item-danger.fw-bold {  /* Target the specific link */
 
 #profile-management-buttons button {  /* Target all buttons within the container */
   width: 100%; /* Make buttons occupy full container width */
+}
+
+/* Styles specific to the accordion with the ID 'management-accordion' */
+#management-accordion .accordion-item {
+  border: 1px solid black;
+}
+
+#management-accordion .accordion-item + .accordion-item {
+  border: 1px solid black;
+}
+
+#management-accordion .accordion-button:not(.collapsed) {
+  color: black;
+}
+
+#management-accordion { /* Styles for the main accordion container */
+  border-radius: 10px;
+  overflow: hidden;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#management-accordion .accordion {
+  border-color: black !important;
+  --bs-accordion-border-color: black;
+}
+
+#management-accordion .accordion-item {
+  border-radius: 0;
+}
+
+#management-accordion .accordion-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bs-gray-800); /* Bootstrap's dark gray */
+  color: white; 
+}
+
+#management-accordion .accordion-button {
+  width: 100%;  /* Full width for consistent layout */
+  text-align: center;
+  font-size: 1.2rem;  /* Custom font size */
+  background-color: transparent;  /* Important: Make button background transparent */
+  border: none;
+  -webkit-user-select: none !important; /* Safari */
+  -ms-user-select: none !important; /* IE 10+ and Edge */
+  user-select: none !important; /* Standard syntax */
+  -webkit-tap-highlight-color: transparent !important; /* Remove tap highlight on mobile devices */
+}
+
+#management-accordion *:focus {
+  outline: none;
+}
+
+#management-accordion *::-moz-selection {
+  background: transparent;
+  color: inherit;
+}
+
+#management-accordion *::selection {
+  background: transparent;
+  color: inherit;
+}
+
+#management-accordion .accordion-button:focus { /* Remove outline on focus */
+  outline: none !important;
+}
+
+/* Style the chevron for collapsed accordion headers */
+#management-accordion .accordion-button::after {
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-left: auto;
+  content: "";
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+  transition: transform 0.2s ease, background-image 0.2s ease;
+  /* Other closed styles (e.g., color) can be added here */
+}
+
+
+/* Style the chevron for open accordion headers */
+#management-accordion .accordion-button:not(.collapsed)::after {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ADD8E6'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+  transform: rotate(-180deg);
+  color: black; 
+}
+
+#management-accordion .accordion-header {
+  background-color: #343a40; /* Darker background */
+  color: white;             /* White text */
+  font-weight: bold;        /* Bolder text */
+  font-size: 1.2rem;     /* Custom font size */
+
+}
+
+.rounded-top-0 {
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+}
+
+.bg-light-grey {
+  background-color: #157347 !important;
+}
+
+/* Custom alert styles */
+.alert-custom {
+  background-color: #e9ecef; /* Light gray background */
+  border-color: #ced4da;      /* Slightly darker border */
+  color: #495057;          /* Dark gray text */
 }

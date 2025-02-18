@@ -1,0 +1,7 @@
+{# products/templates/products/manage/category_update_form.html #}
+<form id="category-update-form"
+    method="post"
+    action="{% url 'products:category_update' category.slug %}"
+    data-category-update-url="{% url 'products:category_update' category.slug %}">
+    {% csrf_token %}
+    {{ form.as_p }} </form>
