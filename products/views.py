@@ -40,17 +40,6 @@ class ProductUpdateView(UpdateView):
         return super().form_valid(form)
 
 
-@method_decorator(staff_member_required, name='dispatch')
-class ProductDeleteView(DeleteView):
-    model = Product
-    template_name = 'products/staff/product_confirm_delete.html'
-    success_url = reverse_lazy('products:product_management')
-
-    def delete(self, request, *args, **kwargs):
-        messages.success(self.request, 'Product deleted successfully!')
-        return super().delete(request, *args, **kwargs)
-
-
 @staff_member_required
 def product_add_form(request):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -77,7 +66,18 @@ def product_add(request):
         else:
             return HttpResponseBadRequest("Invalid request.")  # Correct handling for non-AJAX GET
 
+@staff_member_required
+def product_delete(request, slug):  # New view for handling AJAX product deletion
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        if request.method == 'POST':
+            product = get_object_or_404(Product, slug=slug)
+            product_name = product.name  # Get the product name before deleting
+            product.delete()
 
+            return JsonResponse({'message': f'Product "{product_name}" deleted successfully.'}, status=200)
+        else:
+            return JsonResponse({'error': 'Invalid request method.'}, status=405)  # Method Not Allowed
+    return HttpResponseBadRequest('Invalid request.')
 
 @staff_member_required
 def product_management(request):
@@ -162,8 +162,6 @@ def category_update(request, slug):
                 html = render_to_string('products/manage/category_update_form.html', context, request=request)
                 return JsonResponse({'html': html, 'error': form.errors}, status=400)
     return HttpResponseBadRequest("Invalid request.")
-
-
 
 @staff_member_required
 def category_delete(request, slug):

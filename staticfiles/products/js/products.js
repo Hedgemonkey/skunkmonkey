@@ -10,6 +10,7 @@ $(function () {
     const productManagementUrl = $('#product-add-button').data('product-management-url');
     const getCategoryCardsUrl = $('#category-cards-container').data('category-cards-url'); // Correct ID
     const addCategoryUrl = $('#category-add-button').data('category-add-url');
+    const productBaseUrl = '/products/staff/product/';
 
     const addProductButton = $('#product-add-button');
     const productListContainer = $('#product-list');
@@ -17,7 +18,7 @@ $(function () {
 
     // --- Reusable AJAX function with CSRF protection ---
     function makeAjaxRequest(url, type, data = {}, successCallback, errorCallback, processData = true, contentType = 'application/x-www-form-urlencoded; charset=UTF-8') { // Added processData and contentType parameters
-        $.ajax({
+        return $.ajax({
             url: url,
             type: type,
             headers: {
@@ -96,25 +97,67 @@ $(function () {
         });
     }
 
-    function deleteProduct(productUrl, productName) {
-        makeAjaxRequest(productUrl, 'POST', {}, (data) => {
-            fetchProductCards();
-            displaySuccess(data.message); // Use the server message
-        }, () => {
-            displayError("Failed to delete product.");
-        });
+    function deleteProduct(productSlug) {
+        const deleteUrl = `${productBaseUrl}${productSlug}/delete/`;
+    
+        try {  // Use try...catch to handle potential errors *before* the AJAX call
+            const ajaxPromise = makeAjaxRequest(deleteUrl, 'POST');
+    
+             // *** Essential Check: Make sure makeAjaxRequest returns a Promise ***
+            if (!ajaxPromise || typeof ajaxPromise.then !== 'function') { //Simplified Check
+                console.error("makeAjaxRequest did NOT return a Promise!", ajaxPromise);
+                return Promise.reject("Invalid AJAX response"); // Correct: Immediately reject if not a Promise
+            }
+    
+            return ajaxPromise
+                .then(response => {  // Success: Log the response and resolve
+                    console.log("deleteProduct AJAX success:", response);
+                    return response; //Resolve promise with value from server for preConfirm
+                })
+                .catch(error => {  // Error: log the error and reject
+                    console.error("deleteProduct AJAX error:", error);
+                    return Promise.reject(error);  // Reject and return the error - IMPORTANT!
+                });
+        } catch (error) {  // Catch errors before/during makeAjaxRequest
+            console.error("Error before/during AJAX in deleteProduct:", error);
+            return Promise.reject(error); // Return rejected promise for consistent error handling
+        }
+    
     }
 
-    function handleProductDelete(event) {
-        event.preventDefault();
-        const productUrl = $(this).attr('href');
-        const productName = $(this).data('product-name');
-
+    function handleProductDelete(productSlug, productName) {
         Swal.fire({
-            // ... Swal confirmation options
-        }).then((result) => {
-            if (result.isConfirmed) {
-                deleteProduct(productUrl, productName);
+            title: `Delete ${productName}?`,
+            text: "Are you sure you want to delete this product? This action cannot be undone.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!',
+            preConfirm: () => {
+                Swal.showLoading();
+                return deleteProduct(productSlug) //Call deleteProduct
+                    .then(response => { // handle success
+                        displaySuccess(response?.message || "Product deleted successfully.");
+                        fetchProductCards();
+                        return Promise.resolve();
+                    })
+                    .catch(error => {  // Handle errors
+                        Swal.hideLoading();
+                        if (error.responseJSON && error.responseJSON.error) {
+                            displaySwalError(error, error.responseJSON.error);  // Display server error
+                        } else {
+                            displaySwalError(error, 'Failed to delete product. Please try again.'); //Display generic message
+                        }
+
+                        return Promise.reject(error); //Crucially return a rejected promise so Swal stays open
+                    });
+            } 
+        }).then((result) => { //Log Swal result if it was confirmed.
+            if (result.isConfirmed) { //Only display success message and fetch cards if the product was deleted and the Swal wasn't dismissed in some other way.
+                displaySuccess(result.value?.message || `Product ${productName} deleted successfully.`);
+                fetchProductCards();
+                console.log("Delete Product Swal Result:", result); //Log the result after displaying the success message
             }
         });
     }
@@ -127,13 +170,21 @@ $(function () {
             toast: true,
             position: 'top-end',
             showConfirmButton: false,
-            timer: 3000,
+            timer: 10000,
             timerProgressBar: true,
         });
     }
 
     function displayError(message) {
-        Swal.fire("Error", message, "error");
+        Swal.fire({
+            icon: 'error',
+            title: message,
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 10000,
+            timerProgressBar: true,
+        });
     }
 
     function displaySwalError(error, defaultMessage) {
@@ -167,107 +218,17 @@ $(function () {
     // --- Event Handlers ---
     $('#category-list').on('click', '.delete-category', handleCategoryDelete);
     $(document).on('click', '.edit-category', handleCategoryEdit);
-    $(document).on('click', '.delete-product', handleProductDelete);
+    $(document).on('click', '.delete-product', function(event) { 
+        event.preventDefault();
+        const DEBUGproductSlug = $(this).data('product-slug');
+        const DEBUGproductName = $(this).data('product-name');
+        console.log(`Delete product clicked: slug=${DEBUGproductSlug}, name=${DEBUGproductName}`);
+        handleProductDelete($(this).data('product-slug'), $(this).data('product-name')); 
+    });
 
 
     addProductButton.on('click', () => {
         let outerSwal; // declare outerSwal
-
-        // function openOuterSwal(htmlContent) {
-        //     outerSwal = Swal.fire({
-        //         title: 'add New Product',
-        //         html: htmlContent,
-        //         showCancelButton: true,
-        //         didRender: () => { //didRender for outer Swal - runs after HTML is loaded into Swal
-        //             const categorySelect = $('#id_category');
-        //             const addCategoryUrl = $('#product-form').data('add-category-url');
-
-        //             const addCategoryButton = $('<button type="button">') //Button to open inner "Add Category" Swal
-        //                 .text('Add Category')
-        //                 .addClass('btn btn-sm btn-success ml-2')
-        //                 .on('click', (event) => { //Add Category button click handler
-        //                     event.stopPropagation();
-
-        //                     Swal.fire({ //Inner "Add Category" Swal
-        //                         title: 'Add New Category',
-        //                         input: 'text',
-        //                         preConfirm: (categoryName) => {
-        //                             return addCategory(categoryName, addCategoryUrl)
-        //                                 .catch(error => { //Handle errors returned from addCategory AJAX call
-        //                                     Swal.showValidationMessage(error.responseJSON?.error || 'Category creation failed.');
-        //                                     return Promise.reject(); //Crucial to keep the Swal open after handling the error
-        //                                 });
-        //                         }
-        //                     }).then(result => { //After inner Swal closes for *any* reason
-        //                         if (result.isConfirmed) {
-        //                             $.ajax({  // AJAX to refresh the outer SweetAlert's content
-        //                                 url: addFormUrl,
-        //                                 type: 'GET',
-        //                                 headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        //                                 success: (updatedFormHTML) => {
-        //                                     Swal.fire({  // Show success message after outer Swal has re-opened
-        //                                         title: 'Category Added!',
-        //                                         text: 'Please select the new category from the dropdown list.',
-        //                                         icon: 'success',
-        //                                     }).then(result => { 
-        //                                         console.log("Inner Success Swal closed!");
-        //                                         $.ajax({ //Load outer Swal HTML content
-        //                                             url: addFormUrl,
-        //                                             type: 'GET',
-        //                                             headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        //                                             success: openOuterSwal,
-        //                                             error: () => {
-        //                                                 Swal.fire("Error", "Failed to load form.", "error");
-        //                                             }
-        //                                         });
-        //                                         console.log("Outer Swal re-opened!");
-
-        //                                     });
-        //                                 },
-        //                                 error: () => {
-        //                                     Swal.fire("Error", "Failed to refresh product form. Please try again.", "error").then(result => { //Inner "Success" Swal's .then - runs after success Swal closes for any reason
-        //                                         console.log("Inner Error Swal closed!");
-        //                                         $.ajax({ //Load outer Swal HTML content
-        //                                             url: addFormUrl,
-        //                                             type: 'GET',
-        //                                             headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        //                                             success: openOuterSwal,
-        //                                             error: () => {
-        //                                                 Swal.fire("Error", "Failed to load form.", "error");
-        //                                             }
-        //                                         });
-        //                                         console.log("Outer Swal re-opened!");
-
-        //                                     });
-        //                                 }
-        //                             });
-        //                         }
-        //                     });
-
-        //                 }); //End of Add Category button click handler
-
-
-        //             $('#id_category').parent().append(addCategoryButton);
-
-
-        //             //Form Submission handler:
-        //             $('#product-form').on('submit', function (e) {
-        //                 e.preventDefault();
-
-        //                 //Your existing form submission logic here
-        //                 console.log("Outer Swal Confirmed - submitting form", $(this).serialize());
-
-
-        //             }); //End of form submit handler
-
-
-
-        //         }, //End of didRender for Outer Swal
-
-        //     }); //End of outer Swal definition
-
-        //     return outerSwal; //Return promise
-        // }
 
         makeAjaxRequest(addProductFormUrl, 'GET', {}, (htmlContent) => {
             outerSwal = Swal.fire({
@@ -283,9 +244,7 @@ $(function () {
                         'POST',
                         formData,
                         (response) => { // Success callback
-                            Swal.close(); // Close the loading state
                             fetchProductCards();
-                            displaySuccess(response?.message || "Product added successfully.");
                             // Redirect *after* closing Swal to prevent duplicate messages
                             return productManagementUrl; // Return the redirect URL from preConfirm
                         },
@@ -305,7 +264,8 @@ $(function () {
 
                 // All interaction with outerSwal MUST be inside this .then block:
                 if (result.isConfirmed) {
-                    window.location.href = productManagementUrl; // Redirect after successful product creation
+                    displaySuccess(result.value?.message || "Product added successfully."); // Display success message here
+                    fetchProductCards(); // Fetch new Product Cards
                 } else if (result.isDismissed) { //If we are just closing the Swal then we also need to remove the form.
                     $("#product-form").remove();
                 }

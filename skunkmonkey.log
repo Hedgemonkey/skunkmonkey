@@ -827,3 +827,382 @@ DEBUG 2025-02-18 15:18:49,357 Image 962298 139688299980480 Importing WmfImagePlu
 DEBUG 2025-02-18 15:18:49,358 Image 962298 139688299980480 Importing XbmImagePlugin
 DEBUG 2025-02-18 15:18:49,360 Image 962298 139688299980480 Importing XpmImagePlugin
 DEBUG 2025-02-18 15:18:49,361 Image 962298 139688299980480 Importing XVThumbImagePlugin
+WARNING 2025-02-18 15:24:50,748 log 962298 139688299980480 Not Found: /favicon.ico
+DEBUG 2025-02-18 15:25:04,277 PngImagePlugin 962298 139688299980480 STREAM b'IHDR' 16 13
+DEBUG 2025-02-18 15:25:04,278 PngImagePlugin 962298 139688299980480 STREAM b'tEXt' 41 43
+DEBUG 2025-02-18 15:25:04,278 PngImagePlugin 962298 139688299980480 STREAM b'tEXt' 96 18
+DEBUG 2025-02-18 15:25:04,278 PngImagePlugin 962298 139688299980480 STREAM b'tEXt' 126 232
+DEBUG 2025-02-18 15:25:04,278 PngImagePlugin 962298 139688299980480 STREAM b'iTXt' 370 2566
+DEBUG 2025-02-18 15:25:04,278 PngImagePlugin 962298 139688299980480 STREAM b'IDAT' 2948 65536
+WARNING 2025-02-18 17:59:57,446 log 962298 139688308373184 Not Found: /favicon.ico
+WARNING 2025-02-18 19:48:57,904 log 962298 139688308373184 Not Found: /helpdesk/WebObjects/Helpdesk.woa
+WARNING 2025-02-18 20:09:04,761 log 962298 139688299980480 Not Found: /favicon.ico
+ERROR 2025-02-18 20:09:26,138 log 962298 139688291587776 Internal Server Error: /products/staff/product/hedgemonkey1212/update/
+Traceback (most recent call last):
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+               ^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/response.py", line 90, in rendered_content
+    template = self.resolve_template(self.template_name)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/response.py", line 72, in resolve_template
+    return select_template(template, using=self.using)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader.py", line 47, in select_template
+    raise TemplateDoesNotExist(", ".join(template_name_list), chain=chain)
+django.template.exceptions.TemplateDoesNotExist: products/staff/product_form.html
+ERROR 2025-02-18 20:09:44,332 log 962298 139688291587776 Internal Server Error: /users/contact/
+Traceback (most recent call last):
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader_tags.py", line 134, in render
+    compiled_parent = self.get_parent(context)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader_tags.py", line 131, in get_parent
+    return self.find_template(parent, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader_tags.py", line 109, in find_template
+    template, origin = context.template.engine.find_template(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/engine.py", line 163, in find_template
+    raise TemplateDoesNotExist(name, tried=tried)
+django.template.exceptions.TemplateDoesNotExist: account/base.html
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/users/views.py", line 36, in contact
+    return render(request, 'users/contact.html', {'form': form})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/backends/django.py", line 109, in render
+    reraise(exc, self.backend)
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/backends/django.py", line 130, in reraise
+    raise new from exc
+django.template.exceptions.TemplateDoesNotExist: account/base.html
+ERROR 2025-02-18 20:39:28,355 log 962298 139688283195072 Internal Server Error: /products/staff/product/1212121/update/
+Traceback (most recent call last):
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+               ^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/response.py", line 90, in rendered_content
+    template = self.resolve_template(self.template_name)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/response.py", line 72, in resolve_template
+    return select_template(template, using=self.using)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader.py", line 47, in select_template
+    raise TemplateDoesNotExist(", ".join(template_name_list), chain=chain)
+django.template.exceptions.TemplateDoesNotExist: products/staff/product_form.html
+ERROR 2025-02-18 20:43:53,897 log 962298 139688283195072 Internal Server Error: /products/staff/category/test2/update/
+Traceback (most recent call last):
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/contrib/auth/decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py", line 147, in category_update
+    form = CategoryForm(instance=category)  # Initialize form with category instance
+           ^^^^^^^^^^^^
+NameError: name 'CategoryForm' is not defined
+ERROR 2025-02-18 20:43:56,750 log 962298 139688283195072 Internal Server Error: /products/staff/category/test2/update/
+Traceback (most recent call last):
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/contrib/auth/decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py", line 147, in category_update
+    form = CategoryForm(instance=category)  # Initialize form with category instance
+           ^^^^^^^^^^^^
+NameError: name 'CategoryForm' is not defined
+ERROR 2025-02-18 20:44:01,110 log 962298 139688283195072 Internal Server Error: /products/staff/category/test3/update/
+Traceback (most recent call last):
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/contrib/auth/decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py", line 147, in category_update
+    form = CategoryForm(instance=category)  # Initialize form with category instance
+           ^^^^^^^^^^^^
+NameError: name 'CategoryForm' is not defined
+ERROR 2025-02-18 20:44:43,123 log 962298 139688283195072 Internal Server Error: /products/staff/category/test3/update/
+Traceback (most recent call last):
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/contrib/auth/decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py", line 147, in category_update
+    form = CategoryForm(instance=category)  # Initialize form with category instance
+           ^^^^^^^^^^^^
+NameError: name 'CategoryForm' is not defined
+ERROR 2025-02-18 20:44:45,399 log 962298 139688283195072 Internal Server Error: /products/staff/category/new-category/update/
+Traceback (most recent call last):
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/contrib/auth/decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py", line 147, in category_update
+    form = CategoryForm(instance=category)  # Initialize form with category instance
+           ^^^^^^^^^^^^
+NameError: name 'CategoryForm' is not defined
+ERROR 2025-02-18 20:44:58,048 log 962298 139688283195072 Internal Server Error: /products/staff/category/test3/update/
+Traceback (most recent call last):
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/contrib/auth/decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py", line 147, in category_update
+    form = CategoryForm(instance=category)  # Initialize form with category instance
+           ^^^^^^^^^^^^
+NameError: name 'CategoryForm' is not defined
+DEBUG 2025-02-18 20:46:19,157 views 962298 139688283195072 add_category view called via AJAX POST
+DEBUG 2025-02-18 20:46:19,157 views 962298 139688283195072 Received category name: Test 2
+INFO 2025-02-18 20:46:19,177 views 962298 139688283195072 Created category: Test 2
+ERROR 2025-02-18 20:46:54,109 log 962298 139688283195072 Internal Server Error: /products/staff/category/testing-this-shit/update/
+Traceback (most recent call last):
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/contrib/auth/decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py", line 147, in category_update
+    form = CategoryForm(instance=category)  # Initialize form with category instance
+           ^^^^^^^^^^^^
+NameError: name 'CategoryForm' is not defined
+ERROR 2025-02-18 20:48:40,452 log 962298 139688283195072 Internal Server Error: /products/staff/product/add/
+Traceback (most recent call last):
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 204, in _get_response
+    self.check_response(response, callback)
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 332, in check_response
+    raise ValueError(
+ValueError: The view products.views.product_add didn't return an HttpResponse object. It returned None instead.
+WARNING 2025-02-18 20:48:52,898 log 962298 139688283195072 Not Found: /favicon.ico
+ERROR 2025-02-18 21:08:37,448 log 962298 139688265361088 Internal Server Error: /products/staff/product/the-tits/update/
+Traceback (most recent call last):
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+               ^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/response.py", line 90, in rendered_content
+    template = self.resolve_template(self.template_name)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/response.py", line 72, in resolve_template
+    return select_template(template, using=self.using)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader.py", line 47, in select_template
+    raise TemplateDoesNotExist(", ".join(template_name_list), chain=chain)
+django.template.exceptions.TemplateDoesNotExist: products/staff/product_form.html
+DEBUG 2025-02-18 21:25:52,890 views 962298 139688265361088 add_category view called via AJAX POST
+DEBUG 2025-02-18 21:25:52,891 views 962298 139688265361088 Received category name: Spiral
+INFO 2025-02-18 21:25:52,926 views 962298 139688265361088 Created category: Spiral
+WARNING 2025-02-18 23:46:32,785 log 962298 139688265361088 Not Found: /nice ports,/Trinity.txt.bak
+WARNING 2025-02-18 23:47:23,607 log 962298 139688273753792 Not Found: /inicio.pl
+WARNING 2025-02-18 23:47:23,765 log 962298 139688265361088 Not Found: /index.html
+WARNING 2025-02-18 23:47:23,772 log 962298 139688273753792 Not Found: /login.php
+WARNING 2025-02-18 23:47:23,923 log 962298 139688273753792 Not Found: /default.asp
+WARNING 2025-02-18 23:47:24,076 log 962298 139688265361088 Not Found: /r51201,/desktop,/utility/flag.js
+WARNING 2025-02-18 23:47:24,224 log 962298 139688265361088 Not Found: /r51287,/desktop,/utility/flag.js
+WARNING 2025-02-18 23:47:24,372 log 962298 139688265361088 Not Found: /webui
+WARNING 2025-02-18 23:47:24,523 log 962298 139688265361088 Not Found: /user
+WARNING 2025-02-18 23:47:24,675 log 962298 139688265361088 Not Found: /user
+WARNING 2025-02-18 23:47:24,823 log 962298 139688265361088 Not Found: /human.aspx
+WARNING 2025-02-18 23:47:24,969 log 962298 139688265361088 Not Found: /human.aspx
+WARNING 2025-02-18 23:47:28,214 log 962298 139688256968384 Not Found: /nmaplowercheck1739922443
+WARNING 2025-02-18 23:47:28,266 log 962298 139688256968384 Not Found: /+CSCOE+/logon.html
+WARNING 2025-02-18 23:47:28,363 log 962298 139688256968384 Not Found: /HNAP1
+WARNING 2025-02-18 23:47:29,257 log 962298 139688256968384 Not Found: /server-status
+WARNING 2025-02-18 23:47:29,505 log 962298 139688299980480 Not Found: /geoserver/index.html
+WARNING 2025-02-18 23:47:29,662 log 962298 139688299980480 Not Found: /geoserver/
+WARNING 2025-02-18 23:47:29,811 log 962298 139688299980480 Not Found: /geoserver/web/wicket/bookmarkable/org.geoserver.web.AboutGeoServerPage
+WARNING 2025-02-18 23:47:29,958 log 962298 139688299980480 Not Found: /geoserver/web/wicket/bookmarkable/org.geoserver.web.AboutGeoServerPage
+WARNING 2025-02-18 23:47:32,739 log 962298 139688273753792 Not Found: /rest/applinks/1.0/manifest
+WARNING 2025-02-18 23:47:32,887 log 962298 139688273753792 Not Found: /confluence/rest/applinks/1.0/manifest
+WARNING 2025-02-18 23:47:33,285 log 962298 139688273753792 Not Found: /xml/info.xml
+WARNING 2025-02-19 01:14:10,816 log 962298 139688273753792 Not Found: /login
+INFO 2025-02-19 02:16:01,748 autoreload 962298 139688461250624 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-19 02:16:02,583 autoreload 1001062 140473879941184 Watching for file changes with StatReloader
+INFO 2025-02-19 02:16:03,655 wsgi 1001062 140473811334848 WSGI script has been executed.
+INFO 2025-02-19 02:16:16,225 autoreload 1001062 140473879941184 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-19 02:16:16,599 autoreload 1001126 139777281343552 Watching for file changes with StatReloader
+INFO 2025-02-19 02:16:16,789 wsgi 1001126 139777212937920 WSGI script has been executed.
+INFO 2025-02-19 02:16:49,626 autoreload 1001126 139777281343552 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-19 02:16:49,993 autoreload 1001202 139761524363328 Watching for file changes with StatReloader
+INFO 2025-02-19 02:16:50,167 wsgi 1001202 139761457034944 WSGI script has been executed.
+INFO 2025-02-19 02:16:51,196 autoreload 1001202 139761524363328 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-19 02:16:51,551 autoreload 1001215 140609844985920 Watching for file changes with StatReloader
+INFO 2025-02-19 02:16:51,735 wsgi 1001215 140609778087616 WSGI script has been executed.
+INFO 2025-02-19 02:17:32,717 autoreload 1001215 140609844985920 /home/skunkmonkey/public_html/devel/skunkmonkey/products/urls.py changed, reloading.
+INFO 2025-02-19 02:17:33,111 autoreload 1001296 139883127996480 Watching for file changes with StatReloader
+INFO 2025-02-19 02:17:33,294 wsgi 1001296 139883060393664 WSGI script has been executed.
+WARNING 2025-02-19 02:40:54,557 log 1001296 139883031025344 Not Found: /favicon.ico
+WARNING 2025-02-19 02:44:08,817 log 1001296 139883047810752 Not Found: /favicon.ico
+WARNING 2025-02-19 02:49:40,864 log 1001296 139883047810752 Not Found: /favicon.ico
+WARNING 2025-02-19 02:49:46,499 log 1001296 139883047810752 Not Found: /favicon.ico
+WARNING 2025-02-19 02:54:00,237 log 1001296 139883047810752 Not Found: /favicon.ico
+WARNING 2025-02-19 02:54:04,210 log 1001296 139883031025344 Not Found: /products/staff/management/arizona-original-bootcut-jeans-edited/delete/
+WARNING 2025-02-19 03:00:57,207 log 1001296 139883047810752 Not Found: /favicon.ico
+WARNING 2025-02-19 03:01:01,172 log 1001296 139883047810752 Not Found: /products/staff/management/staff/product/arizona-original-bootcut-jeans-edited/delete/
+INFO 2025-02-19 03:11:03,088 autoreload 1006886 139715020845120 Watching for file changes with StatReloader
+INFO 2025-02-19 03:11:04,156 wsgi 1006886 139714952689344 WSGI script has been executed.
+WARNING 2025-02-19 03:11:15,144 log 1006886 139714923321024 Not Found: /favicon.ico
+WARNING 2025-02-19 03:11:46,108 log 1006886 139714940106432 Not Found: /favicon.ico
+WARNING 2025-02-19 03:15:16,916 log 1006886 139714940106432 Not Found: /favicon.ico
+WARNING 2025-02-19 03:16:28,340 log 1006886 139714940106432 Not Found: /favicon.ico
+WARNING 2025-02-19 03:18:56,879 log 1006886 139714940106432 Not Found: /favicon.ico
+WARNING 2025-02-19 03:21:09,990 log 1006886 139714923321024 Not Found: /favicon.ico
+DEBUG 2025-02-19 03:21:21,470 Image 1006886 139714923321024 Importing BlpImagePlugin
+DEBUG 2025-02-19 03:21:21,472 Image 1006886 139714923321024 Importing BmpImagePlugin
+DEBUG 2025-02-19 03:21:21,472 Image 1006886 139714923321024 Importing BufrStubImagePlugin
+DEBUG 2025-02-19 03:21:21,473 Image 1006886 139714923321024 Importing CurImagePlugin
+DEBUG 2025-02-19 03:21:21,474 Image 1006886 139714923321024 Importing DcxImagePlugin
+DEBUG 2025-02-19 03:21:21,476 Image 1006886 139714923321024 Importing DdsImagePlugin
+DEBUG 2025-02-19 03:21:21,483 Image 1006886 139714923321024 Importing EpsImagePlugin
+DEBUG 2025-02-19 03:21:21,484 Image 1006886 139714923321024 Importing FitsImagePlugin
+DEBUG 2025-02-19 03:21:21,485 Image 1006886 139714923321024 Importing FliImagePlugin
+DEBUG 2025-02-19 03:21:21,486 Image 1006886 139714923321024 Importing FpxImagePlugin
+DEBUG 2025-02-19 03:21:21,487 Image 1006886 139714923321024 Image: failed to import FpxImagePlugin: No module named 'olefile'
+DEBUG 2025-02-19 03:21:21,487 Image 1006886 139714923321024 Importing FtexImagePlugin
+DEBUG 2025-02-19 03:21:21,488 Image 1006886 139714923321024 Importing GbrImagePlugin
+DEBUG 2025-02-19 03:21:21,489 Image 1006886 139714923321024 Importing GifImagePlugin
+DEBUG 2025-02-19 03:21:21,489 Image 1006886 139714923321024 Importing GribStubImagePlugin
+DEBUG 2025-02-19 03:21:21,490 Image 1006886 139714923321024 Importing Hdf5StubImagePlugin
+DEBUG 2025-02-19 03:21:21,491 Image 1006886 139714923321024 Importing IcnsImagePlugin
+DEBUG 2025-02-19 03:21:21,493 Image 1006886 139714923321024 Importing IcoImagePlugin
+DEBUG 2025-02-19 03:21:21,495 Image 1006886 139714923321024 Importing ImImagePlugin
+DEBUG 2025-02-19 03:21:21,496 Image 1006886 139714923321024 Importing ImtImagePlugin
+DEBUG 2025-02-19 03:21:21,497 Image 1006886 139714923321024 Importing IptcImagePlugin
+DEBUG 2025-02-19 03:21:21,498 Image 1006886 139714923321024 Importing JpegImagePlugin
+DEBUG 2025-02-19 03:21:21,498 Image 1006886 139714923321024 Importing Jpeg2KImagePlugin
+DEBUG 2025-02-19 03:21:21,498 Image 1006886 139714923321024 Importing McIdasImagePlugin
+DEBUG 2025-02-19 03:21:21,499 Image 1006886 139714923321024 Importing MicImagePlugin
+DEBUG 2025-02-19 03:21:21,500 Image 1006886 139714923321024 Image: failed to import MicImagePlugin: No module named 'olefile'
+DEBUG 2025-02-19 03:21:21,500 Image 1006886 139714923321024 Importing MpegImagePlugin
+DEBUG 2025-02-19 03:21:21,501 Image 1006886 139714923321024 Importing MpoImagePlugin
+DEBUG 2025-02-19 03:21:21,542 Image 1006886 139714923321024 Importing MspImagePlugin
+DEBUG 2025-02-19 03:21:21,543 Image 1006886 139714923321024 Importing PalmImagePlugin
+DEBUG 2025-02-19 03:21:21,545 Image 1006886 139714923321024 Importing PcdImagePlugin
+DEBUG 2025-02-19 03:21:21,546 Image 1006886 139714923321024 Importing PcxImagePlugin
+DEBUG 2025-02-19 03:21:21,546 Image 1006886 139714923321024 Importing PdfImagePlugin
+DEBUG 2025-02-19 03:21:21,554 Image 1006886 139714923321024 Importing PixarImagePlugin
+DEBUG 2025-02-19 03:21:21,555 Image 1006886 139714923321024 Importing PngImagePlugin
+DEBUG 2025-02-19 03:21:21,555 Image 1006886 139714923321024 Importing PpmImagePlugin
+DEBUG 2025-02-19 03:21:21,555 Image 1006886 139714923321024 Importing PsdImagePlugin
+DEBUG 2025-02-19 03:21:21,556 Image 1006886 139714923321024 Importing QoiImagePlugin
+DEBUG 2025-02-19 03:21:21,557 Image 1006886 139714923321024 Importing SgiImagePlugin
+DEBUG 2025-02-19 03:21:21,558 Image 1006886 139714923321024 Importing SpiderImagePlugin
+DEBUG 2025-02-19 03:21:21,558 Image 1006886 139714923321024 Importing SunImagePlugin
+DEBUG 2025-02-19 03:21:21,559 Image 1006886 139714923321024 Importing TgaImagePlugin
+DEBUG 2025-02-19 03:21:21,560 Image 1006886 139714923321024 Importing TiffImagePlugin
+DEBUG 2025-02-19 03:21:21,560 Image 1006886 139714923321024 Importing WebPImagePlugin
+DEBUG 2025-02-19 03:21:21,568 Image 1006886 139714923321024 Importing WmfImagePlugin
+DEBUG 2025-02-19 03:21:21,569 Image 1006886 139714923321024 Importing XbmImagePlugin
+DEBUG 2025-02-19 03:21:21,570 Image 1006886 139714923321024 Importing XpmImagePlugin
+DEBUG 2025-02-19 03:21:21,571 Image 1006886 139714923321024 Importing XVThumbImagePlugin
+WARNING 2025-02-19 03:24:43,949 log 1006886 139714940106432 Not Found: /favicon.ico
+WARNING 2025-02-19 03:31:21,731 log 1006886 139714923321024 Not Found: /favicon.ico
+WARNING 2025-02-19 03:36:44,172 log 1006886 139714940106432 Not Found: /favicon.ico
+WARNING 2025-02-19 03:40:12,114 log 1006886 139714923321024 Not Found: /favicon.ico
+WARNING 2025-02-19 03:40:47,225 log 1006886 139714931713728 Not Found: /favicon.ico
+WARNING 2025-02-19 03:41:52,055 log 1006886 139714923321024 Not Found: /favicon.ico
+WARNING 2025-02-19 03:43:31,655 log 1006886 139714931713728 Not Found: /favicon.ico
+WARNING 2025-02-19 03:46:16,797 log 1006886 139714913879744 Not Found: /favicon.ico
+WARNING 2025-02-19 03:46:38,756 log 1006886 139714913879744 Not Found: /http:/api.ipify.org/
+WARNING 2025-02-19 03:46:57,563 log 1006886 139714923321024 Not Found: /favicon.ico
+WARNING 2025-02-19 03:47:00,891 log 1006886 139714913879744 Not Found: /www.shadowserver.org:443
+WARNING 2025-02-19 03:50:54,235 log 1006886 139714923321024 Not Found: /favicon.ico
+WARNING 2025-02-19 03:52:58,030 log 1006886 139714931713728 Not Found: /favicon.ico
+WARNING 2025-02-19 05:46:48,899 log 1006886 139714923321024 Not Found: /favicon.ico
+WARNING 2025-02-19 05:49:59,163 log 1006886 139714940106432 Not Found: /favicon.ico
+INFO 2025-02-19 05:56:21,653 autoreload 1006886 139715020845120 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-19 05:56:29,679 autoreload 1016768 140259206074432 Watching for file changes with StatReloader
+INFO 2025-02-19 05:56:35,366 wsgi 1016768 140259138467520 WSGI script has been executed.
+INFO 2025-02-19 05:58:33,215 autoreload 1016973 140388501868608 Watching for file changes with StatReloader
+INFO 2025-02-19 05:58:33,562 wsgi 1016973 140388434179776 WSGI script has been executed.
+WARNING 2025-02-19 06:07:06,170 log 1016973 140388404811456 Not Found: /favicon.ico
+WARNING 2025-02-19 06:07:43,882 log 1016973 140388404811456 Not Found: /favicon.ico
+WARNING 2025-02-19 06:08:57,534 log 1016973 140388421596864 Not Found: /favicon.ico
+WARNING 2025-02-19 06:08:57,536 log 1016973 140388186715840 Not Found: /favicon.ico
+WARNING 2025-02-19 06:12:11,076 log 1016973 140388421596864 Not Found: /favicon.ico
+WARNING 2025-02-19 06:15:20,061 log 1016973 140388421596864 Not Found: /favicon.ico
+WARNING 2025-02-19 06:16:13,174 log 1016973 140388421596864 Not Found: /favicon.ico
+WARNING 2025-02-19 06:17:42,158 log 1016973 140388421596864 Not Found: /favicon.ico
