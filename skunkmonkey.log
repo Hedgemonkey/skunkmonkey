@@ -1206,3 +1206,485 @@ WARNING 2025-02-19 06:12:11,076 log 1016973 140388421596864 Not Found: /favicon.
 WARNING 2025-02-19 06:15:20,061 log 1016973 140388421596864 Not Found: /favicon.ico
 WARNING 2025-02-19 06:16:13,174 log 1016973 140388421596864 Not Found: /favicon.ico
 WARNING 2025-02-19 06:17:42,158 log 1016973 140388421596864 Not Found: /favicon.ico
+DEBUG 2025-02-19 06:30:59,770 Image 1016973 140388404811456 Importing BlpImagePlugin
+DEBUG 2025-02-19 06:30:59,772 Image 1016973 140388404811456 Importing BmpImagePlugin
+DEBUG 2025-02-19 06:30:59,772 Image 1016973 140388404811456 Importing BufrStubImagePlugin
+DEBUG 2025-02-19 06:30:59,773 Image 1016973 140388404811456 Importing CurImagePlugin
+DEBUG 2025-02-19 06:30:59,774 Image 1016973 140388404811456 Importing DcxImagePlugin
+DEBUG 2025-02-19 06:30:59,775 Image 1016973 140388404811456 Importing DdsImagePlugin
+DEBUG 2025-02-19 06:30:59,782 Image 1016973 140388404811456 Importing EpsImagePlugin
+DEBUG 2025-02-19 06:30:59,784 Image 1016973 140388404811456 Importing FitsImagePlugin
+DEBUG 2025-02-19 06:30:59,785 Image 1016973 140388404811456 Importing FliImagePlugin
+DEBUG 2025-02-19 06:30:59,786 Image 1016973 140388404811456 Importing FpxImagePlugin
+DEBUG 2025-02-19 06:30:59,787 Image 1016973 140388404811456 Image: failed to import FpxImagePlugin: No module named 'olefile'
+DEBUG 2025-02-19 06:30:59,787 Image 1016973 140388404811456 Importing FtexImagePlugin
+DEBUG 2025-02-19 06:30:59,788 Image 1016973 140388404811456 Importing GbrImagePlugin
+DEBUG 2025-02-19 06:30:59,789 Image 1016973 140388404811456 Importing GifImagePlugin
+DEBUG 2025-02-19 06:30:59,789 Image 1016973 140388404811456 Importing GribStubImagePlugin
+DEBUG 2025-02-19 06:30:59,790 Image 1016973 140388404811456 Importing Hdf5StubImagePlugin
+DEBUG 2025-02-19 06:30:59,790 Image 1016973 140388404811456 Importing IcnsImagePlugin
+DEBUG 2025-02-19 06:30:59,793 Image 1016973 140388404811456 Importing IcoImagePlugin
+DEBUG 2025-02-19 06:30:59,795 Image 1016973 140388404811456 Importing ImImagePlugin
+DEBUG 2025-02-19 06:30:59,796 Image 1016973 140388404811456 Importing ImtImagePlugin
+DEBUG 2025-02-19 06:30:59,797 Image 1016973 140388404811456 Importing IptcImagePlugin
+DEBUG 2025-02-19 06:30:59,798 Image 1016973 140388404811456 Importing JpegImagePlugin
+DEBUG 2025-02-19 06:30:59,799 Image 1016973 140388404811456 Importing Jpeg2KImagePlugin
+DEBUG 2025-02-19 06:30:59,799 Image 1016973 140388404811456 Importing McIdasImagePlugin
+DEBUG 2025-02-19 06:30:59,801 Image 1016973 140388404811456 Importing MicImagePlugin
+DEBUG 2025-02-19 06:30:59,802 Image 1016973 140388404811456 Image: failed to import MicImagePlugin: No module named 'olefile'
+DEBUG 2025-02-19 06:30:59,802 Image 1016973 140388404811456 Importing MpegImagePlugin
+DEBUG 2025-02-19 06:30:59,803 Image 1016973 140388404811456 Importing MpoImagePlugin
+DEBUG 2025-02-19 06:30:59,809 Image 1016973 140388404811456 Importing MspImagePlugin
+DEBUG 2025-02-19 06:30:59,810 Image 1016973 140388404811456 Importing PalmImagePlugin
+DEBUG 2025-02-19 06:30:59,815 Image 1016973 140388404811456 Importing PcdImagePlugin
+DEBUG 2025-02-19 06:30:59,816 Image 1016973 140388404811456 Importing PcxImagePlugin
+DEBUG 2025-02-19 06:30:59,816 Image 1016973 140388404811456 Importing PdfImagePlugin
+DEBUG 2025-02-19 06:30:59,827 Image 1016973 140388404811456 Importing PixarImagePlugin
+DEBUG 2025-02-19 06:30:59,828 Image 1016973 140388404811456 Importing PngImagePlugin
+DEBUG 2025-02-19 06:30:59,828 Image 1016973 140388404811456 Importing PpmImagePlugin
+DEBUG 2025-02-19 06:30:59,829 Image 1016973 140388404811456 Importing PsdImagePlugin
+DEBUG 2025-02-19 06:30:59,830 Image 1016973 140388404811456 Importing QoiImagePlugin
+DEBUG 2025-02-19 06:30:59,831 Image 1016973 140388404811456 Importing SgiImagePlugin
+DEBUG 2025-02-19 06:30:59,831 Image 1016973 140388404811456 Importing SpiderImagePlugin
+DEBUG 2025-02-19 06:30:59,832 Image 1016973 140388404811456 Importing SunImagePlugin
+DEBUG 2025-02-19 06:30:59,833 Image 1016973 140388404811456 Importing TgaImagePlugin
+DEBUG 2025-02-19 06:30:59,834 Image 1016973 140388404811456 Importing TiffImagePlugin
+DEBUG 2025-02-19 06:30:59,834 Image 1016973 140388404811456 Importing WebPImagePlugin
+DEBUG 2025-02-19 06:30:59,841 Image 1016973 140388404811456 Importing WmfImagePlugin
+DEBUG 2025-02-19 06:30:59,842 Image 1016973 140388404811456 Importing XbmImagePlugin
+DEBUG 2025-02-19 06:30:59,843 Image 1016973 140388404811456 Importing XpmImagePlugin
+DEBUG 2025-02-19 06:30:59,844 Image 1016973 140388404811456 Importing XVThumbImagePlugin
+DEBUG 2025-02-19 06:31:42,970 TiffImagePlugin 1016973 140388421596864 tag: Orientation (274) - type: short (3) - value: b'\x00\x01'
+ERROR 2025-02-19 06:32:03,189 log 1016973 140388404811456 Internal Server Error: /products/staff/product/add/
+Traceback (most recent call last):
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 204, in _get_response
+    self.check_response(response, callback)
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 332, in check_response
+    raise ValueError(
+ValueError: The view products.views.product_add didn't return an HttpResponse object. It returned None instead.
+ERROR 2025-02-19 06:33:48,020 log 1016973 140388421596864 Internal Server Error: /products/staff/product/add/
+Traceback (most recent call last):
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 204, in _get_response
+    self.check_response(response, callback)
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 332, in check_response
+    raise ValueError(
+ValueError: The view products.views.product_add didn't return an HttpResponse object. It returned None instead.
+DEBUG 2025-02-19 06:35:55,508 PngImagePlugin 1016973 140388421596864 STREAM b'IHDR' 16 13
+DEBUG 2025-02-19 06:35:55,508 PngImagePlugin 1016973 140388421596864 STREAM b'iTXt' 41 2566
+DEBUG 2025-02-19 06:35:55,508 PngImagePlugin 1016973 140388421596864 STREAM b'IDAT' 2619 65536
+WARNING 2025-02-19 06:37:43,002 log 1016973 140388404811456 Not Found: /favicon.ico
+WARNING 2025-02-19 06:37:50,766 log 1016973 140388421596864 Not Found: /favicon.ico
+WARNING 2025-02-19 06:37:56,940 log 1016973 140388404811456 Not Found: /favicon.ico
+ERROR 2025-02-19 06:40:06,694 log 1016973 140388404811456 Internal Server Error: /products/staff/management/
+Traceback (most recent call last):
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/contrib/auth/decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py", line 92, in product_management
+    return render(request, template_name, {'products': products, 'categories': categories})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader_tags.py", line 199, in render
+    template = context.template.engine.select_template(template_name)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/engine.py", line 208, in select_template
+    return self.get_template(template_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loaders/cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loaders/base.py", line 28, in get_template
+    return Template(
+           ^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/defaulttags.py", line 962, in do_if
+    nodelist = parser.parse(("elif", "else", "endif"))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/defaulttags.py", line 862, in do_for
+    nodelist_loop = parser.parse(
+                    ^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 489, in parse
+    raise self.error(token, e)
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 487, in parse
+    filter_expression = self.compile_filter(token.contents)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 605, in compile_filter
+    return FilterExpression(token, self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 678, in __init__
+    raise TemplateSyntaxError(
+django.template.exceptions.TemplateSyntaxError: Could not parse some characters: category.products.values_list| 'name', flat=True||json_script:'product-names'
+WARNING 2025-02-19 06:40:07,651 log 1016973 140388404811456 Not Found: /favicon.ico
+ERROR 2025-02-19 06:45:35,005 log 1016973 140388421596864 Internal Server Error: /products/staff/management/
+Traceback (most recent call last):
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/contrib/auth/decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py", line 92, in product_management
+    return render(request, template_name, {'products': products, 'categories': categories})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader_tags.py", line 199, in render
+    template = context.template.engine.select_template(template_name)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/engine.py", line 208, in select_template
+    return self.get_template(template_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loaders/cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loaders/base.py", line 28, in get_template
+    return Template(
+           ^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/defaulttags.py", line 962, in do_if
+    nodelist = parser.parse(("elif", "else", "endif"))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/defaulttags.py", line 862, in do_for
+    nodelist_loop = parser.parse(
+                    ^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 489, in parse
+    raise self.error(token, e)
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 487, in parse
+    filter_expression = self.compile_filter(token.contents)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 605, in compile_filter
+    return FilterExpression(token, self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 678, in __init__
+    raise TemplateSyntaxError(
+django.template.exceptions.TemplateSyntaxError: Could not parse some characters: category.products.values_list| 'name', flat=True||tojson
+WARNING 2025-02-19 06:45:35,532 log 1016973 140388421596864 Not Found: /favicon.ico
+ERROR 2025-02-19 06:45:45,328 log 1016973 140388421596864 Internal Server Error: /products/staff/management/
+Traceback (most recent call last):
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/contrib/auth/decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py", line 92, in product_management
+    return render(request, template_name, {'products': products, 'categories': categories})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loader_tags.py", line 199, in render
+    template = context.template.engine.select_template(template_name)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/engine.py", line 208, in select_template
+    return self.get_template(template_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loaders/cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/loaders/base.py", line 28, in get_template
+    return Template(
+           ^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/defaulttags.py", line 962, in do_if
+    nodelist = parser.parse(("elif", "else", "endif"))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/defaulttags.py", line 862, in do_for
+    nodelist_loop = parser.parse(
+                    ^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 489, in parse
+    raise self.error(token, e)
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 487, in parse
+    filter_expression = self.compile_filter(token.contents)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 605, in compile_filter
+    return FilterExpression(token, self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/skunkmonkey/public_html/devel/skunkmonkey/.venv/lib/python3.11/site-packages/django/template/base.py", line 678, in __init__
+    raise TemplateSyntaxError(
+django.template.exceptions.TemplateSyntaxError: Could not parse some characters: category.products.values_list| 'name', flat=True| | tojson
+WARNING 2025-02-19 06:45:45,863 log 1016973 140388421596864 Not Found: /favicon.ico
+INFO 2025-02-19 06:51:15,688 autoreload 1016973 140388501868608 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-19 06:51:16,452 autoreload 1022747 140672918605888 Watching for file changes with StatReloader
+INFO 2025-02-19 06:51:17,556 wsgi 1022747 140672849934016 WSGI script has been executed.
+INFO 2025-02-19 06:51:48,546 autoreload 1022747 140672918605888 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-19 06:51:48,917 autoreload 1022817 140336368877632 Watching for file changes with StatReloader
+INFO 2025-02-19 06:51:49,122 wsgi 1022817 140336301078208 WSGI script has been executed.
+INFO 2025-02-19 06:51:50,155 autoreload 1022817 140336368877632 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-19 06:51:50,464 autoreload 1022830 140590199730240 Watching for file changes with StatReloader
+INFO 2025-02-19 06:51:50,668 wsgi 1022830 140590131967680 WSGI script has been executed.
+INFO 2025-02-19 06:51:57,886 autoreload 1022830 140590199730240 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-19 06:51:58,258 autoreload 1022893 139787690238016 Watching for file changes with StatReloader
+INFO 2025-02-19 06:51:58,486 wsgi 1022893 139787623200448 WSGI script has been executed.
+INFO 2025-02-19 06:52:00,523 autoreload 1022893 139787690238016 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-19 06:52:00,924 autoreload 1022964 139973399375936 Watching for file changes with StatReloader
+INFO 2025-02-19 06:52:01,127 wsgi 1022964 139973332301504 WSGI script has been executed.
+WARNING 2025-02-19 06:52:24,082 log 1022964 139973248415424 Not Found: /favicon.ico
+WARNING 2025-02-19 06:53:22,909 log 1022964 139973231630016 Not Found: /favicon.ico
+WARNING 2025-02-19 06:54:05,293 log 1022964 139973248415424 Not Found: /favicon.ico
+WARNING 2025-02-19 06:56:30,117 log 1022964 139973248415424 Not Found: /favicon.ico
+INFO 2025-02-19 06:59:44,439 autoreload 1022964 139973399375936 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-19 06:59:44,795 autoreload 1024512 140031022272576 Watching for file changes with StatReloader
+INFO 2025-02-19 06:59:45,108 wsgi 1024512 140030953649856 WSGI script has been executed.
+INFO 2025-02-19 06:59:46,120 autoreload 1024512 140031022272576 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-19 06:59:46,445 autoreload 1024536 140459629244480 Watching for file changes with StatReloader
+INFO 2025-02-19 06:59:46,661 wsgi 1024536 140459561187008 WSGI script has been executed.
+INFO 2025-02-19 06:59:53,866 autoreload 1024536 140459629244480 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-19 06:59:54,202 autoreload 1024602 140021277544512 Watching for file changes with StatReloader
+INFO 2025-02-19 06:59:54,391 wsgi 1024602 140021210281664 WSGI script has been executed.
+INFO 2025-02-19 07:00:04,679 autoreload 1024602 140021277544512 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-19 07:00:05,159 autoreload 1024709 139689626275904 Watching for file changes with StatReloader
+INFO 2025-02-19 07:00:05,354 wsgi 1024709 139689558275776 WSGI script has been executed.
+INFO 2025-02-19 07:00:06,362 autoreload 1024709 139689626275904 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-19 07:00:06,755 autoreload 1024737 140687083511872 Watching for file changes with StatReloader
+INFO 2025-02-19 07:00:06,922 wsgi 1024737 140687016195776 WSGI script has been executed.
+INFO 2025-02-19 07:00:16,182 autoreload 1024737 140687083511872 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-19 07:00:16,563 autoreload 1024798 140051050377280 Watching for file changes with StatReloader
+INFO 2025-02-19 07:00:16,776 wsgi 1024798 140050983548608 WSGI script has been executed.
+INFO 2025-02-19 07:00:17,793 autoreload 1024798 140051050377280 /home/skunkmonkey/public_html/devel/skunkmonkey/products/views.py changed, reloading.
+INFO 2025-02-19 07:00:18,163 autoreload 1024824 139862833868864 Watching for file changes with StatReloader
+INFO 2025-02-19 07:00:18,352 wsgi 1024824 139862766253760 WSGI script has been executed.
+INFO 2025-02-19 07:03:27,235 autoreload 1024824 139862833868864 /home/skunkmonkey/public_html/devel/skunkmonkey/products/urls.py changed, reloading.
+INFO 2025-02-19 07:03:27,692 autoreload 1025874 140631805747264 Watching for file changes with StatReloader
+INFO 2025-02-19 07:03:27,907 wsgi 1025874 140631737366208 WSGI script has been executed.
+INFO 2025-02-19 07:03:36,084 autoreload 1025874 140631805747264 /home/skunkmonkey/public_html/devel/skunkmonkey/products/urls.py changed, reloading.
+INFO 2025-02-19 07:03:36,466 autoreload 1025932 140404658888768 Watching for file changes with StatReloader
+INFO 2025-02-19 07:03:36,671 wsgi 1025932 140404590638784 WSGI script has been executed.
+WARNING 2025-02-19 07:05:14,183 log 1025932 140404578055872 Not Found: /favicon.ico
+WARNING 2025-02-19 07:06:16,547 log 1025932 140404494169792 Not Found: /favicon.ico
+WARNING 2025-02-19 07:12:18,853 log 1025932 140404494169792 Not Found: /favicon.ico
+WARNING 2025-02-19 07:12:48,473 log 1025932 140404477384384 Not Found: /favicon.ico
+WARNING 2025-02-19 07:15:02,168 log 1025932 140404477384384 Not Found: /favicon.ico
+WARNING 2025-02-19 07:16:27,578 log 1025932 140404485777088 Not Found: /favicon.ico
+WARNING 2025-02-19 07:17:21,894 log 1025932 140404477384384 Not Found: /favicon.ico
+WARNING 2025-02-19 07:17:56,815 log 1025932 140404468991680 Not Found: /favicon.ico
+INFO 2025-02-19 07:21:17,996 autoreload 1031771 140360576688192 Watching for file changes with StatReloader
+INFO 2025-02-19 07:21:18,383 wsgi 1031771 140360508503744 WSGI script has been executed.

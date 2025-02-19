@@ -137,6 +137,13 @@ def get_category_cards(request):
 
     except Exception as e: # Broad exception handling for debugging, replace with specific errors for production
         return JsonResponse({'error': str(e)}, status=500)
+    
+@staff_member_required
+def get_category_products(request, category_slug):
+    category = get_object_or_404(Category, slug=category_slug)
+    product_names = list(category.products.values_list('name', flat=True)) 
+    return JsonResponse({'products': product_names})
+
 
 @staff_member_required
 def category_update(request, slug):

@@ -76,15 +76,54 @@ $(function () {
         event.preventDefault();
         const categoryUrl = $(this).attr('href');
         const categoryName = $(this).data('category-name');
+        const productCount = $(this).data('product-count'); // Get product count
+        const categorySlug = $(this).data('category-slug');
 
-        Swal.fire({
-            // ... your Swal confirmation options
-        }).then((result) => {
-            if (result.isConfirmed) {
-                deleteCategory(categoryUrl, categoryName);
+        makeAjaxRequest(`/products/staff/category/${categorySlug}/products/`, 'GET', {},
+            (response) => { // Success callback
+                const productCount = response.products.length;
+                const productsToDelete = response.products;
+
+                let productListHTML = '';
+                if (productCount > 0) {
+                    productsToDelete.forEach(product => {
+                        productListHTML += `${product}<br>`; // Just add a line break after each product
+                    });
+                }
+                Swal.fire({
+                    title: `Delete ${categoryName}?`,
+                    html: `Are you sure you want to delete this category? This action cannot be undone.<br>
+                           ${productCount} product(s) will also be deleted. ${productListHTML ? '<br>' + productListHTML : ''}`, // Display product count and list
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!',
+                    input: 'checkbox',                           // Add checkbox
+                    inputValue: 0,
+                    inputPlaceholder: 'I understand the consequences', // Checkbox label
+                    inputValidator: (result) => {
+                        if (!result) {
+                            return 'You need to confirm by checking the box.' // Checkbox validation message
+                        }
+                    },
+                    preConfirm: () => {    // Keep preConfirm for potential future server-side validation, etc.
+                        return new Promise((resolve) => { resolve() });
+                    },
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        deleteCategory(categoryUrl, categoryName);
+                        fetchCategoryCards();
+                    }
+                });
+
+            }, (error) => { // Error callback – IMPORTANT!
+                displaySwalError(error, "Failed to get products for category."); // Handle errors
             }
-        });
+        );
+
     }
+
 
     // --- Product Functions ---
     function fetchProductCards() {
@@ -99,10 +138,10 @@ $(function () {
 
     function deleteProduct(productSlug) {
         const deleteUrl = `${productBaseUrl}${productSlug}/delete/`;
-    
+
         try {  // Use try...catch to handle potential errors *before* the AJAX call
             const ajaxPromise = makeAjaxRequest(deleteUrl, 'POST');
-             // *** Essential Check: Make sure makeAjaxRequest returns a Promise ***
+            // *** Essential Check: Make sure makeAjaxRequest returns a Promise ***
             if (!ajaxPromise || typeof ajaxPromise.then !== 'function') { //Simplified Check
                 return Promise.reject("Invalid AJAX response"); // Correct: Immediately reject if not a Promise
             }
@@ -116,7 +155,7 @@ $(function () {
         } catch (error) {  // Catch errors before/during makeAjaxRequest
             return Promise.reject(error); // Return rejected promise for consistent error handling
         }
-    
+
     }
 
     function handleProductDelete(productSlug, productName) {
@@ -146,7 +185,7 @@ $(function () {
 
                         return Promise.reject(error); //Crucially return a rejected promise so Swal stays open
                     });
-            } 
+            }
         }).then((result) => { //Log Swal result if it was confirmed.
             if (result.isConfirmed) { //Only display success message and fetch cards if the product was deleted and the Swal wasn't dismissed in some other way.
                 displaySuccess(result.value?.message || `Product ${productName} deleted successfully.`);
@@ -211,9 +250,9 @@ $(function () {
     // --- Event Handlers ---
     $('#category-list').on('click', '.delete-category', handleCategoryDelete);
     $(document).on('click', '.edit-category', handleCategoryEdit);
-    $(document).on('click', '.delete-product', function(event) { 
+    $(document).on('click', '.delete-product', function (event) {
         event.preventDefault();
-        handleProductDelete($(this).data('product-slug'), $(this).data('product-name')); 
+        handleProductDelete($(this).data('product-slug'), $(this).data('product-name'));
     });
 
 

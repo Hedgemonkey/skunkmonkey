@@ -6,10 +6,20 @@
                 <div class="card h-100">  <!-- Ensures cards have equal height in a row -->
                     <div class="card-body px-0 pb-0 pt-2">
                         <h4 class="card-title text-center">{{ category.name }}</h5>
-                            
+
                         <div class="btn-group w-100 rounded-top-0"> 
-                            <a href="{% url 'products:category_update' category.slug %}" class="btn btn-sm btn-secondary edit-category w-50 rounded-top-0" data-category-slug="{{ category.slug }}">Edit</a>
-                            <a href="{% url 'products:category_delete' category.slug %}" class="btn btn-sm btn-danger delete-category w-50 rounded-top-0" data-category-name="{{ category.name }}">Delete</a>
+                            <a href="{% url 'products:category_update' category.slug %}"
+                                class="btn btn-sm btn-secondary edit-category w-50 rounded-top-0" 
+                                data-category-slug="{{ category.slug }}">
+                                Edit
+                            </a>
+                            <a href="{% url 'products:category_delete' category.slug %}"
+                                class="btn btn-sm btn-danger delete-category w-50 rounded-top-0"
+                                data-category-name="{{ category.name }}"
+                                data-product-count="{{ category.products.count }}"
+                                data-category-slug="{{ category.slug }}">
+                                Delete
+                            </a>
                         </div>
                     </div>
                 </div>

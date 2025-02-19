@@ -8,6 +8,7 @@ urlpatterns = [
     path('staff/category/<slug:slug>/update/', views.category_update, name='category_update'),
     path('staff/category/<slug:slug>/delete/', views.category_delete, name='category_delete'),
     path('staff/get_category_cards/', views.get_category_cards, name='get_category_cards'),
+    path('staff/category/<slug:category_slug>/products/', views.get_category_products, name='get_category_products'),
     path('staff/category/add/', views.category_add, name='category_add'), 
     path('staff/product/add-form/', views.product_add_form, name='product_add_form'),
     path('staff/product/add/', views.product_add, name='product_add'),
