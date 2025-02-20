@@ -1,0 +1,5 @@
+{# products/templates/products/manage/product_update_form.html #}
+<form id="product-update-form" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+</form>

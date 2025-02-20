@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.template.loader import render_to_string
 from .models import Product, Category
-from .forms import ProductForm
+from .forms import ProductForm, CategoryForm
 import logging
 
 logger = logging.getLogger(__name__)
@@ -32,12 +32,15 @@ class ProductCreateView(CreateView):
 class ProductUpdateView(UpdateView):
     model = Product
     form_class = ProductForm
-    template_name = 'products/staff/product_form.html'
+    template_name = 'products/manage/product_update_form.html'
     success_url = reverse_lazy('products:product_management')
 
     def form_valid(self, form):
-        messages.info(self.request, 'Product updated successfully!')
-        return super().form_valid(form)
+        self.object = form.save()
+        return JsonResponse({'success': True, 'message': 'Product updated successfully.'})
+
+    def form_invalid(self, form):
+        return JsonResponse({'success': False, 'errors': form.errors})
 
 
 @staff_member_required
@@ -160,9 +163,9 @@ def category_update(request, slug):
             if form.is_valid():
                 try:
                     form.save()
-                    return JsonResponse({'message': 'Category updated successfully!'})
+                    return JsonResponse({'success': True, 'message': 'Category updated successfully!'})
                 except IntegrityError:  # Handle duplicate names
-                    return JsonResponse({'error': 'A category with this name already exists.'}, status=400)
+                    return JsonResponse({'success': False, 'error': 'A category with this name already exists.'}, status=400)
             else:  # Handle invalid form
                 # Re-render the form with errors.
                 context = {'form': form, 'category': category}

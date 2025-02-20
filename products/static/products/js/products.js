@@ -54,13 +54,8 @@ $(function () {
 
     function handleCategoryEdit(event) {
         event.preventDefault();
-        const updateUrl = $(this).attr('href');
-
-        makeAjaxRequest(updateUrl, 'GET', {}, (response) => {
-            showEditCategorySwal(response, updateUrl);
-        }, () => {
-            displayError("Failed to load edit form.");
-        });
+        const url = $(this).attr('href');
+        loadEditForm(url, 'Edit Category', '#category-update-form', fetchCategoryCards);
     }
 
     function handleCategoryAdd(categoryName) {
@@ -76,7 +71,6 @@ $(function () {
         event.preventDefault();
         const categoryUrl = $(this).attr('href');
         const categoryName = $(this).data('category-name');
-        const productCount = $(this).data('product-count'); // Get product count
         const categorySlug = $(this).data('category-slug');
 
         makeAjaxRequest(`/products/staff/category/${categorySlug}/products/`, 'GET', {},
@@ -194,6 +188,13 @@ $(function () {
         });
     }
 
+    function handleProductEdit(event) {
+        event.preventDefault();
+        const url = $(this).attr('href');
+        console.log(`Loading product edit form from URL: ${url}`);
+        loadEditForm(url, 'Edit Product', '#product-update-form', fetchProductCards);
+    }
+
     // --- Shared UI Functions ---
     function displaySuccess(message) {
         Swal.fire({
@@ -224,32 +225,45 @@ $(function () {
         return Promise.reject();
     }
 
-    function showEditCategorySwal(response, updateUrl) {
-        Swal.fire({
-            title: 'Edit Category',
-            html: response.html, // Assuming your view sends the HTML in response.html
-            showCancelButton: true,
-            preConfirm: () => {
-                return makeAjaxRequest(
-                    updateUrl,
-                    'POST',
-                    $('#category-update-form').serialize(),
-                    () => {
-                        fetchCategoryCards();
-                    },
-                    (error) => displaySwalError(error, "Category update failed.")
-                );
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                displaySuccess("Category updated successfully.");
-            }
+    function loadEditForm(url, title, formSelector, fetchFunction) {
+        console.log(`Making AJAX request to load form: ${url}`);
+        makeAjaxRequest(url, 'GET', {}, (response) => {
+            console.log('Form HTML received:', response.html);
+            Swal.fire({
+                title: title,
+                html: response.html,
+                showCancelButton: true,
+                confirmButtonText: `Update ${title.split(' ')[1]}`,
+                preConfirm: () => {
+                    Swal.showLoading();
+                    const formData = $(formSelector).serialize();
+                    console.log('Submitting form data:', formData);
+                    return makeAjaxRequest(url, 'POST', formData, (response) => {
+                        if (response.success) {
+                            console.log('Update successful:', response.message);
+                            Swal.fire('Success', response.message, 'success').then(() => {
+                                fetchFunction(); // Refresh the list after successful update
+                            });
+                        } else {
+                            console.error('Update failed:', response.errors);
+                            Swal.showValidationMessage('Failed to update.');
+                        }
+                    }, (error) => {
+                        console.error('Error during form submission:', error);
+                        Swal.showValidationMessage('Failed to update.');
+                    });
+                }
+            });
+        }, (error) => {
+            console.error('Error loading form:', error);
+            Swal.fire('Error', `Failed to load ${title.toLowerCase()} form.`, 'error');
         });
     }
 
     // --- Event Handlers ---
     $('#category-list').on('click', '.delete-category', handleCategoryDelete);
     $(document).on('click', '.edit-category', handleCategoryEdit);
+    $(document).on('click', '.edit-product', handleProductEdit);
     $(document).on('click', '.delete-product', function (event) {
         event.preventDefault();
         handleProductDelete($(this).data('product-slug'), $(this).data('product-name'));
