@@ -36,7 +36,12 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 DEBUG = 'DEVELOPMENT' in os.environ
 
 
-ALLOWED_HOSTS = ['skunk.devel.hedge-monkey.co.uk', 'localhost', '127.0.0.1', '*' ]
+ALLOWED_HOSTS = [
+                    'skunk.devel.hedge-monkey.co.uk',
+                    'localhost',
+                    '127.0.0.1',
+                    '*'
+                    ]
 
 
 # Application definition
@@ -186,7 +191,6 @@ if 'EMAIL_HOST' in os.environ:
     DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL') # From environemnt variable
 
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -202,19 +206,19 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Media files
-MEDIA_URL = 'media/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-if os.environ.get("SKUNKMONKEY_VPS_HOST", False):
-   STATIC_URL = 'http://devel.skunkmonkey.co.uk/static/'
-   MEDIA_URL = 'http://devel.skunkmonkey.co.uk/media/'
+#if os.environ.get("SKUNKMONKEY_VPS_HOST", False):
+#   STATIC_URL = 'http://devel.skunkmonkey.co.uk/static/'
+#   MEDIA_URL = 'http://devel.skunkmonkey.co.uk/media/'
 
 
 
@@ -268,7 +272,7 @@ if 'DEVELOPMENT' in os.environ:
         },
     }
 else:
-        LOGGING = {
+    LOGGING = {
         'version': 1,
         'disable_existing_loggers': False,  # Important: keep this False
         'formatters': {
@@ -305,7 +309,5 @@ else:
                 'level': 'INFO',
                 'propagate': False,  # Prevents these messages from being logged twice
             }
-
-
         },
     }
