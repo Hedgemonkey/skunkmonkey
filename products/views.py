@@ -50,6 +50,7 @@ def product_add_form(request):
         return render(request, 'products/manage/product_form_partial.html', {'form': form})
     return HttpResponseBadRequest("Invalid request.")  # Return a 400 error for non-AJAX
 
+
 @staff_member_required
 def product_add(request):
     if request.method == 'POST':
@@ -69,6 +70,23 @@ def product_add(request):
         else:
             return HttpResponseBadRequest("Invalid request.")  # Correct handling for non-AJAX GET
 
+
+@staff_member_required
+def product_update(request, slug):
+    product = get_object_or_404(Product, slug=slug)
+    if request.method == 'POST':
+        form = ProductForm(request.POST, instance=product)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True, 'message': 'Product updated successfully.'})
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors})
+    else:
+        form = ProductForm(instance=product)
+        html = render_to_string('products/manage/product_update_form.html', {'form': form}, request=request)
+        return JsonResponse({'html': html})
+    
+
 @staff_member_required
 def product_delete(request, slug):  # New view for handling AJAX product deletion
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -82,6 +100,7 @@ def product_delete(request, slug):  # New view for handling AJAX product deletio
             return JsonResponse({'error': 'Invalid request method.'}, status=405)  # Method Not Allowed
     return HttpResponseBadRequest('Invalid request.')
 
+
 @staff_member_required
 def product_management(request):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -93,6 +112,7 @@ def product_management(request):
     categories = Category.objects.all()
 
     return render(request, template_name, {'products': products, 'categories': categories})
+
 
 @staff_member_required
 def category_add(request):
@@ -128,6 +148,7 @@ def category_add(request):
     logger.warning("add_category view called outside of AJAX or not by staff")
     return redirect('products:product_management')
 
+
 @staff_member_required
 def get_category_cards(request):
     categories = Category.objects.all()  # Get all categories
@@ -140,7 +161,8 @@ def get_category_cards(request):
 
     except Exception as e: # Broad exception handling for debugging, replace with specific errors for production
         return JsonResponse({'error': str(e)}, status=500)
-    
+
+
 @staff_member_required
 def get_category_products(request, category_slug):
     category = get_object_or_404(Category, slug=category_slug)
@@ -172,6 +194,7 @@ def category_update(request, slug):
                 html = render_to_string('products/manage/category_update_form.html', context, request=request)
                 return JsonResponse({'html': html, 'error': form.errors}, status=400)
     return HttpResponseBadRequest("Invalid request.")
+
 
 @staff_member_required
 def category_delete(request, slug):
