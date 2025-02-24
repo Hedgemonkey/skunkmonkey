@@ -4,6 +4,7 @@ from django.conf import settings
 from django.urls import reverse
 from django.utils.text import slugify
 
+
 class Category(models.Model):
     name = models.CharField(max_length=255, unique=True)
     slug = models.SlugField(max_length=255, unique=True, blank=True) # Allow blank for auto-generation

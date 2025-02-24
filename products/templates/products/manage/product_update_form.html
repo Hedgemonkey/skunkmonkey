@@ -1,5 +1,12 @@
 {# products/templates/products/manage/product_update_form.html #}
-<form id="product-update-form" method="post">
+{% load crispy_forms_tags %}
+{% load static %}
+
+
+<form id="product-update-form" method="post" enctype="multipart/form-data" action="{% url 'products:product_update' product.slug %}">
     {% csrf_token %}
-    {{ form.as_p }}
+    {% crispy form %}
+    <div>
+        {{ form.image }}
+    </div>
 </form>

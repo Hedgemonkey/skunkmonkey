@@ -66,7 +66,6 @@
         </div>
     </div>
 </div>
-
 {% endblock %}
 
 {% block postloadjs %}
@@ -74,4 +73,5 @@
     const getCategoryCardsUrl = "{% url 'products:get_category_cards' %}"; // Render the URL
 </script>
 <script src="{% static 'bundles/js/products/products.js' %}"></script>
+<script src="{% static 'bundles/js/cropper_init.js' %}"></script>
 {% endblock %}

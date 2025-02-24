@@ -1,12 +1,16 @@
 {
   "dependencies": {
-    "sweetalert2": "^11.6.13"
+    "cropperjs": "^1.6.2",
+    "sweetalert2": "^11.17.2"
   },
   "name": "skunkmonkey",
   "description": "SkunkMonkey is a **Django-based e-commerce platform** designed for seamless browsing, product discovery, secure transactions, and efficient order management. Built using **Agile methodologies**, the project follows a structured **KanBan** approach to ensure a smooth and organized development workflow.",
   "version": "1.0.0",
   "main": "main.js",
   "devDependencies": {
+    "@babel/core": "^7.26.9",
+    "@babel/preset-env": "^7.26.9",
+    "babel-loader": "^9.2.1",
     "bootstrap": "^5.3.3",
     "css-loader": "^7.1.2",
     "jquery": "^3.7.1",

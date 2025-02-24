@@ -1,5 +1,7 @@
-import Swal from 'sweetalert2';
 import $ from 'jquery';
+import 'bootstrap';
+import Cropper from 'cropperjs';
+import Swal from 'sweetalert2';
 
 $(function () {
     const csrfToken = getCookie('csrftoken'); // Get CSRF token once on load
@@ -32,6 +34,134 @@ $(function () {
             error: errorCallback
         });
     }
+
+    // --- Product Image Cropping ---
+    function showProductForm(url) {
+        console.log(`Making AJAX request to load form: ${url}`);
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(response) {
+                Swal.fire({
+                    title: 'Edit Product',
+                    html: response.html,
+                    showCancelButton: true,
+                    confirmButtonText: 'Save',
+                    allowOutsideClick: false, // Prevent closing on outside click
+                    allowEscapeKey: false,    // Prevent closing on escape key
+                    preConfirm: () => {
+                        const form = $('#product-update-form')[0];
+                        const formData = new FormData(form);
+                        return $.ajax({
+                            url: form.action,
+                            type: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                        }).then(response => {
+                            if (!response.success) {
+                                Swal.showValidationMessage('Failed to update product.');
+                                return Promise.reject(response.errors);
+                            }
+                            return response;
+                        }).catch(error => {
+                            Swal.showValidationMessage('An error occurred while saving the product.');
+                            return Promise.reject(error);
+                        });
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetchProductCards(); // Refresh product cards
+                    }
+                });
+    
+                // Call the image handling function after the form is loaded
+                handleImageInputChange();
+            }
+        });
+    }
+    
+    function handleImageInputChange() {
+        const imageInput = $('#image-input');
+        const uploadButton = $('#upload-button');
+        let cropper;
+    
+        imageInput.on('change', function(event) {
+            const files = event.target.files;
+            if (files && files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#cropper-image').attr('src', e.target.result);
+                    $('#cropperModal').modal('show'); // Use jQuery to show the modal
+    
+                    $('#cropperModal').on('shown.bs.modal', function () {
+                        const imageElement = document.getElementById('cropper-image');
+                        cropper = new Cropper(imageElement, {
+                            aspectRatio: 1,
+                            viewMode: 1,
+                            autoCropArea: 0.8,
+                            movable: true,
+                            zoomable: true,
+                            rotatable: true,
+                            scalable: true,
+                            responsive: true,
+                            background: false,
+                            guides: false,
+                            highlight: false,
+                            cropBoxResizable: true,
+                            cropBoxMovable: true,
+                        });
+    
+                        // Bind the slider to the rotate method
+                        $('#rotate-slider').on('input', function() {
+                            const angle = parseFloat($(this).val());
+                            cropper.rotateTo(angle);
+                        });
+                    });
+                };
+                reader.readAsDataURL(files[0]);
+            }
+        });
+    
+        $('#crop-button').on('click', function() {
+            if (cropper) {
+                const canvas = cropper.getCroppedCanvas();
+                canvas.toBlob(function(blob) {
+                    const url = URL.createObjectURL(blob);
+                    $('#image-preview').attr('src', url); // Update the image preview in the main form
+                    $('#cropperModal').modal('hide'); // Use jQuery to hide the modal
+                    uploadButton.prop('disabled', false);
+    
+                    // Replace the original image file in the form data with the cropped image blob
+                    const formData = new FormData($('#product-form')[0]);
+                    formData.set('image', blob, 'cropped-image.png');
+    
+                    // Update the form submission logic to use the updated formData
+                    uploadButton.on('click', function() {
+                        $.ajax({
+                            url: $('#product-update-form').attr('action'),
+                            type: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function(response) {
+                                if (response.success) {
+                                    Swal.fire('Success', 'Product updated successfully!', 'success');
+                                    fetchProductCards(); // Refresh product cards
+                                } else {
+                                    Swal.fire('Error', 'Failed to update product.', 'error');
+                                }
+                            },
+                            error: function() {
+                                Swal.fire('Error', 'An error occurred while updating the product.', 'error');
+                            }
+                        });
+                    });
+                });
+            }
+        });
+    }
+
 
     // --- Category Functions ---
     function fetchCategoryCards() {
@@ -90,6 +220,8 @@ $(function () {
                            ${productCount} product(s) will also be deleted. ${productListHTML ? '<br>' + productListHTML : ''}`, // Display product count and list
                     icon: 'warning',
                     showCancelButton: true,
+                    allowOutsideClick: false, // Prevent closing on outside click
+                    allowEscapeKey: false,    // Prevent closing on escape key
                     confirmButtonColor: '#d33',
                     cancelButtonColor: '#3085d6',
                     confirmButtonText: 'Yes, delete it!',
@@ -158,6 +290,8 @@ $(function () {
             text: "Are you sure you want to delete this product? This action cannot be undone.",
             icon: 'warning',
             showCancelButton: true,
+            allowOutsideClick: false, // Prevent closing on outside click
+            allowEscapeKey: false,    // Prevent closing on escape key
             confirmButtonColor: '#d33',
             cancelButtonColor: '#3085d6',
             confirmButtonText: 'Yes, delete it!',
@@ -190,9 +324,8 @@ $(function () {
 
     function handleProductEdit(event) {
         event.preventDefault();
-        const url = $(this).attr('href');
-        console.log(`Loading product edit form from URL: ${url}`);
-        loadEditForm(url, 'Edit Product', '#product-update-form', fetchProductCards);
+        const url = $(this).data('url');
+        showProductForm(url);
     }
 
     // --- Shared UI Functions ---
@@ -203,6 +336,8 @@ $(function () {
             toast: true,
             position: 'top-end',
             showConfirmButton: false,
+            allowOutsideClick: false, // Prevent closing on outside click
+            allowEscapeKey: false,    // Prevent closing on escape key
             timer: 10000,
             timerProgressBar: true,
         });
@@ -215,6 +350,8 @@ $(function () {
             toast: true,
             position: 'top-end',
             showConfirmButton: false,
+            allowOutsideClick: false, // Prevent closing on outside click
+            allowEscapeKey: false,    // Prevent closing on escape key
             timer: 10000,
             timerProgressBar: true,
         });
@@ -233,6 +370,8 @@ $(function () {
                 title: title,
                 html: response.html,
                 showCancelButton: true,
+                allowOutsideClick: false, // Prevent closing on outside click
+                allowEscapeKey: false,    // Prevent closing on escape key
                 confirmButtonText: `Update ${title.split(' ')[1]}`,
                 preConfirm: () => {
                     Swal.showLoading();
@@ -278,6 +417,8 @@ $(function () {
                 title: 'Add New Product',
                 html: htmlContent,
                 showCancelButton: true,
+                allowOutsideClick: false, // Prevent closing on outside click
+                allowEscapeKey: false,    // Prevent closing on escape key
                 confirmButtonText: 'Add Product',
                 preConfirm: () => { // Correct placement for form submission
                     Swal.showLoading(); // Show loading state
@@ -301,10 +442,7 @@ $(function () {
                     );
                 }
             }).then((result) => {  //  *** Now outerSwal is guaranteed to be initialized ***
-
                 console.log("add Product Swal closed. Result:", result);
-
-
                 // All interaction with outerSwal MUST be inside this .then block:
                 if (result.isConfirmed) {
                     displaySuccess(result.value?.message || "Product added successfully."); // Display success message here
@@ -318,15 +456,6 @@ $(function () {
         }, (error) => {
             displaySwalError(error, "Failed to add product.");
         });
-
-        function refreshaddProductForm() {
-            makeAjaxRequest(addFormUrl, 'GET', {}, (updatedFormHTML) => {
-                outerSwal.update({ html: updatedFormHTML });
-            }, () => {
-                displayError("Failed to refresh product form.");
-                outerSwal.close(); // Close the outer Swal on failure to refresh the form.
-            });
-        }
     });
     addCategoryButtonStandalone.on('click', () => {
         Swal.fire({

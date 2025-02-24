@@ -183,12 +183,12 @@ ACCOUNT_FORMS = {
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 if 'EMAIL_HOST' in os.environ:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = os.environ.get('EMAIL_HOST') # From environemnt variable
+    EMAIL_HOST = os.environ.get('EMAIL_HOST')  # From environemnt variable
     EMAIL_PORT = os.environ.get('EMAIL_PORT', 587)  # Or the correct port for TLS/SSL
     EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', True)  # Or EMAIL_USE_SSL = True if your server uses SSL
-    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER') # From environemnt variable
-    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD') # From environemnt variable
-    DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL') # From environemnt variable
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')  # From environemnt variable
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')  # From environemnt variable
+    DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')  # From environemnt variable
 
 
 # Internationalization
@@ -216,11 +216,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-#if os.environ.get("SKUNKMONKEY_VPS_HOST", False):
+# if os.environ.get("SKUNKMONKEY_VPS_HOST", False):
 #   STATIC_URL = 'http://devel.skunkmonkey.co.uk/static/'
 #   MEDIA_URL = 'http://devel.skunkmonkey.co.uk/media/'
-
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

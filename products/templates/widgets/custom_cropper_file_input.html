@@ -1,0 +1,21 @@
+<div class="custom-file-input">
+  <div class="custom-cropper-widget">
+      <div style="display: flex; align-items: center; gap: 10px;">
+          <input type="{{ widget.type }}" name="{{ widget.name }}" id="{{ widget.attrs.id }}" class="{{ widget.attrs.class }}" {% if widget.attrs.accept %}accept="{{ widget.attrs.accept }}"{% endif %}>
+          {% if not widget.required %}
+              <input type="checkbox" name="{{ widget.checkbox_name }}" id="{{ widget.checkbox_id }}" class="clearable-file-input" {% if widget.attrs.checked %}checked{% endif %}>
+              <label for="{{ widget.checkbox_id }}">{{ widget.clear_checkbox_label }}</label>
+          {% endif %}
+      </div>
+      {% if widget.image_url %}
+          <div style="margin-top: 10px;">
+              <img src="{{ widget.image_url }}" alt="{{ widget.image_name }}" style="max-width: 100px; max-height: 100px;">
+              <p>{{ widget.image_name }}</p>
+          </div>
+      {% endif %}
+  </div>
+</div>
+
+<!-- Include Bootstrap Modal for Image Cropping -->
+{% include 'includes/image_cropper_modal.html' %}
+<!-- End of custom_cropper_file_input.html -->

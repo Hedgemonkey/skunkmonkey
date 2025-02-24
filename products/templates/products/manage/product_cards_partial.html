@@ -18,9 +18,10 @@
                     <strong>Active:</strong> {% if product.is_active %}Yes{% else %}No{% endif %}
                 </p>
                 <div class="btn-group w-100 rounded-top-0" role="group">
-                    <a href="{% url 'products:product_update' product.slug %}"
+                    <a 
                         class="btn btn-sm btn-secondary edit-product w-50 rounded-top-0"
                         data-product-slug="{{ product.slug }}"
+                        data-url="{% url 'products:product_update' product.slug %}"
                         data-product-name="{{ product.name }}">Edit</a>
                     <a href="{% url 'products:product_delete' product.slug %}"
                         class="btn btn-sm btn-danger delete-product w-50 rounded-top-0"

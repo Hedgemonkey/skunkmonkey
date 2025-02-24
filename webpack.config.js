@@ -1,39 +1,52 @@
 // webpack.config.js
 const path = require('path');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin'); 
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   entry: {
-    'js/main': './static/js/main.js',      // Site-wide JS (including SweetAlert2)
-    'js/user_manage': './static/js/users/manage.js',  // User management JS (excluding SweetAlert2)
-    'js/messages': './static/js/messages.js', // Entry for message handling
-    styles: './static/css/main.css',  // Your main CSS entry point
+    'js/main': './static/js/main.js',
+    'js/user_manage': './static/js/users/manage.js',
+    'js/messages': './static/js/messages.js',
+    styles: './static/css/main.css',
     'js/products/products': './products/static/products/js/products.js',
+    'js/cropper_init': './products/static/js/cropper_init.js',
   },
   output: {
-    path: path.resolve(__dirname, 'static/bundles/'),  // Output path - MUST BE ABSOLUTE
+    path: path.resolve(__dirname, 'static/bundles/'),
     filename: '[name].js',
     publicPath: '/static/bundles/',
   },
   module: {
-        rules: [
-            {
-                test: /\.css$/i,
-                use: [MiniCssExtractPlugin.loader, "css-loader"],
-            },
-        ],
-    },
-  plugins: [    //  <--- Move the plugin here
+    rules: [
+      {
+        test: /\.css$/i,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+      },
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env'],
+          },
+        },
+      },
+    ],
+  },
+  plugins: [
     new MiniCssExtractPlugin({
-      filename: 'css/styles.css',
+      filename: 'css/[name].css',
     }),
   ],
-
   optimization: {
-    splitChunks: {   // This is the KEY change
-      cacheGroups: {
-
-      },
+    splitChunks: {
+      cacheGroups: {},
     },
   },
+  resolve: {
+    alias: {
+      jquery: "jquery/src/jquery"
+    }
+  }
 };

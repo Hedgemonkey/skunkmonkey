@@ -75,16 +75,16 @@ def product_add(request):
 def product_update(request, slug):
     product = get_object_or_404(Product, slug=slug)
     if request.method == 'POST':
-        form = ProductForm(request.POST, instance=product)
+        form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
             form.save()
-            return JsonResponse({'success': True, 'message': 'Product updated successfully.'})
+            return JsonResponse({'success': True, 'message': 'Product updated successfully.'}, status=200)
         else:
-            return JsonResponse({'success': False, 'errors': form.errors})
+            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
     else:
         form = ProductForm(instance=product)
-        html = render_to_string('products/manage/product_update_form.html', {'form': form}, request=request)
-        return JsonResponse({'html': html})
+        html = render_to_string('products/manage/product_update_form.html', {'form': form, 'product': product}, request=request)
+        return JsonResponse({'html': html}, status=200)
     
 
 @staff_member_required
