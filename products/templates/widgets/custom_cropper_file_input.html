@@ -1,23 +1,46 @@
 <div class="custom-file-input">
-  <div class="custom-cropper-widget">
-      <div style="display: flex; align-items: center; gap: 10px;">
-          <input type="{{ widget.type }}" name="{{ widget.name }}" id="{{ widget.attrs.id }}" class="{{ widget.attrs.class }}" {% if widget.attrs.accept %}accept="{{ widget.attrs.accept }}"{% endif %}>
-          {% if not widget.required %}
-              <input type="checkbox" name="{{ widget.checkbox_name }}" id="{{ widget.checkbox_id }}" class="clearable-file-input" {% if widget.attrs.checked %}checked{% endif %}>
-              <label for="{{ widget.checkbox_id }}">{{ widget.clear_checkbox_label }}</label>
-          {% endif %}
-      </div>
-      {% if widget.image_url %}
-          <div style="margin-top: 10px;">
-              <img src="{{ widget.image_url }}" id="preview-image" alt="{{ widget.image_name }}" style="max-width: 100px; max-height: 100px;">
-              <p id="image-name"">{{ widget.image_name }}</p>
-          </div>
-      {% endif %}
-      <!-- Hidden input for cropped image data -->
-      <input type="hidden" id="cropped-image-data" name="cropped_image_data" />
-  </div>
+    <div class="custom-cropper-widget">
+        <div class="input-container">
+            <input type="{{ widget.type }}" 
+                   name="{{ widget.name }}" 
+                   id="{{ widget.attrs.id }}"
+                   class="{{ widget.attrs.class }}" 
+                   {% if widget.attrs.accept %}
+                   accept="{{ widget.attrs.accept }}"
+                   {% endif %}>
+            
+            <div class="clear-checkbox-container">
+                {% if not widget.required %}
+                    <input type="checkbox" 
+                           name="{{ widget.checkbox_name }}" 
+                           id="{{ widget.checkbox_id }}"
+                           class="clearable-file-input" 
+                           {% if widget.attrs.checked %}checked{% endif %}>
+                    <label for="{{ widget.checkbox_id }}">
+                        {{ widget.clear_checkbox_label }}
+                    </label>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="image-preview-container">
+            {% if widget.image_url %}
+                <img src="{{ widget.image_url }}" 
+                     id="preview-image" 
+                     alt="{{ widget.image_name }}"
+                     class="preview-image">
+                <p id="image-name" class="image-name">{{ widget.image_name }}</p>
+            {% else %}
+                <img src="" 
+                     id="preview-image" 
+                     alt="Preview" 
+                     class="preview-image hidden">
+                <p id="image-name" class="image-name hidden">{{ widget.image_name }}</p>
+            {% endif %}
+        </div>
+
+        <input type="hidden" id="cropped-image-data" name="cropped_image_data">
+    </div>
 </div>
 
-<!-- Include Bootstrap Modal for Image Cropping -->
 {% include 'includes/image_cropper_modal.html' %}
-<!-- End of custom_cropper_file_input.html -->

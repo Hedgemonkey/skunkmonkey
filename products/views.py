@@ -56,22 +56,31 @@ def product_add_form(request):
 @staff_member_required
 def product_add(request):
     if request.method == 'POST':
-        form = ProductForm(request.POST, request.FILES) # Corrected form handling
+        form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save() # Save the product (image will be saved as well)
+            product = form.save(commit=False)
+
+            # Handle the cropped image data
+            cropped_image_data = request.POST.get('cropped_image_data')
+            if cropped_image_data:
+                format, imgstr = cropped_image_data.split(';base64,')
+                ext = format.split('/')[-1]
+                image_data = ContentFile(base64.b64decode(imgstr), name=f'cropped_image.{ext}')
+                product.image.save(f'cropped_image.{ext}', image_data, save=False)
+
+            product.save()
 
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                return JsonResponse({'message': 'Product added successfully.'}, status=201) # Correct AJAX response
+                return JsonResponse({'message': 'Product added successfully.'}, status=201)
 
-            return redirect(reverse('products:product_management')) # Redirect after success
+            return redirect(reverse('products:product_management'))
 
-    else:  # GET request - handle it correctly and return the form
+    else:
         form = ProductForm()
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return render(request, 'products/manage/product_form_partial.html', {'form': form}) # Corrected template name
+            return render(request, 'products/manage/product_form_partial.html', {'form': form})
         else:
-            return HttpResponseBadRequest("Invalid request.")  # Correct handling for non-AJAX GET
-
+            return HttpResponseBadRequest("Invalid request.")
 
 @staff_member_required
 def product_update(request, slug):

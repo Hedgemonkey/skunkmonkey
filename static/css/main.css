@@ -12813,33 +12813,25 @@ a.list-group-item-danger.fw-bold {
   /* Dark gray text */
 }
 
-/* Cropper modal styles */
+/* Cropper Modal Styles */
 #cropperModal {
   z-index: 2000;
-  /* Ensure modal is above Swal and form */
   display: none;
-  /* Hide initially */
   position: fixed;
-  /* Ensure it overlays correctly */
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  /* Centering magic */
   width: 90%;
   height: 90%;
   max-width: 800px;
   background-color: rgba(0, 0, 0, 0.5);
-  /* Optional: Add a semi-transparent background */
 }
 
 #cropperModal .modal-dialog {
   max-width: 100%;
   box-sizing: border-box;
-  /* Include padding and border in width */
   margin: 0;
-  /* Remove default margin */
   height: fit-content;
-  /* Ensure height is not fixed */
 }
 
 #cropperModal .modal-content {
@@ -12859,19 +12851,14 @@ a.list-group-item-danger.fw-bold {
   align-items: center;
   justify-content: center;
   max-height: calc(100% - 120px);
-  /* Adjust based on header and footer height */
 }
 
 #cropper-image {
   max-width: 40%;
-  /* Maintain aspect ratio */
   object-fit: contain;
-  /* Ensure image fits within container */
   max-height: 40%;
-  /* Maintain aspect ratio */
   display: block;
   margin: 0 auto;
-  /* Center the image */
 }
 
 #cropperModal .modal-footer {
@@ -12884,6 +12871,75 @@ a.list-group-item-danger.fw-bold {
   gap: 10px;
 }
 
+#cropperModal .action-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+  width: 100%;
+}
+
+#cropperModal .action-buttons button {
+  flex: 1 1 50%;
+  padding: 5px;
+  font-size: 16px;
+}
+
+/* Custom File Input Styles */
+.custom-file-input {
+  width: 100%;
+}
+
+.custom-cropper-widget {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Clear Checkbox Styles */
+.clear-checkbox-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.clear-checkbox-container label {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.clearable-file-input {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.clearable-file-input + label {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 5px;
+}
+
+/* Image Preview Styles */
+.image-preview-container {
+  margin-top: 10px;
+}
+
+.preview-image {
+  max-width: 100px;
+  max-height: 100px;
+}
+
+.image-name {
+  margin: 5px 0;
+}
+
+/* Cropper Controls */
 .cropper-controls {
   display: flex;
   flex-direction: row;
@@ -12943,7 +12999,8 @@ a.list-group-item-danger.fw-bold {
   gap: 5px;
 }
 
-.zoom-controls, .rotate-controls {
+.zoom-controls,
+.rotate-controls {
   display: flex;
   gap: 5px;
 }
@@ -12970,41 +13027,19 @@ a.list-group-item-danger.fw-bold {
   width: 100%;
 }
 
+/* Utility Classes */
+.hidden {
+  display: none;
+}
+
+/* Media Queries */
 @media (max-width: 600px) {
   .cropper-controls {
       flex-direction: column;
   }
   .rotate-slider-container {
-      order: 1; /* Move slider below the controls */
+      order: 1;
+      width: 100%;
+      margin-top: 20px;
   }
-}
-
-#cropperModal .action-buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 5px;
-  width: 100%;
-}
-
-#cropperModal .action-buttons button {
-  flex: 1 1 50%;
-  padding: 5px;
-  font-size: 16px;
-}
-
-/* Cropper widget template CSS */
-.custom-cropper-widget {
-  display: flex;
-  flex-direction: column;
-}
-
-.clearable-file-input {
-  display: inline-block;
-  vertical-align: middle;
-}
-
-.clearable-file-input+label {
-  display: inline-block;
-  vertical-align: middle;
-  margin-left: 5px;
 }
