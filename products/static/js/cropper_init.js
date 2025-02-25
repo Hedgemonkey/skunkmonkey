@@ -20,6 +20,9 @@ $(function () {
 
                 $('#cropperModal').on('shown.bs.modal', function () {
                     const imageElement = document.getElementById('cropper-image');
+                    if (cropper) {
+                        cropper.destroy();
+                    }
                     cropper = new Cropper(imageElement, {
                         aspectRatio: 1,
                         viewMode: 1,
@@ -34,6 +37,39 @@ $(function () {
                         highlight: false,
                         cropBoxResizable: true,
                         cropBoxMovable: true,
+                    });
+
+                    // Control buttons
+                    $('#zoom-in').on('click', function() {
+                        cropper.zoom(0.1);
+                    });
+
+                    $('#zoom-out').on('click', function() {
+                        cropper.zoom(-0.1);
+                    });
+
+                    $('#move-left').on('click', function() {
+                        cropper.move(-10, 0);
+                    });
+
+                    $('#move-right').on('click', function() {
+                        cropper.move(10, 0);
+                    });
+
+                    $('#move-up').on('click', function() {
+                        cropper.move(0, -10);
+                    });
+
+                    $('#move-down').on('click', function() {
+                        cropper.move(0, 10);
+                    });
+
+                    $('#rotate-left').on('click', function() {
+                        cropper.rotate(-45);
+                    });
+
+                    $('#rotate-right').on('click', function() {
+                        cropper.rotate(45);
                     });
 
                     $('#rotate-slider').on('input', function() {
@@ -78,6 +114,10 @@ $(function () {
             $('.swal2-actions').css({
                 visibility: 'visible'
             })
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+            }
         });
     });
 });

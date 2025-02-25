@@ -1,32 +1,46 @@
 <!-- Bootstrap Modal for Image Cropping -->
 <div class="modal fade" id="cropperModal" tabindex="-1" aria-labelledby="cropperModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="cropperModalLabel">Crop Image</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cropperModalLabel">Crop Image</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <img id="cropper-image">
+      </div>
+      <div class="modal-footer">
+        <div class="cropper-controls">
+          <div class="control-row">
+            <div class="d-pad">
+              <button type="button" class="btn btn-secondary" id="move-up"><i class="fas fa-arrow-up"></i></button>
+              <button type="button" class="btn btn-secondary" id="move-left"><i class="fas fa-arrow-left"></i></button>
+              <button type="button" class="btn btn-secondary" id="move-right"><i
+                  class="fas fa-arrow-right"></i></button>
+              <button type="button" class="btn btn-secondary" id="move-down"><i class="fas fa-arrow-down"></i></button>
             </div>
-            <div class="modal-body">
-                <img id="cropper-image">
+            <div class="rotate-slider-container">
+              <label for="rotate-slider" class="form-label mt-2">Free Rotate</label>
+              <input type="range" class="form-range" id="rotate-slider" min="-180" max="180" value="0">
             </div>
-            <div class="modal-footer">
-                <div class="cropper-controls">
-                    <button type="button" class="btn btn-secondary" id="zoom-in">Zoom In</button>
-                    <button type="button" class="btn btn-secondary" id="zoom-out">Zoom Out</button>
-                    <button type="button" class="btn btn-secondary" id="move-left">Move Left</button>
-                    <button type="button" class="btn btn-secondary" id="move-right">Move Right</button>
-                    <button type="button" class="btn btn-secondary" id="move-up">Move Up</button>
-                    <button type="button" class="btn btn-secondary" id="move-down">Move Down</button>
-                    <button type="button" class="btn btn-secondary" id="rotate-left">Rotate Left</button>
-                    <button type="button" class="btn btn-secondary" id="rotate-right">Rotate Right</button>
-                    <label for="rotate-slider" class="form-label mt-2">Free Rotate</label>
-                    <input type="range" class="form-range" id="rotate-slider" min="-180" max="180" value="0">
-                </div>
-                <div class="action-buttons mt-3">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="crop-image-button">Save</button>
-                </div>
+            <div class="zoom-rotate-controls">
+              <div class="zoom-controls">
+                <button type="button" class="btn btn-secondary" id="zoom-in"><i class="fas fa-search-plus"></i></button>
+                <button type="button" class="btn btn-secondary" id="zoom-out"><i
+                    class="fas fa-search-minus"></i></button>
+              </div>
+              <div class="rotate-controls">
+                <button type="button" class="btn btn-secondary" id="rotate-left"><i class="fas fa-undo"></i></button>
+                <button type="button" class="btn btn-secondary" id="rotate-right"><i class="fas fa-redo"></i></button>
+              </div>
             </div>
+          </div>
         </div>
+        <div class="action-buttons mt-3">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="crop-image-button">Save</button>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
