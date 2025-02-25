@@ -8,6 +8,8 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.template.loader import render_to_string
+from django.core.files.base import ContentFile
+import base64
 from .models import Product, Category
 from .forms import ProductForm, CategoryForm
 import logging
@@ -77,7 +79,18 @@ def product_update(request, slug):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
-            form.save()
+            # Handle the cropped image data
+            cropped_image_data = request.POST.get('cropped_image_data')
+            if cropped_image_data:
+                # Decode the base64 image data
+                format, imgstr = cropped_image_data.split(';base64,')
+                ext = format.split('/')[-1]
+                image_data = ContentFile(base64.b64decode(imgstr), name=f'cropped_image.{ext}')
+
+                # Save the image to the product instance
+                product.image.save(f'cropped_image.{ext}', image_data, save=False)
+
+            product.save()
             return JsonResponse({'success': True, 'message': 'Product updated successfully.'}, status=200)
         else:
             return JsonResponse({'success': False, 'errors': form.errors}, status=400)

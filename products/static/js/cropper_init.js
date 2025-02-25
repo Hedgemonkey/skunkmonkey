@@ -49,13 +49,23 @@ $(function () {
             if (cropper) {
                 const canvas = cropper.getCroppedCanvas();
                 canvas.toBlob(function(blob) {
-                    const formData = new FormData();
-                    formData.set('image', blob, 'cropped-image.png');
-                    // Handle form submission with cropped image
+                    const url = URL.createObjectURL(blob);
+                    $('#cropped-image-display').attr('src', url);
+
+                    // Update the hidden input field with the data URL
+                    const reader = new FileReader();
+                    reader.onloadend = function() {
+                        $('#cropped-image-data').val(reader.result);
+                        // Update the preview image and image name
+                        $('#preview-image').attr('src', reader.result);
+                        $('#image-name').text('cropped-image.png');
+                    };
+                    reader.readAsDataURL(blob);
                 });
+
                 $('#cropperModal').css({
                     'display': 'none',
-                    'z-index': 1040 // Reset to initial state
+                    'z-index': 1040
                 }).modal('hide');
             }
         });

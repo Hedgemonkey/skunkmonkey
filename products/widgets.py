@@ -31,5 +31,5 @@ class CustomCropperFileInput(ClearableFileInput):
         print(f"Rendering widget for {name}")
         attrs = attrs or {}
         attrs['class'] = 'form-control'
-        attrs['id'] = f'id_{name}'  # Crucial ID for JavaScript
+        attrs['id'] = 'image-file'  # Crucial ID for JavaScript
         return super().render(name, value, attrs, renderer)

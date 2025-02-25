@@ -9,10 +9,12 @@
       </div>
       {% if widget.image_url %}
           <div style="margin-top: 10px;">
-              <img src="{{ widget.image_url }}" alt="{{ widget.image_name }}" style="max-width: 100px; max-height: 100px;">
-              <p>{{ widget.image_name }}</p>
+              <img src="{{ widget.image_url }}" id="preview-image" alt="{{ widget.image_name }}" style="max-width: 100px; max-height: 100px;">
+              <p id="image-name"">{{ widget.image_name }}</p>
           </div>
       {% endif %}
+      <!-- Hidden input for cropped image data -->
+      <input type="hidden" id="cropped-image-data" name="cropped_image_data" />
   </div>
 </div>
 
