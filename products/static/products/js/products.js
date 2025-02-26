@@ -15,9 +15,10 @@ $(function () {
 
     const ELEMENTS = {
         addProductButton: $('#product-add-button'),
-        productListContainer: $('#product-list'),
+        productListContainer: $('#product-cards-container'),
         addCategoryButton: $('#category-add-button'),
-        categoryList: $('#category-list')
+        categoryList: $('#category-list'),
+        categoryListContainer: $('#category-cards-container')
     };
 
     // Utility Functions
@@ -83,11 +84,18 @@ $(function () {
     const productManager = {
         fetchCards: function() {
             makeAjaxRequest(URLS.productManagement, 'GET', {}, 
-                (data) => {
-                    ELEMENTS.productListContainer.html(data);
+                (response) => {
+                    if (response.html) {
+                        ELEMENTS.productListContainer.html(response.html);
+                    } else {
+                        ELEMENTS.productListContainer.html(response);
+                    }
                     this.attachDeleteListeners();
                 }, 
-                () => notifications.displayError("Failed to refresh product list.")
+                (error) => {
+                    console.error('Error fetching products:', error);
+                    notifications.displayError("Failed to refresh product list.");
+                }
             );
         },
 
@@ -99,7 +107,7 @@ $(function () {
                 (response) => {
                     Swal.fire({
                         title: isEdit ? 'Edit Product' : 'Add New Product',
-                        html: isEdit ? response.html : response,  // Edit returns {html: ...}, Add returns direct HTML
+                        html: isEdit ? response.html : response,
                         showCancelButton: true,
                         confirmButtonText: isEdit ? 'Save' : 'Add Product',
                         allowOutsideClick: false,
@@ -108,35 +116,71 @@ $(function () {
                             Swal.showLoading();
                             const form = $(isEdit ? '#product-update-form' : '#product-form')[0];
                             const formData = new FormData(form);
-                            
                             return makeAjaxRequest(
                                 form.action,
                                 'POST',
                                 formData,
                                 (response) => {
-                                    if (!response.success && isEdit) {
-                                        Swal.showValidationMessage('Failed to update product.');
+                                    if (!response.success) {
+                                        let errorMessage = '';
+                                        if (typeof response.errors === 'object') {
+                                            errorMessage = Object.entries(response.errors)
+                                                .map(([field, errors]) => {
+                                                    if (Array.isArray(errors)) {
+                                                        return `${field}: ${errors.join(', ')}`;
+                                                    }
+                                                    return `${field}: ${errors}`;
+                                                })
+                                                .join('\n');
+                                        } else {
+                                            errorMessage = response.errors;
+                                        }
+                                        Swal.hideLoading(); // Hide loading state
+                                        Swal.showValidationMessage(errorMessage);
                                         return Promise.reject(response.errors);
                                     }
                                     return response;
                                 },
                                 (error) => {
-                                    Swal.showValidationMessage('An error occurred while saving the product.');
+                                    console.error('Form submission error:', error);
+                                    Swal.hideLoading(); // Hide loading state
+                                    let errorMessage = 'An error occurred while saving the product.';
+                                    
+                                    if (error.responseJSON) {
+                                        if (typeof error.responseJSON.errors === 'object') {
+                                            errorMessage = Object.entries(error.responseJSON.errors)
+                                                .map(([field, errors]) => {
+                                                    if (Array.isArray(errors)) {
+                                                        return `${field}: ${errors.join(', ')}`;
+                                                    }
+                                                    return `${field}: ${errors}`;
+                                                })
+                                                .join('\n');
+                                        } else if (error.responseJSON.errors) {
+                                            errorMessage = error.responseJSON.errors;
+                                        }
+                                    }
+                                    
+                                    Swal.showValidationMessage(errorMessage);
                                     return Promise.reject(error);
                                 },
-                                false,  // processData
-                                false   // contentType
+                                false,
+                                false
                             );
                         }
                     }).then((result) => {
                         if (result.isConfirmed) {
+                            this.fetchCards();
                             notifications.displaySuccess(result.value?.message || 
                                 (isEdit ? "Product updated successfully." : "Product added successfully."));
-                            this.fetchCards();
                         }
                         if (result.isDismissed && !isEdit) {
                             $("#product-form").remove();
                         }
+                    }).catch(error => {
+                        console.error('Form submission failed:', error);
+                        // Ensure loading state is hidden on any error
+                        Swal.hideLoading();
                     });
                 },
                 (error) => {
@@ -200,97 +244,156 @@ $(function () {
     };
 
     // Category Management Functions
+const categoryManager = {
+    fetchCards: function() {
+        makeAjaxRequest(
+            URLS.getCategoryCards, 
+            'GET', 
+            {}, 
+            (response) => {
+                if (response.html) {
+                    $('#category-cards-container').html(response.html);
+                } else {
+                    $('#category-cards-container').html(response);
+                }
+            }, 
+            (error) => {
+                console.error('Error fetching categories:', error); // Debug log
+                notifications.displayError("Failed to load category cards.");
+            }
+        );
+    },
 
-    const categoryManager = {
-        
-        fetchCards: function() {
-            makeAjaxRequest(URLS.getCategoryCards, 'GET', {}, 
-                (cardHTML) => {
-                    $('#category-cards-container').html(cardHTML);
-                }, 
-                () => notifications.displayError("Failed to load category cards.")
-            );
-        },
+    delete: function(categoryUrl, categoryName) {
+        makeAjaxRequest(categoryUrl, 'POST', {}, 
+            () => {
+                this.fetchCards();
+                notifications.displaySuccess(`Deleted ${categoryName}`);
+            }, 
+            () => notifications.displayError("Failed to delete category.")
+        );
+    },
 
-        delete: function(categoryUrl, categoryName) {
-            makeAjaxRequest(categoryUrl, 'POST', {}, 
-                () => {
-                    this.fetchCards();
-                    notifications.displaySuccess(`Deleted ${categoryName}`);
-                }, 
-                () => notifications.displayError("Failed to delete category.")
-            );
-        },
+    add: function(categoryName) {
+        makeAjaxRequest(URLS.addCategory, 'POST', { name: categoryName }, 
+            () => {
+                this.fetchCards();
+                notifications.displaySuccess("Category added successfully.");
+            }, 
+            (error) => notifications.displaySwalError(error, "Category creation failed.")
+        );
+    },
 
-        add: function(categoryName) {
-            makeAjaxRequest(URLS.addCategory, 'POST', { name: categoryName }, 
-                () => {
-                    this.fetchCards();
-                    notifications.displaySuccess("Category added successfully.");
-                }, 
-                (error) => notifications.displaySwalError(error, "Category creation failed.")
-            );
-        },
+    edit: function(url) {
+        makeAjaxRequest(url, 'GET', {}, 
+            (response) => {
+                Swal.fire({
+                    title: 'Edit Category',
+                    html: response.html,
+                    showCancelButton: true,
+                    confirmButtonText: 'Save',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    preConfirm: () => {
+                        const form = $('#category-update-form')[0];
+                        const formData = new FormData(form);
+                        return makeAjaxRequest(
+                            form.action,
+                            'POST',
+                            formData,
+                            (response) => {
+                                if (!response.success) {
+                                    Swal.showValidationMessage('Failed to update category.');
+                                    return Promise.reject(response.errors);
+                                }
+                                return response;
+                            },
+                            (error) => {
+                                Swal.showValidationMessage('An error occurred while saving the category.');
+                                return Promise.reject(error);
+                            },
+                            false,
+                            false
+                        );
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        notifications.displaySuccess(result.value?.message || "Category updated successfully.");
+                        this.fetchCards();
+                    }
+                });
+            },
+            (error) => notifications.displaySwalError(error, "Failed to load category form.")
+        );
+    },
 
-        handleDelete: function(event) {
-            event.preventDefault();
-            const categoryUrl = $(event.currentTarget).attr('href');
-            const categoryName = $(event.currentTarget).data('category-name');
-            const categorySlug = $(event.currentTarget).data('category-slug');
+    handleDelete: function(event) {
+        event.preventDefault();
+        const categoryUrl = $(event.currentTarget).attr('href');
+        const categoryName = $(event.currentTarget).data('category-name');
+        const categorySlug = $(event.currentTarget).data('category-slug');
 
-            makeAjaxRequest(`/products/staff/category/${categorySlug}/products/`, 'GET', {},
-                (response) => {
-                    const productCount = response.products.length;
-                    const productsToDelete = response.products;
-                    let productListHTML = productsToDelete.map(product => `${product}<br>`).join('');
+        makeAjaxRequest(`/products/staff/category/${categorySlug}/products/`, 'GET', {},
+            (response) => {
+                const productCount = response.products.length;
+                const productsToDelete = response.products;
+                let productListHTML = productsToDelete.map(product => `${product}<br>`).join('');
 
-                    Swal.fire({
-                        title: `Delete ${categoryName}?`,
-                        html: `Are you sure you want to delete this category? This action cannot be undone.<br>
-                               ${productCount} product(s) will also be deleted. ${productListHTML ? '<br>' + productListHTML : ''}`,
-                        icon: 'warning',
-                        showCancelButton: true,
-                        allowOutsideClick: false,
-                        allowEscapeKey: false,
-                        confirmButtonColor: '#d33',
-                        cancelButtonColor: '#3085d6',
-                        confirmButtonText: 'Yes, delete it!',
-                        input: 'checkbox',
-                        inputValue: 0,
-                        inputPlaceholder: 'I understand the consequences',
-                        inputValidator: (result) => !result && 'You need to confirm by checking the box.',
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            this.delete(categoryUrl, categoryName);
-                        }
-                    });
-                },
-                (error) => notifications.displaySwalError(error, "Failed to get products for category.")
-            );
-        }
-    };
+                Swal.fire({
+                    title: `Delete ${categoryName}?`,
+                    html: `Are you sure you want to delete this category? This action cannot be undone.<br>
+                           ${productCount} product(s) will also be deleted. ${productListHTML ? '<br>' + productListHTML : ''}`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!',
+                    input: 'checkbox',
+                    inputValue: 0,
+                    inputPlaceholder: 'I understand the consequences',
+                    inputValidator: (result) => !result && 'You need to confirm by checking the box.',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.delete(categoryUrl, categoryName);
+                    }
+                });
+            },
+            (error) => notifications.displaySwalError(error, "Failed to get products for category.")
+        );
+    }
+};
 
     // Event Listeners
     function initializeEventListeners() {
-        ELEMENTS.categoryList.on('click', '.delete-category', (e) => categoryManager.handleDelete(e));
-        $(document).on('click', '.edit-product', function(e) {
-            e.preventDefault();
-            productManager.showForm($(this).data('url'), true);
+    ELEMENTS.categoryList.on('click', '.delete-category', (e) => categoryManager.handleDelete(e));
+    $(document).on('click', '.edit-category', function(e) {
+        e.preventDefault();
+        categoryManager.edit($(this).attr('href'));
+    });
+    $(document).on('click', '.edit-product', function(e) {
+        e.preventDefault();
+        productManager.showForm($(this).data('url'), true);
+    });
+    
+    ELEMENTS.addProductButton.on('click', () => productManager.showForm(URLS.addProductForm, false));
+    
+    ELEMENTS.addCategoryButton.on('click', () => {
+        Swal.fire({
+            title: 'Add New Category',
+            input: 'text',
+            inputPlaceholder: 'Enter category name',
+            showCancelButton: true,
+            inputValidator: (value) => !value && 'Please enter a category name.',
+            preConfirm: (categoryName) => categoryManager.add(categoryName)
+        }).then((result) => {
+            if (result.isConfirmed) {
+                categoryManager.fetchCards();
+            }
         });
-        
-        ELEMENTS.addProductButton.on('click', () => productManager.showForm(URLS.addProductForm, false));
-        
-        ELEMENTS.addCategoryButton.on('click', () => {
-            Swal.fire({
-                title: 'Add New Category',
-                input: 'text',
-                inputPlaceholder: 'Enter category name',
-                showCancelButton: true,
-                inputValidator: (value) => !value && 'Please enter a category name.',
-                preConfirm: (categoryName) => categoryManager.add(categoryName)
-            });
-        });
-    }
+    });
+}
 
     // Initialize
     function initialize() {

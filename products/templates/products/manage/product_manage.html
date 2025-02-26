@@ -41,7 +41,9 @@
                     <div id="category-list" class="accordion-collapse collapse" aria-labelledby="categories-header"
                         data-bs-parent="#management-accordion">
                         <div class="accordion-body bg-light-grey">
+                            <div id="category-cards-container" data-category-cards-url="{% url 'products:get_category_cards' %}">
                             {% include 'products/manage/category_cards_partial.html' %}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -57,7 +59,9 @@
                     <div id="product-list-section" class="accordion-collapse collapse show"
                         aria-labelledby="products-header" data-bs-parent="#management-accordion">
                         <div class="accordion-body bg-light-grey">
+                            <div id="product-cards-container">
                             {% include 'products/manage/product_cards_partial.html' %}
+                        </div>
                         </div>
                     </div>
                 </div>
