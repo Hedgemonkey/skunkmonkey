@@ -1,5 +1,6 @@
 {# products/templates/products/manage/category_cards_partial.html #}
 {% if categories %}
+{% include 'includes/filter_controls.html' %}
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">  <!-- Bootstrap grid for responsive layout -->
         {% for category in categories %}
             <div class="col">  <!-- Occupies one column on all screen sizes -->

@@ -1,0 +1,40 @@
+<!-- products/templates/includes/filter_controls.html -->
+{% load static %}
+
+<div class="filter-controls mb-4">
+    <div class="row g-3">
+        <div class="col-12 col-md-4">
+            <div class="input-group">
+                <input type="text" 
+                       class="form-control filter-search" 
+                       placeholder="Search {{ item_type|default:'products' }}..."
+                       {% if search %}value="{{ search }}"{% endif %}>
+                <button class="btn btn-outline-secondary clear-search" type="button">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        {% if show_category_filter %}
+        <div class="col-12 col-md-4">
+            <select class="form-select filter-category" multiple data-placeholder="Select categories">
+                {% for category in categories %}
+                    <option value="{{ category.id }}"
+                            {% if category.id in selected_categories %}selected{% endif %}>
+                        {{ category.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endif %}
+        <div class="col-12 col-md-4">
+            <select class="form-select filter-sort">
+                {% for option in sort_options %}
+                    <option value="{{ option.value }}"
+                            {% if current_sort == option.value %}selected{% endif %}>
+                        {{ option.label }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+</div>

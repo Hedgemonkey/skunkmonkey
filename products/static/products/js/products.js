@@ -2,6 +2,8 @@ import $ from 'jquery';
 import 'bootstrap';
 import Swal from 'sweetalert2';
 import { ItemFilter } from '../../../static/js/filters.js';
+import { makeAjaxRequest } from '../../../../static/js/ajax_helper.js';
+
 
 
 $(function () {
@@ -10,6 +12,7 @@ $(function () {
         addProductForm: $('#product-add-button').data('product-add-form-url'),
         addProduct: $('#product-add-button').data('product-add-url'),
         productManagement: $('#product-add-button').data('product-management-url'),
+        getProductCards: $('#products-header .accordion-button').data('content-url'),
         getCategoryCards: $('#category-cards-container').data('category-cards-url'),
         addCategory: $('#category-add-button').data('category-add-url'),
         productBase: '/products/staff/product/'
@@ -23,38 +26,6 @@ $(function () {
         categoryListContainer: $('#category-cards-container'),
         productCardsContainer: $('#product-cards-container')
     };
-
-    // Utility Functions
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-
-    function makeAjaxRequest(url, type, data = {}, successCallback, errorCallback, processData = true, contentType = 'application/x-www-form-urlencoded; charset=UTF-8') {
-        return $.ajax({
-            url: url,
-            type: type,
-            headers: {
-                'X-CSRFToken': getCookie('csrftoken'),
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            data: data,
-            processData: processData,
-            contentType: contentType,
-            success: successCallback,
-            error: errorCallback
-        });
-    }
 
     // UI Notification Functions
     const notifications = {
@@ -240,7 +211,7 @@ $(function () {
         initializeFilters: function () {
             this.filter = new ItemFilter({
                 containerId: 'product-cards-container',
-                filterUrl: URLS.productManagement,
+                filterUrl: URLS.getProductCards,
                 onUpdate: () => {
                     this.attachDeleteListeners();
                 }

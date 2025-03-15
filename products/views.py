@@ -4,6 +4,7 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.utils.decorators import method_decorator
 from django.db.utils import IntegrityError
+from django.db.models import Q, Count
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponseBadRequest
@@ -57,17 +58,69 @@ def product_add_form(request):
 
 @staff_member_required
 def product_add(request):
+    """Handle product creation via AJAX."""
+    if request.method != 'POST':
+        return JsonResponse({'success': False,
+                            'errors': 'Invalid request method'},
+                            status=405)
+
+    form = ProductForm(request.POST, request.FILES)
+    if not form.is_valid():
+        return JsonResponse({'success': False, 'errors': form.errors},
+                            status=400)
+
+    try:
+        product = form.save(commit=False)
+        cropped_image_data = request.POST.get('cropped_image_data')
+        
+        if cropped_image_data:
+            try:
+                format, imgstr = cropped_image_data.split(';base64,')
+                ext = format.split('/')[-1]
+                image_data = ContentFile(base64.b64decode(imgstr),
+                                         name=f'cropped_image.{ext}')
+                product.image.save(f'cropped_image.{ext}',
+                                   image_data,
+                                   save=False)
+            except Exception as e:
+                logger.error(f"Image processing error: {str(e)}")
+                return JsonResponse({
+                    'success': False,
+                    'errors': f'Error processing image: {str(e)}'
+                }, status=400)
+
+        product.save()
+        return JsonResponse({
+            'success': True,
+            'message': 'Product added successfully.'
+        }, status=201)
+
+    except Exception as e:
+        logger.error(f"Product save error: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'errors': f'Error saving product: {str(e)}'
+        }, status=400)
+
+
+@staff_member_required
+def product_update(request, slug):
+    """Handle product updates via AJAX."""
+    product = get_object_or_404(Product, slug=slug)
+    
     if request.method == 'POST':
-        form = ProductForm(request.POST, request.FILES)
+        form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
-            product = form.save(commit=False)
             cropped_image_data = request.POST.get('cropped_image_data')
             if cropped_image_data:
                 try:
                     format, imgstr = cropped_image_data.split(';base64,')
                     ext = format.split('/')[-1]
-                    image_data = ContentFile(base64.b64decode(imgstr), name=f'cropped_image.{ext}')
-                    product.image.save(f'cropped_image.{ext}', image_data, save=False)
+                    image_data = ContentFile(base64.b64decode(imgstr),
+                                             name=f'cropped_image.{ext}')
+                    product.image.save(f'cropped_image.{ext}',
+                                       image_data,
+                                       save=False)
                 except Exception as e:
                     logger.error(f"Image processing error: {str(e)}")
                     return JsonResponse({
@@ -75,102 +128,90 @@ def product_add(request):
                         'errors': f'Error processing image: {str(e)}'
                     }, status=400)
 
-            try:
-                product.save()
-                return JsonResponse({
-                    'success': True,
-                    'message': 'Product added successfully.'
-                }, status=201)
-            except Exception as e:
-                logger.error(f"Product save error: {str(e)}")
-                return JsonResponse({
-                    'success': False,
-                    'errors': f'Error saving product: {str(e)}'
-                }, status=400)
-        else:
-            logger.error(f"Form validation errors: {form.errors}")
-            return JsonResponse({
-                'success': False,
-                'errors': form.errors
-            }, status=400)
-    
-    return JsonResponse({
-        'success': False,
-        'errors': 'Invalid request method'
-    }, status=405)
-
-
-@staff_member_required
-def product_update(request, slug):
-    product = get_object_or_404(Product, slug=slug)
-    if request.method == 'POST':
-        form = ProductForm(request.POST, request.FILES, instance=product)
-        if form.is_valid():
-            # Handle the cropped image data
-            cropped_image_data = request.POST.get('cropped_image_data')
-            if cropped_image_data:
-                # Decode the base64 image data
-                format, imgstr = cropped_image_data.split(';base64,')
-                ext = format.split('/')[-1]
-                image_data = ContentFile(base64.b64decode(imgstr), 
-                                         name=f'cropped_image.{ext}')
-
-                # Save the image to the product instance
-                product.image.save(f'cropped_image.{ext}',
-                                   image_data,
-                                   save=False)
-
             product.save()
-            return JsonResponse({'success': True,
-                                 'message': 'Product updated successfully.'},
-                                status=200)
-        else:
-            return JsonResponse({'success': False,
-                                 'errors': form.errors},
-                                status=400)
-    else:
-        form = ProductForm(instance=product)
-        html = render_to_string('products/manage/product_update_form.html',
-                                {'form': form,
-                                 'product': product
-                                 },
-                                request=request)
-        return JsonResponse({'html': html}, status=200)
+            return JsonResponse({
+                'success': True,
+                'message': 'Product updated successfully.'
+            }, status=200)
+        return JsonResponse({'success': False, 'errors': form.errors},
+                            status=400)
+
+    form = ProductForm(instance=product)
+    html = render_to_string(
+        'products/manage/product_update_form.html',
+        {'form': form, 'product': product},
+        request=request
+    )
+    return JsonResponse({'html': html})
     
 
 @staff_member_required
 def product_delete(request, slug):
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        if request.method == 'POST':
-            product = get_object_or_404(Product, slug=slug)
-            product_name = product.name 
-            product.delete()
+    """Handle product deletion via AJAX."""
+    if not request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return HttpResponseBadRequest("Invalid request.")
+        
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid request method.'}, status=405)
 
-            return JsonResponse({
-                'message': f'Product "{product_name}" deleted successfully.'},
-                status=200)
-        else:
-            return JsonResponse({
-                'error': 'Invalid request method.'},
-                status=405) 
-    return HttpResponseBadRequest('Invalid request.')
+    product = get_object_or_404(Product, slug=slug)
+    product_name = product.name
+    product.delete()
+    return JsonResponse({
+        'message': f'Product "{product_name}" deleted successfully.'})
 
 
 @staff_member_required
 def product_management(request):
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        template_name = 'products/manage/product_cards_partial.html'
-    else:
-        template_name = 'products/manage/product_manage.html'
+    """Main view for product management dashboard."""
+    search = request.GET.get('search', '').lower()
+    category = request.GET.get('category')
+    sort = request.GET.get('sort', 'name-asc')
 
     products = Product.objects.all()
-    categories = Category.objects.all()
 
-    return render(request,
-                  template_name,
-                  {'products': products,
-                   'categories': categories
-                   })
+    # Apply filters
+    if category:
+        products = products.filter(category_id=category)
+    if search:
+        products = products.filter(
+            Q(name__icontains=search) |
+            Q(description__icontains=search) |
+            Q(category__name__icontains=search)
+        )
+
+    # Apply sorting
+    sort_mapping = {
+        'name-asc': 'name',
+        'name-desc': '-name',
+        'category-asc': 'category__name',
+        'category-desc': '-category__name',
+        'newest': '-created_at',
+        'oldest': 'created_at',
+    }
+    products = products.order_by(sort_mapping.get(sort, 'name'))
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        html = render_to_string(
+            'products/manage/product_cards_partial.html',
+            {'products': products},
+            request=request
+        )
+        return JsonResponse({'html': html})
+
+    context = {
+        'products': products,
+        'categories': Category.objects.all(),
+        'sort_options': [
+            {'value': 'name-asc', 'label': 'Name (A-Z)'},
+            {'value': 'name-desc', 'label': 'Name (Z-A)'},
+            {'value': 'category-asc', 'label': 'Category (A-Z)'},
+            {'value': 'category-desc', 'label': 'Category (Z-A)'},
+            {'value': 'newest', 'label': 'Newest First'},
+            {'value': 'oldest', 'label': 'Oldest First'},
+        ]
+    }
+    return render(request, 'products/manage/product_manage.html', context)
 
 
 @staff_member_required
@@ -198,12 +239,139 @@ def category_add(request):
 
 
 @staff_member_required
-def get_category_cards(request):
+def get_product_cards(request):
+    """API endpoint for fetching product cards via AJAX."""
+    search = request.GET.get('search', '').lower()
+    category = request.GET.get('category')
+    sort = request.GET.get('sort', 'name-asc')
+    items_only = request.GET.get('items_only') == 'true'  # Check if we only want items
+
+    products = Product.objects.all()
+
+    # Apply filters
+    if category:
+        products = products.filter(category_id=category)
+    if search:
+        products = products.filter(
+            Q(name__icontains=search) |
+            Q(description__icontains=search) |
+            Q(category__name__icontains=search)
+        )
+
+    # Apply sorting
+    sort_mapping = {
+        'name-asc': 'name',
+        'name-desc': '-name',
+        'category-asc': 'category__name',
+        'category-desc': '-category__name',
+        'newest': '-created_at',
+        'oldest': 'created_at',
+    }
+    products = products.order_by(sort_mapping.get(sort, 'name'))
+
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        categories = Category.objects.all()
-        html = render_to_string('products/manage/category_cards_partial.html', 
-                                {'categories': categories})
-        return JsonResponse({'html': html}, status=200)
+        context = {
+            'products': products,
+            'search': search,  # Preserve search value
+            'current_sort': sort,  # Preserve sort value
+        }
+        
+        if items_only:
+            # Return only the product cards html without the filter controls and without the row wrapper
+            html = render_to_string(
+                'products/manage/product_cards_only.html',
+                context,
+                request=request
+            )
+        else:
+            # Return the full html including filter controls
+            context.update({
+                'categories': Category.objects.all(),
+                'sort_options': [
+                    {'value': 'name-asc', 'label': 'Name (A-Z)'},
+                    {'value': 'name-desc', 'label': 'Name (Z-A)'},
+                    {'value': 'category-asc', 'label': 'Category (A-Z)'},
+                    {'value': 'category-desc', 'label': 'Category (Z-A)'},
+                    {'value': 'newest', 'label': 'Newest First'},
+                    {'value': 'oldest', 'label': 'Oldest First'},
+                ],
+                'show_category_filter': True,
+                'item_type': 'products',
+                'selected_categories': category.split(',') if category and ',' in category else [category] if category else []
+            })
+            
+            html = render_to_string(
+                'products/manage/product_cards_partial.html',
+                context,
+                request=request
+            )
+            
+        return JsonResponse({'html': html})
+
+    return HttpResponseBadRequest("Invalid request.")
+
+
+@staff_member_required
+def get_category_cards(request):
+    """API endpoint for fetching category cards via AJAX."""
+    search = request.GET.get('search', '').lower()
+    sort = request.GET.get('sort', 'name-asc')
+    items_only = request.GET.get('items_only') == 'true'  # Check if we only want items
+
+    categories = Category.objects.all()
+
+    # Apply search filter
+    if search:
+        categories = categories.filter(
+            Q(name__icontains=search) |
+            Q(products__name__icontains=search)
+        ).distinct()
+
+    # Apply sorting
+    sort_mapping = {
+        'name-asc': 'name',
+        'name-desc': '-name',
+        'products-asc': 'products__count',
+        'products-desc': '-products__count',
+        'newest': '-created_at',
+        'oldest': 'created_at',
+    }
+
+    # Add annotation for product count if needed
+    if sort.endswith('products-asc') or sort.endswith('products-desc'):
+        categories = categories.annotate(Count('products'))
+
+    categories = categories.order_by(sort_mapping.get(sort, 'name'))
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        context = {
+            'categories': categories,
+            'sort_options': [
+                {'value': 'name-asc', 'label': 'Name (A-Z)'},
+                {'value': 'name-desc', 'label': 'Name (Z-A)'},
+                {'value': 'products-asc',
+                 'label': 'Product Count (Low to High)'},
+                {'value': 'products-desc',
+                 'label': 'Product Count (High to Low)'},
+                {'value': 'newest', 'label': 'Newest First'},
+                {'value': 'oldest', 'label': 'Oldest First'},
+            ],
+            'show_category_filter': True,
+            'item_type': 'categories',
+            'search': search,
+            'current_sort': sort
+        }
+        
+        # Choose the appropriate template based on whether we want just the items
+        template = 'products/manage/category_cards_only.html' if items_only else 'products/manage/category_cards_partial.html'
+        
+        html = render_to_string(
+            template,
+            context,
+            request=request
+        )
+        return JsonResponse({'html': html})
+    
     return HttpResponseBadRequest("Invalid request.")
 
 
@@ -274,3 +442,28 @@ def category_delete(request, slug):
             return JsonResponse({'error': 'Invalid request method.'},
                                 status=405)
     return HttpResponseBadRequest("Invalid request.")
+
+
+@staff_member_required
+def category_search(request):
+    """API endpoint for category search autocomplete."""
+    search = request.GET.get('search', '').lower()
+    page = int(request.GET.get('page', 1))
+    page_size = 10
+
+    categories = Category.objects.filter(name__icontains=search)
+    
+    # Handle pagination
+    start = (page - 1) * page_size
+    end = start + page_size
+    total = categories.count()
+    
+    categories_page = categories[start:end]
+    
+    return JsonResponse({
+        'categories': [
+            {'id': cat.id, 'name': cat.name}
+            for cat in categories_page
+        ],
+        'has_more': total > end
+    })

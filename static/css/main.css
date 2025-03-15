@@ -13092,6 +13092,44 @@ a.list-group-item-danger.fw-bold {
   width: 100%;
 }
 
+/* Product Filter Controls */
+.product-controls {
+  background-color: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 0.375rem;
+  margin-bottom: 1.5rem;
+}
+
+.product-controls .input-group {
+  max-width: 100%;
+}
+
+.product-controls .form-select,
+.product-controls .form-control {
+  border: 1px solid #ced4da;
+}
+
+.product-controls .btn-outline-secondary {
+  border-color: #ced4da;
+}
+
+.product-controls .btn-outline-secondary:hover {
+  background-color: #e9ecef;
+  border-color: #ced4da;
+  color: #212529;
+}
+
+/* input-group */
+.input-group .form-control {
+  flex: 1 1 auto; /* Allow the input to take up remaining space */
+}
+
+.input-group .btn {
+  flex: 0 0 auto; /* Prevent the button from growing */
+  width: auto; /* Ensure the button only takes up necessary space */
+  max-width: 40px;
+}
+
 /* Utility Classes */
 .hidden {
   display: none;

@@ -1,6 +1,8 @@
 {# products/manage/product_cards_partial.html #}
 {% if products %}
-<div class="row">{% for product in products %}
+{% include 'includes/filter_controls.html' %}
+<div id="product-cards-grid" class="row">
+    {% for product in products %}
     <div class="col-md-4 mb-4">
         <div class="card">
             {% if product.image %}

@@ -34,15 +34,16 @@
                     <h2 class="accordion-header text-center" id="categories-header">
                         <button class="accordion-button collapsed bg-dark-grey text-white text-center" type="button"
                             data-bs-toggle="collapse" data-bs-target="#category-list" aria-expanded="false"
-                            aria-controls="category-list">
+                            data-content-url="{% url 'products:get_category_cards' %}" aria-controls="category-list">
                             Categories
                         </button>
                     </h2>
                     <div id="category-list" class="accordion-collapse collapse" aria-labelledby="categories-header"
                         data-bs-parent="#management-accordion">
                         <div class="accordion-body bg-light-grey">
-                            <div id="category-cards-container" data-category-cards-url="{% url 'products:get_category_cards' %}">
-                            {% include 'products/manage/category_cards_partial.html' %}
+                            <div id="category-cards-container"
+                                data-category-cards-url="{% url 'products:get_category_cards' %}">
+                                {% include 'products/manage/category_cards_partial.html' %}
                             </div>
                         </div>
                     </div>
@@ -52,6 +53,7 @@
                     <h2 class="accordion-header text-center" id="products-header">
                         <button class="accordion-button bg-dark-grey text-white text-center" type="button"
                             data-bs-toggle="collapse" data-bs-target="#product-list-section" aria-expanded="true"
+                            data-content-url="{% url 'products:get_product_cards' %}"
                             aria-controls="product-list-section">
                             Products
                         </button>
@@ -60,8 +62,8 @@
                         aria-labelledby="products-header" data-bs-parent="#management-accordion">
                         <div class="accordion-body bg-light-grey">
                             <div id="product-cards-container">
-                            {% include 'products/manage/product_cards_partial.html' %}
-                        </div>
+                                {% include 'products/manage/product_cards_partial.html' %}
+                            </div>
                         </div>
                     </div>
                 </div>

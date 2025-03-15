@@ -10,6 +10,26 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./node_modules/select2-bootstrap-5-theme/dist/select2-bootstrap-5-theme.min.css":
+/*!***************************************************************************************!*\
+  !*** ./node_modules/select2-bootstrap-5-theme/dist/select2-bootstrap-5-theme.min.css ***!
+  \***************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extract-plugin\n\n\n//# sourceURL=webpack://skunkmonkey/./node_modules/select2-bootstrap-5-theme/dist/select2-bootstrap-5-theme.min.css?");
+
+/***/ }),
+
+/***/ "./node_modules/select2/dist/css/select2.css":
+/*!***************************************************!*\
+  !*** ./node_modules/select2/dist/css/select2.css ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extract-plugin\n\n\n//# sourceURL=webpack://skunkmonkey/./node_modules/select2/dist/css/select2.css?");
+
+/***/ }),
+
 /***/ "./static/css/main.css":
 /*!*****************************!*\
   !*** ./static/css/main.css ***!
@@ -42,8 +62,10 @@ eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extr
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module can't be inlined because the eval devtool is used.
+/******/ 	__webpack_modules__["./static/css/main.css"](0, {}, __webpack_require__);
+/******/ 	__webpack_modules__["./node_modules/select2/dist/css/select2.css"](0, {}, __webpack_require__);
 /******/ 	var __webpack_exports__ = {};
-/******/ 	__webpack_modules__["./static/css/main.css"](0, __webpack_exports__, __webpack_require__);
+/******/ 	__webpack_modules__["./node_modules/select2-bootstrap-5-theme/dist/select2-bootstrap-5-theme.min.css"](0, __webpack_exports__, __webpack_require__);
 /******/ 	
 /******/ })()
 ;

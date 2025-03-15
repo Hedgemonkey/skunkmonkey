@@ -7,9 +7,14 @@ module.exports = {
     'js/main': './static/js/main.js',
     'js/user_manage': './static/js/users/manage.js',
     'js/messages': './static/js/messages.js',
-    styles: './static/css/main.css',
+    styles: [
+      './static/css/main.css',
+      './node_modules/select2/dist/css/select2.css',
+      './node_modules/select2-bootstrap-5-theme/dist/select2-bootstrap-5-theme.min.css'
+    ],
     'js/products/products': './products/static/products/js/products.js',
     'js/cropper_init': './products/static/js/cropper_init.js',
+    'js/filters': './products/static/js/filters.js',
   },
   output: {
     path: path.resolve(__dirname, 'static/bundles/'),
