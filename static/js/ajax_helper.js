@@ -13,8 +13,18 @@ export function getCookie(name) {
     return cookieValue;
 }
 
-export function makeAjaxRequest(url, method, data, successCallback, errorCallback) {
-    $.ajax({
+/**
+ * Makes an AJAX request and returns the jqXHR object to allow aborting the request if needed
+ * @param {string} url - The URL to send the request to
+ * @param {string} method - The HTTP method to use (GET, POST, etc.)
+ * @param {Object} data - The data to send with the request
+ * @param {Function} successCallback - Called when the request succeeds
+ * @param {Function} errorCallback - Called when the request fails
+ * @param {boolean} abortable - Whether to return the jqXHR object for aborting (default: true)
+ * @returns {Object} The jqXHR object if abortable is true, otherwise undefined
+ */
+export function makeAjaxRequest(url, method, data, successCallback, errorCallback, abortable = true) {
+    const ajaxRequest = $.ajax({
         url: url,
         method: method,
         data: data,
@@ -29,10 +39,18 @@ export function makeAjaxRequest(url, method, data, successCallback, errorCallbac
             }
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            console.error("AJAX Request failed:", textStatus, errorThrown);
-            if (typeof errorCallback === "function") {
-                errorCallback(jqXHR, textStatus, errorThrown);
+            // Don't log aborted requests as errors
+            if (textStatus !== 'abort') {
+                console.error("AJAX Request failed:", textStatus, errorThrown);
+                if (typeof errorCallback === "function") {
+                    errorCallback(jqXHR, textStatus, errorThrown);
+                }
             }
         }
     });
+    
+    // Return the jqXHR object if the request should be abortable
+    if (abortable) {
+        return ajaxRequest;
+    }
 }

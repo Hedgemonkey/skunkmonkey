@@ -12,6 +12,8 @@ export class ItemFilter {
         
         this.container = $(`#${this.containerId}`);
         this.searchTimeout = null;
+        this.pendingRequest = null;
+        this.searchInputValue = '';
         
         this.initializeSelect2();
         this.initializeListeners();
@@ -52,8 +54,12 @@ export class ItemFilter {
     initializeListeners() {
         const self = this;
 
-        // Search with debounce
+        // Search with debounce - track every input change immediately
         this.container.on('input', '.filter-search', function() {
+            // Store the current value immediately after each keystroke
+            self.searchInputValue = $(this).val();
+            
+            // Reset the timer for each keystroke
             clearTimeout(self.searchTimeout);
             self.searchTimeout = setTimeout(() => {
                 self.filterItems();
@@ -63,6 +69,7 @@ export class ItemFilter {
         // Clear search
         this.container.on('click', '.clear-search', function() {
             self.container.find('.filter-search').val('');
+            self.searchInputValue = '';
             self.filterItems();
         });
 
@@ -78,18 +85,28 @@ export class ItemFilter {
     }
 
     filterItems() {
+        // If there's a pending request, abort it
+        if (this.pendingRequest && typeof this.pendingRequest.abort === 'function') {
+            this.pendingRequest.abort();
+        }
+        
+        // Use the most up-to-date search value
+        // First check the actual input field (most current)
+        const currentInputValue = this.container.find('.filter-search').val();
+        // If there's a discrepancy, use the most recent value
+        const searchValue = currentInputValue || this.searchInputValue;
+
         const params = {
-            search: this.container.find('.filter-search').val(),
+            search: searchValue,
             category: this.container.find('.filter-category').val(),
             sort: this.container.find('.filter-sort').val(),
             items_only: true // Add a flag to request only the items, not the filter controls
         };
 
-        // Store the search value for later use
-        const searchValue = params.search;
-        console.log("Filtering with search value:", searchValue);
+        console.log(`Making filter request with search: "${searchValue}"`);
 
-        makeAjaxRequest(
+        // Store the jqXHR object returned by makeAjaxRequest to be able to abort it
+        this.pendingRequest = makeAjaxRequest(
             this.filterUrl,
             'GET',
             params,
@@ -102,8 +119,6 @@ export class ItemFilter {
                     return;
                 }
                 
-                console.log("Found cards container, updating content");
-                
                 if (response.html) {
                     // Direct replacement with the response HTML
                     cardsContainer.html(response.html);
@@ -111,18 +126,26 @@ export class ItemFilter {
                     console.error("Response did not contain HTML property");
                 }
                 
-                // Make sure we preserve the input values
-                if (searchValue) {
-                    this.container.find('.filter-search').val(searchValue);
+                // Get the current value again after the response
+                const finalInputValue = this.container.find('.filter-search').val();
+                
+                // If the input value changed during the request, make sure we preserve it
+                if (finalInputValue !== searchValue) {
+                    console.log(`Input value changed during request: "${searchValue}" -> "${finalInputValue}"`);
+                    this.container.find('.filter-search').val(finalInputValue);
+                    this.searchInputValue = finalInputValue;
                 }
                 
                 // Call the update callback
                 this.onUpdate();
+                
+                this.pendingRequest = null;
             },
-            (error) => {
+            (jqXHR, textStatus, errorThrown) => {
                 this.displayError(`Failed to filter ${this.itemType}. Please try again.`);
-                console.error('Filter error:', error);
-            }
+                this.pendingRequest = null;
+            },
+            true // Pass true to make it abortable (default value)
         );
     }
 
