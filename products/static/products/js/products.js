@@ -57,7 +57,7 @@ $(function () {
     // Product Management Functions
     const productManager = {
         fetchCards: function () {
-            makeAjaxRequest(URLS.productManagement, 'GET', {},
+            makeAjaxRequest(URLS.getProductCards, 'GET', {},
                 (response) => {
                     if (response.html) {
                         ELEMENTS.productListContainer.html(response.html);
@@ -65,6 +65,7 @@ $(function () {
                         ELEMENTS.productListContainer.html(response);
                     }
                     this.attachDeleteListeners();
+                    this.initializeFilters();
                 },
                 (error) => {
                     console.error('Error fetching products:', error);
@@ -467,6 +468,9 @@ $(function () {
     function initialize() {
         initializeEventListeners();
         initializeAccordion();
+        
+        // Load the initial product cards via AJAX since the Products accordion is expanded by default
+        productManager.fetchCards();
     }
 
     initialize();

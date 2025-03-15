@@ -43,7 +43,7 @@
                         <div class="accordion-body bg-light-grey">
                             <div id="category-cards-container"
                                 data-category-cards-url="{% url 'products:get_category_cards' %}">
-                                {% include 'products/manage/category_cards_partial.html' %}
+                                <!-- Category cards will be loaded via AJAX -->
                             </div>
                         </div>
                     </div>
@@ -62,7 +62,7 @@
                         aria-labelledby="products-header" data-bs-parent="#management-accordion">
                         <div class="accordion-body bg-light-grey">
                             <div id="product-cards-container">
-                                {% include 'products/manage/product_cards_partial.html' %}
+                                <!-- Product cards will be loaded via AJAX -->
                             </div>
                         </div>
                     </div>
@@ -76,7 +76,8 @@
 
 {% block postloadjs %}
 <script>
-    const getCategoryCardsUrl = "{% url 'products:get_category_cards' %}"; // Render the URL
+    const getCategoryCardsUrl = "{% url 'products:get_category_cards' %}"; 
+    const getProductCardsUrl = "{% url 'products:get_product_cards' %}";
 </script>
 <script src="{% static 'bundles/js/products/products.js' %}"></script>
 <script src="{% static 'bundles/js/cropper_init.js' %}"></script>

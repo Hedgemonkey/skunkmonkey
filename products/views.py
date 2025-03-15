@@ -164,54 +164,9 @@ def product_delete(request, slug):
 @staff_member_required
 def product_management(request):
     """Main view for product management dashboard."""
-    search = request.GET.get('search', '').lower()
-    category = request.GET.get('category')
-    sort = request.GET.get('sort', 'name-asc')
-
-    products = Product.objects.all()
-
-    # Apply filters
-    if category:
-        products = products.filter(category_id=category)
-    if search:
-        products = products.filter(
-            Q(name__icontains=search) |
-            Q(description__icontains=search) |
-            Q(category__name__icontains=search)
-        )
-
-    # Apply sorting
-    sort_mapping = {
-        'name-asc': 'name',
-        'name-desc': '-name',
-        'category-asc': 'category__name',
-        'category-desc': '-category__name',
-        'newest': '-created_at',
-        'oldest': 'created_at',
-    }
-    products = products.order_by(sort_mapping.get(sort, 'name'))
-
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        html = render_to_string(
-            'products/manage/product_cards_partial.html',
-            {'products': products},
-            request=request
-        )
-        return JsonResponse({'html': html})
-
-    context = {
-        'products': products,
-        'categories': Category.objects.all(),
-        'sort_options': [
-            {'value': 'name-asc', 'label': 'Name (A-Z)'},
-            {'value': 'name-desc', 'label': 'Name (Z-A)'},
-            {'value': 'category-asc', 'label': 'Category (A-Z)'},
-            {'value': 'category-desc', 'label': 'Category (Z-A)'},
-            {'value': 'newest', 'label': 'Newest First'},
-            {'value': 'oldest', 'label': 'Oldest First'},
-        ]
-    }
-    return render(request, 'products/manage/product_manage.html', context)
+    # Now this function only renders the template 
+    # All data loading is handled by AJAX requests to get_product_cards and get_category_cards
+    return render(request, 'products/manage/product_manage.html')
 
 
 @staff_member_required
