@@ -1,0 +1,40 @@
+{# products/templates/products/manage/category_cards_only.html #}
+{% for category in categories %}
+    <div class="col">
+        <div class="card h-100">
+            <div class="card-header py-2 category-header {% if category.id|stringformat:'i' in selected_categories %}bg-primary text-white selected{% else %}bg-light{% endif %}" 
+                 data-category-id="{{ category.id }}">
+                <h4 class="card-title text-center mb-0 category-title">{{ category.name }}</h4>
+            </div>
+            <div class="card-body">
+                <p class="card-text text-center">
+                    {% if category.products.count > 0 %}
+                    Contains {{ category.products.count }} product{{ category.products.count|pluralize }}
+                    {% else %}
+                    No products in this category
+                    {% endif %}
+                </p>
+            </div>
+            <div class="btn-group w-100 m-0 p-0" role="group">
+                <a href="{% url 'products:category_update' category.slug %}"
+                    class="btn btn-sm btn-secondary edit-category w-50 rounded-top-0" 
+                    data-category-slug="{{ category.slug }}">
+                    Edit
+                </a>
+                <a href="{% url 'products:category_delete' category.slug %}"
+                    class="btn btn-sm btn-danger delete-category w-50 rounded-top-0"
+                    data-category-name="{{ category.name }}"
+                    data-product-count="{{ category.products.count }}"
+                    data-category-slug="{{ category.slug }}">
+                    Delete
+                </a>
+            </div>
+        </div>
+    </div>
+{% empty %}
+<div class="col-12">
+    <div class="alert alert-custom" role="alert">
+        <div class="text-center"><h3>No categories found.</h3></div>
+    </div>
+</div>
+{% endfor %}

@@ -241,6 +241,8 @@ $(function () {
                     } else {
                         ELEMENTS.categoryListContainer.html(response);
                     }
+                    this.initializeFilters(); // Initialize filters after loading content
+                    this.attachCategoryEventListeners(); // Attach event listeners after content is loaded
                 },
                 (error) => {
                     console.error('Error fetching categories:', error); // Debug log
@@ -347,6 +349,122 @@ $(function () {
                 },
                 (error) => notifications.displaySwalError(error, "Failed to get products for category.")
             );
+        },
+        attachCategoryEventListeners: function() {
+            // Attach delete event listeners to category cards
+            $('#category-cards-grid').off('click', '.delete-category').on('click', '.delete-category', (e) => this.handleDelete(e));
+        
+            // Attach edit event listeners to category cards
+            $('#category-cards-grid').off('click', '.edit-category').on('click', '.edit-category', function(e) {
+                e.preventDefault();
+                categoryManager.edit($(this).attr('href'));
+            });
+        
+            // Handle category header clicks for selection
+            $('#category-cards-grid').off('click', '.category-header').on('click', '.category-header', function(e) {
+                // Skip if the click was on a button in the card
+                if ($(e.target).closest('.btn').length || $(e.target).closest('.btn-group').length) {
+                    return;
+                }
+            
+                const categoryId = $(this).data('category-id').toString();
+                const categoryName = $(this).find('.category-title').text();
+                const selectElement = $('.filter-category');
+                let currentSelection = selectElement.val() || [];
+            
+                // Ensure the option exists in the select element
+                if (selectElement.find(`option[value="${categoryId}"]`).length === 0) {
+                    const newOption = new Option(categoryName, categoryId, true, true);
+                    selectElement.append(newOption);
+                }
+            
+                if (currentSelection.includes(categoryId)) {
+                    // Remove from selection
+                    const index = currentSelection.indexOf(categoryId);
+                    if (index > -1) {
+                        currentSelection.splice(index, 1);
+                    }
+                    $(this).removeClass('selected bg-primary text-white').addClass('bg-light');
+                } else {
+                    // Add to selection
+                    currentSelection.push(categoryId);
+                    $(this).addClass('selected bg-primary text-white').removeClass('bg-light');
+                }
+            
+                // Update the underlying select element value
+                selectElement.val(currentSelection);
+                
+                // Properly update Select2
+                if ($.fn.select2) {
+                    // First try standard Select2 trigger
+                    try {
+                        selectElement.trigger('change.select2');
+                    } catch (e) {
+                        console.warn("Error with change.select2, falling back to standard change event", e);
+                        selectElement.trigger('change');
+                    }
+                    
+                    // If that doesn't work, try a full refresh
+                    setTimeout(() => {
+                        // Check if the select element's visual display matches our selection
+                        const displayedSelection = selectElement.select2('data').map(item => item.id);
+                        if (!arraysEqual(displayedSelection, currentSelection)) {
+                            console.log("Select2 display not in sync, doing full refresh");
+                            // Force recreation of the Select2
+                            selectElement.select2('destroy');
+                            selectElement.select2({
+                                theme: 'bootstrap-5',
+                                width: '100%',
+                                multiple: true,
+                                allowClear: true,
+                                closeOnSelect: false
+                            });
+                            // Reapply the selection
+                            selectElement.val(currentSelection).trigger('change');
+                        }
+                    }, 50);
+                } else {
+                    // Just use standard change event if Select2 isn't available
+                    selectElement.trigger('change');
+                }
+            
+                // Update the count display
+                const countDisplay = $('.category-count');
+                if (countDisplay.length) {
+                    countDisplay.text(currentSelection.length);
+                }
+            });
+        
+            // Add cursor pointer style to indicate clickable headers
+            $('#category-cards-grid .category-header').css('cursor', 'pointer');
+        },
+        
+        initializeFilters: function () {
+            try {
+                console.log("Initializing category filters");
+            
+                // Create a filter for the category view
+                this.filter = new ItemFilter({
+                    containerId: 'category-cards-container',
+                    filterUrl: URLS.getCategoryCards,
+                    itemType: 'categories',
+                    filterOnCategorySelect: false, // Disable filtering when categories are selected
+                    onUpdate: () => {
+                        // Re-attach event handlers for category cards
+                        this.attachCategoryEventListeners();
+                    }
+                });
+            
+                // Preload all categories to ensure they're available for selection
+                if (this.filter && typeof this.filter.preloadCategories === 'function') {
+                    this.filter.preloadCategories();
+                }
+            
+                console.log("Category filters initialized successfully");
+            } catch (error) {
+                console.error("Error initializing category filters:", error);
+                notifications.displayError("Failed to initialize category filters.");
+            }
         }
     };
 
@@ -411,10 +529,16 @@ $(function () {
                     {},
                     (response) => {
                         contentContainer.html(response.html || response);
+                        
+                        // Initialize appropriate filters based on the section
                         if (contentId === 'product-cards-container') {
                             productManager.attachDeleteListeners();
                             productManager.initializeFilters();
+                        } else if (contentId === 'category-cards-container') {
+                            categoryManager.initializeFilters();
+                            categoryManager.attachCategoryEventListeners();
                         }
+                        
                         resolve();
                     },
                     (error) => {
@@ -475,3 +599,19 @@ $(function () {
 
     initialize();
 });
+
+// Helper function to compare arrays
+function arraysEqual(a, b) {
+    if (a === b) return true;
+    if (a == null || b == null) return false;
+    if (a.length !== b.length) return false;
+    
+    // Sort both arrays for comparison
+    const sortedA = [...a].sort();
+    const sortedB = [...b].sort();
+    
+    for (let i = 0; i < sortedA.length; i++) {
+        if (sortedA[i] !== sortedB[i]) return false;
+    }
+    return true;
+}

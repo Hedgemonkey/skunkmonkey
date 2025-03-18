@@ -205,7 +205,15 @@ def get_product_cards(request):
 
     # Apply filters
     if category:
-        products = products.filter(category_id=category)
+        # Check if we have multiple categories (comma-separated)
+        if ',' in category:
+            category_ids = [c for c in category.split(',') if c]
+            if category_ids:
+                # Filter products that have any of the selected categories
+                products = products.filter(category_id__in=category_ids)
+        else:
+            # Single category case
+            products = products.filter(category_id=category)
     if search:
         products = products.filter(
             Q(name__icontains=search) |
@@ -269,65 +277,98 @@ def get_product_cards(request):
 @staff_member_required
 def get_category_cards(request):
     """API endpoint for fetching category cards via AJAX."""
-    search = request.GET.get('search', '').lower()
-    sort = request.GET.get('sort', 'name-asc')
-    items_only = request.GET.get('items_only') == 'true'  # Check if we only want items
+    try:
+        search = request.GET.get('search', '').lower()
+        category = request.GET.get('category')
+        sort = request.GET.get('sort', 'name-asc')
+        items_only = request.GET.get('items_only') == 'true'
 
-    categories = Category.objects.all()
+        categories = Category.objects.all()
 
-    # Apply search filter
-    if search:
-        categories = categories.filter(
-            Q(name__icontains=search) |
-            Q(products__name__icontains=search)
-        ).distinct()
+        # Apply filters
+        if category:
+            try:
+                # Check if we have multiple categories (comma-separated)
+                if ',' in category:
+                    category_ids = [c for c in category.split(',') if c]
+                    if category_ids:
+                        categories = categories.filter(id__in=category_ids)
+                else:
+                    # Single category case
+                    categories = categories.filter(id=category)
+            except Exception as e:
+                logger.error(f"Error filtering categories by ID: {e}")
+                # Continue with unfiltered categories rather than failing
 
-    # Apply sorting
-    sort_mapping = {
-        'name-asc': 'name',
-        'name-desc': '-name',
-        'products-asc': 'products__count',
-        'products-desc': '-products__count',
-        'newest': '-created_at',
-        'oldest': 'created_at',
-    }
+        # Apply search filter
+        if search:
+            categories = categories.filter(
+                Q(name__icontains=search) |
+                Q(products__name__icontains=search)
+            ).distinct()
 
-    # Add annotation for product count if needed
-    if sort.endswith('products-asc') or sort.endswith('products-desc'):
-        categories = categories.annotate(Count('products'))
-
-    categories = categories.order_by(sort_mapping.get(sort, 'name'))
-
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        context = {
-            'categories': categories,
-            'sort_options': [
-                {'value': 'name-asc', 'label': 'Name (A-Z)'},
-                {'value': 'name-desc', 'label': 'Name (Z-A)'},
-                {'value': 'products-asc',
-                 'label': 'Product Count (Low to High)'},
-                {'value': 'products-desc',
-                 'label': 'Product Count (High to Low)'},
-                {'value': 'newest', 'label': 'Newest First'},
-                {'value': 'oldest', 'label': 'Oldest First'},
-            ],
-            'show_category_filter': True,
-            'item_type': 'categories',
-            'search': search,
-            'current_sort': sort
+        # Apply sorting
+        sort_mapping = {
+            'name-asc': 'name',
+            'name-desc': '-name',
+            'products-asc': 'products__count',
+            'products-desc': '-products__count',
+            'newest': '-created_at',
+            'oldest': 'created_at',
         }
+
+        # Add annotation for product count if needed
+        if sort and (sort.endswith('products-asc') or sort.endswith('products-desc')):
+            categories = categories.annotate(Count('products'))
+
+        categories = categories.order_by(sort_mapping.get(sort, 'name'))
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            # Prepare categories for context
+            selected_categories = []
+            if category:
+                if ',' in category:
+                    selected_categories = [c for c in category.split(',') if c]
+                else:
+                    selected_categories = [category]
+            
+            context = {
+                'categories': categories,
+                'sort_options': [
+                    {'value': 'name-asc', 'label': 'Name (A-Z)'},
+                    {'value': 'name-desc', 'label': 'Name (Z-A)'},
+                    {'value': 'products-asc',
+                     'label': 'Product Count (Low to High)'},
+                    {'value': 'products-desc',
+                     'label': 'Product Count (High to Low)'},
+                    {'value': 'newest', 'label': 'Newest First'},
+                    {'value': 'oldest', 'label': 'Oldest First'},
+                ],
+                'show_category_filter': True,
+                'item_type': 'categories',
+                'search': search,
+                'current_sort': sort,
+                'selected_categories': selected_categories  # Pass selected categories to template
+            }
+            
+            # Choose the appropriate template based on whether we want just the items
+            template = 'products/manage/category_cards_only.html' if items_only else 'products/manage/category_cards_partial.html'
+            
+            html = render_to_string(
+                template,
+                context,
+                request=request
+            )
+            return JsonResponse({'html': html})
         
-        # Choose the appropriate template based on whether we want just the items
-        template = 'products/manage/category_cards_only.html' if items_only else 'products/manage/category_cards_partial.html'
-        
-        html = render_to_string(
-            template,
-            context,
-            request=request
-        )
-        return JsonResponse({'html': html})
+        return HttpResponseBadRequest("Invalid request.")
     
-    return HttpResponseBadRequest("Invalid request.")
+    except Exception as e:
+        logger.error(f"Error in get_category_cards: {str(e)}")
+        return JsonResponse({
+            'error': f"Error fetching categories: {str(e)}",
+            'html': '<div class="alert alert-danger">Error loading categories. Please try again.</div>'
+        }, status=500)
 
 
 @staff_member_required

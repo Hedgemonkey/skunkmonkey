@@ -16,14 +16,19 @@
         </div>
         {% if show_category_filter %}
         <div class="col-12 col-md-4">
-            <select class="form-select filter-category" multiple data-placeholder="Select categories">
-                {% for category in categories %}
-                    <option value="{{ category.id }}"
-                            {% if category.id in selected_categories %}selected{% endif %}>
-                        {{ category.name }}
-                    </option>
-                {% endfor %}
-            </select>
+            <div class="category-filter-container">
+                <select class="form-select filter-category" multiple data-placeholder="Select categories">
+                    {% for category in categories %}
+                        <option value="{{ category.id }}"
+                                {% if category.id in selected_categories %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <div class="selected-categories-display mt-1">
+                    <small class="text-muted">Selected: <span class="category-count">{{ selected_categories|length }}</span></small>
+                </div>
+            </div>
         </div>
         {% endif %}
         <div class="col-12 col-md-4">

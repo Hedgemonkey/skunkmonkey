@@ -13215,6 +13215,21 @@ a.list-group-item-danger.fw-bold {
   border-bottom-right-radius: 0.375rem;  /* Match card border radius */
 }
 
+/* Filter styles */
+.select2-result-category {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+}
+
+.select2-result-category:hover {
+  background-color: #f8f9fa;
+}
+
+.select2-container--bootstrap-5 .select2-results__option--selected {
+  background-color: #e9ecef !important;
+}
+
 /* Cropper Modal Styles */
 #cropperModal {
   z-index: 2000;
