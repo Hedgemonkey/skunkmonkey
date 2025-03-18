@@ -13230,6 +13230,44 @@ a.list-group-item-danger.fw-bold {
   background-color: #e9ecef !important;
 }
 
+/* Styles for filter controls */
+.category-action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.clear-categories-btn, .list-products-btn {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.category-filter-container {
+  position: relative;
+}
+
+.selected-categories-display {
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Highlight selected categories in the cards */
+.category-header.selected {
+  background-color: var(--bs-primary) !important;
+  color: white !important;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.category-header {
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.category-header:hover:not(.selected) {
+  background-color: #e9ecef !important;
+}
+
 /* Cropper Modal Styles */
 #cropperModal {
   z-index: 2000;

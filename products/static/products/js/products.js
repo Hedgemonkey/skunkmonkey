@@ -4,8 +4,6 @@ import Swal from 'sweetalert2';
 import { ItemFilter } from '../../../static/js/filters.js';
 import { makeAjaxRequest } from '../../../../static/js/ajax_helper.js';
 
-
-
 $(function () {
     // Constants and Selectors
     const URLS = {
@@ -57,7 +55,17 @@ $(function () {
     // Product Management Functions
     const productManager = {
         fetchCards: function () {
-            makeAjaxRequest(URLS.getProductCards, 'GET', {},
+            // Get saved categories to apply to product filtering
+            const savedCategories = localStorage.getItem('selectedCategories');
+            const categoryParam = savedCategories ? JSON.parse(savedCategories).join(',') : '';
+            
+            // Add category parameter to request if we have saved categories
+            const params = {};
+            if (categoryParam) {
+                params.category = categoryParam;
+            }
+            
+            makeAjaxRequest(URLS.getProductCards, 'GET', params,
                 (response) => {
                     if (response.html) {
                         ELEMENTS.productListContainer.html(response.html);
@@ -210,6 +218,7 @@ $(function () {
         },
 
         initializeFilters: function () {
+            // Create an instance of ItemFilter with persistent category support
             this.filter = new ItemFilter({
                 containerId: 'product-cards-container',
                 filterUrl: URLS.getProductCards,
@@ -367,23 +376,27 @@ $(function () {
                     return;
                 }
             
-                const categoryId = $(this).data('category-id').toString();
+                const categoryId = $(this).data('category-id').toString(); // Ensure string format
                 const categoryName = $(this).find('.category-title').text();
                 const selectElement = $('.filter-category');
-                let currentSelection = selectElement.val() || [];
+                
+                // Get current selection from localStorage or select element
+                // Ensure all values are strings for consistent comparison
+                let storedCategories = localStorage.getItem('selectedCategories');
+                let currentSelection = storedCategories 
+                    ? JSON.parse(storedCategories).map(id => id.toString()) 
+                    : (selectElement.val() || []).map(id => id.toString());
             
                 // Ensure the option exists in the select element
                 if (selectElement.find(`option[value="${categoryId}"]`).length === 0) {
-                    const newOption = new Option(categoryName, categoryId, true, true);
+                    const newOption = new Option(categoryName, categoryId, false, false);
                     selectElement.append(newOption);
                 }
             
+                // Toggle selection
                 if (currentSelection.includes(categoryId)) {
                     // Remove from selection
-                    const index = currentSelection.indexOf(categoryId);
-                    if (index > -1) {
-                        currentSelection.splice(index, 1);
-                    }
+                    currentSelection = currentSelection.filter(id => id !== categoryId);
                     $(this).removeClass('selected bg-primary text-white').addClass('bg-light');
                 } else {
                     // Add to selection
@@ -391,42 +404,67 @@ $(function () {
                     $(this).addClass('selected bg-primary text-white').removeClass('bg-light');
                 }
             
-                // Update the underlying select element value
-                selectElement.val(currentSelection);
+                // Update localStorage for persistence
+                localStorage.setItem('selectedCategories', JSON.stringify(currentSelection));
                 
-                // Properly update Select2
-                if ($.fn.select2) {
-                    // First try standard Select2 trigger
-                    try {
-                        selectElement.trigger('change.select2');
-                    } catch (e) {
-                        console.warn("Error with change.select2, falling back to standard change event", e);
+                // Update the underlying select element value 
+                // Apply a small delay to avoid race conditions
+                setTimeout(() => {
+                    // First update the DOM select element
+                    selectElement.val(currentSelection);
+                    
+                    // Then update Select2 with proper timing
+                    if ($.fn.select2) {
+                        try {
+                            selectElement.trigger('change.select2');
+                        } catch (e) {
+                            console.warn("Error with change.select2, falling back to standard change event", e);
+                            selectElement.trigger('change');
+                        }
+                        
+                        // Additional safety measure: check and fix any sync issues after a delay
+                        setTimeout(() => {
+                            // Get the current Select2 selection for verification
+                            const displayedSelection = selectElement.select2('data').map(item => item.id.toString());
+                            
+                            // Check if they match using our improved comparison
+                            if (!arraysEqual(displayedSelection, currentSelection)) {
+                                console.log("Select2 display still not in sync, applying more aggressive fix");
+                                
+                                // Force complete refresh of the Select2 component
+                                selectElement.select2('destroy');
+                                selectElement.empty(); // Clear all options
+                                
+                                // Re-add all needed options
+                                $('.category-header').each(function() {
+                                    const catId = $(this).data('category-id').toString();
+                                    const catName = $(this).find('.category-title').text();
+                                    
+                                    const newOption = new Option(catName, catId, 
+                                                                currentSelection.includes(catId), 
+                                                                currentSelection.includes(catId));
+                                    selectElement.append(newOption);
+                                });
+                                
+                                // Reinitialize Select2
+                                selectElement.select2({
+                                    theme: 'bootstrap-5',
+                                    width: '100%',
+                                    multiple: true,
+                                    allowClear: true,
+                                    closeOnSelect: false,
+                                    placeholder: 'Select or search categories'
+                                });
+                                
+                                // Set the value and trigger change
+                                selectElement.val(currentSelection).trigger('change');
+                            }
+                        }, 150);
+                    } else {
+                        // Just use standard change event if Select2 isn't available
                         selectElement.trigger('change');
                     }
-                    
-                    // If that doesn't work, try a full refresh
-                    setTimeout(() => {
-                        // Check if the select element's visual display matches our selection
-                        const displayedSelection = selectElement.select2('data').map(item => item.id);
-                        if (!arraysEqual(displayedSelection, currentSelection)) {
-                            console.log("Select2 display not in sync, doing full refresh");
-                            // Force recreation of the Select2
-                            selectElement.select2('destroy');
-                            selectElement.select2({
-                                theme: 'bootstrap-5',
-                                width: '100%',
-                                multiple: true,
-                                allowClear: true,
-                                closeOnSelect: false
-                            });
-                            // Reapply the selection
-                            selectElement.val(currentSelection).trigger('change');
-                        }
-                    }, 50);
-                } else {
-                    // Just use standard change event if Select2 isn't available
-                    selectElement.trigger('change');
-                }
+                }, 50);
             
                 // Update the count display
                 const countDisplay = $('.category-count');
@@ -434,7 +472,43 @@ $(function () {
                     countDisplay.text(currentSelection.length);
                 }
             });
-        
+            
+            // Handle Clear Selection button
+            $('#category-cards-container').off('click', '.clear-categories-btn').on('click', '.clear-categories-btn', function() {
+                // Clear the selection in localStorage
+                localStorage.removeItem('selectedCategories');
+                
+                // Clear the Select2 selection
+                const selectElement = $('.filter-category');
+                selectElement.val([]).trigger('change');
+                
+                // Update the count display
+                $('.category-count').text('0');
+                
+                // Update the visual state of category headers
+                $('.category-header').removeClass('selected bg-primary text-white').addClass('bg-light');
+            });
+            
+            // Handle List Products button
+            $('#category-cards-container').off('click', '.list-products-btn').on('click', '.list-products-btn', function() {
+                // Get selected categories
+                const storedCategories = localStorage.getItem('selectedCategories');
+                const selectedCategories = storedCategories ? JSON.parse(storedCategories) : [];
+                
+                if (!selectedCategories || selectedCategories.length === 0) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'No Categories Selected',
+                        text: 'Please select at least one category to list its products.',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+                
+                // Switch to the products tab with the selected categories
+                $('#products-header .accordion-button').click();
+            });
+            
             // Add cursor pointer style to indicate clickable headers
             $('#category-cards-grid .category-header').css('cursor', 'pointer');
         },
@@ -443,7 +517,7 @@ $(function () {
             try {
                 console.log("Initializing category filters");
             
-                // Create a filter for the category view
+                // Create a filter for the category view with persistence
                 this.filter = new ItemFilter({
                     containerId: 'category-cards-container',
                     filterUrl: URLS.getCategoryCards,
@@ -515,6 +589,16 @@ $(function () {
             const contentContainer = section.find('.accordion-body > div');
             const contentId = contentContainer.attr('id');
             
+            // Get saved categories for filtering (if needed)
+            const savedCategories = localStorage.getItem('selectedCategories');
+            const categoryParam = savedCategories ? JSON.parse(savedCategories).join(',') : '';
+            
+            // Prepare params - include category filter for products view
+            const params = {};
+            if (contentId === 'product-cards-container' && categoryParam) {
+                params.category = categoryParam;
+            }
+            
             // Determine which URL to use
             const url = contentId === 'category-cards-container' 
                 ? $('#categories-header .accordion-button').data('content-url')
@@ -526,7 +610,7 @@ $(function () {
                 makeAjaxRequest(
                     url,
                     'GET',
-                    {},
+                    params,
                     (response) => {
                         contentContainer.html(response.html || response);
                         
@@ -606,12 +690,11 @@ function arraysEqual(a, b) {
     if (a == null || b == null) return false;
     if (a.length !== b.length) return false;
     
-    // Sort both arrays for comparison
-    const sortedA = [...a].sort();
-    const sortedB = [...b].sort();
+    // Normalize both arrays to ensure consistent comparison
+    // Convert all elements to strings and sort them
+    const normalizedA = [...a].map(item => item.toString()).sort();
+    const normalizedB = [...b].map(item => item.toString()).sort();
     
-    for (let i = 0; i < sortedA.length; i++) {
-        if (sortedA[i] !== sortedB[i]) return false;
-    }
-    return true;
+    // Use JSON.stringify for deep comparison
+    return JSON.stringify(normalizedA) === JSON.stringify(normalizedB);
 }
