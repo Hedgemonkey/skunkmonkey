@@ -1,9 +1,30 @@
+/**
+ * filters.js - Reusable filtering component for product and category management
+ * 
+ * Provides filtering, category selection, and persistent selection features
+ * with Select2 integration and responsive UI feedback.
+ */
 import 'select2';
 import { makeAjaxRequest } from '../../../static/js/ajax_helper.js';
-import Swal from 'sweetalert2'; // Import SweetAlert2 for notifications
+import Swal from 'sweetalert2';
 
+/**
+ * ItemFilter - A reusable class for handling item filtering and category selection
+ */
 export class ItemFilter {
+    /**
+     * Create a new ItemFilter instance
+     * @param {Object} options - Configuration options
+     * @param {string} options.containerId - The ID of the container element
+     * @param {string} options.filterUrl - The URL to fetch filtered items
+     * @param {Function} options.onUpdate - Callback function when items are updated
+     * @param {number} options.searchDelay - Delay in ms before triggering search
+     * @param {string} options.itemType - Type of items ('products' or 'categories')
+     * @param {boolean} options.filterOnCategorySelect - Whether to filter when categories are selected
+     * @param {string} options.navToProductsUrl - URL for navigating to products view
+     */
     constructor(options) {
+        // Core settings
         this.containerId = options.containerId;
         this.filterUrl = options.filterUrl;
         this.onUpdate = options.onUpdate || function() {};
@@ -11,62 +32,89 @@ export class ItemFilter {
         this.itemType = options.itemType || 'products';
         this.filterOnCategorySelect = options.filterOnCategorySelect !== undefined ? 
             options.filterOnCategorySelect : true;
-        this.categoriesLoaded = false;
         this.navToProductsUrl = options.navToProductsUrl || '/products/staff/';
         
+        // State management
         this.container = $(`#${this.containerId}`);
         this.searchTimeout = null;
         this.pendingRequest = null;
         this.searchInputValue = '';
+        this.processingCategoryClick = false;
+        this.categoriesLoaded = false;
         
-        // Get stored categories from localStorage if available
+        // Initialize category data
         this.selectedCategories = this.getSavedCategories() || [];
         this.allCategories = [];
         
-        // Initialize Select2 first
+        // Initialization sequence
         this.initializeSelect2();
-        
-        // Then preload all categories
         this.preloadCategories();
-        
-        // Initialize listeners last
-        this.initializeListeners();
+        this.initializeEventListeners();
     }
 
-    // New method to save selected categories to localStorage
+    /**
+     * Save selected categories to localStorage
+     * @param {Array} categories - Array of category IDs to save
+     */
     saveCategories(categories) {
-        this.selectedCategories = categories;
-        localStorage.setItem('selectedCategories', JSON.stringify(categories));
+        // Normalize to strings for consistent storage
+        const normalizedCategories = categories.map(id => id.toString());
+        this.selectedCategories = normalizedCategories;
+        localStorage.setItem('selectedCategories', JSON.stringify(normalizedCategories));
     }
 
-    // New method to get saved categories from localStorage
+    /**
+     * Get saved categories from localStorage
+     * @returns {Array} Array of category IDs
+     */
     getSavedCategories() {
         const savedCategories = localStorage.getItem('selectedCategories');
         return savedCategories ? JSON.parse(savedCategories) : [];
     }
 
+    /**
+     * Clear all selected categories
+     */
+    clearCategories() {
+        const selectElement = this.container.find('.filter-category');
+        
+        // Clear the selection in localStorage
+        localStorage.removeItem('selectedCategories');
+        this.selectedCategories = [];
+        
+        // Update the UI
+        selectElement.val([]).trigger('change');
+        this.container.find('.category-count').text('0');
+        $('.category-header').removeClass('selected bg-primary text-white').addClass('bg-light');
+        
+        // Trigger filtering if needed
+        if (this.filterOnCategorySelect) {
+            this.filterItems();
+        }
+    }
+
+    /**
+     * Preload all categories for performance
+     */
     preloadCategories() {
-        // Skip if there's no category filter in the container
+        // Skip if there's no category filter
         if (this.container.find('.filter-category').length === 0) {
             return;
         }
         
-        // Fetch all categories to ensure they're loaded
         makeAjaxRequest(
             '/products/api/categories/search/',
             'GET',
-            { search: '', limit: 100 }, // Empty search to get all categories
+            { search: '', limit: 100 },
             (data) => {
                 this.allCategories = data.categories || [];
                 this.categoriesLoaded = true;
                 
-                // Add all preloaded categories to the Select2 dropdown
                 const selectElement = this.container.find('.filter-category');
                 const currentSelection = selectElement.val() || [];
                 
-                // Add new options for each category
+                // Add options for each category
                 this.allCategories.forEach(category => {
-                    // Check if option already exists
                     if (selectElement.find(`option[value="${category.id}"]`).length === 0) {
                         const newOption = new Option(category.name, category.id, false, false);
                         selectElement.append(newOption);
@@ -84,45 +132,34 @@ export class ItemFilter {
         );
     }
 
+    /**
+     * Initialize Select2 with custom templates and event handlers
+     */
     initializeSelect2() {
-        // Skip Select2 initialization if there's no category filter in the container
+        // Skip if there's no category filter
         if (this.container.find('.filter-category').length === 0) {
             return;
         }
         
-        // Add custom template for checkboxes in select2
-        function formatCategoryOption(category) {
-            if (!category.id) {
-                return category.text;
-            }
-            
-            // Create the checkbox template
-            return $(`
-                <div class="select2-result-category">
-                    <input type="checkbox" class="form-check-input me-2" id="category-${category.id}" 
-                           ${category.selected ? 'checked' : ''}>
-                    <label for="category-${category.id}">${category.text}</label>
-                </div>
-            `);
-        }
-
-        // Initialize Select2 with enhanced options
-        this.container.find('.filter-category').select2({
+        const selectElement = this.container.find('.filter-category');
+        
+        // Configure Select2
+        selectElement.select2({
             theme: 'bootstrap-5',
             width: '100%',
             multiple: true,
             allowClear: true,
-            closeOnSelect: false, // Keep dropdown open when selecting items
+            closeOnSelect: false,
             placeholder: 'Select or search categories',
-            minimumInputLength: 0, // Allow showing all options without typing
-            minimumResultsForSearch: 0, // Always show the search box
-            templateResult: formatCategoryOption,
+            minimumInputLength: 0,
+            minimumResultsForSearch: 0,
+            templateResult: this.formatCategoryOption,
             ajax: {
                 delay: 250,
                 url: '/products/api/categories/search/',
                 data: function (params) {
                     return {
-                        search: params.term || '', // Handle empty search
+                        search: params.term || '',
                         page: params.page || 1
                     };
                 },
@@ -131,48 +168,73 @@ export class ItemFilter {
                         results: data.categories.map(category => ({
                             id: category.id,
                             text: category.name,
-                            selected: false // Default to not selected
+                            selected: false
                         })),
                         pagination: {
                             more: data.has_more
                         }
                     };
                 },
-                cache: true // Enable caching for better performance
+                cache: true
             }
         });
 
-        // Handle checkbox clicks inside the dropdown
-        $(document).on('click', '.select2-result-category input[type="checkbox"]', function(e) {
-            e.stopPropagation(); // Prevent the event from closing the dropdown
-            const checkbox = $(this);
-            const option = checkbox.closest('.select2-result-category');
-            const id = checkbox.attr('id').replace('category-', '');
-            
-            // Find the corresponding select option and toggle its selection
-            const selectElement = $('.filter-category');
-            const currentSelection = selectElement.val() || [];
-            
-            if (checkbox.is(':checked')) {
-                if (!currentSelection.includes(id)) {
-                    currentSelection.push(id);
-                }
-            } else {
-                const index = currentSelection.indexOf(id);
-                if (index > -1) {
-                    currentSelection.splice(index, 1);
-                }
-            }
-            
-            // Update the select value
-            selectElement.val(currentSelection).trigger('change');
-        });
+        // Handle checkbox clicks in dropdown
+        this.setupCheckboxHandlers();
         
-        // When Select2 opens, make sure checkboxes reflect current selection
-        this.container.find('.filter-category').on('select2:open', function() {
+        // Update checkboxes when dropdown opens
+        this.setupDropdownOpenHandler(selectElement);
+    }
+    
+    /**
+     * Format category options with checkboxes for Select2
+     */
+    formatCategoryOption(category) {
+        if (!category.id) {
+            return category.text;
+        }
+        
+        return $(`
+            <div class="select2-result-category">
+                <input type="checkbox" class="form-check-input me-2" id="category-${category.id}" 
+                       ${category.selected ? 'checked' : ''}>
+                <label for="category-${category.id}">${category.text}</label>
+            </div>
+        `);
+    }
+    
+    /**
+     * Set up handlers for checkbox clicks in Select2 dropdown
+     */
+    setupCheckboxHandlers() {
+        $(document).off('click', '.select2-result-category input[type="checkbox"]')
+            .on('click', '.select2-result-category input[type="checkbox"]', (e) => {
+                e.stopPropagation();
+                
+                const checkbox = $(e.currentTarget);
+                const id = checkbox.attr('id').replace('category-', '');
+                const selectElement = $('.filter-category');
+                const currentSelection = selectElement.val() || [];
+                
+                let newSelection = [...currentSelection];
+                
+                if (checkbox.is(':checked') && !newSelection.includes(id)) {
+                    newSelection.push(id);
+                } else if (!checkbox.is(':checked')) {
+                    newSelection = newSelection.filter(value => value !== id);
+                }
+                
+                selectElement.val(newSelection).trigger('change');
+            });
+    }
+    
+    /**
+     * Set up handler for Select2 dropdown open event
+     */
+    setupDropdownOpenHandler(selectElement) {
+        selectElement.on('select2:open', function() {
             const selectedValues = $(this).val() || [];
             
-            // Short timeout to ensure DOM is updated
             setTimeout(() => {
                 $('.select2-result-category input[type="checkbox"]').each(function() {
                     const id = $(this).attr('id').replace('category-', '');
@@ -182,7 +244,10 @@ export class ItemFilter {
         });
     }
 
-    initializeListeners() {
+    /**
+     * Initialize all event listeners for filtering and interaction
+     */
+    initializeEventListeners() {
         const self = this;
 
         // Search with debounce - track every input change immediately
@@ -511,6 +576,10 @@ export class ItemFilter {
         );
     }
 
+    /**
+     * Display an error message using SweetAlert
+     * @param {string} message - Error message to display
+     */
     displayError(message) {
         Swal.fire({
             icon: 'error',
@@ -518,6 +587,46 @@ export class ItemFilter {
             text: message,
             confirmButtonText: 'OK'
         });
+    }
+    
+    /**
+     * Clean up event listeners and resources
+     * Prevents memory leaks when filter instances are no longer needed
+     */
+    destroy() {
+        // Clear timeouts
+        if (this.searchTimeout) {
+            clearTimeout(this.searchTimeout);
+        }
+        
+        // Abort any pending requests
+        if (this.pendingRequest && typeof this.pendingRequest.abort === 'function') {
+            this.pendingRequest.abort();
+        }
+        
+        // Remove event listeners
+        this.container.off('input', '.filter-search');
+        this.container.off('click', '.clear-search');
+        this.container.off('click', '.clear-categories-btn');
+        this.container.off('click', '.list-products-btn');
+        this.container.off('change', '.filter-sort');
+        
+        // Clean up Select2
+        const selectElement = this.container.find('.filter-category');
+        if (selectElement.length && $.fn.select2) {
+            try {
+                selectElement.off('change').off('select2:open');
+                selectElement.select2('destroy');
+            } catch (e) {
+                console.warn('Error destroying Select2:', e);
+            }
+        }
+        
+        // Remove global document event handlers
+        $(document).off('click', '.select2-result-category input[type="checkbox"]');
+        $(document).off('click', '.category-header');
+        
+        console.log(`ItemFilter for ${this.itemType} destroyed.`);
     }
 }
 
