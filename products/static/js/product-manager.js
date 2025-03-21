@@ -132,6 +132,11 @@ export class ProductManager extends BaseManager {
         this.filter = new ItemFilter({
             containerId: 'product-cards-container',
             filterUrl: this.urls.getProductCards,
+            filterOnCategorySelect: true,
+            filterOnSearch: true,
+            filterOnSort: true,
+            filterOnSearchInput: true,
+            filterOnSortSelect: true,
             onUpdate: () => {
                 this.attachDeleteListeners();
             }

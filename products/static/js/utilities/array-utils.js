@@ -80,10 +80,52 @@ export function toggleInArray(array, item) {
         : addToArray(array, item);
 }
 
+/**
+ * Check if an array includes a value (alias for arrayContains)
+ * @param {Array} array - The array to check
+ * @param {*} value - The value to find
+ * @returns {boolean} True if the array includes the value
+ */
+export function includesValue(array, value) {
+    return arrayContains(array, value);
+}
+
+/**
+ * Get unique values from an array
+ * @param {Array} array - The array to process
+ * @returns {Array} Array with duplicate values removed
+ */
+export function uniqueValues(array) {
+    if (!array || !Array.isArray(array)) return [];
+    return [...new Set(array)];
+}
+
+/**
+ * Group array items by a property
+ * @param {Array} array - Array of objects
+ * @param {string} property - Property to group by
+ * @returns {Object} Grouped items
+ */
+export function groupBy(array, property) {
+    if (!array || !Array.isArray(array)) return {};
+    
+    return array.reduce((result, item) => {
+        const key = item[property];
+        if (!result[key]) {
+            result[key] = [];
+        }
+        result[key].push(item);
+        return result;
+    }, {});
+}
+
 export default {
     arraysEqual,
     arrayContains,
     addToArray,
     removeFromArray,
-    toggleInArray
+    toggleInArray,
+    includesValue,
+    uniqueValues,
+    groupBy
 };

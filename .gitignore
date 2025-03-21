@@ -12,3 +12,4 @@ cloudinary_python.txt
 skunkmonkey/production.py
 skunkmonkey*.log
 .qodo
+.qodo/history.sqlite

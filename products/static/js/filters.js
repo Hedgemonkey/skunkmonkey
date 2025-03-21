@@ -1,27 +1,27 @@
 /**
  * filters.js - Reusable filtering component for product and category management
- * 
- * Provides filtering, category selection, and persistent selection features
- * with Select2 integration and responsive UI feedback.
+ * Refactored to use a modular approach with utility modules and ApiClient
  */
 import 'select2';
-import { makeAjaxRequest } from '../../../static/js/ajax_helper.js';
-import Swal from 'sweetalert2';
+import apiClient from '../../../static/js/api-client.js';
+import notifications from './utilities/notifications.js';
+import { setDisabledState } from './utilities/form-utils.js';
+import { CategoryFilterManager } from './filters/category-filter-manager.js';
+import { FilterUIManager } from './filters/filter-ui-manager.js';
 
 /**
- * ItemFilter - A reusable class for handling item filtering and category selection
+ * ItemFilter - Handles item filtering and category selection
  */
 export class ItemFilter {
     /**
-     * Create a new ItemFilter instance
+     * Initialize the filter component
      * @param {Object} options - Configuration options
-     * @param {string} options.containerId - The ID of the container element
-     * @param {string} options.filterUrl - The URL to fetch filtered items
-     * @param {Function} options.onUpdate - Callback function when items are updated
-     * @param {number} options.searchDelay - Delay in ms before triggering search
-     * @param {string} options.itemType - Type of items ('products' or 'categories')
-     * @param {boolean} options.filterOnCategorySelect - Whether to filter when categories are selected
-     * @param {string} options.navToProductsUrl - URL for navigating to products view
+     * @param {string} options.containerId - ID of the container element
+     * @param {string} options.filterUrl - URL to fetch filtered items
+     * @param {Function} [options.onUpdate] - Callback after filter update
+     * @param {number} [options.searchDelay=300] - Debounce delay for search
+     * @param {string} [options.itemType='products'] - Type of items being filtered
+     * @param {boolean} [options.filterOnCategorySelect=true] - Whether to filter when categories change
      */
     constructor(options) {
         // Core settings
@@ -32,566 +32,442 @@ export class ItemFilter {
         this.itemType = options.itemType || 'products';
         this.filterOnCategorySelect = options.filterOnCategorySelect !== undefined ? 
             options.filterOnCategorySelect : true;
-        this.navToProductsUrl = options.navToProductsUrl || '/products/staff/';
         
         // State management
         this.container = $(`#${this.containerId}`);
         this.searchTimeout = null;
         this.pendingRequest = null;
-        this.searchInputValue = '';
-        this.processingCategoryClick = false;
-        this.categoriesLoaded = false;
+        this.lastFilteredValue = '';
         
-        // Initialize category data
-        this.selectedCategories = this.getSavedCategories() || [];
-        this.allCategories = [];
+        // Initialize specialized managers
+        this.categoryManager = new CategoryFilterManager(this);
+        this.uiManager = new FilterUIManager(this);
         
-        // Initialization sequence
-        this.initializeSelect2();
-        this.preloadCategories();
-        this.initializeEventListeners();
+        // Initialize components
+        this._initialize();
     }
 
-    /**
-     * Save selected categories to localStorage
-     * @param {Array} categories - Array of category IDs to save
-     */
-    saveCategories(categories) {
-        // Normalize to strings for consistent storage
-        const normalizedCategories = categories.map(id => id.toString());
-        this.selectedCategories = normalizedCategories;
-        localStorage.setItem('selectedCategories', JSON.stringify(normalizedCategories));
-    }
+    // -------------------------------------------------------------------------
+    // Initialization Methods
+    // -------------------------------------------------------------------------
 
     /**
-     * Get saved categories from localStorage
-     * @returns {Array} Array of category IDs
+     * Initialize all components
+     * @private
      */
-    getSavedCategories() {
-        const savedCategories = localStorage.getItem('selectedCategories');
-        return savedCategories ? JSON.parse(savedCategories) : [];
+    _initialize() {
+        this.categoryManager.initialize();
+        this.uiManager.initialize();
+        this._initializeEventListeners();
+        
+        // Initial filter to load data with applied filters
+        // This ensures any pre-selected categories or search terms are applied
+        this.filterItems();
+    }
+    
+    /**
+     * Initialize all event listeners
+     * @private
+     */
+    _initializeEventListeners() {
+        this._setupSearchEvents();
+        this._setupSortEvents();
+        this._setupResetEvents();
+        this._setupListProductsEvent();
     }
 
+    // -------------------------------------------------------------------------
+    // Event Handling Methods
+    // -------------------------------------------------------------------------
+    
     /**
-     * Clear all selected categories
+     * Set up search-related events
+     * @private
      */
-    clearCategories() {
-        const selectElement = this.container.find('.filter-category');
+    _setupSearchEvents() {
+        const searchSelector = '.filter-search';
         
-        // Clear the selection in localStorage
-        localStorage.removeItem('selectedCategories');
-        this.selectedCategories = [];
+        // Use event delegation for better performance
+        this.container.on('input', searchSelector, this._handleSearchInput.bind(this));
+        this.container.on('click', '.clear-search', this._handleClearSearch.bind(this));
+    }
+    
+    /**
+     * Handle search input events with debounce
+     * @private
+     * @param {Event} e - The input event
+     */
+    _handleSearchInput(e) {
+        const searchInput = $(e.currentTarget);
+        const currentValue = searchInput.val();
         
-        // Update the UI
-        selectElement.val([]).trigger('change');
-        this.container.find('.category-count').text('0');
-        $('.category-header').removeClass('selected bg-primary text-white').addClass('bg-light');
-        
-        // Trigger filtering if needed
-        if (this.filterOnCategorySelect) {
+        // Only trigger search if value has changed
+        if (currentValue !== this.lastFilteredValue) {
+            clearTimeout(this.searchTimeout);
+            this.searchTimeout = setTimeout(() => {
+                this.lastFilteredValue = currentValue;
+                this.filterItems();
+            }, this.searchDelay);
+        }
+    }
+    
+    /**
+     * Handle clear search button clicks
+     * @private
+     */
+    _handleClearSearch() {
+        this.container.find('.filter-search').val('');
+        this.lastFilteredValue = '';
+        this.filterItems();
+    }
+    
+    /**
+     * Set up sort-related events
+     * @private
+     */
+    _setupSortEvents() {
+        this.container.on('change', '.filter-sort', () => {
             this.filterItems();
-        }
-    }
-
-    /**
-     * Preload all categories for performance
-     */
-    preloadCategories() {
-        // Skip if there's no category filter
-        if (this.container.find('.filter-category').length === 0) {
-            return;
-        }
-        
-        makeAjaxRequest(
-            '/products/api/categories/search/',
-            'GET',
-            { search: '', limit: 100 },
-            (data) => {
-                this.allCategories = data.categories || [];
-                this.categoriesLoaded = true;
-                
-                const selectElement = this.container.find('.filter-category');
-                const currentSelection = selectElement.val() || [];
-                
-                // Add options for each category
-                this.allCategories.forEach(category => {
-                    if (selectElement.find(`option[value="${category.id}"]`).length === 0) {
-                        const newOption = new Option(category.name, category.id, false, false);
-                        selectElement.append(newOption);
-                    }
-                });
-                
-                // Restore selection
-                selectElement.val(currentSelection).trigger('change');
-                
-                console.log('Categories preloaded successfully:', this.allCategories.length);
-            },
-            (error) => {
-                console.error('Failed to preload categories:', error);
-            }
-        );
-    }
-
-    /**
-     * Initialize Select2 with custom templates and event handlers
-     */
-    initializeSelect2() {
-        // Skip if there's no category filter
-        if (this.container.find('.filter-category').length === 0) {
-            return;
-        }
-        
-        const selectElement = this.container.find('.filter-category');
-        
-        // Configure Select2
-        selectElement.select2({
-            theme: 'bootstrap-5',
-            width: '100%',
-            multiple: true,
-            allowClear: true,
-            closeOnSelect: false,
-            placeholder: 'Select or search categories',
-            minimumInputLength: 0,
-            minimumResultsForSearch: 0,
-            templateResult: this.formatCategoryOption,
-            ajax: {
-                delay: 250,
-                url: '/products/api/categories/search/',
-                data: function (params) {
-                    return {
-                        search: params.term || '',
-                        page: params.page || 1
-                    };
-                },
-                processResults: function (data) {
-                    return {
-                        results: data.categories.map(category => ({
-                            id: category.id,
-                            text: category.name,
-                            selected: false
-                        })),
-                        pagination: {
-                            more: data.has_more
-                        }
-                    };
-                },
-                cache: true
-            }
         });
-
-        // Handle checkbox clicks in dropdown
-        this.setupCheckboxHandlers();
-        
-        // Update checkboxes when dropdown opens
-        this.setupDropdownOpenHandler(selectElement);
     }
     
     /**
-     * Format category options with checkboxes for Select2
+     * Set up reset-related events
+     * @private
      */
-    formatCategoryOption(category) {
-        if (!category.id) {
-            return category.text;
-        }
-        
-        return $(`
-            <div class="select2-result-category">
-                <input type="checkbox" class="form-check-input me-2" id="category-${category.id}" 
-                       ${category.selected ? 'checked' : ''}>
-                <label for="category-${category.id}">${category.text}</label>
-            </div>
-        `);
+    _setupResetEvents() {
+        this.container.on('click', '.reset-all-filters', () => {
+            const clearSearchBtn = this.container.find('.clear-search');
+            const clearCategoriesBtn = this.container.find('.clear-categories-btn');
+            
+            if (clearSearchBtn.length) clearSearchBtn.click();
+            if (clearCategoriesBtn.length) clearCategoriesBtn.click();
+        });
     }
     
     /**
-     * Set up handlers for checkbox clicks in Select2 dropdown
+     * Set up List Products button for category view
+     * @private
      */
-    setupCheckboxHandlers() {
-        $(document).off('click', '.select2-result-category input[type="checkbox"]')
-            .on('click', '.select2-result-category input[type="checkbox"]', (e) => {
-                e.stopPropagation();
+    _setupListProductsEvent() {
+        this.container.on('click', '.list-products-btn', () => {
+            const selectedCategories = this.categoryManager.getSelectedCategories();
+            if (selectedCategories.length > 0) {
+                // Redirect to products view with selected categories
+                window.location.href = `/products/staff/management/?category=${selectedCategories.join(',')}`;
                 
-                const checkbox = $(e.currentTarget);
-                const id = checkbox.attr('id').replace('category-', '');
-                const selectElement = $('.filter-category');
-                const currentSelection = selectElement.val() || [];
-                
-                let newSelection = [...currentSelection];
-                
-                if (checkbox.is(':checked') && !newSelection.includes(id)) {
-                    newSelection.push(id);
-                } else if (!checkbox.is(':checked')) {
-                    newSelection = newSelection.filter(value => value !== id);
-                }
-                
-                selectElement.val(newSelection).trigger('change');
-            });
-    }
-    
-    /**
-     * Set up handler for Select2 dropdown open event
-     */
-    setupDropdownOpenHandler(selectElement) {
-        selectElement.on('select2:open', function() {
-            const selectedValues = $(this).val() || [];
-            
-            setTimeout(() => {
-                $('.select2-result-category input[type="checkbox"]').each(function() {
-                    const id = $(this).attr('id').replace('category-', '');
-                    $(this).prop('checked', selectedValues.includes(id));
-                });
-            }, 50);
-        });
-    }
-
-    /**
-     * Initialize all event listeners for filtering and interaction
-     */
-    initializeEventListeners() {
-        const self = this;
-
-        // Search with debounce - track every input change immediately
-        this.container.on('input', '.filter-search', function() {
-            // Store the current value immediately after each keystroke
-            self.searchInputValue = $(this).val();
-            
-            // Reset the timer for each keystroke
-            clearTimeout(self.searchTimeout);
-            self.searchTimeout = setTimeout(() => {
-                self.filterItems();
-            }, self.searchDelay);
-        });
-
-        // Clear search
-        this.container.on('click', '.clear-search', function() {
-            self.container.find('.filter-search').val('');
-            self.searchInputValue = '';
-            self.filterItems();
-        });
-
-        // Category filter changes (when using the dropdown)
-        if (this.container.find('.filter-category').length > 0) {
-            // Get stored selection from localStorage
-            const savedCategories = this.getSavedCategories();
-            const selectElement = this.container.find('.filter-category');
-            
-            // Apply saved categories if we have any
-            if (savedCategories && savedCategories.length > 0) {
-                // Set values and update UI
-                selectElement.val(savedCategories);
-                
-                // Trigger change to update display
-                try {
-                    selectElement.trigger('change.select2');
-                } catch (e) {
-                    selectElement.trigger('change');
-                }
-                
-                // Update the count display
-                this.container.find('.category-count').text(savedCategories.length);
-                
-                // Update category headers to reflect selection state
-                this.updateCategoryHeaderStyles();
-            }
-            
-            // Register change listener
-            selectElement.on('change', function() {
-                // Update the stored selection
-                const newSelection = $(this).val() || [];
-                self.selectedCategories = newSelection;
-                
-                // Save to localStorage for persistence
-                self.saveCategories(newSelection);
-                
-                // Update category headers in cards to reflect selection state
-                self.updateCategoryHeaderStyles();
-                
-                // Update the count display
-                self.container.find('.category-count').text(newSelection.length);
-                
-                // Only filter if we're configured to filter on category selection
-                if (self.filterOnCategorySelect) {
-                    self.filterItems();
-                }
-            });
-            
-            // New: Clear categories button
-            this.container.on('click', '.clear-categories-btn', function() {
-                selectElement.val([]).trigger('change');
-                self.saveCategories([]);
-                self.container.find('.category-count').text('0');
-                self.updateCategoryHeaderStyles();
-                
-                if (self.filterOnCategorySelect) {
-                    self.filterItems();
-                }
-            });
-            
-            // New: List products button
-            this.container.on('click', '.list-products-btn', function() {
-                const selectedCategories = self.selectedCategories;
-                
-                if (!selectedCategories || selectedCategories.length === 0) {
-                    Swal.fire({
-                        icon: 'info',
-                        title: 'No Categories Selected',
-                        text: 'Please select at least one category to list its products.',
-                        confirmButtonText: 'OK'
-                    });
-                    return;
-                }
-                
-                // Navigate to products tab with the categories pre-selected
-                // First, ensure the selection is saved
-                self.saveCategories(selectedCategories);
-                
-                // Switch to the products tab
-                // Find and click the Products accordion button
-                $('#products-header .accordion-button').click();
-            });
-        }
-
-        // Sort items
-        this.container.on('change', '.filter-sort', function() {
-            self.filterItems();
-        });
-        
-        // Handle clicks on category headers in cards
-        $(document).off('click', '.category-header').on('click', '.category-header', function(e) {
-            if (self.itemType !== 'categories') return; // Only handle in categories view
-        
-            // Prevent clicks on buttons from triggering category selection
-            if ($(e.target).closest('.btn-group').length || $(e.target).closest('.btn').length) {
-                return;
-            }
-        
-            e.preventDefault();
-            e.stopPropagation();
-        
-            // Prevent rapid double-clicks
-            if ($(this).data('processing') === true) {
-                return;
-            }
-            $(this).data('processing', true);
-        
-            const categoryId = $(this).data('category-id').toString();
-            const categoryName = $(this).find('.category-title').text();
-            const categoryCard = $(this);
-            const selectElement = self.container.find('.filter-category');
-            
-            // Get current selection - make sure to map to strings
-            let currentSelection = (self.selectedCategories || []).map(id => id.toString());
-            
-            // Determine if we're adding or removing
-            const isSelected = currentSelection.includes(categoryId);
-            
-            // Clone the selection array so we're not modifying the original directly
-            let newSelection = [...currentSelection];
-            
-            if (isSelected) {
-                // Remove from selection
-                newSelection = newSelection.filter(id => id !== categoryId);
-                
-                // Update visual state immediately for responsive feel
-                categoryCard.removeClass('selected bg-primary text-white').addClass('bg-light');
-            } else {
-                // Add to selection
-                newSelection.push(categoryId);
-                
-                // Update visual state immediately for responsive feel
-                categoryCard.addClass('selected bg-primary text-white').removeClass('bg-light');
-                
-                // Ensure the option exists in the dropdown
-                if (selectElement.find(`option[value="${categoryId}"]`).length === 0) {
-                    const newOption = new Option(categoryName, categoryId, false, false);
-                    selectElement.append(newOption);
-                }
-            }
-            
-            // Update internal state
-            self.selectedCategories = newSelection;
-            
-            // Save to localStorage
-            self.saveCategories(newSelection);
-            
-            // Update the DOM select element first
-            selectElement.val(newSelection);
-            
-            // Update the count display
-            const countDisplay = self.container.find('.category-count');
-            if (countDisplay.length) {
-                countDisplay.text(newSelection.length);
-            }
-            
-            // Use a promise to make the Select2 update more reliable
-            const updateSelect2 = function() {
-                return new Promise((resolve) => {
-                    if ($.fn.select2) {
-                        try {
-                            selectElement.trigger('change.select2');
-                            resolve();
-                        } catch (error) {
-                            console.warn("Error with change.select2, falling back to standard change", error);
-                            selectElement.trigger('change');
-                            resolve();
-                        }
-                    } else {
-                        selectElement.trigger('change');
-                        resolve();
-                    }
-                });
-            };
-            
-            // Execute the update and handle completion
-            updateSelect2().then(() => {
-                // Release processing lock after a short delay
+                // Ensure the Product accordion is open
                 setTimeout(() => {
-                    $(categoryCard).data('processing', false);
+                    $('#product-list-section').addClass('show');
+                    $('#products-header button').attr('aria-expanded', 'true').removeClass('collapsed');
                     
-                    // Verify that the visual state matches the selection state
-                    if (newSelection.includes(categoryId)) {
-                        categoryCard.addClass('selected bg-primary text-white').removeClass('bg-light');
-                    } else {
-                        categoryCard.removeClass('selected bg-primary text-white').addClass('bg-light');
-                    }
+                    // Scroll to the product section
+                    $('html, body').animate({
+                        scrollTop: $('#products-header').offset().top - 100
+                    }, 500);
                 }, 300);
-            });
-        });
-    }
-    
-    // Method to update category headers based on selection state
-    updateCategoryHeaderStyles() {
-        const selectedCategories = this.selectedCategories;
-        
-        // Update all category headers
-        $('.category-header').each(function() {
-            const categoryId = $(this).data('category-id').toString();
-            
-            if (selectedCategories.includes(categoryId)) {
-                $(this).addClass('selected bg-primary text-white').removeClass('bg-light');
             } else {
-                $(this).removeClass('selected bg-primary text-white').addClass('bg-light');
+                notifications.displayWarning('Please select at least one category first.');
             }
         });
     }
 
-    filterItems() {
-        // If there's a pending request, abort it
-        if (this.pendingRequest && typeof this.pendingRequest.abort === 'function') {
-            this.pendingRequest.abort();
-        }
-        
-        // Use the most up-to-date search value
-        // First check the actual input field (most current)
-        const currentInputValue = this.container.find('.filter-search').val();
-        // If there's a discrepancy, use the most recent value
-        const searchValue = currentInputValue || this.searchInputValue;
+    // -------------------------------------------------------------------------
+    // Filtering Methods
+    // -------------------------------------------------------------------------
 
-        // Get the selected categories
-        const selectedCategories = this.selectedCategories;
+    /**
+     * Filter items based on current filter settings
+     */
+    filterItems() {
+        // Cancel any pending request
+        this._cancelPendingRequest();
+
+        // Gather filter parameters
+        const requestParams = this._buildRequestParams();
         
-        // Build the params object with proper handling for arrays
-        const params = {
-            search: searchValue,
+        // Update UI before sending request
+        this.uiManager.updateFilterSummary();
+        this._showLoading(true);
+        
+        // Save search field focus state
+        const focusState = this._captureSearchFieldState();
+        
+        // Make the request using ApiClient
+        this._makeFilterRequest(requestParams, focusState);
+    }
+    
+    /**
+     * Cancel any pending filter request
+     * @private
+     */
+    _cancelPendingRequest() {
+        // If there's a pending request reference, abort it
+        if (this.pendingRequest) {
+            // Try using ApiClient's abort method first
+            if (apiClient.pendingRequests && apiClient.pendingRequests.includes(this.pendingRequest)) {
+                apiClient.removePendingRequest(this.pendingRequest);
+                if (typeof this.pendingRequest.abort === 'function') {
+                    this.pendingRequest.abort();
+                }
+            } 
+            // Fallback to direct abort if needed
+            else if (typeof this.pendingRequest.abort === 'function') {
+                this.pendingRequest.abort();
+            }
+            
+            this.pendingRequest = null;
+        }
+    }
+    
+    /**
+     * Build request parameters for filtering
+     * @private
+     * @returns {Object} Request parameters
+     */
+    _buildRequestParams() {
+        const currentInputValue = this.container.find('.filter-search').val();
+        const selectedCategories = this.categoryManager.getSelectedCategories();
+        const categoryParam = selectedCategories.join(',');
+        
+        const requestParams = {
+            search: currentInputValue,
             sort: this.container.find('.filter-sort').val(),
-            items_only: true, // Add a flag to request only the items, not the filter controls
-            highlightSelected: true // Flag to indicate we want to highlight selected categories
+            items_only: true
         };
         
-        // Special handling for categories array - convert to comma-separated string
-        if (selectedCategories && selectedCategories.length > 0) {
-            params.category = selectedCategories.join(',');
-            
-            // For category view, we want to show all categories but highlight selected ones
-            // We don't filter by category unless specifically configured to do so
-            if (this.itemType === 'categories' && !this.filterOnCategorySelect) {
-                params.selected_categories = selectedCategories.join(',');
-                // Don't filter by category, just pass the selection for highlighting
-                delete params.category;
-            }
+        // Only include category parameter for product filtering, not for category filtering
+        // This way, when on the categories page, we'll show all categories regardless of which ones are selected
+        if (categoryParam && this.itemType !== 'categories') {
+            requestParams.category = categoryParam;
         }
-
-        // Debug logging
-        console.log(`Filtering ${this.itemType} with parameters:`, {
-            search: searchValue,
-            category: selectedCategories,
-            categoryParam: params.category,
-            sort: params.sort,
-            filterOnCategorySelect: this.filterOnCategorySelect
-        });
-
-        // Determine the target grid selector based on the item type
-        let gridSelector;
-        if (this.itemType === 'categories') {
-            gridSelector = '#category-cards-grid';
-        } else {
-            gridSelector = '#product-cards-grid';
-        }
-
-        // Store the jqXHR object returned by makeAjaxRequest to be able to abort it
-        this.pendingRequest = makeAjaxRequest(
-            this.filterUrl,
-            'GET',
-            params,
-            (response) => {
-                const cardsContainer = $(gridSelector);
-                
-                if (!cardsContainer.length) {
-                    console.error(`Couldn't find ${gridSelector} element`);
-                    return;
-                }
-                
-                if (response.html) {
-                    // Direct replacement with the response HTML
-                    cardsContainer.html(response.html);
-                    console.log(`${this.itemType} filter results updated`);
-                    
-                    // Update the styling for category headers after content is updated
-                    this.updateCategoryHeaderStyles();
-                } else {
-                    console.error("Response did not contain HTML property");
-                }
-                
-                // Get the current value again after the response
-                const finalInputValue = this.container.find('.filter-search').val();
-                
-                // If the input value changed during the request, make sure we preserve it
-                if (finalInputValue !== searchValue) {
-                    console.log(`Input value changed during request: "${searchValue}" -> "${finalInputValue}"`);
-                    this.container.find('.filter-search').val(finalInputValue);
-                    this.searchInputValue = finalInputValue;
-                }
-                
-                // Call the update callback
-                this.onUpdate();
-                
-                this.pendingRequest = null;
-            },
-            (jqXHR, textStatus, errorThrown) => {
-                console.error('Filter request failed:', textStatus, errorThrown);
-                this.displayError(`Failed to filter ${this.itemType}. Please try again.`);
-                this.pendingRequest = null;
-            },
-            true // Pass true to make it abortable (default value)
-        );
+        
+        // Debug logging to help track what parameters are being sent
+        console.log(`Building filter params for ${this.itemType}:`, requestParams);
+        
+        return requestParams;
     }
-
+    
     /**
-     * Display an error message using SweetAlert
-     * @param {string} message - Error message to display
+     * Capture the current state of the search field for restoring later
+     * @private
+     * @returns {Object} The search field state
      */
-    displayError(message) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: message,
-            confirmButtonText: 'OK'
+    _captureSearchFieldState() {
+        const searchField = this.container.find('.filter-search');
+        const wasSearchFocused = document.activeElement === searchField[0];
+        
+        return {
+            field: searchField,
+            wasFocused: wasSearchFocused,
+            selectionStart: wasSearchFocused ? searchField[0].selectionStart : null,
+            selectionEnd: wasSearchFocused ? searchField[0].selectionEnd : null
+        };
+    }
+    
+    /**
+     * Make the filter request to the server using ApiClient
+     * @private
+     * @param {Object} requestParams - The filter parameters
+     * @param {Object} focusState - The search field focus state
+     */
+    _makeFilterRequest(requestParams, focusState) {
+        // Use ApiClient.get with Promise handling
+        this.pendingRequest = apiClient.get(this.filterUrl, requestParams, {
+            // Skip global error handler as we'll handle errors here
+            skipGlobalErrorHandler: true
+        })
+        .then(response => {
+            this._handleFilterSuccess(response, focusState);
+        })
+        .catch(error => {
+            this._handleFilterError(error, focusState);
+        })
+        .finally(() => {
+            // This will execute regardless of success or failure
+            this.pendingRequest = null;
         });
     }
     
     /**
-     * Clean up event listeners and resources
-     * Prevents memory leaks when filter instances are no longer needed
+     * Handle successful filter response
+     * @private
+     * @param {Object|string} response - The server response
+     * @param {Object} focusState - The search field focus state
+     */
+    _handleFilterSuccess(response, focusState) {
+        try {
+            this._processSuccessfulResponse(response);
+        } catch (error) {
+            console.error('Error processing filter results:', error);
+        } finally {
+            this._finishFilterRequest(focusState);
+        }
+    }
+    
+    /**
+     * Handle filter request error
+     * @private
+     * @param {Object} error - The error object
+     * @param {Object} focusState - The search field focus state
+     */
+    _handleFilterError(error, focusState) {
+        if (error.statusText !== 'abort') {
+            console.error(`Error fetching ${this.itemType}:`, error);
+            notifications.displayError(`Failed to filter ${this.itemType}. Please try again.`);
+        }
+        this._finishFilterRequest(focusState);
+    }
+    
+    /**
+     * Common cleanup after filter request completes
+     * @private
+     * @param {Object} focusState - The search field focus state
+     */
+    _finishFilterRequest(focusState) {
+        this._showLoading(false);
+        
+        // Restore search field focus if it was focused before
+        if (focusState.wasFocused) {
+            focusState.field.focus();
+            if (focusState.selectionStart !== null && focusState.selectionEnd !== null) {
+                focusState.field[0].setSelectionRange(
+                    focusState.selectionStart, 
+                    focusState.selectionEnd
+                );
+            }
+        }
+    }
+    
+    /**
+     * Process a successful API response
+     * @private
+     * @param {Object|string} response - The server response
+     */
+    _processSuccessfulResponse(response) {
+        // Find the proper container to update based on the item type
+        let itemContainer;
+        
+        if (this.itemType === 'categories') {
+            // Try to find the category cards grid first
+            itemContainer = $('#category-cards-grid');
+            
+            // If not found, try to locate it within our container
+            if (!itemContainer.length) {
+                itemContainer = this.container.find('#category-cards-grid');
+            }
+            
+            // Fallback to the filtered-items container if it exists
+            if (!itemContainer.length) {
+                itemContainer = this.container.find('.filtered-items');
+            }
+        } else {
+            // Try to find the product cards grid first
+            itemContainer = $('#product-cards-grid');
+            
+            // If not found, try to locate it within our container
+            if (!itemContainer.length) {
+                itemContainer = this.container.find('#product-cards-grid');
+            }
+            
+            // Fallback to the filtered-items container if it exists
+            if (!itemContainer.length) {
+                itemContainer = this.container.find('.filtered-items');
+            }
+        }
+        
+        // If we still don't have a container, fall back to the main container
+        if (!itemContainer.length) {
+            console.warn(`Could not find specific container for ${this.itemType}, using main container`);
+            itemContainer = this.container;
+        }
+        
+        // Update the content with the new HTML
+        if (response.html) {
+            itemContainer.html(response.html);
+            console.log(`Updated ${this.itemType} HTML content from response.html`);
+        } else if (typeof response === 'string') {
+            itemContainer.html(response);
+            console.log(`Updated ${this.itemType} HTML content from string response`);
+        } else {
+            console.warn(`No HTML content found in response for ${this.itemType}`);
+        }
+        
+        // Get item count using the most reliable method available
+        const itemCount = this._extractItemCount(response, itemContainer);
+        
+        // Update count displays
+        this.uiManager.updateItemCountDisplays(itemCount);
+        
+        // Call the onUpdate callback if provided
+        if (typeof this.onUpdate === 'function') {
+            this.onUpdate(response);
+        }
+        
+        console.log(`Updated ${this.itemType} container with new content. Count: ${itemCount}`);
+    }
+    
+    /**
+     * Extract the item count from the response using multiple fallback strategies
+     * @private
+     * @param {Object|string} response - The server response
+     * @param {jQuery} container - The items container
+     * @returns {number} The item count
+     */
+    _extractItemCount(response, container) {
+        // Try API response properties first
+        if (response.count !== undefined) {
+            return response.count;
+        } else if (response.total_count !== undefined) {
+            return response.total_count;
+        }
+        
+        // Fallback to counting DOM elements
+        return this._countItemsInContainer(container);
+    }
+    
+    /**
+     * Count items in the container as a fallback
+     * @private
+     * @param {jQuery} container - The items container
+     * @returns {number} The item count
+     */
+    _countItemsInContainer(container) {
+        // Try to count items based on common selectors
+        const itemSelectors = ['.card', '.item', '.product-card', '.category-card'];
+        
+        for (const selector of itemSelectors) {
+            const count = container.find(selector).length;
+            if (count > 0) return count;
+        }
+        
+        return 0;
+    }
+    
+    /**
+     * Show or hide loading state
+     * @private
+     * @param {boolean} show - Whether to show loading state
+     */
+    _showLoading(show) {
+        setDisabledState(this.container, '.filter-sort', show);
+        // Don't disable the search field to prevent focus issues
+        this.container.find('.filter-loading').toggleClass('loading', show);
+    }
+    
+    // -------------------------------------------------------------------------
+    // Public API Methods
+    // -------------------------------------------------------------------------
+    
+    /**
+     * Public method to apply saved categories (used by CategoryManager)
+     */
+    preloadCategories() {
+        this.categoryManager.applySavedCategories();
+    }
+    
+    /**
+     * Clean up resources to prevent memory leaks
      */
     destroy() {
         // Clear timeouts
@@ -599,36 +475,20 @@ export class ItemFilter {
             clearTimeout(this.searchTimeout);
         }
         
-        // Abort any pending requests
-        if (this.pendingRequest && typeof this.pendingRequest.abort === 'function') {
+        // Abort any pending request
+        if (this.pendingRequest) {
             this.pendingRequest.abort();
         }
         
-        // Remove event listeners
+        // Remove event handlers
         this.container.off('input', '.filter-search');
         this.container.off('click', '.clear-search');
-        this.container.off('click', '.clear-categories-btn');
-        this.container.off('click', '.list-products-btn');
         this.container.off('change', '.filter-sort');
+        this.container.off('click', '.reset-all-filters');
+        this.container.off('click', '.list-products-btn');
         
-        // Clean up Select2
-        const selectElement = this.container.find('.filter-category');
-        if (selectElement.length && $.fn.select2) {
-            try {
-                selectElement.off('change').off('select2:open');
-                selectElement.select2('destroy');
-            } catch (e) {
-                console.warn('Error destroying Select2:', e);
-            }
-        }
-        
-        // Remove global document event handlers
-        $(document).off('click', '.select2-result-category input[type="checkbox"]');
-        $(document).off('click', '.category-header');
-        
-        console.log(`ItemFilter for ${this.itemType} destroyed.`);
+        // Destroy managers
+        this.categoryManager.destroy();
+        this.uiManager.destroy();
     }
 }
-
-// Export for use in other modules
-export default ItemFilter;

@@ -1,235 +1,95 @@
 /**
- * form-utils.js - Reusable form utilities
- * 
- * Provides form handling, validation, and submission helpers
+ * form-utils.js - Common form-related utilities
  */
-import { makeAjaxRequest } from '../../../../static/js/ajax_helper.js';
-import Swal from 'sweetalert2';
 
 /**
- * Format error messages from form validation
- * @param {Object|string} errors - Error data
- * @returns {string} - Formatted error message
- */
-export function formatErrorMessages(errors) {
-    if (!errors) return 'Unknown error occurred';
-    
-    if (typeof errors === 'object') {
-        return Object.entries(errors)
-            .map(([field, fieldErrors]) => {
-                if (Array.isArray(fieldErrors)) {
-                    return `${field}: ${fieldErrors.join(', ')}`;
-                }
-                return `${field}: ${fieldErrors}`;
-            })
-            .join('\n');
-    }
-    
-    return errors;
-}
-
-/**
- * Submit a form with AJAX
- * @param {HTMLElement} form - The form to submit
- * @param {Function} onSuccess - Success callback
- * @param {Function} onError - Error callback
- * @returns {Promise} - Promise resolving with the response
- */
-export function submitFormAjax(form, onSuccess, onError) {
-    Swal.showLoading();
-    const formData = new FormData(form);
-    
-    return makeAjaxRequest(
-        form.action,
-        'POST',
-        formData,
-        (response) => {
-            if (!response.success) {
-                const errorMessage = formatErrorMessages(response.errors);
-                Swal.hideLoading();
-                Swal.showValidationMessage(errorMessage);
-                return Promise.reject(response.errors);
-            }
-            
-            if (onSuccess) {
-                onSuccess(response);
-            }
-            
-            return response;
-        },
-        (error) => {
-            console.error('Form submission error:', error);
-            Swal.hideLoading();
-            
-            let errorMessage = 'An error occurred while processing your request.';
-            if (error.responseJSON) {
-                errorMessage = formatErrorMessages(error.responseJSON.errors);
-            }
-            
-            Swal.showValidationMessage(errorMessage);
-            
-            if (onError) {
-                onError(error);
-            }
-            
-            return Promise.reject(error);
-        },
-        false,
-        false
-    );
-}
-
-/**
- * Initialize Select2 on a form field
- * @param {jQuery} selectElement - The select element to initialize
+ * Set up a Select2 dropdown
+ * @param {jQuery} element - The select element
  * @param {Object} options - Configuration options
  */
-export function initializeSelect2(selectElement, options = {}) {
-    const defaultOptions = {
+export function setupSelect2(element, options) {
+    if (!element.length) return;
+    
+    const config = {
         theme: 'bootstrap-5',
         width: '100%',
-        placeholder: 'Select an option'
+        multiple: options.multiple || false,
+        allowClear: options.allowClear || false,
+        closeOnSelect: options.closeOnSelect || true,
+        placeholder: options.placeholder || 'Select an option',
+        minimumInputLength: options.minimumInputLength || 0,
+        minimumResultsForSearch: options.minimumResultsForSearch || 0,
+        templateResult: options.formatResult || null,
+        templateSelection: options.formatSelection || function(data) {
+            return data.text;
+        }
     };
     
-    selectElement.select2({...defaultOptions, ...options});
-}
-
-/**
- * Disable a form while it's being submitted
- * @param {jQuery} form - The form to disable
- * @param {boolean} disabled - Whether to disable or enable the form
- */
-export function setFormDisabled(form, disabled) {
-    form.find('input, select, textarea, button').prop('disabled', disabled);
-}
-
-/**
- * Show a form in a modal dialog
- * @param {string} title - Dialog title
- * @param {string} html - Dialog content
- * @param {Function} onSubmit - Form submission handler
- * @param {boolean} isEdit - Whether this is an edit operation
- * @returns {Promise} - Promise resolving when dialog is closed
- */
-export function showFormDialog(title, html, onSubmit, isEdit = false) {
-    return Swal.fire({
-        title: title,
-        html: html,
-        showCancelButton: true,
-        confirmButtonText: isEdit ? 'Save' : 'Submit',
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        preConfirm: onSubmit
-    });
-}
-
-/**
- * Show a confirmation dialog
- * @param {string} title - Dialog title
- * @param {string} text - Dialog message
- * @param {Function} onConfirm - Confirmation handler
- * @returns {Promise} - Promise resolving when dialog is closed
- */
-export function confirmAction(title, text, onConfirm) {
-    return Swal.fire({
-        title: title,
-        text: text,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
-        preConfirm: onConfirm
-    });
-}
-
-/**
- * Collect form data as an object
- * @param {HTMLElement} form - The form to collect data from
- * @returns {Object} - Object containing form data
- */
-export function collectFormData(form) {
-    const formData = new FormData(form);
-    const data = {};
-    
-    for (let [key, value] of formData.entries()) {
-        data[key] = value;
+    // Add AJAX configuration if URL is provided
+    if (options.url) {
+        config.ajax = {
+            delay: 250,
+            url: options.url,
+            data: (params) => ({
+                search: params.term || '',
+                page: params.page || 1
+            }),
+            processResults: (data) => ({
+                results: data.categories.map(item => ({
+                    id: item.id,
+                    text: item.name,
+                    selected: false
+                })),
+                pagination: {
+                    more: data.has_more
+                }
+            }),
+            cache: true
+        };
     }
     
-    return data;
+    element.select2(config);
 }
 
 /**
- * Validate a form field
- * @param {HTMLElement} field - The field to validate
- * @param {Function} validator - Validation function returning error message or null
- * @returns {boolean} - Whether the field is valid
+ * Toggle an element's visibility with smooth transition
+ * @param {jQuery} element - The element to toggle
+ * @param {Object} callbacks - Optional callback functions
  */
-export function validateField(field, validator) {
-    const $field = $(field);
-    const errorMessage = validator($field.val(), $field);
+export function toggleElement(element, callbacks = {}) {
+    const isExpanded = element.hasClass('show');
+    const newState = !isExpanded;
     
-    if (errorMessage) {
-        $field.addClass('is-invalid');
-        
-        // Create or update error message
-        let $feedback = $field.next('.invalid-feedback');
-        if (!$feedback.length) {
-            $feedback = $('<div class="invalid-feedback"></div>');
-            $field.after($feedback);
-        }
-        
-        $feedback.text(errorMessage);
-        return false;
+    if (newState) {
+        element.addClass('show');
+        if (callbacks.onShow) callbacks.onShow();
     } else {
-        $field.removeClass('is-invalid');
-        $field.next('.invalid-feedback').remove();
-        return true;
+        element.removeClass('show');
+        if (callbacks.onHide) callbacks.onHide();
     }
 }
 
 /**
- * Set up form field validation
- * @param {jQuery} form - The form to set up validation for
- * @param {Object} validationRules - Mapping of field names to validation functions
+ * Set disabled state for a group of elements
+ * @param {jQuery} container - Container element
+ * @param {string} selector - Selector for elements to disable/enable
+ * @param {boolean} disabled - Whether to disable or enable the elements
  */
-export function setupFormValidation(form, validationRules) {
-    // Validate on submit
-    form.on('submit', function(e) {
-        let isValid = true;
-        
-        for (const [fieldName, validator] of Object.entries(validationRules)) {
-            const field = form.find(`[name="${fieldName}"]`)[0];
-            if (field && !validateField(field, validator)) {
-                isValid = false;
-            }
-        }
-        
-        if (!isValid) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-        
-        return isValid;
-    });
-    
-    // Validate fields on blur
-    for (const fieldName of Object.keys(validationRules)) {
-        form.on('blur', `[name="${fieldName}"]`, function() {
-            validateField(this, validationRules[fieldName]);
-        });
-    }
+export function setDisabledState(container, selector, disabled) {
+    container.find(selector).prop('disabled', disabled);
 }
 
-export default {
-    formatErrorMessages,
-    submitFormAjax,
-    initializeSelect2,
-    setFormDisabled,
-    showFormDialog,
-    confirmAction,
-    collectFormData,
-    validateField,
-    setupFormValidation
-};
+/**
+ * Reset a form to its initial state
+ * @param {jQuery} form - The form element
+ */
+export function resetForm(form) {
+    form[0].reset();
+    
+    // Reset Select2 dropdowns
+    form.find('select').each(function() {
+        if ($(this).hasClass('select2-hidden-accessible')) {
+            $(this).val(null).trigger('change');
+        }
+    });
+}

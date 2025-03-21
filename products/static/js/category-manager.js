@@ -3,7 +3,7 @@
  * 
  * Handles category CRUD operations, filtering, and event handling
  */
-import { makeAjaxRequest } from '../../../static/js/ajax_helper.js';
+import apiClient from '../../../static/js/api-client.js';
 import { ItemFilter } from './filters.js';
 import { BaseManager } from './utilities/base-manager.js';
 import Swal from 'sweetalert2';
@@ -25,6 +25,9 @@ export class CategoryManager extends BaseManager {
             ...options,
             itemType: 'category'
         });
+        
+        // Store reference to filter
+        this.filter = null;
     }
 
     /**
@@ -32,25 +35,23 @@ export class CategoryManager extends BaseManager {
      * Implements abstract method from BaseManager
      */
     fetchItems() {
-        makeAjaxRequest(
-            this.urls.getCategoryCards,
-            'GET',
-            {},
-            (response) => {
-                if (response.html) {
-                    this.elements.categoryListContainer.html(response.html);
-                } else {
-                    this.elements.categoryListContainer.html(response);
-                }
-                
-                this.initializeFilters();
-                this.attachCategoryEventListeners();
-            },
-            (error) => {
-                console.error('Error fetching categories:', error);
-                this.notifications.displayError("Failed to load category cards.");
+        apiClient.get(this.urls.getCategoryCards, {}, {
+            skipGlobalErrorHandler: true
+        })
+        .then((response) => {
+            if (response.html) {
+                this.elements.categoryListContainer.html(response.html);
+            } else {
+                this.elements.categoryListContainer.html(response);
             }
-        );
+            
+            this.initializeFilters();
+            this.attachCategoryEventListeners();
+        })
+        .catch((error) => {
+            console.error('Error fetching categories:', error);
+            this.notifications.displayError("Failed to load category cards.");
+        });
     }
 
     /**
@@ -60,15 +61,9 @@ export class CategoryManager extends BaseManager {
      */
     delete(categorySlug) {
         const deleteUrl = `${this.urls.categoryBase}${categorySlug}/delete/`;
-        try {
-            const ajaxPromise = makeAjaxRequest(deleteUrl, 'POST');
-            if (!ajaxPromise || typeof ajaxPromise.then !== 'function') {
-                return Promise.reject("Invalid AJAX response");
-            }
-            return ajaxPromise;
-        } catch (error) {
-            return Promise.reject(error);
-        }
+        return apiClient.post(deleteUrl, {}, {
+            skipGlobalErrorHandler: true
+        });
     }
 
     /**
@@ -98,16 +93,15 @@ export class CategoryManager extends BaseManager {
                 inputPlaceholder: 'Enter category name',
                 inputValue: categoryName,
                 preConfirm: (name) => {
-                    return makeAjaxRequest(
+                    return apiClient.post(
                         this.urls.addCategory,
-                        'POST',
                         { name: name },
-                        (response) => response,
-                        (error) => {
-                            this.notifications.displaySwalError(error, "Category creation failed.");
-                            return Promise.reject(error);
-                        }
-                    );
+                        { skipGlobalErrorHandler: true }
+                    )
+                    .catch(error => {
+                        this.notifications.displaySwalError(error, "Category creation failed.");
+                        return Promise.reject(error);
+                    });
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -132,13 +126,11 @@ export class CategoryManager extends BaseManager {
         const categoryName = $(event.currentTarget).data('category-name');
         const categorySlug = $(event.currentTarget).data('category-slug');
 
-        makeAjaxRequest(
-            `/products/staff/category/${categorySlug}/products/`,
-            'GET',
-            {},
-            (response) => this.confirmCategoryDeletion(response, categorySlug, categoryName),
-            (error) => this.notifications.displaySwalError(error, "Failed to get products for category.")
-        );
+        apiClient.get(`/products/staff/category/${categorySlug}/products/`, {}, {
+            skipGlobalErrorHandler: true
+        })
+        .then((response) => this.confirmCategoryDeletion(response, categorySlug, categoryName))
+        .catch((error) => this.notifications.displaySwalError(error, "Failed to get products for category."));
     }
     
     /**
@@ -196,6 +188,22 @@ export class CategoryManager extends BaseManager {
                 this.showForm($(e.currentTarget).attr('href'), true);
             });
         
+        // Category headers - connect with the filter's category manager
+        $('#category-cards-grid').off('click', '.category-header')
+            .on('click', '.category-header', (e) => {
+                // Only handle if not clicking on a button or link inside the card
+                if (!$(e.target).closest('button, a').length) {
+                    const categoryId = $(e.currentTarget).data('category-id');
+                    if (categoryId && this.filter && this.filter.categoryManager) {
+                        // Use the filter's category manager to toggle the category
+                        this.filter.categoryManager._toggleCategory(categoryId.toString());
+                        // Update category styling after toggling
+                        this.filter.categoryManager._updateCategoryCardStyling();
+                        return false; // Prevent any parent handlers from triggering
+                    }
+                }
+            });
+        
         // Add cursor pointer to indicate clickable headers
         $('#category-cards-grid .category-header').css('cursor', 'pointer');
     }
@@ -208,18 +216,34 @@ export class CategoryManager extends BaseManager {
         try {
             console.log("Initializing category filters");
             
+            // Clean up any existing filter instance
+            if (this.filter) {
+                this.filter.destroy();
+            }
+            
             this.filter = new ItemFilter({
                 containerId: 'category-cards-container',
                 filterUrl: this.urls.getCategoryCards,
                 itemType: 'categories',
-                filterOnCategorySelect: false,
+                filterOnCategorySelect: true,  // Changed from false to true to enable dynamic updating
                 onUpdate: () => {
+                    // Important: Re-attach category event listeners after filter updates the DOM
                     this.attachCategoryEventListeners();
+                    
+                    // Ensure category card styling is updated to match selected state
+                    if (this.filter.categoryManager) {
+                        this.filter.categoryManager._updateCategoryCardStyling();
+                    }
                 }
             });
             
             if (this.filter && typeof this.filter.preloadCategories === 'function') {
                 this.filter.preloadCategories();
+                
+                // Important: Ensure the category cards are styled correctly initially
+                if (this.filter.categoryManager) {
+                    this.filter.categoryManager._updateCategoryCardStyling();
+                }
             }
             
             console.log("Category filters initialized successfully");
@@ -237,6 +261,13 @@ export class CategoryManager extends BaseManager {
         // Clean up event listeners
         $('#category-cards-grid').off('click', '.delete-category');
         $('#category-cards-grid').off('click', '.edit-category');
+        $('#category-cards-grid').off('click', '.category-header');
+        
+        // Clean up filter if it exists
+        if (this.filter) {
+            this.filter.destroy();
+            this.filter = null;
+        }
         
         // Call base class destroy
         super.destroy();

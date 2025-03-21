@@ -12,7 +12,11 @@
         <title>{% block title %}SkunkMonkey{% endblock %}</title>
     {% block css %}
         <link rel="stylesheet" href="{% static 'bundles/css/styles.css' %}">
-        {% endblock %}
+    {% endblock %}
+    
+    {% block extra_css %}
+        {# Template-specific CSS files can be included here #}
+    {% endblock %}
     {% block js %}
         <script src="{% static 'bundles/js/main.js' %}"></script>
     {% endblock %}

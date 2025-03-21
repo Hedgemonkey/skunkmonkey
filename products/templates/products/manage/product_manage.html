@@ -3,6 +3,13 @@
 
 {% block title %}SkunkMonkey - Product Management{% endblock %}
 
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/products/category-tags.css' %}">
+    <link rel="stylesheet" href="{% static 'css/products/filter-buttons.css' %}">
+    <link rel="stylesheet" href="{% static 'css/products/product-card-buttons.css' %}">
+    <link rel="stylesheet" href="{% static 'css/products/select2-custom.css' %}">
+{% endblock %}
+
 {% block header %}
 <header class="py-0 bg-image-full" style="background-image: url('https://source.unsplash.com/wfh8dDlNFOk/1600x900')">
     <div class="text-center my-2">

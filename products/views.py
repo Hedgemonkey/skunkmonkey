@@ -200,6 +200,7 @@ def get_product_cards(request):
     category = request.GET.get('category')
     sort = request.GET.get('sort', 'name-asc')
     items_only = request.GET.get('items_only') == 'true'  # Check if we only want items
+    count_only = request.GET.get('count_only') == 'true'  # Check if we only want the count
 
     products = Product.objects.all()
 
@@ -231,6 +232,16 @@ def get_product_cards(request):
         'oldest': 'created_at',
     }
     products = products.order_by(sort_mapping.get(sort, 'name'))
+
+    # Get the total count before any pagination
+    product_count = products.count()
+    
+    # If we only want the count, return it immediately without rendering HTML
+    if count_only:
+        return JsonResponse({
+            'count': product_count,
+            'total_count': product_count
+        })
 
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         context = {
@@ -269,7 +280,12 @@ def get_product_cards(request):
                 request=request
             )
             
-        return JsonResponse({'html': html})
+        # Return both the HTML and the product count in the JSON response
+        return JsonResponse({
+            'html': html,
+            'count': product_count,  # Add the count to the response
+            'total_count': product_count  # For consistency with other APIs
+        })
 
     return HttpResponseBadRequest("Invalid request.")
 
@@ -282,6 +298,7 @@ def get_category_cards(request):
         category = request.GET.get('category')
         sort = request.GET.get('sort', 'name-asc')
         items_only = request.GET.get('items_only') == 'true'
+        count_only = request.GET.get('count_only') == 'true'  # Check if we only want the count
 
         categories = Category.objects.all()
 
@@ -322,6 +339,16 @@ def get_category_cards(request):
             categories = categories.annotate(Count('products'))
 
         categories = categories.order_by(sort_mapping.get(sort, 'name'))
+        
+        # Get the total count before any pagination
+        category_count = categories.count()
+        
+        # If we only want the count, return it immediately without rendering HTML
+        if count_only:
+            return JsonResponse({
+                'count': category_count,
+                'total_count': category_count
+            })
 
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             # Prepare categories for context
@@ -359,7 +386,13 @@ def get_category_cards(request):
                 context,
                 request=request
             )
-            return JsonResponse({'html': html})
+            
+            # Return the HTML and the count in the JSON response
+            return JsonResponse({
+                'html': html,
+                'count': category_count,  # Add the count to the response
+                'total_count': category_count  # For consistency
+            })
         
         return HttpResponseBadRequest("Invalid request.")
     
@@ -367,7 +400,8 @@ def get_category_cards(request):
         logger.error(f"Error in get_category_cards: {str(e)}")
         return JsonResponse({
             'error': f"Error fetching categories: {str(e)}",
-            'html': '<div class="alert alert-danger">Error loading categories. Please try again.</div>'
+            'html': '<div class="alert alert-danger">Error loading categories. Please try again.</div>',
+            'count': 0  # Return 0 count on error
         }, status=500)
 
 
@@ -376,6 +410,38 @@ def get_category_products(request, category_slug):
     category = get_object_or_404(Category, slug=category_slug)
     product_names = list(category.products.values_list('name', flat=True)) 
     return JsonResponse({'products': product_names})
+
+
+@staff_member_required
+def get_product_count(request):
+    """API endpoint to get the count of unique products in selected categories."""
+    try:
+        # Get category IDs from request parameters
+        category_param = request.GET.get('category', '')
+        
+        if not category_param:
+            return JsonResponse({'product_count': 0})
+        
+        # Parse category IDs
+        if ',' in category_param:
+            category_ids = [int(c) for c in category_param.split(',') if c and c.isdigit()]
+        else:
+            category_ids = [int(category_param)] if category_param.isdigit() else []
+        
+        if not category_ids:
+            return JsonResponse({'product_count': 0})
+        
+        # Query for unique products in the selected categories
+        product_count = Product.objects.filter(category_id__in=category_ids).distinct().count()
+        
+        return JsonResponse({
+            'product_count': product_count,
+            'category_count': len(category_ids)
+        })
+        
+    except Exception as e:
+        logger.error(f"Error in get_product_count: {str(e)}")
+        return JsonResponse({'error': f"Error getting product count: {str(e)}"}, status=500)
 
 
 @staff_member_required

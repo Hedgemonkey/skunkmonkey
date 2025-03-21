@@ -2,54 +2,139 @@
 {% load static %}
 
 <div class="filter-controls mb-4">
-    <div class="row g-3">
-        <div class="col-12 col-md-4">
-            <div class="input-group">
-                <input type="text" 
-                       class="form-control filter-search" 
-                       placeholder="Search {{ item_type|default:'products' }}..."
-                       {% if search %}value="{{ search }}"{% endif %}>
-                <button class="btn btn-outline-secondary clear-search" type="button">
-                    <i class="fas fa-times"></i>
+    <div class="filter-panel p-3 bg-light rounded border">
+        <!-- Header with title -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Filter {{ item_type|default:'products'|title }}</h5>
+            <div class="d-flex">
+                <button class="btn btn-sm btn-outline-secondary me-2 reset-all-filters" type="button" title="Reset all filters">
+                    <i class="fas fa-undo-alt me-1"></i> Reset
+                </button>
+                <button class="btn btn-sm btn-outline-primary filter-toggle collapsed" type="button" aria-expanded="false" aria-controls="filterOptions">
+                    <i class="fas fa-sliders-h me-1"></i> <span class="filter-toggle-text">Show Filters</span>
                 </button>
             </div>
         </div>
-        {% if show_category_filter %}
-        <div class="col-12 col-md-4">
-            <div class="category-filter-container">
-                <select class="form-select filter-category" multiple data-placeholder="Select categories">
-                    {% for category in categories %}
-                        <option value="{{ category.id }}"
-                                {% if category.id in selected_categories %}selected{% endif %}>
-                            {{ category.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-                <div class="selected-categories-display mt-1 d-flex justify-content-between align-items-center">
-                    <small class="text-muted">Selected: <span class="category-count">{{ selected_categories|length }}</span></small>
-                    <div class="category-action-buttons">
-                        <button class="btn btn-sm btn-outline-secondary clear-categories-btn" type="button">
-                            Clear Selection
+        
+        <!-- Collapsible filter content -->
+        <div class="collapse" id="filterOptions">
+            <!-- Search and Sort options -->
+            <div class="row g-3 mb-3">
+                <div class="col-12 col-md-7">
+                    <label class="form-label small fw-bold">Search</label>
+                    <div class="input-group">
+                        <input type="text" 
+                               class="form-control filter-search" 
+                               placeholder="Enter search terms..."
+                               {% if search %}value="{{ search }}"{% endif %}>
+                        <button class="btn btn-outline-secondary clear-search" type="button">
+                            <i class="fas fa-times"></i>
                         </button>
-                        {% if item_type == 'categories' %}
-                        <button class="btn btn-sm btn-outline-primary list-products-btn" type="button">
-                            List Products
-                        </button>
-                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-12 col-md-5">
+                    <label class="form-label small fw-bold">Sort By</label>
+                    <select class="form-select filter-sort">
+                        {% for option in sort_options %}
+                            <option value="{{ option.value }}"
+                                    {% if current_sort == option.value %}selected{% endif %}>
+                                {{ option.label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Category selection -->
+            {% if show_category_filter %}
+            <div class="row mt-3">
+                <div class="col-12">
+                    <label class="form-label small fw-bold">Categories</label>
+                    <select class="form-select filter-category mb-2" multiple data-placeholder="Select Categories" aria-label="Select Categories">
+                        {% for category in categories %}
+                            <option value="{{ category.id }}"
+                                    {% if category.id in selected_categories %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <div class="selected-categories-tags mt-2" id="selectedCategoriesTags"></div>
+                    <div class="d-flex justify-content-between align-items-center mt-2 category-summary">
+                        <small class="text-muted">Selected: <span class="category-count">{{ selected_categories|length }}</span></small>
+                        <div class="category-action-buttons">
+                            <button class="btn btn-sm btn-outline-secondary clear-categories-btn" type="button">
+                                <i class="fas fa-times me-1"></i>Clear Selection
+                            </button>
+                            {% if item_type == 'categories' %}
+                            <button class="btn btn-sm btn-outline-primary list-products-btn ms-2" type="button" id="expanded-list-products-btn">
+                                <i class="fas fa-list me-1"></i>List Products
+                            </button>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
+            {% endif %}
+            
+            <!-- Active filters summary row - Apply Filters button removed -->
+            <div class="active-filters mt-3 pt-2 border-top">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="active-filter-display">
+                        <small class="text-muted">
+                            Active filters: 
+                            <span class="search-display {% if not search %}d-none{% endif %}">
+                                Search: "<span class="search-term">{{ search }}</span>"
+                            </span>
+                            <span class="categories-display {% if not selected_categories %}d-none{% endif %}">
+                                Categories: <span class="category-count-display">{{ selected_categories|length }}</span>
+                            </span>
+                        </small>
+                    </div>
+                    <!-- Apply Filters button removed -->
+                </div>
+            </div>
         </div>
-        {% endif %}
-        <div class="col-12 col-md-4">
-            <select class="form-select filter-sort">
-                {% for option in sort_options %}
-                    <option value="{{ option.value }}"
-                            {% if current_sort == option.value %}selected{% endif %}>
-                        {{ option.label }}
-                    </option>
-                {% endfor %}
-            </select>
+        
+        <!-- Always visible summary when collapsed - MODIFIED to show by default -->
+        <div class="filter-summary mt-1 d-flex justify-content-between align-items-center flex-wrap" id="filterSummary">
+            <div class="active-filters-summary">
+                <small>
+                    <span class="search-summary {% if not search %}d-none{% endif %}">
+                        <span class="badge bg-secondary me-1">
+                            Search: <span class="search-term-summary">{{ search }}</span>
+                            <button class="btn-close btn-close-white ms-1" type="button" style="font-size: 0.5rem;" aria-label="Clear search"></button>
+                        </span>
+                    </span>
+                    <span class="categories-summary {% if not selected_categories %}d-none{% endif %}">
+                        <span class="badge bg-secondary">
+                            Categories: <span class="category-count-summary">{{ selected_categories|length }}</span>
+                            <button class="btn-close btn-close-white ms-1" type="button" style="font-size: 0.5rem;" aria-label="Clear categories"></button>
+                        </span>
+                    </span>
+                </small>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <!-- Enhanced results count display -->
+                <small class="results-count text-muted">
+                    <span class="item-count-display">
+                        Showing <span class="item-count">0</span> {{ item_type|default:'products' }}
+                    </span>
+                    {% if item_type == 'categories' %}
+                    <span class="selected-stats d-none">
+                        (<span class="selected-count">0</span> selected with 
+                        <span class="product-count">0</span> products)
+                    </span>
+                    {% endif %}
+                </small>
+                {% if item_type == 'categories' %}
+                <!-- Changed from d-none to visible by default -->
+                <div class="collapsed-list-products-btn-container">
+                    <button class="btn btn-sm btn-outline-primary list-products-btn" type="button">
+                        <i class="fas fa-list me-1"></i>List Products
+                    </button>
+                </div>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>

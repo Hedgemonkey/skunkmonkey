@@ -17,5 +17,6 @@ urlpatterns = [
     path('staff/get_product_cards/', views.get_product_cards, name='get_product_cards'),
     path('staff/management/', views.product_management, name='product_management'),
     path('api/categories/search/', views.category_search, name='category_search'),
+    path('api/products/count/', views.get_product_count, name='product_count'),
 ]
 
