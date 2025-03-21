@@ -124,7 +124,7 @@ The SkunkMonkey site will be structured around the following pages:
 ## 🗄️ Database Schema & Migration Strategy
 
 ### 🔹 Database Schema Overview  
-The database is designed using **PostgreSQL** and follows Django’s **ORM** structure. Below is an overview of how data is structured:
+The database is designed using **PostgreSQL** and follows Django's **ORM** structure. Below is an overview of how data is structured:
 
 ```plaintext
 +--------------------+         +--------------------+
@@ -142,9 +142,9 @@ The database is designed using **PostgreSQL** and follows Django’s **ORM** str
                                | slug               |
                                | is_active          | 
                                +--------------------+
-                                        |
-                                        | 1:M
-                                        v
+                                      |
+                                      | 1:M
+                                      v
 +--------------------+         +--------------------+
 |      Review        |         |   InventoryLog     |
 +--------------------+         +--------------------+
@@ -154,15 +154,96 @@ The database is designed using **PostgreSQL** and follows Django’s **ORM** str
 | rating             |         | reason             |
 | comment            |         | created_at         |
 | created_at         |         +--------------------+
++--------------------+                 |
+          |                            |
+          | M:1                        | M:1
+          v                            v
++--------------------+         +--------------------+
+|       User         |<---+    |       Cart         |
++--------------------+    |    +--------------------+
+| id (PK)            |    |    | id (PK)            |
+| username           |    |    | user_id (FK, opt)  |
+| email              |    |    | session_id (opt)   |
+| password           |    |    | created_at         |
+| ...                |    |    | updated_at         |
++--------------------+    |    +--------------------+
+         ^                |            |
+         |                |            | 1:M
+         |                |            v
+         |                |    +--------------------+
+         |                |    |     CartItem       |
+         |                |    +--------------------+
+         |                |    | id (PK)            |
+         |                |    | cart_id (FK)       |
+         | 1:1            |    | product_id (FK)    |
+         |                |    | quantity           |
++--------------------+    |    | added_at           |
+|     WishList       |    |    | updated_at         |
++--------------------+    |    +--------------------+
+| id (PK)            |    |
+| user_id (FK)       |----+
+| created_at         |
+| updated_at         |
 +--------------------+
-
+         |
+         | 1:M
+         v
++--------------------+         +--------------------+
+|   WishListItem     |         |       Order        |
++--------------------+         +--------------------+
+| id (PK)            |         | id (PK)            |
+| wishlist_id (FK)   |         | user_id (FK, opt)  |
+| product_id (FK)    |         | full_name          |
+| added_at           |         | email              |
++--------------------+         | shipping_address   |
+                               | order_number       |
+                               | status             |
+                               | tracking_number    |
+                               | total_price        |
+                               | stripe_pid         |
+                               | is_paid            |
+                               | created_at         |
+                               | updated_at         |
+                               +--------------------+
+                                        |
+                                        | 1:M
+                                        v
+                               +--------------------+
+                               |     OrderItem      |
+                               +--------------------+
+                               | id (PK)            |
+                               | order_id (FK)      |
+                               | product_id (FK)    |
+                               | product_name       |
+                               | price              |
+                               | quantity           |
+                               +--------------------+
 ```
 
-Relationships:
+### Key Relationships:
+
+**Products Module:**
 - `Category` ↔️ `Product`: One-to-Many (a category can have many products)  
 - `Product` ↔️ `Review`: One-to-Many (a product can have many reviews)  
 - `Product` ↔️ `InventoryLog`: One-to-Many (tracks stock changes over time)  
-- `Review` ↔️ `User`: Many-to-One (a user can leave many reviews)  
+- `Review` ↔️ `User`: Many-to-One (a user can leave many reviews)
+
+**Shop Module:**
+- `User` ↔️ `Cart`: One-to-One (a user has one cart)
+- `Cart` ↔️ `CartItem`: One-to-Many (a cart contains multiple items)
+- `CartItem` ↔️ `Product`: Many-to-One (many cart items can reference the same product)
+- `User` ↔️ `Order`: One-to-Many (a user can have many orders)
+- `Order` ↔️ `OrderItem`: One-to-Many (an order contains multiple items)
+- `OrderItem` ↔️ `Product`: Many-to-One (many order items can reference the same product)
+- `User` ↔️ `WishList`: One-to-One (a user has one wishlist)
+- `WishList` ↔️ `WishListItem`: One-to-Many (a wishlist contains multiple items)
+- `WishListItem` ↔️ `Product`: Many-to-One (many wishlist items can reference the same product)
+
+**Notable Features:**
+- Carts can be associated with either registered users or anonymous sessions
+- Orders store product information at time of purchase to maintain historical records
+- Inventory is managed through both product stock levels and a log of changes
+- Wishlists allow users to save products for future purchase
 
 The database consists of relational tables that store information about users, products, and orders. **Django's ORM** is used to interact with the database efficiently.
 
@@ -179,7 +260,7 @@ Managing **schema changes** in a production environment requires careful plannin
 - Choose an **appropriate migration strategy** (Zero-Downtime, Rolling Migration, etc.).
 
 #### **2️⃣ Use Django Migrations**
-All schema changes are managed through Django’s built-in migration framework:
+All schema changes are managed through Django's built-in migration framework:
 ```
 python manage.py makemigrations
 python manage.py migrate

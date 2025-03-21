@@ -54,8 +54,8 @@ python manage.py migrate socialaccount zero
 
 ---
 
-### Version: v1.2.0 (or your initial version number)
-📅 **Date**: 2025-02-16 (The date from the migration file)
+### **Version: v1.2.0**
+📅 **Date**: 2025-02-16
 📝 **Description**: Initial migration for the `products` app. This migration creates the `Category`, `Product`, `Review`, and `InventoryLog` models and their associated database tables.
 
 📂 **Migration File**: `products/migrations/0001_initial.py`
@@ -65,6 +65,28 @@ python manage.py migrate socialaccount zero
 🔄 **Rollback Plan**:
 ```bash
 python manage.py migrate products zero   # Reverts the initial migration
+```
+
+---
+
+### **Version: v1.3.0**
+📅 **Date**: 2025-03-21
+📝 **Description**: Initial migration for the `shop` app. This migration creates shopping cart, order management, and wishlist functionality with the following models: `Cart`, `CartItem`, `Order`, `OrderItem`, `WishList`, and `WishListItem`.
+
+📂 **Migration File**: `shop/migrations/0001_initial.py`
+
+🛠 **Impact**:
+- Created `shop_cart` table with constraints to ensure either user_id or session_id is provided
+- Created `shop_cartitem` table with unique constraint for cart-product combinations
+- Created `shop_order` table for tracking customer purchases and payment status
+- Created `shop_orderitem` table that stores product information at time of purchase
+- Created `shop_wishlist` table for user's saved products
+- Created `shop_wishlistitem` table with unique constraint for wishlist-product combinations
+- Established relationships between users, products, carts, orders, and wishlists
+
+🔄 **Rollback Plan**:
+```bash
+python manage.py migrate shop zero   # Reverts the initial migration
 ```
 
 ---
@@ -98,4 +120,4 @@ python manage.py migrate app_name 0002
 ---
 
 **Maintainer**: `@Hedgemonkey`  
-_Last updated: 2025-02-09_  
+_Last updated: 2025-03-21_  
