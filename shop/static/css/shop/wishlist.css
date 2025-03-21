@@ -1,0 +1,114 @@
+/* Wishlist page styles */
+.wishlist-header {
+    margin-bottom: 1.5rem;
+}
+
+.wishlist-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.wishlist-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.wishlist-card-header {
+    position: relative;
+}
+
+.wishlist-card .card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.remove-wishlist-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: white;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+    z-index: 2;
+}
+
+.wishlist-card:hover .remove-wishlist-btn {
+    opacity: 1;
+}
+
+.remove-wishlist-btn:hover {
+    background-color: #dc3545;
+    color: white;
+    border-color: #dc3545;
+}
+
+.price {
+    font-weight: 600;
+    color: #198754;
+}
+
+.card-body .btn {
+    transition: all 0.2s ease;
+}
+
+.card-body .btn:hover {
+    background-color: rgba(13, 110, 253, 0.1);
+    color: #0d6efd;
+}
+
+.card-footer .btn {
+    transition: all 0.3s ease;
+}
+
+.card-footer .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Animation when removing items */
+@keyframes fadeOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(20px); }
+}
+
+.fade-out {
+    animation: fadeOut 0.3s forwards;
+}
+
+/* Empty wishlist styling */
+.text-center.py-5 {
+    padding: 3rem 0;
+}
+
+.text-center.py-5 i {
+    color: #dee2e6;
+}
+
+.text-center.py-5 .btn {
+    margin-top: 1rem;
+    transition: all 0.3s ease;
+}
+
+.text-center.py-5 .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+    .wishlist-card .card-img-top {
+        height: 150px;
+    }
+    
+    .remove-wishlist-btn {
+        opacity: 1;
+    }
+}

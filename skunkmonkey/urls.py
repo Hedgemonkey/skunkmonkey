@@ -28,6 +28,7 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('users/', include('users.urls')),
     path('products/', include('products.urls')),
+    path('shop/', include('shop.urls')),  # Add the shop URLs
     path('', include('home.urls')),
 ]
 

@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} - SkunkMonkey Shop{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'bundles/css/shop.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'shop:product_list' %}">Shop</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'shop:product_list_by_category' product.category.slug %}">{{ product.category.name }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Product Gallery -->
+        <div class="col-md-6 mb-4">
+            <div class="product-gallery">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded shadow">
+                {% else %}
+                    <img src="{% static 'img/no-image.png' %}" alt="No image available" class="img-fluid rounded shadow">
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Product Info -->
+        <div class="col-md-6">
+            <div class="product-info">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h1 class="mb-0">{{ product.name }}</h1>
+                    
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'shop:add_to_wishlist' product.id %}" 
+                       class="btn btn-outline-danger add-to-wishlist-btn"
+                       data-product-id="{{ product.id }}">
+                        {% if user.wishlist.has_product %}
+                            <i class="fas fa-heart"></i>
+                        {% else %}
+                            <i class="far fa-heart"></i>
+                        {% endif %}
+                    </a>
+                    {% endif %}
+                </div>
+                
+                <p class="product-price mb-3">${{ product.price }}</p>
+                
+                <div class="mb-4">
+                    <p class="lead">{{ product.description }}</p>
+                </div>
+                
+                <!-- Stock Status -->
+                <div class="mb-4">
+                    <p class="mb-2">
+                        Stock Status: 
+                        {% if product.stock_quantity > 10 %}
+                            <span class="stock-status in-stock">In Stock ({{ product.stock_quantity }} available)</span>
+                        {% elif product.stock_quantity > 0 %}
+                            <span class="stock-status low-stock">Low Stock (Only {{ product.stock_quantity }} left)</span>
+                        {% else %}
+                            <span class="stock-status out-of-stock">Out of Stock</span>
+                        {% endif %}
+                    </p>
+                </div>
+                
+                <!-- Add to Cart Form -->
+                {% if product.stock_quantity > 0 %}
+                    <form method="post" action="{% url 'shop:cart_add' product.id %}" class="add-to-cart-form">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="quantity" class="form-label">Quantity</label>
+                            <div class="input-group quantity-selector">
+                                <button class="btn btn-outline-secondary" type="button" id="decrease-quantity">-</button>
+                                <input type="number" name="quantity" id="quantity" class="form-control text-center" value="1" min="1" max="{{ product.stock_quantity }}">
+                                <button class="btn btn-outline-secondary" type="button" id="increase-quantity">+</button>
+                            </div>
+                        </div>
+                        <div class="product-actions">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+                            </button>
+                        </div>
+                    </form>
+                {% else %}
+                    <div class="alert alert-danger">
+                        This product is currently out of stock.
+                    </div>
+                {% endif %}
+                
+                <!-- Product Meta -->
+                <div class="product-meta mt-4">
+                    <p class="mb-1"><strong>Category:</strong> <a href="{% url 'shop:product_list_by_category' product.category.slug %}">{{ product.category.name }}</a></p>
+                    <p class="mb-0"><strong>Last Updated:</strong> {{ product.updated_at|date:"F j, Y" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Related Products -->
+    {% if related_products %}
+    <div class="mt-5">
+        <h3 class="mb-4">You Might Also Like</h3>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+            {% for related in related_products %}
+            <div class="col">
+                <div class="card related-product-card h-100">
+                    {% if related.image %}
+                        <img src="{{ related.image.url }}" class="card-img-top" alt="{{ related.name }}">
+                    {% else %}
+                        <img src="{% static 'img/no-image.png' %}" class="card-img-top" alt="No image available">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ related.name }}</h5>
+                        <p class="card-text text-success fw-bold">${{ related.price }}</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0">
+                        <a href="{% url 'shop:product_detail' related.slug %}" class="btn btn-outline-primary btn-sm d-block">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block postloadjs %}
+    {{ block.super }}
+    <script src="{% static 'bundles/js/shop/cart.js' %}"></script>
+    <script src="{% static 'bundles/js/shop/wishlist.js' %}"></script>
+    <script src="{% static 'bundles/js/shop/product-detail.js' %}"></script>
+{% endblock %}

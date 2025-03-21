@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'home',
     'users.apps.UsersConfig',
     'products',
+    'shop',  # Add the new shop app
 ]
 
 MIDDLEWARE = [
@@ -72,7 +73,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
-
+    'shop.middleware.CartMiddleware',  # Add the shop cart middleware
 ]
 
 ROOT_URLCONF = 'skunkmonkey.urls'

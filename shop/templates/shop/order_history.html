@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order History - SkunkMonkey Shop{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/shop/order-history.css' %}">
+{% endblock %}
+
+{% block header %}
+<div class="py-4 bg-primary text-white">
+    <div class="container">
+        <h1 class="mb-0">Order History</h1>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    {% if orders %}
+        <div class="card">
+            <div class="card-header bg-transparent">
+                <h5 class="mb-0">Your Orders</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Order Number</th>
+                                <th>Date</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                                <tr>
+                                    <td>{{ order.order_number }}</td>
+                                    <td>{{ order.created_at|date:"M d, Y" }}</td>
+                                    <td>{{ order.items.count }}</td>
+                                    <td>${{ order.total_price }}</td>
+                                    <td>
+                                        <span class="badge {% if order.status == 'pending' %}bg-warning{% elif order.status == 'delivered' %}bg-success{% elif order.status == 'cancelled' %}bg-danger{% else %}bg-info{% endif %}">
+                                            {{ order.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" 
+                                                type="button" 
+                                                data-bs-toggle="collapse" 
+                                                data-bs-target="#order-{{ order.id }}" 
+                                                aria-expanded="false">
+                                            View Details
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="order-details-row">
+                                    <td colspan="6" class="p-0">
+                                        <div class="collapse" id="order-{{ order.id }}">
+                                            <div class="p-3">
+                                                <h6>Items</h6>
+                                                <div class="table-responsive">
+                                                    <table class="table table-sm">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Product</th>
+                                                                <th>Quantity</th>
+                                                                <th>Price</th>
+                                                                <th>Subtotal</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for item in order.items.all %}
+                                                                <tr>
+                                                                    <td>{{ item.product_name }}</td>
+                                                                    <td>{{ item.quantity }}</td>
+                                                                    <td>${{ item.price }}</td>
+                                                                    <td>${{ item.subtotal }}</td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                
+                                                <div class="row mt-3">
+                                                    <div class="col-md-6">
+                                                        <h6>Shipping Address</h6>
+                                                        <p class="mb-0">{{ order.shipping_address }}</p>
+                                                    </div>
+                                                    {% if order.tracking_number %}
+                                                    <div class="col-md-6">
+                                                        <h6>Tracking Information</h6>
+                                                        <p class="mb-0">{{ order.tracking_number }}</p>
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <nav aria-label="Order pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1">First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    </li>
+                {% endif %}
+                
+                <li class="page-item active">
+                    <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                </li>
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+        
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-shopping-bag fa-4x mb-3 text-muted"></i>
+            <h3>No Orders Yet</h3>
+            <p class="mb-4">You haven't placed any orders yet.</p>
+            <a href="{% url 'shop:product_list' %}" class="btn btn-primary">
+                Start Shopping
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% endblock %}
