@@ -38,15 +38,26 @@ class WishlistManager {
         
         this.sendAjaxRequest(url, null, 'GET', response => {
             if (response.success) {
-                button.classList.toggle('active');
+                // Update button to show it's now in wishlist
+                button.classList.remove('btn-outline-danger');
+                button.classList.add('btn-danger');
+                button.innerHTML = '<i class="fas fa-heart"></i>';
+                button.title = 'Remove from wishlist';
+                button.setAttribute('data-bs-original-title', 'Remove from wishlist');
                 
-                if (response.added) {
-                    button.innerHTML = '<i class="fas fa-heart"></i>';
-                    this.showNotification('Added to Wishlist', 'Product has been added to your wishlist.', 'success');
-                } else {
-                    button.innerHTML = '<i class="far fa-heart"></i>';
-                    this.showNotification('Already in Wishlist', 'Product is already in your wishlist.', 'info');
-                }
+                // Change the URL to the remove endpoint
+                const newUrl = button.href.replace('add_to_wishlist', 'remove_from_wishlist');
+                button.href = newUrl;
+                
+                // Change the class for event handling
+                button.classList.remove('add-to-wishlist-btn');
+                button.classList.add('remove-wishlist-btn');
+                
+                // Re-bind the event listener for this button
+                button.removeEventListener('click', this.handleAddToWishlist.bind(this));
+                button.addEventListener('click', this.handleRemoveFromWishlist.bind(this));
+                
+                this.showNotification('Added to Wishlist', 'Product has been added to your wishlist.', 'success');
             }
         });
     }
@@ -60,23 +71,46 @@ class WishlistManager {
         
         const button = event.currentTarget;
         const url = button.href;
+        const productName = button.dataset.productName || 'this item';
         
-        this.showConfirmation('Remove from Wishlist?', 'Are you sure you want to remove this item from your wishlist?', () => {
+        this.showConfirmation(`Remove ${productName}?`, 'Are you sure you want to remove this item from your wishlist?', () => {
             this.sendAjaxRequest(url, null, 'GET', response => {
                 if (response.success && response.removed) {
-                    // Remove the product card from the wishlist
-                    const card = button.closest('.col');
-                    card.classList.add('fade-out');
-                    
-                    setTimeout(() => {
-                        card.remove();
+                    // Check if we're on the wishlist page
+                    if (window.location.pathname.includes('/wishlist/')) {
+                        // Remove the product card from the wishlist
+                        const card = button.closest('.col');
+                        card.classList.add('fade-out');
                         
-                        // If no more items in wishlist, show empty state
-                        const wishlistItems = document.querySelectorAll('.wishlist-card');
-                        if (wishlistItems.length === 0) {
-                            window.location.reload();
-                        }
-                    }, 300);
+                        setTimeout(() => {
+                            card.remove();
+                            
+                            // If no more items in wishlist, show empty state
+                            const wishlistItems = document.querySelectorAll('.wishlist-card');
+                            if (wishlistItems.length === 0) {
+                                window.location.reload();
+                            }
+                        }, 300);
+                    } else {
+                        // We're on a product grid page, update the button
+                        button.classList.remove('btn-danger');
+                        button.classList.add('btn-outline-danger');
+                        button.innerHTML = '<i class="far fa-heart"></i>';
+                        button.title = 'Add to wishlist';
+                        button.setAttribute('data-bs-original-title', 'Add to wishlist');
+                        
+                        // Change the URL to the add endpoint
+                        const newUrl = button.href.replace('remove_from_wishlist', 'add_to_wishlist');
+                        button.href = newUrl;
+                        
+                        // Change the class for event handling
+                        button.classList.remove('remove-wishlist-btn');
+                        button.classList.add('add-to-wishlist-btn');
+                        
+                        // Re-bind the event listener for this button
+                        button.removeEventListener('click', this.handleRemoveFromWishlist.bind(this));
+                        button.addEventListener('click', this.handleAddToWishlist.bind(this));
+                    }
                     
                     this.showNotification('Removed from Wishlist', 'Product has been removed from your wishlist.', 'success');
                 }

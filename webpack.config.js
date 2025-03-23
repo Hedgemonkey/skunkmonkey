@@ -16,6 +16,10 @@ module.exports = {
       './static/css/main.css',
     ],
     
+    // Product grid entries
+    'js/product_grid': './static/js/product_grid.js',
+    'css/product_grid': './static/css/product_grid.css',
+    
     // Products app entries
     'js/products/products': './products/static/products/js/products.js',
     'js/products/cropper_init': './products/static/js/cropper_init.js',
@@ -25,6 +29,7 @@ module.exports = {
     'js/shop/cart': './shop/static/js/shop/cart-manager.js',
     'js/shop/catalog': './shop/static/js/shop/catalog-manager.js',
     'js/shop/wishlist': './shop/static/js/shop/wishlist-manager.js',
+    'js/shop/wishlist-initializer': './shop/static/js/shop/wishlist-initializer.js', // New entry
     'js/shop/product-list': './shop/static/js/shop/product-list-manager.js',
     'js/shop/product-detail': './shop/static/js/shop/product-detail-manager.js',
     

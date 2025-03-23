@@ -1,0 +1,119 @@
+{% load static %}
+
+<div id="dynamic-filter-container" class="filter-container" 
+     data-product-list-url="{% url 'shop:product_list_ajax' %}"
+     data-search-query="{{ search }}"
+     data-current-category="{{ current_category|default:'' }}">
+    
+    <!-- Mobile filter summary -->
+    <div class="filter-summary d-md-none mb-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <button class="btn btn-outline-secondary filter-toggle collapsed" type="button" 
+                    data-bs-toggle="collapse" data-bs-target="#filterOptions" 
+                    aria-expanded="false" aria-controls="filterOptions">
+                <i class="fas fa-sliders-h me-1"></i>
+                <span class="filter-toggle-text">Show Filters</span>
+            </button>
+            <span class="ms-2">
+                <span id="product-count">{{ products.count }}</span> products
+            </span>
+        </div>
+        
+        <!-- Active filters display for mobile -->
+        <div class="active-filters mt-2">
+            <div class="search-summary d-none">
+                <div class="filter-badge">
+                    <span class="badge bg-primary">
+                        Search: <span class="search-term-summary"></span>
+                        <button type="button" class="btn-close btn-close-white" aria-label="Clear search"></button>
+                    </span>
+                </div>
+            </div>
+            
+            <div class="categories-summary d-none">
+                <div class="filter-badge">
+                    <span class="badge bg-primary">
+                        <span class="category-count-summary">0</span> Categories
+                        <button type="button" class="btn-close btn-close-white" aria-label="Clear categories"></button>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filter options (collapsible on mobile) -->
+    <div class="collapse d-md-block" id="filterOptions">
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="filter-header d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title mb-0">Filter Products</h5>
+                    <button class="btn btn-sm btn-outline-secondary reset-all-filters" type="button">
+                        <i class="fas fa-sync-alt me-1"></i> Reset All
+                    </button>
+                </div>
+                
+                <!-- Search filter -->
+                <div class="mb-3">
+                    <label for="searchInput" class="form-label">Search</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control filter-search" id="searchInput" 
+                               placeholder="Search products..." value="{{ search|default:'' }}">
+                        <button class="btn btn-outline-secondary clear-search" type="button">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Search term display -->
+                <div class="search-display d-none mb-3">
+                    <div class="alert alert-info mb-0 d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>Searching for:</strong> 
+                            <span class="search-term"></span>
+                        </div>
+                        <button type="button" class="btn-close" aria-label="Clear search"></button>
+                    </div>
+                </div>
+                
+                <!-- Category filter -->
+                <div class="mb-3">
+                    <label for="categorySelect" class="form-label">Categories</label>
+                    <select class="form-select filter-category" id="categorySelect" multiple>
+                        {% for category in categories %}
+                            <option value="{{ category.id }}" 
+                                {% if category.id|stringformat:"i" in selected_categories %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Selected categories display -->
+                <div class="categories-display d-none mb-3">
+                    <div class="alert alert-info mb-0">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <strong>
+                                <span class="category-count-display">0</span> categories selected
+                            </strong>
+                            <button type="button" class="btn-close clear-categories-btn" aria-label="Clear categories"></button>
+                        </div>
+                        <div id="selectedCategoriesTags" class="category-tags-container"></div>
+                    </div>
+                </div>
+                
+                <!-- Sort filter -->
+                <div class="mb-3">
+                    <label for="sortSelect" class="form-label">Sort By</label>
+                    <select class="form-select filter-sort" id="sortSelect">
+                        {% for option in sort_options %}
+                            <option value="{{ option.value }}" 
+                                {% if current_sort == option.value %}selected{% endif %}>
+                                {{ option.label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

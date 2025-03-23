@@ -9,6 +9,17 @@ urlpatterns = [
     path('category/<slug:category_slug>/', views.ProductListView.as_view(), name='product_list_by_category'),
     path('product/<slug:slug>/', views.ProductDetailView.as_view(), name='product_detail'),
     
+    # Product list with dynamic filtering
+    path('products/', views.ProductListView.as_view(), name='product_list'),
+    path('products/category/<slug:category_slug>/', views.ProductListView.as_view(), name='product_list_by_category'),
+    
+    # Add the missing URL pattern for category_products
+    path('category_products/<slug:category_slug>/', views.ProductListView.as_view(), name='category_products'),
+    
+    # AJAX endpoints for dynamic filtering
+    path('ajax/products/', views.product_list_ajax, name='product_list_ajax'),
+    path('products/ajax/', views.product_list_ajax, name='product_list_ajax_alt'),
+    
     # Cart management
     path('cart/', views.CartView.as_view(), name='cart'),
     path('cart/add/<int:product_id>/', views.cart_add, name='cart_add'),
@@ -17,7 +28,7 @@ urlpatterns = [
     
     # Checkout process
     path('checkout/', views.CheckoutView.as_view(), name='checkout'),
-    path('order/complete/<int:order_id>/', views.OrderCompleteView.as_view(), name='order_complete'),
+    path('order/<int:order_id>/complete/', views.OrderCompleteView.as_view(), name='order_complete'),
     path('orders/', views.OrderHistoryView.as_view(), name='order_history'),
     
     # Wishlist functionality

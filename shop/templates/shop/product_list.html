@@ -35,8 +35,30 @@
 {% block content %}
 <div class="container my-4">
     <div class="row">
-        <!-- Filter sidebar -->
+        <!-- Filter sidebar - replaced with dynamic filter controls -->
         <div class="col-lg-3 mb-4">
+            <div class="wishlist-panel mb-4">
+                <h5>Your Wishlist</h5>
+                {% if user.is_authenticated %}
+                    <div class="wishlist-summary">
+                        <a href="{% url 'shop:wishlist' %}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-heart me-2"></i>View Your Wishlist
+                            <span class="badge bg-secondary ms-2 wishlist-count">
+                                {% if request.user.wishlist %}
+                                    {{ request.user.wishlist.products.count }}
+                                {% else %}
+                                    0
+                                {% endif %}
+                            </span>
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info small">
+                        <a href="{% url 'account_login' %}">Log in</a> to manage your wishlist.
+                    </div>
+                {% endif %}
+            </div>
+            
             <div class="filter-section mb-4">
                 <h5>Categories</h5>
                 <div class="list-group">
@@ -67,79 +89,60 @@
         
         <!-- Product grid -->
         <div class="col-lg-9">
+            <!-- Dynamic filter controls -->
+            <div id="dynamic-filter-container" 
+                 data-product-list-url="{% url 'shop:product_list_ajax' %}"
+                 data-current-category="{% if current_category %}{{ current_category.id }}{% endif %}"
+                 data-search-query="{{ search_query|default:'' }}">
+                {% include 'includes/filter_controls.html' with sort_options=sort_options categories=categories current_sort=request.GET.sort|default:'name-asc' search=search_query item_type='products' show_category_filter=True %}
+            </div>
+            
+            <!-- Results Count Display -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <span class="text-muted">Showing {{ products.count }} products</span>
-                </div>
-                <div>
-                    <select id="sort-select" class="form-select form-select-sm">
-                        <option value="name-asc">Name (A-Z)</option>
-                        <option value="name-desc">Name (Z-A)</option>
-                        <option value="price-asc">Price (Low to High)</option>
-                        <option value="price-desc">Price (High to Low)</option>
-                        <option value="newest">Newest First</option>
-                    </select>
+                    <span class="text-muted">Showing <span id="product-count">{{ products.count }}</span> products</span>
                 </div>
             </div>
             
-            {% if products %}
-                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="product-grid">
-                    {% for product in products %}
-                        <div class="col">
-                            <div class="card product-card">
-                                {% if product.image %}
-                                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
-                                {% else %}
-                                    <img src="{% static 'img/no-image.png' %}" class="card-img-top" alt="No image available">
-                                {% endif %}
-                                <span class="badge category-badge">{{ product.category.name }}</span>
-                                <div class="card-body d-flex flex-column">
-                                    <h5 class="card-title">{{ product.name }}</h5>
-                                    <p class="card-text text-muted small mb-2">{{ product.description|truncatewords:20 }}</p>
-                                    <div class="d-flex justify-content-between align-items-center mt-auto">
-                                        <span class="price">${{ product.price }}</span>
-                                        <a href="{% url 'shop:product_detail' product.slug %}" class="btn btn-outline-primary btn-sm">View Details</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-                
-                <!-- Pagination -->
-                {% if is_paginated %}
-                <nav aria-label="Product pagination" class="mt-4">
-                    <ul class="pagination justify-content-center">
-                        {% if page_obj.has_previous %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page=1{% if search_query %}&q={{ search_query }}{% endif %}">First</a>
+            <!-- Product Grid Container -->
+            <div id="product-grid-container">
+                {% if products %}
+                    {% include 'shop/includes/product_grid.html' with products=products %}
+                    
+                    <!-- Pagination -->
+                    {% if is_paginated %}
+                    <nav aria-label="Product pagination" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1{% if search_query %}&q={{ search_query }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">First</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">Previous</a>
+                                </li>
+                            {% endif %}
+                            
+                            <li class="page-item active">
+                                <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
                             </li>
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}">Previous</a>
-                            </li>
-                        {% endif %}
-                        
-                        <li class="page-item active">
-                            <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-                        </li>
-                        
-                        {% if page_obj.has_next %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}">Next</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&q={{ search_query }}{% endif %}">Last</a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </nav>
+                            
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">Next</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&q={{ search_query }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">Last</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                {% else %}
+                    <div class="alert alert-info">
+                        <p class="mb-0">No products found {% if search_query %}matching "{{ search_query }}"{% endif %}.</p>
+                    </div>
                 {% endif %}
-                
-            {% else %}
-                <div class="alert alert-info">
-                    <p class="mb-0">No products found {% if search_query %}matching "{{ search_query }}"{% endif %}.</p>
-                </div>
-            {% endif %}
+            </div>
         </div>
     </div>
 </div>
@@ -148,4 +151,5 @@
 {% block postloadjs %}
     {{ block.super }}
     <script src="{% static 'bundles/js/shop/product-list.js' %}"></script>
+    <script src="{% static 'bundles/js/shop/wishlist.js' %}"></script>
 {% endblock %}

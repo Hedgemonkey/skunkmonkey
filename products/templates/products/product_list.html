@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/product_grid.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Products</h1>
+    
+    <!-- Filter and Sort Options -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-secondary filter-btn" data-filter="all">All</button>
+                <button type="button" class="btn btn-outline-secondary filter-btn" data-filter="new">New Arrivals</button>
+                <button type="button" class="btn btn-outline-secondary filter-btn" data-filter="low-stock">Low Stock</button>
+            </div>
+        </div>
+        <div class="col-md-6 text-end">
+            <select class="form-select d-inline-block w-auto" id="sort-options">
+                <option value="default">Sort by: Default</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+                <option value="name-az">Name: A to Z</option>
+                <option value="name-za">Name: Z to A</option>
+            </select>
+        </div>
+    </div>
+    
+    <!-- Product Grid -->
+    <div class="row product-grid">
+        {% for product in products %}
+        <div class="col-lg-3 col-md-4 col-sm-6 mb-4 product-item" 
+             data-product-id="{{ product.id }}"
+             data-category="{{ product.category.name|lower }}"
+             data-price="{{ product.price }}"
+             data-is-new="{% if product.is_new %}true{% else %}false{% endif %}"
+             data-is-low-stock="{% if product.stock_level <= 5 and product.stock_level > 0 %}true{% else %}false{% endif %}"
+             data-name="{{ product.name|lower }}">
+            <div class="card h-100 product-card">
+                <!-- Product Image -->
+                <div class="product-image-container">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" class="card-img-top product-image" alt="{{ product.name }}">
+                    {% else %}
+                    <img src="{% static 'images/no_image.png' %}" class="card-img-top product-image" alt="{{ product.name }}">
+                    {% endif %}
+                    
+                    <!-- Wishlist Button -->
+                    <button class="btn wishlist-btn {% if product.id in user_wishlist %}active{% endif %}" 
+                            data-product-id="{{ product.id }}"
+                            title="Add to Wishlist">
+                        <i class="fa {% if product.id in user_wishlist %}fa-heart{% else %}fa-heart-o{% endif %}"></i>
+                    </button>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Product Tags -->
+                    <div class="product-tags">
+                        {% if product.is_new %}
+                        <span class="badge bg-success tag-new">New</span>
+                        {% endif %}
+                        
+                        {% if product.stock_level <= 5 and product.stock_level > 0 %}
+                        <span class="badge bg-warning tag-low-stock">Low Stock</span>
+                        {% endif %}
+                        
+                        {% if product.stock_level == 0 %}
+                        <span class="badge bg-danger tag-out-of-stock">Out of Stock</span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Product Name -->
+                    <h5 class="card-title product-name">
+                        <a href="{% url 'products:detail' product.id %}">{{ product.name }}</a>
+                    </h5>
+                    
+                    <!-- Product Price -->
+                    <div class="product-price">
+                        {% if product.compare_at_price and product.compare_at_price > product.price %}
+                        <span class="text-muted text-decoration-line-through original-price">
+                            ${{ product.compare_at_price }}
+                        </span>
+                        <span class="sale-price">${{ product.price }}</span>
+                        {% else %}
+                        <span>${{ product.price }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Product Description (Short) -->
+                    <p class="card-text product-description">
+                        {{ product.description|truncatechars:60 }}
+                    </p>
+                </div>
+                
+                <div class="card-footer">
+                    <div class="d-grid">
+                        <button class="btn btn-primary add-to-cart-btn" 
+                                data-product-id="{{ product.id }}"
+                                {% if product.stock_level == 0 %}disabled{% endif %}>
+                            {% if product.stock_level == 0 %}Out of Stock{% else %}Add to Cart{% endif %}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <p>No products found.</p>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <nav aria-label="Page navigation" class="my-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1" aria-label="First">
+                    <span aria-hidden="true">&laquo;&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% endif %}
+            
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <li class="page-item active"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                    <span aria-hidden="true">&raquo;&raquo;</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/product_grid.js' %}"></script>
+{% endblock %}

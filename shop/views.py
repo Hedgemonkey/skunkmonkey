@@ -3,10 +3,11 @@ from django.views.generic import ListView, DetailView, View, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.db.models import Q
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
 from django.urls import reverse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.template.loader import render_to_string
 
 from products.models import Product, Category
 from .models import Cart, CartItem, Order, OrderItem, WishList
@@ -65,7 +66,93 @@ class ProductListView(ListView):
         context['categories'] = Category.objects.all()
         context['current_category'] = getattr(self, 'current_category', None)
         context['search_query'] = getattr(self, 'search_query', None)
+        
+        # Add sort options for the filter controls
+        context['sort_options'] = [
+            {'value': 'name-asc', 'label': 'Name (A-Z)'},
+            {'value': 'name-desc', 'label': 'Name (Z-A)'},
+            {'value': 'price-asc', 'label': 'Price (Low to High)'},
+            {'value': 'price-desc', 'label': 'Price (High to Low)'},
+            {'value': 'newest', 'label': 'Newest First'},
+        ]
+        
         return context
+
+
+def product_list_ajax(request):
+    """
+    AJAX endpoint for dynamic product filtering
+    """
+    # Handle category filter
+    category = request.GET.get('category')
+    search = request.GET.get('search', '').lower()
+    sort = request.GET.get('sort', 'name-asc')
+    items_only = request.GET.get('items_only') == 'true'
+    count_only = request.GET.get('count_only') == 'true'
+
+    products = Product.objects.filter(is_active=True)
+
+    # Apply filters
+    if category:
+        # Check if we have multiple categories (comma-separated)
+        if ',' in category:
+            category_ids = [c for c in category.split(',') if c]
+            if category_ids:
+                # Filter products that have any of the selected categories
+                products = products.filter(category_id__in=category_ids)
+        else:
+            # Single category case
+            products = products.filter(category_id=category)
+    
+    if search:
+        products = products.filter(
+            Q(name__icontains=search) |
+            Q(description__icontains=search) |
+            Q(category__name__icontains=search)
+        )
+
+    # Apply sorting
+    sort_mapping = {
+        'name-asc': 'name',
+        'name-desc': '-name',
+        'price-asc': 'price',
+        'price-desc': '-price',
+        'newest': '-created_at',
+    }
+    products = products.order_by(sort_mapping.get(sort, 'name'))
+
+    # Get the total count before any pagination
+    product_count = products.count()
+    
+    # If we only want the count, return it immediately without rendering HTML
+    if count_only:
+        return JsonResponse({
+            'count': product_count,
+            'total_count': product_count
+        })
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        context = {
+            'products': products,
+            'search': search,
+            'current_sort': sort,
+        }
+        
+        html = render_to_string(
+            'shop/includes/product_grid.html',
+            context,
+            request=request
+        )
+        
+        # Return both the HTML and the product count in the JSON response
+        return JsonResponse({
+            'html': html,
+            'count': product_count,
+            'total_count': product_count
+        })
+
+    # Fallback for non-AJAX requests
+    return redirect('shop:product_list')
 
 
 class ProductDetailView(DetailView):
@@ -88,6 +175,15 @@ class ProductDetailView(DetailView):
         
         context['related_products'] = related_products
         context['form'] = CartAddProductForm()
+        
+        # Add wishlist state for the product
+        if self.request.user.is_authenticated:
+            try:
+                wishlist = WishList.objects.get(user=self.request.user)
+                context['in_wishlist'] = wishlist.has_product(product)
+            except WishList.DoesNotExist:
+                context['in_wishlist'] = False
+        
         return context
 
 
@@ -320,7 +416,8 @@ def add_to_wishlist(request, product_id):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return JsonResponse({
             'success': True,
-            'added': added
+            'added': added,
+            'wishlist_count': wishlist.products.count()
         })
     
     if added:
@@ -347,7 +444,8 @@ def remove_from_wishlist(request, product_id):
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse({
                 'success': True,
-                'removed': removed
+                'removed': removed,
+                'wishlist_count': wishlist.products.count()
             })
         
         if removed:

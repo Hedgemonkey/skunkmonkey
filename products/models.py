@@ -59,6 +59,16 @@ class Product(models.Model):
         return self.compare_at_price and self.compare_at_price > self.price
     
     @property
+    def is_low_stock(self):
+        """Return True if the product has low stock (5 or fewer items)"""
+        return 0 < self.stock_quantity <= 5
+    
+    @property
+    def is_out_of_stock(self):
+        """Return True if the product is out of stock"""
+        return self.stock_quantity == 0
+    
+    @property
     def discount_percentage(self):
         """Return the discount percentage if the product is on sale"""
         if self.is_sale:
