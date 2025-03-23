@@ -8,6 +8,14 @@ from django.utils.text import slugify
 class Category(models.Model):
     name = models.CharField(max_length=255, unique=True)
     slug = models.SlugField(max_length=255, unique=True, blank=True) # Allow blank for auto-generation
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
+    level = models.PositiveIntegerField(default=0, editable=False)
+    order = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    
+    class Meta:
+        verbose_name_plural = 'Categories'
+        ordering = ['order', 'name']
 
     def __str__(self):
         return self.name
@@ -15,11 +23,36 @@ class Category(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)  # Generate slug automatically
+        
+        # Calculate level based on parent
+        if self.parent:
+            self.level = self.parent.level + 1
+        else:
+            self.level = 0
+            
         super().save(*args, **kwargs)
     
     def get_absolute_url(self):
         return reverse("products:category_detail", kwargs={"slug": self.slug})
-
+    
+    @property
+    def get_ancestors(self):
+        """Return list of ancestors from root to parent"""
+        ancestors = []
+        current = self.parent
+        while current:
+            ancestors.insert(0, current)
+            current = current.parent
+        return ancestors
+    
+    @property
+    def get_descendants(self):
+        """Return all descendants of this category"""
+        descendants = []
+        for child in self.children.all():
+            descendants.append(child)
+            descendants.extend(child.get_descendants)
+        return descendants
 
 
 class Product(models.Model):
@@ -90,9 +123,53 @@ class Review(models.Model):
 
 class InventoryLog(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='inventory_logs')
-    change = models.IntegerField() 
+    change = models.IntegerField()
     reason = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Inventory change for {self.product.name}: {self.change}"
+
+
+class ProductAttributeType(models.Model):
+    """Define types of attributes (e.g., Color, Size, Material)"""
+    name = models.CharField(max_length=100, unique=True)
+    display_name = models.CharField(max_length=100)
+    
+    def __str__(self):
+        return self.display_name
+
+
+class ProductAttributeValue(models.Model):
+    """Define possible values for each attribute type"""
+    attribute_type = models.ForeignKey(
+        ProductAttributeType,
+        on_delete=models.CASCADE,
+        related_name='values'
+    )
+    value = models.CharField(max_length=100)
+    
+    class Meta:
+        unique_together = ('attribute_type', 'value')
+    
+    def __str__(self):
+        return f"{self.attribute_type.display_name}: {self.value}"
+
+
+class ProductAttribute(models.Model):
+    """Associate products with attribute values"""
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='attributes'
+    )
+    attribute_value = models.ForeignKey(
+        ProductAttributeValue,
+        on_delete=models.CASCADE
+    )
+    
+    class Meta:
+        unique_together = ('product', 'attribute_value')
+    
+    def __str__(self):
+        return f"{self.product.name} - {self.attribute_value}"

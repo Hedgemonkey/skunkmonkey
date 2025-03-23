@@ -138,4 +138,55 @@ python manage.py migrate app_name 0002
 ---
 
 **Maintainer**: `@Hedgemonkey`  
-_Last updated: 2025-03-23_  
+_Last updated: 2025-03-23_
+
+---
+
+### **Version: v1.3.2**
+📅 **Date**: 2025-03-23
+📝 **Description**: Updated database schema to include the `compare_at_price` field in the `Product` model.
+
+📂 **Migration File**: `products/migrations/0002_product_compare_at_price.py`
+
+🛠 **Impact**:
+- Added `compare_at_price` field to the `products_product` table.
+- No data migration required.
+
+🔄 **Rollback Plan**:
+```bash
+python manage.py migrate products 0001_initial   # Reverts to the previous migration
+```
+
+---
+
+## 🔍 Guidelines for Future Changes
+
+✔ **Always document changes here before running `migrate` in production.**
+✔ **Ensure backups are taken before applying schema updates.**
+✔ **Use feature flags for risky migrations affecting live data.**
+✔ **Test migrations in a staging environment before deploying.**
+
+---
+
+## 📌 Migration Tracking Commands
+
+Check migration status:
+```sh
+python manage.py showmigrations
+```
+
+Apply migrations:
+```sh
+python manage.py migrate
+```
+
+Rollback to a previous migration:
+```sh
+python manage.py migrate app_name 0002
+```
+
+---
+
+**Maintainer**: `@Hedgemonkey`
+_Last updated: 2025-03-23_
+

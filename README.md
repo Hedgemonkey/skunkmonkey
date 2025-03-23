@@ -124,7 +124,7 @@ The SkunkMonkey site will be structured around the following pages:
 ## 🗄️ Database Schema & Migration Strategy
 
 ### 🔹 Database Schema Overview  
-The database is designed using **PostgreSQL** and follows Django's **ORM** structure. Below is an overview of how data is structured:
+The database is designed using **PostgreSQL** and follows Django's **ORM** structure. Below is an overview of how data is structured. Note that this diagram does not represent all tables in the database. Additional tables manage user authentication, sessions, and social accounts.
 
 ```plaintext
 +--------------------+         +--------------------+
@@ -134,8 +134,9 @@ The database is designed using **PostgreSQL** and follows Django's **ORM** struc
 | name               |         | name               |
 | slug               |         | description        |
 +--------------------+         | price              |
-                               | compare_at_price   |
                                | category_id (FK)   |
+                               | compare_at_price   |
+                               | stock_quantity     |
                                | stock_quantity     |
                                | image              |
                                | created_at         |
@@ -399,7 +400,6 @@ The site will use **Google Fonts**:
 
 ### 🎨 Colors
 The project will use a **modern, clean color scheme** with a focus on contrast for readability.
-
 ```
 :root {
   --primary-color: #4CAF50;
@@ -492,41 +492,9 @@ This project will be deployed to a **production server** using **one of the foll
 #### **Planned Deployment Process**
 1. **Containerization (Optional)**:
    - A `Dockerfile` and `docker-compose.yml` may be used for easy deployment.
-2. **CI/CD Pipeline**:
+3. **CI/CD Pipeline**:
    - GitHub Actions will be set up for automated testing and deployment.
-3. **Environment Variables**:
+4. **Environment Variables**:
    - Sensitive settings (e.g., `SECRET_KEY`, database credentials) will be stored in the **Heroku Config Vars** or an `.env` file in the server.
-4. **PostgreSQL Database**:
+5. **PostgreSQL Database**:
    - A managed **PostgreSQL database** will be used for scalability.
-5. **Static & Media Files**:
-   - **AWS S3** or **Cloudinary** will be used for storing static and media assets.
-6. **Security & Performance**:
-   - SSL Certificates (HTTPS)
-   - Gunicorn as WSGI server
-   - Cloudflare CDN (optional)
-
-[Back to top](#contents)
-
----
-
-## 📜 Credits
-
-### **Resources & Libraries**
-- **[Bootstrap Full Width Pics](https://startbootstrap.com/theme/full-width-pics)** – Free Bootstrap template used as the base theme.
-- **Django** – Python-based web framework.
-- **PostgreSQL** – Database system for backend data storage.
-- **Bootstrap 5** – Frontend styling framework.
-- **FontAwesome** – Icons used throughout the project.
-
-### **Tools & Services**
-- **GitHub Projects** – Used for Agile task management with KanBan.
-- **GitHub Copilot** & **ChatGPT** – Assisted with code and documentation.
-- **Code Institute** – Provided guidance and feedback.
-
-### **Acknowledgments**
-Special thanks to:
-- The **Code Institute community** for advice and support.
-- **Friends and family** for testing and feedback.
-- Open-source contributors for maintaining the libraries used in this project.
-
-[Back to top](#contents)

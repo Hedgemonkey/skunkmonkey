@@ -285,3 +285,94 @@ class WishListItem(models.Model):
 
     def __str__(self):
         return f"{self.product.name} in {self.wishlist}"
+
+
+class ComparisonList(models.Model):
+    """
+    Model to track products being compared by a user
+    """
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='comparison_list',
+        null=True,
+        blank=True
+    )
+    session_id = models.CharField(max_length=255, null=True, blank=True)
+    products = models.ManyToManyField(
+        Product,
+        related_name='comparison_lists'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                check=models.Q(user__isnull=False) | models.Q(session_id__isnull=False),
+                name='comparison_user_or_session_required'
+            )
+        ]
+    
+    def __str__(self):
+        return f"Comparison list for {self.user.username if self.user else 'Anonymous'}"
+    
+    def add_product(self, product):
+        """Add a product to the comparison list"""
+        if self.products.count() >= 4:  # Limit to 4 products
+            return False
+        self.products.add(product)
+        return True
+    
+    def remove_product(self, product):
+        """Remove a product from the comparison list"""
+        self.products.remove(product)
+        return True
+    
+    def clear(self):
+        """Remove all products from the comparison list"""
+        self.products.clear()
+        return True
+
+
+class RecentlyViewedItem(models.Model):
+    """
+    Model to track recently viewed products by a user
+    """
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='recently_viewed_items',
+        null=True,
+        blank=True
+    )
+    session_id = models.CharField(max_length=255, null=True, blank=True)
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='recently_viewed_by'
+    )
+    viewed_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                check=models.Q(user__isnull=False) | models.Q(session_id__isnull=False),
+                name='recently_viewed_user_or_session_required'
+            ),
+            models.UniqueConstraint(
+                fields=['user', 'product'],
+                condition=models.Q(user__isnull=False),
+                name='unique_user_product_view'
+            ),
+            models.UniqueConstraint(
+                fields=['session_id', 'product'],
+                condition=models.Q(session_id__isnull=False),
+                name='unique_session_product_view'
+            )
+        ]
+        ordering = ['-viewed_at']
+    
+    def __str__(self):
+        viewer = self.user.username if self.user else f"Session {self.session_id[:8]}"
+        return f"{viewer} viewed {self.product.name}"
