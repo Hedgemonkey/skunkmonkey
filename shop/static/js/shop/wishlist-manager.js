@@ -36,6 +36,12 @@ class WishlistManager {
         const productId = button.dataset.productId;
         const url = button.href;
         
+        // Add loading state to parent container
+        const container = button.closest('.product-card') || button.closest('.product-detail-container');
+        if (container) {
+            container.classList.add('loading-container');
+        }
+        
         this.sendAjaxRequest(url, null, 'GET', response => {
             if (response.success) {
                 // Update button to show it's now in wishlist
@@ -59,6 +65,11 @@ class WishlistManager {
                 
                 this.showNotification('Added to Wishlist', 'Product has been added to your wishlist.', 'success');
             }
+            
+            // Remove loading state
+            if (container) {
+                container.classList.remove('loading-container');
+            }
         });
     }
     
@@ -74,6 +85,12 @@ class WishlistManager {
         const productName = button.dataset.productName || 'this item';
         
         this.showConfirmation(`Remove ${productName}?`, 'Are you sure you want to remove this item from your wishlist?', () => {
+            // Add loading state to parent container
+            const container = button.closest('.product-card') || button.closest('.product-detail-container');
+            if (container) {
+                container.classList.add('loading-container');
+            }
+            
             this.sendAjaxRequest(url, null, 'GET', response => {
                 if (response.success && response.removed) {
                     // Check if we're on the wishlist page
@@ -113,6 +130,11 @@ class WishlistManager {
                     }
                     
                     this.showNotification('Removed from Wishlist', 'Product has been removed from your wishlist.', 'success');
+                }
+                
+                // Remove loading state
+                if (container) {
+                    container.classList.remove('loading-container');
                 }
             });
         });
@@ -186,6 +208,11 @@ class WishlistManager {
             .catch(error => {
                 console.error('Error:', error);
                 this.showNotification('Error', error.message || 'There was a problem with your request.', 'error');
+                
+                // Remove any loading indicators that might be active
+                document.querySelectorAll('.loading-container').forEach(el => {
+                    el.classList.remove('loading-container');
+                });
             });
     }
     

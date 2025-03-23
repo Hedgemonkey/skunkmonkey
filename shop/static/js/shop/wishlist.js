@@ -41,6 +41,12 @@ function handleWishlistToggle(e) {
     const action = button.dataset.action;
     const url = button.dataset.url;
     
+    // Add loading state to parent container
+    const container = button.closest('.product-card') || button.closest('.product-detail-container');
+    if (container) {
+        container.classList.add('loading-container');
+    }
+    
     fetch(url, {
         method: 'GET',
         headers: {
@@ -129,10 +135,20 @@ function handleWishlistToggle(e) {
             // Show error message
             showToast('Error', data.error || 'There was an error processing your request.', 'error');
         }
+        
+        // Remove loading state
+        if (container) {
+            container.classList.remove('loading-container');
+        }
     })
     .catch(error => {
         console.error('Error toggling wishlist:', error);
         showToast('Error', 'There was an error processing your request.', 'error');
+        
+        // Remove loading state
+        if (container) {
+            container.classList.remove('loading-container');
+        }
     });
 }
 

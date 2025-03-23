@@ -71,16 +71,23 @@ function initializeProductGrid() {
     // Example: Add to cart forms
     document.querySelectorAll('.add-to-cart-form').forEach(form => {
         form.addEventListener('submit', function(event) {
-            // You could add AJAX submission here if desired
-            // For now, just show a brief loading state
-            const button = form.querySelector('.add-to-cart-btn');
-            const originalText = button.innerHTML;
-            button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Adding...';
-            
-            // Reset after 2 seconds (you'd remove this when implementing actual AJAX)
-            setTimeout(() => {
-                button.innerHTML = originalText;
-            }, 2000);
+            // Get the product card container
+            const productCard = form.closest('.product-card');
+            if (productCard) {
+                // Use the standardized loading-container class for consistent UI
+                productCard.classList.add('loading-container');
+                
+                // Store original button text for restoring later
+                const button = form.querySelector('.add-to-cart-btn');
+                const originalText = button.innerHTML;
+                
+                // After 2 seconds (simulating AJAX completion), restore the state
+                // In a real implementation, you'd do this in the AJAX success callback
+                setTimeout(() => {
+                    productCard.classList.remove('loading-container');
+                    // You could also update the button text to "Added!" or similar
+                }, 2000);
+            }
         });
     });
 }

@@ -523,9 +523,11 @@ class ProductListManager {
     fetchProducts() {
         // Show loading state if container exists
         if (this.productGridContainer) {
+            // Just add the loading class - the CSS will handle the spinner display
             this.productGridContainer.classList.add('loading');
-            // Add a loading indicator
-            this.productGridContainer.innerHTML = '<div class="text-center py-5"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+            
+            // Store the current HTML to restore in case of an error
+            this.originalGridHtml = this.productGridContainer.innerHTML;
         }
         
         try {
