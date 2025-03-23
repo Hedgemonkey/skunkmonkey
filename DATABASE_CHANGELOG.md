@@ -91,6 +91,24 @@ python manage.py migrate shop zero   # Reverts the initial migration
 
 ---
 
+### **Version: v1.3.1**
+📅 **Date**: 2025-03-23
+📝 **Description**: Added `compare_at_price` field to the `Product` model to support sale pricing and discount calculations.
+
+📂 **Migration File**: `products/migrations/0002_product_compare_at_price.py`
+
+🛠 **Impact**:
+- Altered `products_product` table to add the `compare_at_price` column
+- This allows products to display original prices alongside discounted prices
+- No data migration required as the field is nullable
+
+🔄 **Rollback Plan**:
+```bash
+python manage.py migrate products 0001_initial   # Reverts to the previous migration
+```
+
+---
+
 ## 🔍 Guidelines for Future Changes  
 
 ✔ **Always document changes here before running `migrate` in production.**  
@@ -120,4 +138,4 @@ python manage.py migrate app_name 0002
 ---
 
 **Maintainer**: `@Hedgemonkey`  
-_Last updated: 2025-03-21_  
+_Last updated: 2025-03-23_  

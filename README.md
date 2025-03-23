@@ -134,6 +134,7 @@ The database is designed using **PostgreSQL** and follows Django's **ORM** struc
 | name               |         | name               |
 | slug               |         | description        |
 +--------------------+         | price              |
+                               | compare_at_price   |
                                | category_id (FK)   |
                                | stock_quantity     |
                                | image              |
@@ -244,6 +245,7 @@ The database is designed using **PostgreSQL** and follows Django's **ORM** struc
 - Orders store product information at time of purchase to maintain historical records
 - Inventory is managed through both product stock levels and a log of changes
 - Wishlists allow users to save products for future purchase
+- Products now support a `compare_at_price` field to enable sale pricing and discount display (original price vs. current price)
 
 The database consists of relational tables that store information about users, products, and orders. **Django's ORM** is used to interact with the database efficiently.
 

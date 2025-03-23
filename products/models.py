@@ -28,6 +28,7 @@ class Product(models.Model):
     slug = models.SlugField(max_length=255, unique=True, blank=True)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    compare_at_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     stock_quantity = models.PositiveIntegerField(default=0)
     image = models.ImageField(upload_to='product_images/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -44,6 +45,25 @@ class Product(models.Model):
 
     def get_absolute_url(self):
         return reverse("products:product_detail", kwargs={"slug": self.slug})
+    
+    @property
+    def is_new(self):
+        """Return True if product was created in the last 30 days"""
+        from datetime import timedelta
+        from django.utils import timezone
+        return self.created_at >= (timezone.now() - timedelta(days=30))
+    
+    @property
+    def is_sale(self):
+        """Return True if product has a sale price"""
+        return self.compare_at_price and self.compare_at_price > self.price
+    
+    @property
+    def discount_percentage(self):
+        """Return the discount percentage if the product is on sale"""
+        if self.is_sale:
+            return int(((self.compare_at_price - self.price) / self.compare_at_price) * 100)
+        return 0
 
 
 class Review(models.Model):
