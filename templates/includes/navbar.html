@@ -19,6 +19,16 @@
                         </span>
                     </a>
                 </li>
+                
+                <!-- Comparison icon with count -->
+                <li class="nav-item">
+                    <a class="nav-link position-relative" href="{% url 'shop:comparison' %}">
+                        <i class="fas fa-balance-scale"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary comparison-count">
+                            {{ request.comparison_list.products.count|default:'0' }}
+                        </span>
+                    </a>
+                </li>
 
                 {% if user.is_staff or user.is_superuser %}
                 <li class="nav-item dropdown">

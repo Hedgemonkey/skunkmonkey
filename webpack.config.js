@@ -32,6 +32,7 @@ module.exports = {
     'js/shop/wishlist-initializer': './shop/static/js/shop/wishlist-initializer.js', // New entry
     'js/shop/product-list': './shop/static/js/shop/product-list-manager.js',
     'js/shop/product-detail': './shop/static/js/shop/product-detail-manager.js',
+    'js/shop/comparison-manager': './shop/static/js/shop/comparison-manager.js',
     
     // Shop CSS
     'css/shop': [

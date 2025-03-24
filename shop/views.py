@@ -9,8 +9,12 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 
-from products.models import Product, Category
-from .models import Cart, CartItem, Order, OrderItem, WishList
+from django.utils import timezone
+from products.models import Product, Category, ProductAttributeType
+from .models import (
+    Cart, CartItem, Order, OrderItem, WishList,
+    ComparisonList, RecentlyViewedItem
+)
 from .forms import CartAddProductForm, CheckoutForm
 
 
@@ -162,6 +166,49 @@ class ProductDetailView(DetailView):
     model = Product
     template_name = 'shop/product_detail.html'
     context_object_name = 'product'
+    
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        
+        # Track this product view
+        product = self.object
+        
+        # Store in recently viewed items
+        if request.user.is_authenticated:
+            # For authenticated users, store with user reference
+            RecentlyViewedItem.objects.update_or_create(
+                user=request.user,
+                product=product,
+                defaults={'viewed_at': timezone.now()}
+            )
+            
+            # Limit to 10 most recent items
+            if request.user.recently_viewed_items.count() > 10:
+                oldest = request.user.recently_viewed_items.order_by('viewed_at').first()
+                if oldest:
+                    oldest.delete()
+        else:
+            # For anonymous users, store with session ID
+            session_id = request.session.session_key
+            if not session_id:
+                request.session.create()
+                session_id = request.session.session_key
+                
+            RecentlyViewedItem.objects.update_or_create(
+                session_id=session_id,
+                product=product,
+                defaults={'viewed_at': timezone.now()}
+            )
+            
+            # Limit to 10 most recent items
+            if RecentlyViewedItem.objects.filter(session_id=session_id).count() > 10:
+                oldest = RecentlyViewedItem.objects.filter(
+                    session_id=session_id
+                ).order_by('viewed_at').first()
+                if oldest:
+                    oldest.delete()
+        
+        return response
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -183,6 +230,26 @@ class ProductDetailView(DetailView):
                 context['in_wishlist'] = wishlist.has_product(product)
             except WishList.DoesNotExist:
                 context['in_wishlist'] = False
+        
+        # Add recently viewed products
+        if self.request.user.is_authenticated:
+            recently_viewed = RecentlyViewedItem.objects.filter(
+                user=self.request.user
+            ).exclude(
+                product=product
+            ).select_related('product')[:5]
+            context['recently_viewed'] = [item.product for item in recently_viewed]
+        else:
+            session_id = self.request.session.session_key
+            if session_id:
+                recently_viewed = RecentlyViewedItem.objects.filter(
+                    session_id=session_id
+                ).exclude(
+                    product=product
+                ).select_related('product')[:5]
+                context['recently_viewed'] = [item.product for item in recently_viewed]
+            else:
+                context['recently_viewed'] = []
         
         return context
 
@@ -481,3 +548,82 @@ class WishlistView(LoginRequiredMixin, ListView):
             return wishlist.products.all()
         except WishList.DoesNotExist:
             return Product.objects.none()
+
+
+def add_to_comparison(request, product_id):
+    """
+    Add a product to the comparison list
+    """
+    product = get_object_or_404(Product, id=product_id, is_active=True)
+    comparison_list = request.comparison_list
+    
+    added = comparison_list.add_product(product)
+    
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({
+            'success': added,
+            'message': 'Product added to comparison' if added else 'Comparison list is full (max 4 products)',
+            'comparison_count': comparison_list.products.count()
+        })
+    
+    if added:
+        messages.success(request, f"{product.name} has been added to your comparison list.")
+    else:
+        messages.warning(request, "Comparison list is full (maximum 4 products).")
+    
+    # Redirect back to product detail page
+    return redirect('shop:product_detail', slug=product.slug)
+
+
+def remove_from_comparison(request, product_id):
+    """
+    Remove a product from the comparison list
+    """
+    product = get_object_or_404(Product, id=product_id)
+    comparison_list = request.comparison_list
+    
+    removed = comparison_list.remove_product(product)
+    
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({
+            'success': removed,
+            'message': 'Product removed from comparison',
+            'comparison_count': comparison_list.products.count()
+        })
+    
+    messages.success(request, f"{product.name} has been removed from your comparison list.")
+    
+    # Redirect back to comparison page
+    return redirect('shop:comparison')
+
+
+class ComparisonView(TemplateView):
+    """
+    View for displaying product comparison
+    """
+    template_name = 'shop/comparison.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        comparison_list = self.request.comparison_list
+        products = comparison_list.products.all().select_related('category')
+        
+        # Get all attribute types and values for these products
+        attribute_types = ProductAttributeType.objects.filter(
+            values__productattribute__product__in=products
+        ).distinct()
+        
+        # Create a dictionary of attributes for each product
+        product_attributes = {}
+        for product in products:
+            product_attributes[product.id] = {}
+            for attr in product.attributes.select_related('attribute_value__attribute_type'):
+                attr_type = attr.attribute_value.attribute_type
+                if attr_type.id not in product_attributes[product.id]:
+                    product_attributes[product.id][attr_type.id] = []
+                product_attributes[product.id][attr_type.id].append(attr.attribute_value.value)
+        
+        context['products'] = products
+        context['attribute_types'] = attribute_types
+        context['product_attributes'] = product_attributes
+        return context

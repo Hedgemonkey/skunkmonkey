@@ -148,7 +148,12 @@ class StripePaymentManager {
                 confirmButtonColor: '#0d6efd'
             });
         } else {
-            alert(`${title}: ${message}`);
+            Swal.fire({
+                title: title,
+                text: message,
+                icon: type,
+                confirmButtonColor: '#0d6efd'
+            });
         }
     }
 }

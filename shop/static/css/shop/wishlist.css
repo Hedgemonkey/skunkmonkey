@@ -1,114 +1,181 @@
-/* Wishlist page styles */
-.wishlist-header {
-    margin-bottom: 1.5rem;
-}
+/**
+ * Wishlist button styles
+ * Provides consistent hover and click behavior for wishlist icons
+ */
 
-.wishlist-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border-radius: 0.5rem;
-    overflow: hidden;
-    border: 1px solid rgba(0, 0, 0, 0.125);
-}
-
-.wishlist-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-}
-
-.wishlist-card-header {
-    position: relative;
-}
-
-.wishlist-card .card-img-top {
-    height: 200px;
-    object-fit: cover;
-}
-
+/* Base wishlist button styles */
+.add-to-wishlist-btn,
 .remove-wishlist-btn {
+    transition: all 0.2s ease-in-out;
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border: none;
+}
+
+/* Styling for non-wishlist items (add to wishlist) */
+.add-to-wishlist-btn {
+    background-color: #fff;
+}
+
+/* Styling for wishlist items (remove from wishlist) */
+.remove-wishlist-btn {
+    background-color: #dc3545; /* Red background */
+}
+
+/* Interactive hover effects */
+.wishlist-btn-interactive {
+    transform: scale(1);
+}
+
+.wishlist-btn-interactive:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Active state for click feedback */
+.wishlist-btn-active {
+    transform: scale(0.9);
+}
+
+/* Icon animations */
+.add-to-wishlist-btn i,
+.remove-wishlist-btn i {
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    font-size: 1rem;
+}
+
+/* Non-wishlist item icon (outline heart) */
+.add-to-wishlist-btn i {
+    color: #6c757d; /* Gray color */
+}
+
+/* Non-wishlist item icon on hover (only the heart turns red) */
+.add-to-wishlist-btn:hover i {
+    color: #dc3545; /* Red color */
+}
+
+/* Wishlist item icon (solid heart) */
+.remove-wishlist-btn i {
+    color: #fff; /* White color on red background */
+}
+
+/* Wishlist item icon on hover (changes to broken heart) */
+.remove-wishlist-btn:hover i.fas.fa-heart::before {
+    content: "\f7a9"; /* Font Awesome broken heart icon */
+    animation: shake 0.5s ease-in-out;
+}
+
+/* Shake animation for broken heart */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    50% { transform: translateX(2px); }
+    75% { transform: translateX(-2px); }
+}
+
+/* Heartbeat animation for filled heart icon */
+@keyframes heartbeat {
+    0% { transform: scale(1); }
+    25% { transform: scale(1.2); }
+    50% { transform: scale(1); }
+    75% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+/* Ripple effect for click feedback */
+.add-to-wishlist-btn::after,
+.remove-wishlist-btn::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: scale(0);
+    top: 0;
+    left: 0;
+    opacity: 0;
+    transition: all 0.3s ease-out;
+}
+
+.add-to-wishlist-btn:active::after,
+.remove-wishlist-btn:active::after {
+    transform: scale(2);
+    opacity: 0;
+    transition: 0s;
+}
+
+/* Product top-right positioning */
+.product-top-right {
     position: absolute;
     top: 10px;
     right: 10px;
-    background-color: white;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
+    z-index: 10;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.3s ease, background-color 0.3s ease, color 0.3s ease;
-    z-index: 2;
+    flex-direction: column;
+    gap: 8px;
 }
 
-.wishlist-card:hover .remove-wishlist-btn {
-    opacity: 1;
+/* Toast notification styles for wishlist actions */
+.swal2-container {
+    z-index: 9999 !important; /* Ensure toasts appear above other elements */
 }
 
-.remove-wishlist-btn:hover {
-    background-color: #dc3545;
-    color: white;
-    border-color: #dc3545;
+.swal2-toast {
+    padding: 0.75rem 1.5rem !important;
+    margin-top: 1rem !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    font-family: inherit !important;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
-.price {
-    font-weight: 600;
-    color: #198754;
+.swal2-toast.swal2-icon-success {
+    background-color: #d4edda !important;
+    color: #155724 !important;
 }
 
-.card-body .btn {
-    transition: all 0.2s ease;
+.swal2-toast.swal2-icon-error {
+    background-color: #f8d7da !important;
+    color: #721c24 !important;
 }
 
-.card-body .btn:hover {
-    background-color: rgba(13, 110, 253, 0.1);
-    color: #0d6efd;
+.swal2-toast.swal2-icon-info {
+    background-color: #d1ecf1 !important;
+    color: #0c5460 !important;
 }
 
-.card-footer .btn {
-    transition: all 0.3s ease;
+.swal2-toast.swal2-icon-warning {
+    background-color: #fff3cd !important;
+    color: #856404 !important;
 }
 
-.card-footer .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+/* Ensure consistent styling in different contexts */
+.product-card .product-top-right .wishlist-btn {
+    margin: 0;
 }
 
-/* Animation when removing items */
-@keyframes fadeOut {
-    from { opacity: 1; transform: translateY(0); }
-    to { opacity: 0; transform: translateY(20px); }
+/* Focus state for accessibility */
+.wishlist-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
 }
 
-.fade-out {
-    animation: fadeOut 0.3s forwards;
+/* Loading state styling */
+.wishlist-btn.disabled {
+    opacity: 0.65;
+    pointer-events: none;
 }
 
-/* Empty wishlist styling */
-.text-center.py-5 {
-    padding: 3rem 0;
-}
-
-.text-center.py-5 i {
-    color: #dee2e6;
-}
-
-.text-center.py-5 .btn {
-    margin-top: 1rem;
-    transition: all 0.3s ease;
-}
-
-.text-center.py-5 .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Responsive adjustments */
-@media (max-width: 767.98px) {
-    .wishlist-card .card-img-top {
-        height: 150px;
-    }
-    
-    .remove-wishlist-btn {
-        opacity: 1;
-    }
+.wishlist-btn .spinner-border {
+    width: 1rem;
+    height: 1rem;
+    border-width: 0.15em;
 }

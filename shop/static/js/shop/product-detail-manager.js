@@ -31,16 +31,13 @@ class ProductDetailManager {
                     quantityInput.value = currentValue + 1;
                 } else {
                     // Use SweetAlert2 directly
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            title: 'Maximum Quantity',
-                            text: `Sorry, only ${maxValue} units available.`,
-                            icon: 'info',
-                            confirmButtonColor: '#0d6efd'
-                        });
-                    } else {
-                        alert(`Maximum Quantity: Sorry, only ${maxValue} units available.`);
-                    }
+                    // Always use SweetAlert2
+                    Swal.fire({
+                        title: 'Maximum Quantity',
+                        text: `Sorry, only ${maxValue} units available.`,
+                        icon: 'info',
+                        confirmButtonColor: '#0d6efd'
+                    });
                 }
             });
         }

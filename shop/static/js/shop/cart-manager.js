@@ -2,13 +2,19 @@
  * CartManager - handles all cart functionality
  * Manages adding, removing, and updating items in the shopping cart
  */
+import { ApiClient } from '../../../../static/js/api-client.js';
+
 class CartManager {
     constructor() {
-        this.initEventListeners();
+        this.api = new ApiClient({
+            errorHandler: this.handleApiError.bind(this)
+        });
         this.cartContainer = document.getElementById('cart-container');
         this.cartTotal = document.getElementById('cart-total');
         this.cartCount = document.getElementById('cart-count');
         this.cartCountBadge = document.querySelector('.cart-count-badge');
+        
+        this.initEventListeners();
     }
 
     /**
@@ -78,43 +84,44 @@ class CartManager {
 
         this.showNotification('Adding to Cart...', 'Please wait...', 'info', false);
         
-        this.sendAjaxRequest(url, formData, 'POST', response => {
-            if (response.success) {
-                // Add animation to the add to cart button
-                if (button) {
-                    button.classList.add('add-to-cart-animation');
-                    setTimeout(() => {
-                        button.classList.remove('add-to-cart-animation');
-                    }, 1500);
-                }
-                
-                // Update cart count
-                if (this.cartCount) {
-                    this.cartCount.textContent = response.cart_count;
-                    this.cartCount.classList.add('cart-count-updated');
-                    setTimeout(() => {
-                        this.cartCount.classList.remove('cart-count-updated');
-                    }, 500);
-                }
-                
-                // Update cart badge in navbar if it exists
-                if (this.cartCountBadge) {
-                    this.cartCountBadge.textContent = response.cart_count;
-                    this.cartCountBadge.classList.remove('d-none');
-                }
-                
-                this.showNotification('Added to Cart!', `${productName} has been added to your cart.`, 'success', true, {
-                    showDenyButton: true,
-                    denyButtonText: 'View Cart',
-                    denyButtonColor: '#198754',
-                    confirmButtonText: 'Continue Shopping'
-                }).then((result) => {
-                    if (result.isDenied) {
-                        window.location.href = '/shop/cart/';
+        this.api.post(url, formData)
+            .then(response => {
+                if (response.success) {
+                    // Add animation to the add to cart button
+                    if (button) {
+                        button.classList.add('add-to-cart-animation');
+                        setTimeout(() => {
+                            button.classList.remove('add-to-cart-animation');
+                        }, 1500);
                     }
-                });
-            }
-        });
+                    
+                    // Update cart count
+                    if (this.cartCount) {
+                        this.cartCount.textContent = response.cart_count;
+                        this.cartCount.classList.add('cart-count-updated');
+                        setTimeout(() => {
+                            this.cartCount.classList.remove('cart-count-updated');
+                        }, 500);
+                    }
+                    
+                    // Update cart badge in navbar if it exists
+                    if (this.cartCountBadge) {
+                        this.cartCountBadge.textContent = response.cart_count;
+                        this.cartCountBadge.classList.remove('d-none');
+                    }
+                    
+                    this.showNotification('Added to Cart!', `${productName} has been added to your cart.`, 'success', true, {
+                        showDenyButton: true,
+                        denyButtonText: 'View Cart',
+                        denyButtonColor: '#198754',
+                        confirmButtonText: 'Continue Shopping'
+                    }).then((result) => {
+                        if (result.isDenied) {
+                            window.location.href = '/shop/cart/';
+                        }
+                    });
+                }
+            });
     }
 
     /**
@@ -127,40 +134,41 @@ class CartManager {
         const url = form.action;
         const formData = new FormData(form);
 
-        this.sendAjaxRequest(url, formData, 'POST', response => {
-            if (response.success) {
-                // Update the item subtotal
-                const row = form.closest('tr');
-                const subtotalCell = row.querySelector('.item-subtotal');
-                if (subtotalCell) {
-                    subtotalCell.textContent = `$${response.item_subtotal}`;
-                    subtotalCell.classList.add('highlight-update');
-                    setTimeout(() => {
-                        subtotalCell.classList.remove('highlight-update');
-                    }, 1000);
+        this.api.post(url, formData)
+            .then(response => {
+                if (response.success) {
+                    // Update the item subtotal
+                    const row = form.closest('tr');
+                    const subtotalCell = row.querySelector('.item-subtotal');
+                    if (subtotalCell) {
+                        subtotalCell.textContent = `$${response.item_subtotal}`;
+                        subtotalCell.classList.add('highlight-update');
+                        setTimeout(() => {
+                            subtotalCell.classList.remove('highlight-update');
+                        }, 1000);
+                    }
+                    
+                    // Update cart total
+                    if (this.cartTotal) {
+                        this.cartTotal.textContent = `$${response.cart_total}`;
+                        this.cartTotal.classList.add('highlight-update');
+                        setTimeout(() => {
+                            this.cartTotal.classList.remove('highlight-update');
+                        }, 1000);
+                    }
+                    
+                    // Update cart count badge if it exists
+                    if (this.cartCountBadge) {
+                        this.cartCountBadge.textContent = response.cart_count;
+                    }
+                    
+                    this.showNotification('Cart Updated', 'Your cart has been updated successfully.', 'success', true, {
+                        timer: 2000,
+                        timerProgressBar: true,
+                        showConfirmButton: false
+                    });
                 }
-                
-                // Update cart total
-                if (this.cartTotal) {
-                    this.cartTotal.textContent = `$${response.cart_total}`;
-                    this.cartTotal.classList.add('highlight-update');
-                    setTimeout(() => {
-                        this.cartTotal.classList.remove('highlight-update');
-                    }, 1000);
-                }
-                
-                // Update cart count badge if it exists
-                if (this.cartCountBadge) {
-                    this.cartCountBadge.textContent = response.cart_count;
-                }
-                
-                this.showNotification('Cart Updated', 'Your cart has been updated successfully.', 'success', true, {
-                    timer: 2000,
-                    timerProgressBar: true,
-                    showConfirmButton: false
-                });
-            }
-        });
+            });
     }
 
     /**
@@ -174,39 +182,40 @@ class CartManager {
         const productName = link.dataset.productName || 'this item';
         
         this.showConfirmation('Remove Item?', `Are you sure you want to remove ${productName} from your cart?`, () => {
-            this.sendAjaxRequest(url, null, 'GET', response => {
-                if (response.success) {
-                    // Add fade-out animation to the row
-                    const row = link.closest('tr');
-                    row.classList.add('fade-out');
-                    
-                    setTimeout(() => {
-                        // Remove the row from the table
-                        row.remove();
+            this.api.get(url)
+                .then(response => {
+                    if (response.success) {
+                        // Add fade-out animation to the row
+                        const row = link.closest('tr');
+                        row.classList.add('fade-out');
                         
-                        // Update cart total
-                        if (this.cartTotal) {
-                            this.cartTotal.textContent = `$${response.cart_total}`;
-                        }
-                        
-                        // Update cart count badge in navbar if it exists
-                        if (this.cartCountBadge) {
-                            if (response.cart_count > 0) {
-                                this.cartCountBadge.textContent = response.cart_count;
-                            } else {
-                                this.cartCountBadge.classList.add('d-none');
+                        setTimeout(() => {
+                            // Remove the row from the table
+                            row.remove();
+                            
+                            // Update cart total
+                            if (this.cartTotal) {
+                                this.cartTotal.textContent = `$${response.cart_total}`;
                             }
-                        }
+                            
+                            // Update cart count badge in navbar if it exists
+                            if (this.cartCountBadge) {
+                                if (response.cart_count > 0) {
+                                    this.cartCountBadge.textContent = response.cart_count;
+                                } else {
+                                    this.cartCountBadge.classList.add('d-none');
+                                }
+                            }
+                            
+                            // If cart is empty, refresh the page to show empty state
+                            if (response.cart_count === 0) {
+                                window.location.reload();
+                            }
+                        }, 300);
                         
-                        // If cart is empty, refresh the page to show empty state
-                        if (response.cart_count === 0) {
-                            window.location.reload();
-                        }
-                    }, 300);
-                    
-                    this.showNotification('Item Removed', `${productName} has been removed from your cart.`, 'success');
-                }
-            });
+                        this.showNotification('Item Removed', `${productName} has been removed from your cart.`, 'success');
+                    }
+                });
         });
     }
     
@@ -238,42 +247,12 @@ class CartManager {
     }
     
     /**
-     * Send an AJAX request for cart operations
-     * @param {string} url - The URL to send the request to
-     * @param {FormData|null} data - Form data to send, or null for GET requests
-     * @param {string} method - HTTP method (GET, POST, etc.)
-     * @param {Function} successCallback - Function to call on success
+     * Handle API errors
+     * @param {Error} error - Error object
      */
-    sendAjaxRequest(url, data, method, successCallback) {
-        const options = {
-            method: method,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        };
-        
-        if (data && method === 'POST') {
-            options.body = data;
-        }
-        
-        fetch(url, options)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    successCallback(data);
-                } else if (data.error) {
-                    this.showNotification('Error', data.error, 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                this.showNotification('Error', 'There was a problem updating your cart.', 'error');
-            });
+    handleApiError(error) {
+        console.error('API Error:', error);
+        this.showNotification('Error', error.message || 'There was a problem with your request.', 'error');
     }
     
     /**
@@ -305,3 +284,5 @@ class CartManager {
 document.addEventListener('DOMContentLoaded', function() {
     window.cartManager = new CartManager();
 });
+
+export default CartManager;

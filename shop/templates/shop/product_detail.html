@@ -36,17 +36,29 @@
                 <div class="d-flex justify-content-between align-items-start mb-3">
                     <h1 class="mb-0">{{ product.name }}</h1>
                     
-                    {% if user.is_authenticated %}
-                    <a href="{% url 'shop:add_to_wishlist' product.id %}" 
-                       class="btn btn-outline-danger add-to-wishlist-btn"
-                       data-product-id="{{ product.id }}">
-                        {% if user.wishlist.has_product %}
-                            <i class="fas fa-heart"></i>
-                        {% else %}
-                            <i class="far fa-heart"></i>
+                    <div class="d-flex">
+                        <!-- Compare button -->
+                        <a href="{% url 'shop:add_to_comparison' product.id %}"
+                           class="btn btn-outline-primary me-2 add-to-comparison-btn rounded-circle"
+                           data-product-id="{{ product.id }}"
+                           data-bs-toggle="tooltip"
+                           title="Add to comparison">
+                            <i class="fas fa-balance-scale"></i>
+                        </a>
+                        
+                        <!-- Wishlist button -->
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'shop:add_to_wishlist' product.id %}"
+                           class="btn btn-outline-danger add-to-wishlist-btn"
+                           data-product-id="{{ product.id }}">
+                            {% if user.wishlist.has_product %}
+                                <i class="fas fa-heart"></i>
+                            {% else %}
+                                <i class="far fa-heart"></i>
+                            {% endif %}
+                        </a>
                         {% endif %}
-                    </a>
-                    {% endif %}
+                    </div>
                 </div>
                 
                 <p class="product-price mb-3">${{ product.price }}</p>
@@ -128,6 +140,32 @@
         </div>
     </div>
     {% endif %}
+    
+    {% if recently_viewed %}
+    <div class="mt-5">
+        <h3 class="mb-4">Recently Viewed</h3>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-5 g-4">
+            {% for viewed_product in recently_viewed %}
+            <div class="col">
+                <div class="card h-100">
+                    {% if viewed_product.image %}
+                        <img src="{{ viewed_product.image.url }}" class="card-img-top" alt="{{ viewed_product.name }}" loading="lazy">
+                    {% else %}
+                        <img src="{% static 'img/no-image.png' %}" class="card-img-top" alt="No image available" loading="lazy">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ viewed_product.name }}</h5>
+                        <p class="card-text text-success fw-bold">${{ viewed_product.price }}</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0">
+                        <a href="{% url 'shop:product_detail' viewed_product.slug %}" class="btn btn-outline-primary btn-sm d-block">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}
 
@@ -135,5 +173,6 @@
     {{ block.super }}
     <script src="{% static 'bundles/js/shop/cart.js' %}"></script>
     <script src="{% static 'bundles/js/shop/wishlist.js' %}"></script>
+    <script src="{% static 'bundles/js/shop/comparison-manager.js' %}"></script>
     <script src="{% static 'bundles/js/shop/product-detail.js' %}"></script>
 {% endblock %}

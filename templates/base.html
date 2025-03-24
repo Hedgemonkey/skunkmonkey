@@ -11,14 +11,14 @@
     {% endblock %}
         <title>{% block title %}SkunkMonkey{% endblock %}</title>
     {% block css %}
-        <link rel="stylesheet" href="{% static 'bundles/css/styles.css' %}">
+        <link rel="stylesheet" href="{% static 'bundles/css/styles.css' %}?v=2">
     {% endblock %}
     
     {% block extra_css %}
         {# Template-specific CSS files can be included here #}
     {% endblock %}
     {% block js %}
-        <script src="{% static 'bundles/js/main.js' %}"></script>
+        <script src="{% static 'bundles/js/main.js' %}?v=2"></script>
     {% endblock %}
     {% block messages-js %}
     <script>
@@ -55,6 +55,12 @@
     <!-- Content section-->
     {% block content %}
     {% endblock %}
+    
+    <!-- Toast container for notifications -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1050;">
+        <!-- Toasts will be dynamically added here -->
+    </div>
+    
     <!-- Footer-->
     {% block footer %}
         <footer class="footer">
