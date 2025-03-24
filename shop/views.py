@@ -415,7 +415,8 @@ class CheckoutView(View):
             # Process payment with Stripe
             try:
                 # Create a payment intent
-                stripe.api_key = djstripe_settings.STRIPE_SECRET_KEY
+                # Stripe API key should be configured through djstripe
+                # stripe.api_key = djstripe_settings.STRIPE_SECRET_KEY
                 
                 # Convert to cents/pence
                 amount_in_cents = int(order.total_price * 100)

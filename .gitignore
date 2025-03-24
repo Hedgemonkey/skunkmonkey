@@ -8,6 +8,7 @@ node_modules/
 .github/
 cloudinary_python.txt
 .env
+.env.backup
 .env-host
 skunkmonkey/production.py
 skunkmonkey*.log

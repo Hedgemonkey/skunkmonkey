@@ -112,7 +112,7 @@ WSGI_APPLICATION = 'skunkmonkey.wsgi.application'
 
 if 'DATABASE_URL' in os.environ:
     DATABASES = {
-        'default': dj_database_url.parse(os.environ.get('DATABASE_URL'))
+        'default': dj_database_url.parse(os.environ['DATABASE_URL'])
     }
 else:
     DATABASES = {
@@ -185,12 +185,12 @@ ACCOUNT_FORMS = {
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 if 'EMAIL_HOST' in os.environ:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = os.environ.get('EMAIL_HOST')  # From environemnt variable
-    EMAIL_PORT = os.environ.get('EMAIL_PORT', 587)  # Or the correct port for TLS/SSL
-    EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', True)  # Or EMAIL_USE_SSL = True if your server uses SSL
-    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')  # From environemnt variable
-    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')  # From environemnt variable
-    DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')  # From environemnt variable
+    EMAIL_HOST = os.environ['EMAIL_HOST']
+    EMAIL_PORT = int(os.environ['EMAIL_PORT'])
+    EMAIL_USE_TLS = os.environ['EMAIL_USE_TLS'].lower() == 'true'
+    EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
+    EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
+    DEFAULT_FROM_EMAIL = os.environ['DEFAULT_FROM_EMAIL']
 
 
 # Internationalization
@@ -228,9 +228,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Stripe settings
-STRIPE_TEST_PUBLISHABLE_KEY = os.environ.get("STRIPE_TEST_PUBLISHABLE_KEY", "pk_test_51R5zfiBRu1D9KmMCIxDakPSiroSDK825c64msYQgCHiKslgkSMDEwP9v79d8TTnmvp5kJf6rPi9gqfctiB3ZiyfF00WZcwFa3u")
-STRIPE_TEST_SECRET_KEY = os.environ.get("STRIPE_TEST_SECRET_KEY", "sk_test_51R5zfiBRu1D9KmMCZYzXl8IppBzGEImZECgk6dn5TGG1y5AbyVEeDN00nnziGJBrERqRGiYKbW9DWegbKQUcdTJM00mi3yMHsi")
+STRIPE_TEST_PUBLISHABLE_KEY = os.environ.get("STRIPE_TEST_PUBLISHABLE_KEY")
+STRIPE_TEST_SECRET_KEY = os.environ.get("STRIPE_TEST_SECRET_KEY")
 DJSTRIPE_USE_NATIVE_JSONFIELD = True
 DJSTRIPE_FOREIGN_KEY_TO_FIELD = "id"
 STRIPE_API_VERSION = "2025-02-24.acacia"
-STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "your_webhook_secret")
+STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET")

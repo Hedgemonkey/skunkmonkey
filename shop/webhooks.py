@@ -24,7 +24,8 @@ def stripe_webhook(request):
     
     try:
         # Verify the webhook signature
-        stripe.api_key = settings.STRIPE_SECRET_KEY
+        # Should be configured through djstripe
+        # stripe.api_key = settings.STRIPE_SECRET_KEY
         event = stripe.Webhook.construct_event(
             payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
         )
