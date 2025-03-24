@@ -144,9 +144,29 @@ The database is designed using **PostgreSQL** and follows Django's **ORM** struc
                                | slug               |
                                | is_active          | 
                                +--------------------+
-                                      |
-                                      | 1:M
-                                      v
+                                       |
+                                       | 1:M
+                                       v
++--------------------+         +----------------------+
+| ProductAttribute   |<------> | ProductAttributeValue|
++--------------------+         +----------------------+
+| id (PK)            |         | id (PK)              |
+| product_id (FK)    |         | attribute_type_id(FK)|
+| attribute_value_id(FK)|      | value                |
++--------------------+         +----------------------+
+      ^                             ^
+      |1:M                          |1:M
+      |                             |
++--------------------+         +--------------------+
+|      Product       |         |ProductAttributeType|
++--------------------+         +--------------------+
+      |                        | id (PK)            |
+      |                        | name               |
+      |                        | display_name       |
+      |                        +--------------------+
+      |
+      | 1:M
+      v
 +--------------------+         +--------------------+
 |      Review        |         |   InventoryLog     |
 +--------------------+         +--------------------+
@@ -157,9 +177,37 @@ The database is designed using **PostgreSQL** and follows Django's **ORM** struc
 | comment            |         | created_at         |
 | created_at         |         +--------------------+
 +--------------------+                 |
-          |                            |
-          | M:1                        | M:1
-          v                            v
+         |                             |
+         | M:1                         | M:1
+         v                             v
++--------------------+         +--------------------+
+|       User         |<------- |  RecentlyViewedItem|
++--------------------+         +--------------------+
+| id (PK)            |         |  id (PK)           |
+| username           |         |  user_id (FK, opt) |
+| email              |         |  session_id (opt)  |
+| password           |         |  product_id (FK)  |
+| ...                |         |  viewed_at         |
++--------------------+         +--------------------+
+         ^
+         |1:1
+         |
++--------------------+         +--------------------+
+|     ComparisonList |<-------  |      Product       |
++--------------------+         +--------------------+
+| id (PK)            |         | id (PK)            |
+| user_id (FK, opt)  |         | name               |
+| session_id (opt)   |         | description        |
+| created_at         |         | price              |
+| updated_at         |         | category_id (FK)   |
++--------------------+         | compare_at_price   |
+                               | stock_quantity     |
+                               | image              |
+                               | created_at         |
+                               | updated_at         |
+                               | slug               |
+                               | is_active          |
+                               +--------------------+
 +--------------------+         +--------------------+
 |       User         |<---+    |       Cart         |
 +--------------------+    |    +--------------------+
@@ -232,6 +280,10 @@ The database is designed using **PostgreSQL** and follows Django's **ORM** struc
 
 **Shop Module:**
 - `User` ↔️ `Cart`: One-to-One (a user has one cart)
+- `User` ↔️ `ComparisonList`: One-to-One (a user has one comparison list)
+- `User` ↔️ `RecentlyViewedItem`: One-to-Many (a user can have many recently viewed items)
+- `Product` ↔️ `ComparisonList`: Many-to-Many (a product can be in many comparison lists)
+- `Product` ↔️ `RecentlyViewedItem`: One-to-Many (a product can be recently viewed by many users)
 - `Cart` ↔️ `CartItem`: One-to-Many (a cart contains multiple items)
 - `CartItem` ↔️ `Product`: Many-to-One (many cart items can reference the same product)
 - `User` ↔️ `Order`: One-to-Many (a user can have many orders)
@@ -247,6 +299,8 @@ The database is designed using **PostgreSQL** and follows Django's **ORM** struc
 - Inventory is managed through both product stock levels and a log of changes
 - Wishlists allow users to save products for future purchase
 - Products now support a `compare_at_price` field to enable sale pricing and discount display (original price vs. current price)
+- Comparison lists allow users to compare up to 4 products side-by-side
+- Recently viewed items are tracked to provide personalized recommendations
 
 The database consists of relational tables that store information about users, products, and orders. **Django's ORM** is used to interact with the database efficiently.
 

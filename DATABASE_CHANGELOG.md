@@ -144,6 +144,46 @@ python manage.py migrate sessions zero
 
 ---
 
+**Maintainer**: `@Hedgemonkey`
+_Last updated: 2025-03-24_
+
+---
+
+### **Version: v1.3.4**
+📅 **Date**: 2025-03-24
+📝 **Description**: Added `ProductAttribute`, `ProductAttributeType`, and `ProductAttributeValue` models to the `products` app.
+
+📂 **Migration File**: `products/migrations/0003_productattributetype_alter_category_options_and_more.py`
+
+🛠 **Impact**:
+- Created `products_productattribute` table to store product attributes.
+- Created `products_productattributetype` table to store product attribute types.
+- Created `products_productattributevalue` table to store product attribute values.
+
+🔄 **Rollback Plan**:
+```bash
+python manage.py migrate products 0002_product_compare_at_price   # Reverts to the previous migration
+```
+
+---
+
+### **Version: v1.3.5**
+📅 **Date**: 2025-03-24
+📝 **Description**: Added `ComparisonList` and `RecentlyViewedItem` models to the `shop` app.
+
+📂 **Migration File**: `shop/migrations/0002_comparisonlist_recentlyvieweditem.py`
+
+🛠 **Impact**:
+- Created `shop_comparisonlist` table to store products being compared by users.
+- Created `shop_recentlyvieweditem` table to track recently viewed products.
+
+🔄 **Rollback Plan**:
+```bash
+python manage.py migrate shop 0001_initial   # Reverts to the previous migration
+```
+
+---
+
 ## 🔍 Guidelines for Future Changes  
 
 ✔ **Always document changes here before running `migrate` in production.**  
@@ -169,8 +209,3 @@ Rollback to a previous migration:
 ```sh
 python manage.py migrate app_name 0002
 ```  
-
----
-
-**Maintainer**: `@Hedgemonkey`  
-_Last updated: 2025-03-23_
