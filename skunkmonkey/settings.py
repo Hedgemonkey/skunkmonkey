@@ -61,7 +61,8 @@ INSTALLED_APPS = [
     'home',
     'users.apps.UsersConfig',
     'products',
-    'shop',  # Add the new shop app
+    'shop',
+    'djstripe'
 ]
 
 MIDDLEWARE = [
@@ -226,87 +227,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Logging configuration
-
-if 'DEVELOPMENT' in os.environ:
-    LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': False,  # Important: keep this False
-        'formatters': {
-            'verbose': {
-                'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-                'style': '{',  # Use str.format() style formatting
-            },
-            'simple': {
-                'format': '{levelname} {message}',
-                'style': '{',
-            },
-        },
-        'handlers': {
-            'file': {
-                'level': 'DEBUG',
-                'class': 'logging.FileHandler',
-                'filename': os.path.join(BASE_DIR, 'skunkmonkey.log'), # Log file path
-                'formatter': 'verbose',  # Use the 'verbose' formatter
-            },
-            'console': {  # Add a console handler for development
-                'level': 'DEBUG',  # Adjust as needed
-                'class': 'logging.StreamHandler',
-                'formatter': 'simple',
-            },
-
-        },
-        'loggers': {
-            '': {  # Root logger (catch-all if no other logger matches)
-                'handlers': ['file', 'console'], #  Output to both file and console
-                'level': 'DEBUG',  # Adjust log level as needed
-            },
-            'django.request': {  # Log HTTP requests (optional)
-                'handlers': ['file', 'console'], 
-                'level': 'INFO',
-                'propagate': False,  # Prevents these messages from being logged twice
-            }
-
-
-        },
-    }
-else:
-    LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': False,  # Important: keep this False
-        'formatters': {
-            'verbose': {
-                'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-                'style': '{',  # Use str.format() style formatting
-            },
-            'simple': {
-                'format': '{levelname} {message}',
-                'style': '{',
-            },
-        },
-        'handlers': {
-            'file': {
-                'level': 'DEBUG',
-                'class': 'logging.FileHandler',
-                'filename': os.path.join(BASE_DIR, 'skunkmonkey-apache.log'), # Log file path
-                'formatter': 'verbose',  # Use the 'verbose' formatter
-            },
-            'console': {  # Add a console handler for development
-                'level': 'DEBUG',  # Adjust as needed
-                'class': 'logging.StreamHandler',
-                'formatter': 'simple',
-            },
-
-        },
-        'loggers': {
-            '': {  # Root logger (catch-all if no other logger matches)
-                'handlers': ['file', 'console'], #  Output to both file and console
-                'level': 'DEBUG',  # Adjust log level as needed
-            },
-            'django.request': {  # Log HTTP requests (optional)
-                'handlers': ['file', 'console'], 
-                'level': 'INFO',
-                'propagate': False,  # Prevents these messages from being logged twice
-            }
-        },
-    }
+# Stripe settings
+STRIPE_TEST_PUBLISHABLE_KEY = os.environ.get("STRIPE_TEST_PUBLISHABLE_KEY", "pk_test_51R5zfiBRu1D9KmMCIxDakPSiroSDK825c64msYQgCHiKslgkSMDEwP9v79d8TTnmvp5kJf6rPi9gqfctiB3ZiyfF00WZcwFa3u")
+STRIPE_TEST_SECRET_KEY = os.environ.get("STRIPE_TEST_SECRET_KEY", "sk_test_51R5zfiBRu1D9KmMCZYzXl8IppBzGEImZECgk6dn5TGG1y5AbyVEeDN00nnziGJBrERqRGiYKbW9DWegbKQUcdTJM00mi3yMHsi")
+DJSTRIPE_USE_NATIVE_JSONFIELD = True
+DJSTRIPE_FOREIGN_KEY_TO_FIELD = "id"
+STRIPE_API_VERSION = "2025-02-24.acacia"
+STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "your_webhook_secret")

@@ -28,8 +28,12 @@ urlpatterns = [
     
     # Checkout process
     path('checkout/', views.CheckoutView.as_view(), name='checkout'),
+    path('payment/<int:order_id>/', views.PaymentView.as_view(), name='payment'),
     path('order/<int:order_id>/complete/', views.OrderCompleteView.as_view(), name='order_complete'),
     path('orders/', views.OrderHistoryView.as_view(), name='order_history'),
+    
+    # Stripe subscription
+    path('subscribe/', views.subscribe_view, name='subscribe'),
     
     # Wishlist functionality
     path('wishlist/', views.WishlistView.as_view(), name='wishlist'),

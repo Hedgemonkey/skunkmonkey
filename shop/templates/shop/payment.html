@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Complete Your Payment</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Order Summary</h5>
+                            <p><strong>Order ID:</strong> {{ order.id }}</p>
+                            <p><strong>Total Amount:</strong> ${{ order.total_price }}</p>
+                        </div>
+                    </div>
+
+                    <form id="payment-form">
+                        <div id="payment-element">
+                            <!-- Stripe Elements will be inserted here -->
+                        </div>
+                        <div id="error-message" class="text-danger mt-2"></div>
+                        <button id="submit-button" class="btn btn-primary mt-4">
+                            <span id="button-text">Pay Now</span>
+                            <span id="spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    // Initialize Stripe
+    const stripe = Stripe('{{ stripe_publishable_key }}');
+    const clientSecret = '{{ client_secret }}';
+    
+    // Create payment element
+    const elements = stripe.elements({
+        clientSecret: clientSecret
+    });
+    
+    const paymentElement = elements.create('payment');
+    paymentElement.mount('#payment-element');
+    
+    // Handle form submission
+    const form = document.getElementById('payment-form');
+    const submitButton = document.getElementById('submit-button');
+    const buttonText = document.getElementById('button-text');
+    const spinner = document.getElementById('spinner');
+    const errorMessage = document.getElementById('error-message');
+    
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        
+        // Disable the submit button while processing
+        submitButton.disabled = true;
+        buttonText.classList.add('d-none');
+        spinner.classList.remove('d-none');
+        
+        // Confirm the payment
+        const { error } = await stripe.confirmPayment({
+            elements,
+            confirmParams: {
+                return_url: window.location.origin + "{% url 'shop:order_complete' order_id=order.id %}",
+            }
+        });
+        
+        if (error) {
+            // Show error message
+            errorMessage.textContent = error.message;
+            
+            // Re-enable the submit button
+            submitButton.disabled = false;
+            buttonText.classList.remove('d-none');
+            spinner.classList.add('d-none');
+        }
+        // The payment will redirect to the return_url on success
+    });
+</script>
+{% endblock %}

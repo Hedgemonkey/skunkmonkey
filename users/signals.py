@@ -1,8 +1,11 @@
 # users/signals.py
 from django.dispatch import receiver
+from django.db.models.signals import post_save
+from django.contrib.auth import get_user_model
 from allauth.account.signals import email_confirmed, email_added
 from allauth.account.models import EmailAddress
 from django.contrib import messages
+from .models import UserProfile
 
 @receiver(email_confirmed)
 def update_user_email(sender, request, email_address, **kwargs):
@@ -21,3 +24,15 @@ def email_added_signal(sender, request, email_address, **kwargs): # Sends an ext
             email_address.set_as_primary(request)
         else:# send a message to verify
             messages.info(request, f"Confirmation email sent to {email_address}. Please verify this email address.")
+
+
+# Create a UserProfile for each new user
+User = get_user_model()
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    """
+    Create a UserProfile for each new user.
+    """
+    if created:
+        UserProfile.objects.create(user=instance)

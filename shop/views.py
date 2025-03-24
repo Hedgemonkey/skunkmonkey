@@ -3,19 +3,21 @@ from django.views.generic import ListView, DetailView, View, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.db.models import Q
-from django.http import JsonResponse, HttpResponseBadRequest
-from django.urls import reverse
-from django.conf import settings
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 
 from django.utils import timezone
 from products.models import Product, Category, ProductAttributeType
 from .models import (
-    Cart, CartItem, Order, OrderItem, WishList,
-    ComparisonList, RecentlyViewedItem
+    Order, WishList, RecentlyViewedItem
 )
 from .forms import CartAddProductForm, CheckoutForm
+
+# Stripe integration
+from djstripe import models as djstripe_models
+from djstripe import settings as djstripe_settings
+import stripe
 
 
 class ProductListView(ListView):
@@ -410,11 +412,33 @@ class CheckoutView(View):
             # Create order items from cart
             cart.transfer_cart_items_to_order(order)
             
-            # TODO: Process payment with Stripe
-            
-            # For now, we just mark the order as paid
-            order.is_paid = True
-            order.save()
+            # Process payment with Stripe
+            try:
+                # Create a payment intent
+                stripe.api_key = djstripe_settings.STRIPE_SECRET_KEY
+                
+                # Convert to cents/pence
+                amount_in_cents = int(order.total_price * 100)
+                
+                # Create a PaymentIntent
+                intent = stripe.PaymentIntent.create(
+                    amount=amount_in_cents,
+                    currency='usd',  # Change to your currency
+                    payment_method_types=['card'],
+                    metadata={
+                        'order_id': order.id,
+                        'user_id': request.user.id if request.user.is_authenticated else None,
+                    }
+                )
+                
+                # Store the client secret in the session
+                request.session['client_secret'] = intent.client_secret
+                
+                # Redirect to payment page
+                return redirect('shop:payment', order_id=order.id)
+            except Exception as e:
+                messages.error(request, f"Payment error: {str(e)}")
+                return redirect('shop:checkout')
             
             return redirect('shop:order_complete', order_id=order.id)
         
@@ -422,6 +446,52 @@ class CheckoutView(View):
             'cart': cart,
             'form': form
         })
+
+
+class PaymentView(View):
+    """
+    View for handling Stripe payment
+    """
+    template_name = 'shop/payment.html'
+    
+    def get(self, request, order_id):
+        # Get the order
+        if request.user.is_authenticated:
+            order = get_object_or_404(Order, id=order_id, user=request.user)
+        else:
+            order = get_object_or_404(Order, id=order_id)
+        
+        # Get the client secret from the session
+        client_secret = request.session.get('client_secret')
+        if not client_secret:
+            messages.error(request, "Payment session expired. Please try again.")
+            return redirect('shop:checkout')
+        
+        return render(request, self.template_name, {
+            'order': order,
+            'client_secret': client_secret,
+            'stripe_publishable_key': djstripe_settings.STRIPE_TEST_PUBLISHABLE_KEY
+        })
+    
+    def post(self, request, order_id):
+        # This endpoint will be called by Stripe.js after payment is complete
+        # In a real application, you would verify the payment status with Stripe
+        # For now, we'll just mark the order as paid
+        
+        if request.user.is_authenticated:
+            order = get_object_or_404(Order, id=order_id, user=request.user)
+        else:
+            order = get_object_or_404(Order, id=order_id)
+        
+        # Mark the order as paid
+        order.is_paid = True
+        order.save()
+        
+        # Clear the client secret from the session
+        if 'client_secret' in request.session:
+            del request.session['client_secret']
+        
+        return redirect('shop:order_complete', order_id=order.id)
 
 
 class OrderCompleteView(TemplateView):
@@ -461,6 +531,42 @@ class OrderHistoryView(LoginRequiredMixin, ListView):
     
     def get_queryset(self):
         return Order.objects.filter(user=self.request.user).order_by('-created_at')
+
+
+# Stripe integration views
+@login_required
+def subscribe_view(request):
+    """Subscribe a user to a Stripe plan."""
+    if request.method == 'POST':
+        try:
+            # Get the plan from the POST data
+            plan = djstripe_models.Plan.objects.get(id=request.POST['plan'])
+
+            # Subscribe the user to the plan
+            customer, created = djstripe_models.Customer.get_or_create(subscriber=request.user)
+            subscription = djstripe_models.Subscription.create(customer=customer, plan=plan)
+
+            # Optionally, associate the subscription with your user model
+            if hasattr(request.user, 'userprofile'):
+                request.user.userprofile.stripe_subscription = subscription
+                request.user.userprofile.save()
+
+            messages.success(request, "Successfully subscribed!")
+            return redirect('home')  # Replace 'home' with your success URL
+        except Exception as e:
+            messages.error(request, f"Error subscribing: {e}")
+            return redirect('shop:subscribe')  # Replace 'subscribe' with your subscription page
+
+    # If not a POST request, render the subscription page
+    plans = djstripe_models.Plan.objects.all()
+    return render(
+        request,
+        'shop/subscribe.html',
+        {
+            'plans': plans,
+            'stripe_publishable_key': djstripe_settings.STRIPE_TEST_PUBLISHABLE_KEY
+        }
+    )
 
 
 # Additional views for future implementation
