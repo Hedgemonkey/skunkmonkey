@@ -12,12 +12,12 @@ import time
 import logging
 from django.utils import timezone
 
-from djstripe.models import PaymentIntent, APIKey
+from djstripe.models import PaymentIntent
 
 from ..models import Order, OrderItem
 from ..forms import CheckoutForm
 from .mixins import CartAccessMixin
-from ..utils.stripe_utils import get_stripe_publishable_key, get_stripe_secret_key, create_payment_intent
+from ..utils.stripe_utils import get_stripe_key, create_payment_intent
 
 
 logger = logging.getLogger(__name__)
@@ -26,70 +26,9 @@ logger = logging.getLogger(__name__)
 class CheckoutView(CartAccessMixin, View):
     """
     View for processing checkout with Stripe integration
-    Enhanced with detailed logging and consolidated Stripe API key handling
+    Enhanced with detailed logging
     """
     template_name = 'shop/checkout.html'
-    
-    def get_stripe_key(self, key_type='publishable'):
-        """
-        Consolidated method to get Stripe keys
-        Args:
-            key_type: Either 'publishable' or 'secret'
-        Returns:
-            The requested Stripe API key
-        """
-        logger.debug(f"Getting Stripe {key_type} key")
-        
-        # Set variables based on key type
-        if key_type == 'publishable':
-            settings_key = 'STRIPE_PUBLISHABLE_KEY'
-            api_key_type = "pk_test"
-            possible_names = ["test_publishable", "Test Publishable", "publishable", "Publishable"]
-            fallback_key = 'pk_test_your_development_key'
-        else:  # secret
-            settings_key = 'STRIPE_SECRET_KEY'
-            api_key_type = "sk_test"
-            possible_names = ["test_secret", "Test Secret", "secret", "Secret"]
-            fallback_key = 'sk_test_your_development_key'
-        
-        # First try from settings
-        if hasattr(settings, settings_key) and getattr(settings, settings_key):
-            logger.debug(f"Using {settings_key} from settings")
-            return getattr(settings, settings_key)
-        
-        # Then try from database (if using dj-stripe)
-        try:
-            # Try by type first
-            api_key = APIKey.objects.filter(type=key_type).first()
-            
-            # If that doesn't work, try by name
-            if not api_key:
-                for possible_name in possible_names:
-                    api_key = APIKey.objects.filter(name__iexact=possible_name).first()
-                    if api_key:
-                        break
-            
-            # If that doesn't work, try any key with appropriate prefix
-            if not api_key:
-                for key in APIKey.objects.all():
-                    if key.secret and key.secret.startswith(api_key_type):
-                        api_key = key
-                        break
-            
-            if api_key and api_key.secret:
-                logger.debug(f"Using {key_type} API key from database: {getattr(api_key, 'name', 'unknown')}")
-                return api_key.secret
-                
-        except Exception as e:
-            logger.error(f"Error retrieving {key_type} API key from database: {e}")
-        
-        # Fallback for development
-        if settings.DEBUG:
-            logger.warning(f"Using development fallback for Stripe {key_type} key")
-            return fallback_key
-            
-        logger.error(f"No Stripe {key_type} key found")
-        return ''
     
     def get(self, request, *args, **kwargs):
         """
@@ -106,8 +45,8 @@ class CheckoutView(CartAccessMixin, View):
         
         logger.debug(f"Cart contains {cart.items.count()} items with total price {cart.total_price}")
         
-        # Get Stripe publishable key using consolidated method
-        stripe_public_key = self.get_stripe_key('publishable')
+        # Get Stripe publishable key from utils
+        stripe_public_key = get_stripe_key('publishable')
         
         # Create a new payment intent for the checkout
         client_secret, error = create_payment_intent(request)
@@ -142,8 +81,8 @@ class CheckoutView(CartAccessMixin, View):
             messages.error(request, "Your cart is empty!")
             return redirect('shop:cart')
 
-        # Get Stripe API key with consolidated method
-        stripe_public_key = self.get_stripe_key('publishable')
+        # Get Stripe API key from utils
+        stripe_public_key = get_stripe_key('publishable')
         logger.debug(f"Using stripe_public_key: {stripe_public_key}")
         
         if not stripe_public_key:
@@ -193,8 +132,8 @@ class CheckoutView(CartAccessMixin, View):
 
                 # Verify the payment intent is valid
                 try:
-                    # Get the API key using consolidated method
-                    stripe_api_key = self.get_stripe_key('secret')
+                    # Get the API key from utils
+                    stripe_api_key = get_stripe_key('secret')
                     if stripe_api_key:
                         stripe.api_key = stripe_api_key
                         
@@ -244,10 +183,12 @@ class CheckoutView(CartAccessMixin, View):
                     cart.to_dict() if hasattr(cart, 'to_dict') else {})
                 order.total_price = cart.total_price
                 order.grand_total = cart.total_price  # Add shipping cost if needed
-                order.is_paid = True
-                order.payment_status = 'completed'
-                order.status = 'paid'
-                order.paid_at = timezone.now()  # Set the paid_at timestamp
+                
+                # The webhook will mark this as paid once confirmed by Stripe
+                # Set as pending for now
+                order.is_paid = False
+                order.payment_status = 'pending'
+                order.status = 'created'
 
                 # If user is authenticated, associate order with user
                 if request.user.is_authenticated:
@@ -301,40 +242,13 @@ class CheckoutView(CartAccessMixin, View):
             return render(request, self.template_name, context)
 
 
-class PaymentSuccessView(TemplateView):
-    """
-    Display payment success page after order is completed
-    """
-    template_name = 'shop/payment_success.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        order_id = self.request.session.get('order_id')
-        
-        if order_id:
-            try:
-                order = Order.objects.get(id=order_id)
-                context['order'] = order
-                
-                # Clear the order_id from session once viewed
-                if 'order_id' in self.request.session:
-                    del self.request.session['order_id']
-                    
-                logger.info(f"Displaying payment success page for order {order.order_number}")
-            except Order.DoesNotExist:
-                logger.warning(f"Order with ID {order_id} not found for success page")
-                # If order not found, show generic success message
-                pass
-                
-        return context
-
-
 class CheckoutSuccessView(TemplateView):
     """
     Display checkout success page for a specific order
     Takes order_id as URL parameter
+    Shows different information depending on payment status
     """
-    template_name = 'shop/payment_success.html'  # Reusing the same template as PaymentSuccessView
+    template_name = 'shop/checkout_success.html'  # Use the checkout_success.html template
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -344,6 +258,10 @@ class CheckoutSuccessView(TemplateView):
             try:
                 order = Order.objects.get(id=order_id)
                 context['order'] = order
+                
+                # Additional context based on payment status
+                context['payment_confirmed'] = order.is_paid
+                
                 logger.info(f"Displaying checkout success page for order {order.order_number}")
             except Order.DoesNotExist:
                 logger.warning(f"Order with ID {order_id} not found for checkout success page")
@@ -355,12 +273,8 @@ class CheckoutSuccessView(TemplateView):
         return context
 
 
-def payment_success(request):
-    """
-    Function-based view for payment success
-    Redirects to class-based view for consistency
-    """
-    return PaymentSuccessView.as_view()(request)
+# Using a single success view - CheckoutSuccessView
+# The webhook handler will update the order status which will be reflected in the CheckoutSuccessView
 
 
 def payment_cancel(request):

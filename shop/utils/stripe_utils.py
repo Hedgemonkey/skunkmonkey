@@ -10,85 +10,85 @@ from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
-def get_stripe_secret_key():
+def get_stripe_key(key_type='publishable'):
     """
-    Get the Stripe secret key from database (djstripe)
-    Falls back to settings if not found in database
+    Consolidated method to get Stripe keys - prioritizing database keys
+    Args:
+        key_type: Either 'publishable' or 'secret'
+    Returns:
+        The requested Stripe API key
     """
+    # Set variables based on key type
+    if key_type == 'publishable':
+        settings_key = 'STRIPE_PUBLISHABLE_KEY'
+        api_key_type = "pk_test"
+        key_prefix = "pk_"
+        possible_names = ["test_publishable", "Test Publishable", "publishable", "Publishable"]
+        fallback_key = 'pk_test_your_development_key'
+    else:  # secret
+        settings_key = 'STRIPE_SECRET_KEY'
+        api_key_type = "sk_test"
+        key_prefix = "sk_"
+        possible_names = ["test_secret", "Test Secret", "secret", "Secret"]
+        fallback_key = 'sk_test_your_development_key'
+    
+    # First try from database (primary source)
     try:
         # Import here to avoid circular imports
         from djstripe.models import APIKey
         
         # Try by type first
-        api_key = APIKey.objects.filter(type="sk_test").first()
+        api_key = APIKey.objects.filter(type=api_key_type).first()
         
         # If that doesn't work, try by name
         if not api_key:
-            for possible_name in ["test_secret", "Test Secret", "secret", "Secret"]:
+            for possible_name in possible_names:
                 api_key = APIKey.objects.filter(name__iexact=possible_name).first()
                 if api_key:
                     break
         
-        # If that doesn't work, try any key with sk_test
+        # If that doesn't work, try any key with the correct prefix
         if not api_key:
             for key in APIKey.objects.all():
-                if key.secret and key.secret.startswith('sk_test'):
+                if key.secret and key.secret.startswith(key_prefix):
                     api_key = key
                     break
         
         if api_key and api_key.secret:
-            logger.debug(f"Using Stripe secret key from database: {getattr(api_key, 'name', 'unknown')}")
+            logger.debug(f"Using Stripe {key_type} key from database: {getattr(api_key, 'name', 'unknown')}")
             return api_key.secret
     except Exception as e:
-        logger.error(f"Error retrieving Stripe secret key from database: {e}")
+        logger.error(f"Error retrieving Stripe {key_type} key from database: {e}")
     
-    # Fall back to settings
-    if hasattr(settings, 'STRIPE_SECRET_KEY') and settings.STRIPE_SECRET_KEY:
-        logger.debug("Using STRIPE_SECRET_KEY from settings")
-        return settings.STRIPE_SECRET_KEY
+    # Fall back to settings (secondary source)
+    try:
+        if hasattr(settings, settings_key) and getattr(settings, settings_key):
+            logger.debug(f"Using {settings_key} from settings")
+            return getattr(settings, settings_key)
+    except Exception as e:
+        logger.error(f"Error retrieving {settings_key} from settings: {e}")
     
-    logger.error("No Stripe secret key found in database or settings")
+    # Final fallback for development
+    if settings.DEBUG:
+        logger.warning(f"Using development fallback for Stripe {key_type} key")
+        return fallback_key
+        
+    logger.error(f"No Stripe {key_type} key found in database or settings")
     return None
+
+def get_stripe_secret_key():
+    """
+    Get the Stripe secret key using the consolidated method
+    Falls back to settings if not found in database
+    """
+    return get_stripe_key('secret')
 
 def get_stripe_publishable_key():
     """
-    Get the Stripe publishable key from database (djstripe)
+    Get the Stripe publishable key using the consolidated method
     Falls back to settings if not found in database
     """
-    try:
-        # Import here to avoid circular imports
-        from djstripe.models import APIKey
-        
-        # Try by type first
-        api_key = APIKey.objects.filter(type="pk_test").first()
-        
-        # If that doesn't work, try by name
-        if not api_key:
-            for possible_name in ["test_publishable", "Test Publishable", "publishable", "Publishable"]:
-                api_key = APIKey.objects.filter(name__iexact=possible_name).first()
-                if api_key:
-                    break
-        
-        # If that doesn't work, try any key with pk_test
-        if not api_key:
-            for key in APIKey.objects.all():
-                if key.secret and key.secret.startswith('pk_test'):
-                    api_key = key
-                    break
-        
-        if api_key and api_key.secret:
-            logger.debug(f"Using Stripe publishable key from database: {getattr(api_key, 'name', 'unknown')}")
-            return api_key.secret
-    except Exception as e:
-        logger.error(f"Error retrieving Stripe publishable key from database: {e}")
-    
-    # Fall back to settings
-    if hasattr(settings, 'STRIPE_PUBLISHABLE_KEY') and settings.STRIPE_PUBLISHABLE_KEY:
-        logger.debug("Using STRIPE_PUBLISHABLE_KEY from settings")
-        return settings.STRIPE_PUBLISHABLE_KEY
-    
-    logger.error("No Stripe publishable key found in database or settings")
-    return None
+    return get_stripe_key('publishable')
 
 def create_payment_intent(request):
     """
@@ -105,7 +105,7 @@ def create_payment_intent(request):
         return None, "Your cart is empty"
     
     # Get Stripe API key
-    stripe_api_key = get_stripe_secret_key()
+    stripe_api_key = get_stripe_key('secret')
     if not stripe_api_key:
         logger.error("No Stripe API key found")
         return None, "Payment system configuration error"

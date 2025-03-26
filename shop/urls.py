@@ -13,7 +13,7 @@ from .views import (
     ProductListView, ProductDetailView, 
     
     # Checkout and payment views
-    CheckoutView, PaymentSuccessView, CreatePaymentIntentView,
+    CheckoutView, CheckoutSuccessView, CreatePaymentIntentView,
     payment_cancel, recover_payment_intent, cache_checkout_data,
     reset_payment_intent,
     
@@ -45,7 +45,7 @@ urlpatterns = [
 
     # Checkout views
     path('checkout/', CheckoutView.as_view(), name='checkout'),
-    path('checkout/success/<int:order_id>/', PaymentSuccessView.as_view(), name='checkout_success'),
+    path('checkout/success/<int:order_id>/', CheckoutSuccessView.as_view(), name='checkout_success'),
     path('checkout/cancel/', payment_cancel, name='payment_cancel'),
     path('recover_payment_intent/<int:order_id>/', recover_payment_intent, name='recover_payment_intent'),
 

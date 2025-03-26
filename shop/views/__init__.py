@@ -8,8 +8,8 @@ from .cart_views import CartDetailView, CartAddView, CartRemoveView, CartUpdateQ
 from .product_views import ProductListView, ProductDetailView, ProductSearchView, product_list_ajax
 from .payment_views import CreatePaymentIntentView, cache_checkout_data, reset_payment_intent
 from .checkout_views import (
-    CheckoutView, PaymentSuccessView, CheckoutSuccessView, OrderDetailView,
-    payment_success, payment_cancel, recover_payment_intent
+    CheckoutView, CheckoutSuccessView, OrderDetailView,
+    payment_cancel, recover_payment_intent
 )
 from .wishlist_views import WishlistView, AddToWishlistView, RemoveFromWishlistView
 from .ajax_views import AjaxCartCountView, AjaxProductListView, AjaxQuickViewView
@@ -41,8 +41,8 @@ __all__ = [
     'CreatePaymentIntentView', 'cache_checkout_data', 'reset_payment_intent',
     
     # Checkout views
-    'CheckoutView', 'PaymentSuccessView', 'CheckoutSuccessView', 'OrderDetailView',
-    'payment_success', 'payment_cancel', 'recover_payment_intent',
+    'CheckoutView', 'CheckoutSuccessView', 'OrderDetailView',
+    'payment_cancel', 'recover_payment_intent',
     
     # Wishlist views
     'WishlistView', 'AddToWishlistView', 'RemoveFromWishlistView',
