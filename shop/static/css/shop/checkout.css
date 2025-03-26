@@ -1,4 +1,27 @@
-/* Checkout page styles */
+/* Checkout page specific styles */
+
+/* Loading overlay */
+#loading-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-spinner {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+/* Product images */
 .checkout-item-img {
     width: 50px;
     height: 50px;
@@ -7,6 +30,49 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
+/* Stripe test mode banner */
+.stripe-test-mode-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #ffdd57;
+    color: #544800;
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+    z-index: 1000;
+    border-top: 1px solid #e6c700;
+}
+
+/* Payment form elements */
+#card-element {
+    padding: 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: white;
+}
+
+#card-errors {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Secure checkout badge */
+.secured-badge {
+    font-size: 0.9rem;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+}
+
+.secured-badge i {
+    margin-right: 0.5rem;
+    color: #198754;
+}
+
+/* Checkout summary styling */
 .checkout-summary {
     background-color: #f8f9fa;
     border-radius: 0.5rem;
@@ -22,42 +88,11 @@
     color: var(--bs-primary);
 }
 
-/* Shipping details form */
-#shipping-details .form-group {
-    margin-bottom: 1.25rem;
-}
-
-#shipping-details label {
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-}
-
-#shipping-details .form-control:focus {
-    border-color: rgba(13, 110, 253, 0.25);
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
-}
-
-/* Stripe placeholder (to be replaced with actual Stripe elements) */
-.placeholder-stripe {
-    min-height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #f8f9fa;
-    border-radius: 4px;
-    border: 1px dashed #ced4da;
-}
-
-#card-element {
-    padding: 10px 14px;
-    background-color: #fff;
-    border-radius: 4px;
-}
-
-#card-errors {
-    color: #dc3545;
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
+/* Order items */
+.order-items > div:not(:last-child) {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e9ecef;
 }
 
 /* Submit button styling */
@@ -68,58 +103,6 @@
 #submit-button:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Order items */
-.order-items > div:not(:last-child) {
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #e9ecef;
-}
-
-/* Checkout section styling */
-.checkout-section {
-    background-color: #fff;
-    border-radius: 0.5rem;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    padding: 2rem;
-    margin-bottom: 2rem;
-}
-
-.checkout-section h3 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    color: #212529;
-}
-
-/* Security badge styling */
-.secured-badge {
-    font-size: 0.9rem;
-    color: #6c757d;
-    display: flex;
-    align-items: center;
-}
-
-.secured-badge i {
-    margin-right: 0.5rem;
-    color: #198754;
-}
-
-/* Modal styling */
-.modal-body h6 {
-    font-weight: 600;
-    margin-top: 1.5rem;
-    margin-bottom: 0.5rem;
-}
-
-.modal-body h6:first-child {
-    margin-top: 0;
-}
-
-.modal-body p {
-    color: #495057;
-    margin-bottom: 1rem;
 }
 
 /* Responsive adjustments */
@@ -137,21 +120,9 @@
     .checkout-summary .h5 {
         font-size: 1.15rem;
     }
-    
-    .checkout-section {
-        padding: 1.5rem;
-    }
 }
 
 @media (max-width: 575.98px) {
-    .checkout-section {
-        padding: 1.25rem;
-    }
-    
-    .checkout-section h3 {
-        font-size: 1.25rem;
-    }
-    
     .btn-lg {
         padding: 0.5rem 1rem;
         font-size: 1rem;

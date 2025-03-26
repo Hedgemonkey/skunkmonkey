@@ -1,0 +1,332 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/stripe.css' %}">
+{% endblock %}
+
+{% block page_header %}
+    <div class="container header-container">
+        <div class="row">
+            <div class="col">
+                <h1 class="mb-4">Subscription Plans</h1>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="container mb-5">
+        <!-- Active subscriptions alert if user has any -->
+        {% if active_subscriptions %}
+            <div class="alert alert-info mb-4">
+                <h4 class="alert-heading">You have active subscriptions</h4>
+                <p>You currently have active subscriptions. You can manage them in your <a href="{% url 'shop:subscription_list' %}" class="alert-link">subscription dashboard</a>.</p>
+            </div>
+        {% endif %}
+        
+        <!-- Subscription Plans -->
+        <div class="subscription-plans">
+            {% for product in plans %}
+                {% for price in product.prices %}
+                    <div class="subscription-plan-card {% if price.metadata.featured %}featured{% endif %}" data-plan-id="{{ price.id }}">
+                        {% if price.metadata.featured %}
+                            <div class="featured-badge">Most Popular</div>
+                        {% endif %}
+                        
+                        <h3 class="plan-name">{{ product.name }}</h3>
+                        <div class="plan-price">
+                            {{ price.currency|upper }} {{ price.unit_amount }}
+                            <span class="plan-interval">
+                                / {% if price.recurring.interval_count > 1 %}{{ price.recurring.interval_count }} {% endif %}{{ price.recurring.interval }}
+                                {% if price.recurring.interval_count > 1 and price.recurring.interval == 'month' %}s{% endif %}
+                            </span>
+                        </div>
+                        
+                        <div class="plan-features">
+                            {% if product.metadata.features %}
+                                {% for feature in product.metadata.features|split:"," %}
+                                    <div class="plan-feature">
+                                        <i class="fas fa-check-circle"></i> {{ feature|trim }}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <p>{{ product.description }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <button class="btn btn-primary btn-block select-plan-btn" data-plan-id="{{ price.id }}">
+                            Select Plan
+                        </button>
+                    </div>
+                {% endfor %}
+            {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        No subscription plans are currently available.
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Subscription Form (shown after selecting a plan) -->
+        <div id="subscription-form-container" style="display: none;">
+            <div class="card mt-5">
+                <div class="card-header">
+                    <h2 class="mb-0">Complete Your Subscription</h2>
+                </div>
+                <div class="card-body">
+                    <form id="subscription-form" method="POST" action="javascript:void(0);">
+                        {% csrf_token %}
+                        <input type="hidden" id="selected_plan" name="plan" value="">
+                        
+                        {% if user.is_authenticated %}
+                            <!-- Payment Method Selection -->
+                            <div class="form-group">
+                                <label for="payment_method_id">Select Payment Method</label>
+                                {% if payment_methods %}
+                                    <select class="form-control" id="payment_method_id" name="payment_method" required>
+                                        <option value="">-- Select a payment method --</option>
+                                        {% for method in payment_methods %}
+                                            <option value="{{ method.id }}" {% if method.isDefault %}selected{% endif %}>
+                                                {{ method.card.brand|title }} **** {{ method.card.last4 }}
+                                                (Expires {{ method.card.exp_month }}/{{ method.card.exp_year }})
+                                                {% if method.isDefault %} (Default){% endif %}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <small class="form-text text-muted">
+                                        <a href="{% url 'shop:payment_methods_list' %}">Manage payment methods</a>
+                                    </small>
+                                {% else %}
+                                    <div class="alert alert-warning">
+                                        <p>You don't have any saved payment methods.</p>
+                                        <a href="{% url 'shop:payment_methods_list' %}" class="btn btn-primary">
+                                            Add a Payment Method
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-group">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="agree_terms" name="agree_terms" required>
+                                    <label class="form-check-label" for="agree_terms">
+                                        I agree to the <a href="#" data-toggle="modal" data-target="#termsModal">terms and conditions</a>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary" id="subscribe-button" {% if not payment_methods %}disabled{% endif %}>
+                                Complete Subscription
+                            </button>
+                            
+                            <div id="subscription-errors" class="text-danger mt-3"></div>
+                        {% else %}
+                            <div class="alert alert-warning">
+                                <p>Please log in to subscribe to this plan.</p>
+                                <a href="{% url 'account_login' %}?next={{ request.path }}" class="btn btn-primary">
+                                    Log In
+                                </a>
+                            </div>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Subscription Information -->
+        <div class="card mt-5">
+            <div class="card-header">
+                <h3 class="mb-0">Subscription Information</h3>
+            </div>
+            <div class="card-body">
+                <h4>What's included in our subscriptions?</h4>
+                <p>Our subscription plans give you access to exclusive benefits and features not available to regular customers.</p>
+                
+                <h4>How do subscriptions work?</h4>
+                <p>Your subscription will automatically renew at the end of each billing period unless you cancel. You can cancel at any time from your subscription dashboard.</p>
+                
+                <h4>How secure is my payment information?</h4>
+                <p>Your payment information is securely stored with Stripe, our payment processor. We do not store your credit card details on our servers.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Terms and Conditions Modal -->
+    <div class="modal fade" id="termsModal" tabindex="-1" role="dialog" aria-labelledby="termsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="termsModalLabel">Subscription Terms and Conditions</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <h4>1. Subscription Agreement</h4>
+                    <p>By subscribing to any plan offered by SkunkMonkey Shop, you agree to these terms and conditions.</p>
+                    
+                    <h4>2. Billing and Cancellation</h4>
+                    <p>Your subscription will automatically renew at the end of each billing period unless you cancel. You can cancel at any time from your subscription dashboard.</p>
+                    
+                    <h4>3. Changes to Subscription</h4>
+                    <p>We reserve the right to modify our subscription plans and pricing at any time. Current subscribers will be notified of any changes.</p>
+                    
+                    <h4>4. Refund Policy</h4>
+                    <p>Subscription fees are non-refundable except as required by law.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Hidden input for Stripe public key -->
+    <input type="hidden" id="id_stripe_public_key" value="{{ stripe_publishable_key }}">
+    <!-- Hidden input for customer ID if user is logged in -->
+    {% if user.is_authenticated and customer %}
+        <input type="hidden" id="customer-id" value="{{ customer.id }}">
+    {% endif %}
+{% endblock %}
+
+{% block postloadjs %}
+    {{ block.super }}
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="{% static 'js/stripe_elements.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle plan selection
+            const planCards = document.querySelectorAll('.subscription-plan-card');
+            const planForm = document.getElementById('subscription-form-container');
+            const selectedPlanInput = document.getElementById('selected_plan');
+            
+            planCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Update selected styles
+                    planCards.forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                    
+                    // Update hidden input
+                    const planId = this.dataset.planId;
+                    selectedPlanInput.value = planId;
+                    
+                    // Show subscription form
+                    planForm.style.display = 'block';
+                    
+                    // Scroll to form
+                    planForm.scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+            
+            // Select plan buttons
+            document.querySelectorAll('.select-plan-btn').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Prevent triggering the card click
+                    
+                    // Simulate clicking the parent card
+                    this.closest('.subscription-plan-card').click();
+                });
+            });
+            
+            // Initialize Stripe for subscription form
+            const subscriptionForm = document.getElementById('subscription-form');
+            if (subscriptionForm) {
+                const stripePublicKey = document.getElementById('id_stripe_public_key').value;
+                const stripe = Stripe(stripePublicKey);
+                
+                subscriptionForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    // Disable submit button
+                    const submitButton = document.getElementById('subscribe-button');
+                    if (submitButton) {
+                        submitButton.disabled = true;
+                        submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+                    }
+                    
+                    // Get form data
+                    const planId = document.getElementById('selected_plan').value;
+                    const paymentMethodId = document.getElementById('payment_method_id').value;
+                    const agreeTerms = document.getElementById('agree_terms').checked;
+                    
+                    // Validate form
+                    if (!planId) {
+                        showError('Please select a subscription plan');
+                        resetButton(submitButton);
+                        return;
+                    }
+                    
+                    if (!paymentMethodId) {
+                        showError('Please select a payment method');
+                        resetButton(submitButton);
+                        return;
+                    }
+                    
+                    if (!agreeTerms) {
+                        showError('You must agree to the terms and conditions');
+                        resetButton(submitButton);
+                        return;
+                    }
+                    
+                    // Submit to server
+                    try {
+                        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                        
+                        const response = await fetch('{% url "shop:create_subscription" %}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': csrfToken
+                            },
+                            body: JSON.stringify({
+                                price_id: planId,
+                                payment_method_id: paymentMethodId
+                            })
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (!data.success) {
+                            throw new Error(data.error || 'Failed to create subscription');
+                        }
+                        
+                        // Handle additional authentication if needed
+                        if (data.requires_action) {
+                            const { error, paymentIntent } = await stripe.confirmCardPayment(
+                                data.client_secret
+                            );
+                            
+                            if (error) {
+                                throw error;
+                            }
+                            
+                            // Redirect to success page
+                            window.location.href = data.success_url;
+                        } else {
+                            // Redirect to success page
+                            window.location.href = data.success_url;
+                        }
+                    } catch (error) {
+                        showError(error.message || 'An error occurred. Please try again.');
+                        resetButton(submitButton);
+                    }
+                });
+                
+                function showError(message) {
+                    const errorElement = document.getElementById('subscription-errors');
+                    errorElement.textContent = message;
+                    errorElement.style.display = 'block';
+                }
+                
+                function resetButton(button) {
+                    if (button) {
+                        button.disabled = false;
+                        button.innerHTML = 'Complete Subscription';
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %}

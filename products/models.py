@@ -1,18 +1,20 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.urls import reverse
 from django.utils.text import slugify
+from django.utils import timezone
 
+User = get_user_model()
 
 class Category(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    slug = models.SlugField(max_length=255, unique=True, blank=True) # Allow blank for auto-generation
+    slug = models.SlugField(max_length=255, unique=True, blank=True)  # Allow blank for auto-generation
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
     level = models.PositiveIntegerField(default=0, editable=False)
     order = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True)
-    
+
     class Meta:
         verbose_name_plural = 'Categories'
         ordering = ['order', 'name']
@@ -22,7 +24,7 @@ class Category(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)  # Generate slug automatically
+            self.slug = slugify(self.name)
         
         # Calculate level based on parent
         if self.parent:
@@ -31,7 +33,7 @@ class Category(models.Model):
             self.level = 0
             
         super().save(*args, **kwargs)
-    
+
     def get_absolute_url(self):
         return reverse("products:category_detail", kwargs={"slug": self.slug})
     
@@ -53,7 +55,6 @@ class Category(models.Model):
             descendants.append(child)
             descendants.extend(child.get_descendants)
         return descendants
-
 
 class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
@@ -82,9 +83,7 @@ class Product(models.Model):
     @property
     def is_new(self):
         """Return True if product was created in the last 30 days"""
-        from datetime import timedelta
-        from django.utils import timezone
-        return self.created_at >= (timezone.now() - timedelta(days=30))
+        return self.created_at >= (timezone.now() - timezone.timedelta(days=30))
     
     @property
     def is_sale(self):
@@ -108,18 +107,15 @@ class Product(models.Model):
             return int(((self.compare_at_price - self.price) / self.compare_at_price) * 100)
         return 0
 
-
 class Review(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='reviews')
-    rating = models.PositiveSmallIntegerField() 
-    comment = models.TextField(blank=True) 
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
+    rating = models.PositiveSmallIntegerField()
+    comment = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    
 
     def __str__(self):
         return f"Review by {self.user.username} on {self.product.name}"
-
 
 class InventoryLog(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='inventory_logs')
@@ -130,15 +126,13 @@ class InventoryLog(models.Model):
     def __str__(self):
         return f"Inventory change for {self.product.name}: {self.change}"
 
-
 class ProductAttributeType(models.Model):
     """Define types of attributes (e.g., Color, Size, Material)"""
     name = models.CharField(max_length=100, unique=True)
     display_name = models.CharField(max_length=100)
-    
+
     def __str__(self):
         return self.display_name
-
 
 class ProductAttributeValue(models.Model):
     """Define possible values for each attribute type"""
@@ -148,13 +142,12 @@ class ProductAttributeValue(models.Model):
         related_name='values'
     )
     value = models.CharField(max_length=100)
-    
+
     class Meta:
         unique_together = ('attribute_type', 'value')
     
     def __str__(self):
         return f"{self.attribute_type.display_name}: {self.value}"
-
 
 class ProductAttribute(models.Model):
     """Associate products with attribute values"""
@@ -167,7 +160,7 @@ class ProductAttribute(models.Model):
         ProductAttributeValue,
         on_delete=models.CASCADE
     )
-    
+
     class Meta:
         unique_together = ('product', 'attribute_value')
     

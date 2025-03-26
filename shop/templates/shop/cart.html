@@ -106,9 +106,10 @@
                     </div>
                     
                     <div class="cart-actions">
-                        <a href="{% url 'shop:checkout' %}" class="btn btn-primary w-100 mb-2">
-                            Proceed to Checkout
-                        </a>
+                        <form method="post" action="{% url 'shop:checkout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary w-100 mb-2">Proceed to Checkout</button>
+                        </form>
                         <a href="{% url 'shop:product_list' %}" class="btn btn-outline-secondary w-100">
                             Continue Shopping
                         </a>

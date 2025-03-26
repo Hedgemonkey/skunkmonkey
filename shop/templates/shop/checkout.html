@@ -24,25 +24,13 @@
         <div class="col-lg-8">
             <div class="card mb-4 shadow-sm">
                 <div class="card-header bg-transparent">
-                    <h5 class="mb-0">Shipping Information</h5>
+                    <h5 class="mb-0">Your Information</h5>
                 </div>
                 <div class="card-body">
                     <form id="checkout-form" method="post" action="{% url 'shop:checkout' %}">
                         {% csrf_token %}
-                        <div id="shipping-details">
-                            {% crispy form %}
-                        </div>
                         
-                        <hr class="my-4">
-                        
-                        <h5 class="mb-3">Payment Information</h5>
-                        <div id="card-element" class="form-control mb-3">
-                            <!-- Stripe card element will be inserted here -->
-                            <div class="placeholder-stripe">
-                                <p class="text-muted mb-0">Stripe payment integration will be added here</p>
-                            </div>
-                        </div>
-                        <div id="card-errors" class="text-danger mb-3" role="alert"></div>
+                        {% crispy form %}
                         
                         <div class="form-check mb-3">
                             <input class="form-check-input" type="checkbox" id="terms-check" required>
@@ -51,9 +39,12 @@
                             </label>
                         </div>
                         
-                        <div class="d-grid">
+                        <!-- Hidden fields for Stripe -->
+                        <input type="hidden" id="id_payment_method_id" name="payment_method_id">
+                        
+                        <div class="d-grid mt-4">
                             <button id="submit-button" type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-lock me-2"></i> Place Order
+                                <i class="fas fa-lock me-2"></i> Complete Order
                             </button>
                             
                             <div class="mt-3 secured-badge text-center">
@@ -121,85 +112,26 @@
     </div>
 </div>
 
+<!-- Loading Overlay -->
+<div id="loading-overlay">
+    <div class="loading-spinner">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">Processing your payment...</p>
+    </div>
+</div>
+
+{% if DEBUG %}
+<div class="stripe-test-mode-banner">
+    <strong>STRIPE TEST MODE</strong> - No real payments will be processed
+</div>
+{% endif %}
 {% endblock %}
 
 {% block postloadjs %}
     {{ block.super }}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- Placeholder for Stripe JS -->
     <script src="https://js.stripe.com/v3/"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Terms and conditions modal using SweetAlert2
-            document.getElementById('terms-link').addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                Swal.fire({
-                    title: 'Terms and Conditions',
-                    html: `
-                        <div class="text-start">
-                            <h6 class="mb-2">1. General Terms</h6>
-                            <p class="mb-3">By placing an order with SkunkMonkey, you agree to these terms and conditions.</p>
-                            
-                            <h6 class="mb-2">2. Payment</h6>
-                            <p class="mb-3">All payments are processed securely. We accept major credit cards and payment platforms.</p>
-                            
-                            <h6 class="mb-2">3. Shipping</h6>
-                            <p class="mb-3">Orders are usually processed within 1-2 business days. Shipping times vary by location.</p>
-                            
-                            <h6 class="mb-2">4. Returns</h6>
-                            <p class="mb-3">We accept returns within 14 days of delivery. Items must be unused and in original packaging.</p>
-                            
-                            <h6 class="mb-2">5. Privacy</h6>
-                            <p class="mb-3">Your personal information is kept secure and only used for order processing and delivery.</p>
-                        </div>
-                    `,
-                    width: '600px',
-                    confirmButtonText: 'I Understand',
-                    confirmButtonColor: '#0d6efd',
-                    showClass: {
-                        popup: 'animate__animated animate__fadeInDown'
-                    },
-                    hideClass: {
-                        popup: 'animate__animated animate__fadeOutUp'
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        document.getElementById('terms-check').checked = true;
-                    }
-                });
-            });
-            
-            // Form validation with SweetAlert2
-            const checkoutForm = document.getElementById('checkout-form');
-            if (checkoutForm) {
-                checkoutForm.addEventListener('submit', function(e) {
-                    const termsCheck = document.getElementById('terms-check');
-                    if (!termsCheck.checked) {
-                        e.preventDefault();
-                        Swal.fire({
-                            title: 'Terms Required',
-                            text: 'You must agree to the terms and conditions to proceed.',
-                            icon: 'warning',
-                            confirmButtonColor: '#0d6efd'
-                        });
-                    } else {
-                        // Show loading message while form submits
-                        Swal.fire({
-                            title: 'Processing Order',
-                            html: 'Please wait while we process your order...',
-                            allowOutsideClick: false,
-                            didOpen: () => {
-                                Swal.showLoading();
-                            }
-                        });
-                    }
-                });
-            }
-            
-            // Stripe integration placeholder
-            // This will be replaced with actual Stripe implementation
-            console.log('Stripe integration will be added here');
-        });
-    </script>
+    <script src="{% static 'bundles/js/shop/checkout.js' %}"></script>
 {% endblock %}

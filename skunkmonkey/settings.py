@@ -12,35 +12,38 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
-from dotenv import load_dotenv
+import inspect
+import environ
 import dj_database_url
 from django.urls import reverse
-import logging
+import djstripe.settings as djstripe_settings
 
-# Load environment variables from .env file
-
-load_dotenv()
-
+# Initialize environment variables
+env = environ.Env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables from .env file
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+SECRET_KEY = env('DJANGO_SECRET_KEY', default='django-insecure-default-key-for-dev')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = 'DEVELOPMENT' in os.environ
+DEBUG = env.bool('DEVELOPMENT', default=False)
 
 
 ALLOWED_HOSTS = [
                     'skunk.devel.hedge-monkey.co.uk',
                     'localhost',
                     '127.0.0.1',
-                    '*'
+                    'hedgemonkey.ddns.net:8000',
+                    'hedgemonkey.ddns.net'
                     ]
 
 
@@ -62,7 +65,8 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'products',
     'shop',
-    'djstripe'
+    'djstripe',
+    'django_countries',
 ]
 
 MIDDLEWARE = [
@@ -228,9 +232,123 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Stripe settings
-STRIPE_TEST_PUBLISHABLE_KEY = os.environ.get("STRIPE_TEST_PUBLISHABLE_KEY")
-STRIPE_TEST_SECRET_KEY = os.environ.get("STRIPE_TEST_SECRET_KEY")
+STRIPE_LIVE_MODE = env.bool('STRIPE_LIVE_MODE', default=False)
+
+# Define these for your application's use
+STRIPE_CURRENCY = 'gbp'  # British Pound as default currency
+
+# These are here only as a reference for your application
+# dj-stripe will manage the actual API keys through the admin
+STRIPE_PUBLISHABLE_KEY = env('STRIPE_PUBLISHABLE_KEY', default='')
+STRIPE_WEBHOOK_SECRET = env('STRIPE_WEBHOOK_SECRET', default='')
+
+# dj-stripe settings - must be compliant with their recommendations
+DJSTRIPE_WEBHOOK_SECRET = STRIPE_WEBHOOK_SECRET
 DJSTRIPE_USE_NATIVE_JSONFIELD = True
 DJSTRIPE_FOREIGN_KEY_TO_FIELD = "id"
-STRIPE_API_VERSION = "2025-02-24.acacia"
-STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET")
+
+# This is critical - tells dj-stripe to only use the secret key when syncing
+# The empty string for TEST_API_KEY forces dj-stripe to use only keys from the admin
+DJSTRIPE_TEST_API_KEY = ""
+DJSTRIPE_LIVE_API_KEY = ""
+
+# Use a stable API version
+STRIPE_API_VERSION = "2023-10-16"
+
+# Enable dj-stripe webhooks - important for proper webhook handling
+DJSTRIPE_WEBHOOK_VALIDATION = "verify_signature"
+
+# Make sure these environment variables are set in your .env file:
+# STRIPE_PUBLISHABLE_KEY=pk_test_your_key
+# STRIPE_SECRET_KEY=sk_test_your_key
+# STRIPE_WEBHOOK_SECRET=whsec_your_key
+
+# Logging Configuration
+LOGS_DIR = os.path.join(BASE_DIR, 'logs')
+os.makedirs(LOGS_DIR, exist_ok=True)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+        'detailed': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'stripe': {
+            'format': 'STRIPE: {levelname} {asctime} {message}',
+            'style': '{',
+        },
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOGS_DIR, 'django.log'),
+            'formatter': 'detailed',
+        },
+        'stripe_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOGS_DIR, 'stripe.log'),
+            'formatter': 'stripe',
+        },
+        'webhook_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOGS_DIR, 'webhooks.log'),
+            'formatter': 'detailed',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'django.server': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'shop': {
+            'handlers': ['console', 'file', 'stripe_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'djstripe': {
+            'handlers': ['console', 'stripe_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'shop.webhooks': {
+            'handlers': ['console', 'webhook_file', 'stripe_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}
+

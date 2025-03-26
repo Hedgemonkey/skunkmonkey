@@ -3,6 +3,7 @@ const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
+  mode: 'development',
   entry: {
     // Main entries
     'js/main': './static/js/main.js',
@@ -33,6 +34,7 @@ module.exports = {
     'js/shop/product-list': './shop/static/js/shop/product-list-manager.js',
     'js/shop/product-detail': './shop/static/js/shop/product-detail-manager.js',
     'js/shop/comparison-manager': './shop/static/js/shop/comparison-manager.js',
+    'js/shop/checkout': './shop/static/js/shop/checkout.js',
     
     // Shop CSS
     'css/shop': [
@@ -42,7 +44,8 @@ module.exports = {
       './shop/static/css/shop/checkout.css',
       './shop/static/css/shop/order-complete.css',
       './shop/static/css/shop/order-history.css',
-      './shop/static/css/shop/wishlist.css'
+      './shop/static/css/shop/wishlist.css',
+      './shop/static/css/shop/stripe.css'
     ]
   },
   output: {
@@ -81,6 +84,7 @@ module.exports = {
   resolve: {
     alias: {
       jquery: "jquery/src/jquery"
-    }
+    },
+    extensions: ['.js', '.jsx']
   }
 };

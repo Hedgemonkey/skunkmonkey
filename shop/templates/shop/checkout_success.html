@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/checkout.css' %}">
+{% endblock %}
+
+{% block page_header %}
+    <div class="container header-container">
+        <div class="row">
+            <div class="col">
+                <h1 class="mb-4">Order Confirmation</h1>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="container mb-5">
+        <div class="row">
+            <div class="col-12 col-lg-7">
+                <!-- Order Success Message -->
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h2 class="mb-0">Thank You!</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
+                            <h3>Your order has been received</h3>
+                            <p class="lead">Your order number is <strong>{{ order.order_number }}</strong></p>
+                            <p>A confirmation email has been sent to <strong>{{ order.email }}</strong></p>
+                        </div>
+                        
+                        <p>Thank you for shopping with SkunkMonkey. We hope you enjoy your purchase!</p>
+                        
+                        <div class="mt-4 text-center">
+                            <a href="{% url 'products:product_list' %}" class="btn btn-primary">
+                                <i class="fas fa-shopping-bag"></i> Continue Shopping
+                            </a>
+                            {% if user.is_authenticated %}
+                            <a href="#" class="btn btn-outline-secondary ml-2">
+                                <i class="fas fa-history"></i> View Order History
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Order Details -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="mb-0">Order Details</h3>
+                    </div>
+                    <div class="card-body">
+                        <h4 class="mb-3">Order Items</h4>
+                        <table class="table table-borderless">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th class="text-right">Quantity</th>
+                                    <th class="text-right">Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order.order_items.all %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if item.product.image %}
+                                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-thumbnail mr-3" style="max-width: 50px;">
+                                            {% else %}
+                                            <div class="mr-3" style="width: 50px; height: 50px; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-image text-muted"></i>
+                                            </div>
+                                            {% endif %}
+                                            <div>
+                                                <p class="mb-0 font-weight-bold">{{ item.product.name }}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-right">{{ item.quantity }}</td>
+                                    <td class="text-right">${{ item.price }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="2" class="text-right">Subtotal:</th>
+                                    <td class="text-right">${{ order.total }}</td>
+                                </tr>
+                                <tr>
+                                    <th colspan="2" class="text-right">Shipping:</th>
+                                    <td class="text-right">${{ order.shipping_cost }}</td>
+                                </tr>
+                                <tr>
+                                    <th colspan="2" class="text-right">Total:</th>
+                                    <td class="text-right font-weight-bold">${{ order.grand_total }}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-12 col-lg-5 mt-4 mt-lg-0">
+                <!-- Shipping Details -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3 class="mb-0">Shipping Information</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-0 font-weight-bold">{{ order.full_name }}</p>
+                        <p class="mb-0">{{ order.shipping_address1 }}</p>
+                        {% if order.shipping_address2 %}
+                        <p class="mb-0">{{ order.shipping_address2 }}</p>
+                        {% endif %}
+                        <p class="mb-0">
+                            {{ order.shipping_city }}, 
+                            {% if order.shipping_state %}{{ order.shipping_state }}, {% endif %}
+                            {{ order.shipping_zipcode }}
+                        </p>
+                        <p class="mb-0">{{ order.shipping_country.name }}</p>
+                        <p class="mb-0">{{ order.phone_number }}</p>
+                    </div>
+                </div>
+                
+                <!-- Order Status -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="mb-0">Payment Information</h3>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Order Date:</strong> {{ order.date_ordered }}</p>
+                        <p><strong>Order Status:</strong> 
+                            <span class="badge {% if order.status == 'paid' %}bg-success{% elif order.status == 'processing' %}bg-info{% elif order.status == 'shipped' %}bg-primary{% else %}bg-secondary{% endif %}">
+                                {{ order.get_status_display }}
+                            </span>
+                        </p>
+                        {% if order.stripe_pid %}
+                        <p><small class="text-muted">Transaction ID: {{ order.stripe_pid }}</small></p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block postloadjs %}
+    {{ block.super }}
+    <!-- Clear the cart to avoid duplicate orders -->
+    <script>
+        $(document).ready(function() {
+            // Clear any saved payment info in session
+            if (window.sessionStorage.getItem('save_info')) {
+                window.sessionStorage.removeItem('save_info');
+            }
+            
+            // Clear any client_secret from session
+            if (window.sessionStorage.getItem('client_secret')) {
+                window.sessionStorage.removeItem('client_secret');
+            }
+        });
+    </script>
+{% endblock %}

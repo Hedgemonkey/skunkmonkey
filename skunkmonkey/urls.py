@@ -20,7 +20,7 @@ from django.urls.conf import include
 from django.conf import settings
 from django.conf.urls.static import static
 from users import views as user_views
-from shop.webhooks import stripe_webhook
+from shop.webhooks import webhook  # Import the webhook function
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -39,7 +39,7 @@ urlpatterns = [
     path('products/', include('products.urls')),
     path('shop/', include('shop.urls')),
     path('', include('home.urls')),
-    path('stripe/webhook/', stripe_webhook, name='stripe_webhook'),
+    path('stripe/webhook/', webhook, name='stripe_webhook'),  # Add webhook URL
     path('stripe/', include('djstripe.urls', namespace='djstripe')),
 ]
 

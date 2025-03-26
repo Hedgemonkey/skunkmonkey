@@ -14,3 +14,5 @@ skunkmonkey/production.py
 skunkmonkey*.log
 .qodo
 .qodo/history.sqlite
+logs
+logs/
