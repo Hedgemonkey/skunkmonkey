@@ -1,14 +1,14 @@
 from django import template
+from decimal import Decimal
 
 register = template.Library()
 
-@register.filter(name='get_item')
-def get_item(dictionary, key):
+@register.filter
+def multiply(value, arg):
     """
-    Custom template filter to access dictionary items using a variable as the key.
-    Usage: {{ dictionary|get_item:key }}
+    Multiply the value by the argument
     """
-    if dictionary is None:
-        return None
-    
-    return dictionary.get(key)
+    try:
+        return Decimal(str(value)) * Decimal(str(arg))
+    except (ValueError, TypeError):
+        return value

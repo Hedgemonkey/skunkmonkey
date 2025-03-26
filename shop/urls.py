@@ -24,7 +24,7 @@ from .views import (
     ComparisonView, AddToComparisonView, RemoveFromComparisonView,
     
     # Order views
-    OrderHistoryView, OrderCompleteView
+    OrderHistoryView, OrderCompleteView, OrderDetailView
 )
 
 
@@ -57,6 +57,7 @@ urlpatterns = [
     # Order history
     path('orders/', OrderHistoryView.as_view(), name='order_history'),
     path('order/complete/<int:order_id>/', OrderCompleteView.as_view(), name='order_complete'),
+    path('order/<int:order_id>/', OrderDetailView.as_view(), name='order_detail'),
 
     # Wishlist
     path('wishlist/', WishlistView.as_view(), name='wishlist'),

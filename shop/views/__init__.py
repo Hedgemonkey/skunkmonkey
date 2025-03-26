@@ -18,7 +18,7 @@ from .ajax_views import AjaxCartCountView, AjaxProductListView, AjaxQuickViewVie
 from .comparison_views import ComparisonView, AddToComparisonView, RemoveFromComparisonView
 
 # Import order history views
-from .order_views import OrderHistoryView, OrderCompleteView
+from .order_views import OrderHistoryView, OrderCompleteView, OrderDetailView
 
 # For backwards compatibility
 from .cart_views import (
@@ -51,7 +51,7 @@ __all__ = [
     'ComparisonView', 'AddToComparisonView', 'RemoveFromComparisonView',
     
     # Order views
-    'OrderHistoryView', 'OrderCompleteView',
+    'OrderHistoryView', 'OrderCompleteView', 'OrderDetailView'
     
     # AJAX views
     'AjaxCartCountView', 'AjaxProductListView', 'AjaxQuickViewView',

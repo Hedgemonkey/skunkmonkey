@@ -33,8 +33,8 @@
                                         <th scope="col" width="80"></th>
                                         <th scope="col">Product</th>
                                         <th scope="col">Price</th>
-                                        <th scope="col">Quantity</th>
-                                        <th scope="col">Subtotal</th>
+                                        <th scope="col" class="text-center">Quantity</th>
+                                        <th scope="col" class="text-end">Subtotal</th>
                                         <th scope="col"></th>
                                     </tr>
                                 </thead>
@@ -54,24 +54,32 @@
                                             </a>
                                             <div class="small text-muted">{{ item.product.category.name }}</div>
                                         </td>
-                                        <td>${{ item.product.price }}</td>
-                                        <td>
-                                            <form method="post" action="{% url 'shop:cart_update' item.product.id %}" class="update-cart-form">
+                                        <td>${{ item.product.price|floatformat:2 }}</td>
+                                        <td class="text-center">
+                                            <form method="post" action="{% url 'shop:cart_update' item.product.id %}" class="update-cart-form" data-product-id="{{ item.product.id }}">
                                                 {% csrf_token %}
-                                                <div class="input-group input-group-sm">
+                                                <div class="quantity-control">
+                                                    <button type="button" class="quantity-btn quantity-decrease rounded-start" data-action="decrease" aria-label="Decrease quantity">
+                                                        <i class="fas fa-minus small"></i>
+                                                    </button>
                                                     <input type="number" name="quantity" value="{{ item.quantity }}" 
                                                            min="1" max="{{ item.product.stock_quantity }}" 
-                                                           class="form-control cart-quantity-input text-center">
-                                                    <button type="submit" class="btn btn-outline-secondary">Update</button>
+                                                           class="form-control quantity-input" 
+                                                           data-max-stock="{{ item.product.stock_quantity }}" 
+                                                           aria-label="Quantity">
+                                                    <button type="button" class="quantity-btn quantity-increase rounded-end" data-action="increase" aria-label="Increase quantity">
+                                                        <i class="fas fa-plus small"></i>
+                                                    </button>
                                                 </div>
                                             </form>
                                         </td>
-                                        <td class="item-subtotal fw-bold">${{ item.subtotal }}</td>
-                                        <td>
+                                        <td class="item-subtotal text-end fw-bold">${{ item.subtotal|floatformat:2 }}</td>
+                                        <td class="text-end">
                                             <a href="{% url 'shop:cart_remove' item.product.id %}" 
-                                               class="remove-cart-item"
-                                               data-product-name="{{ item.product.name }}">
-                                                <i class="fas fa-trash"></i>
+                                               class="remove-cart-item btn btn-sm btn-outline-danger"
+                                               data-product-name="{{ item.product.name }}"
+                                               aria-label="Remove item">
+                                                <i class="fas fa-trash-alt"></i>
                                             </a>
                                         </td>
                                     </tr>
@@ -89,8 +97,8 @@
                     <h5 class="mb-4">Order Summary</h5>
                     
                     <div class="d-flex justify-content-between mb-2">
-                        <span>Subtotal:</span>
-                        <span>${{ cart.total_price }}</span>
+                        <span>Items ({{ cart.item_count }}):</span>
+                        <span>${{ cart.total_price|floatformat:2 }}</span>
                     </div>
                     
                     <div class="d-flex justify-content-between mb-2">
@@ -102,16 +110,18 @@
                     
                     <div class="d-flex justify-content-between mb-4">
                         <span class="fw-bold">Total:</span>
-                        <span class="cart-total" id="cart-total">${{ cart.total_price }}</span>
+                        <span class="cart-total fw-bold fs-5" id="cart-total">${{ cart.total_price|floatformat:2 }}</span>
                     </div>
                     
                     <div class="cart-actions">
                         <form method="post" action="{% url 'shop:checkout' %}">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-primary w-100 mb-2">Proceed to Checkout</button>
+                            <button type="submit" class="btn btn-primary w-100 mb-2 py-2">
+                                <i class="fas fa-credit-card me-2"></i>Proceed to Checkout
+                            </button>
                         </form>
                         <a href="{% url 'shop:product_list' %}" class="btn btn-outline-secondary w-100">
-                            Continue Shopping
+                            <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
                         </a>
                     </div>
                 </div>
@@ -123,7 +133,7 @@
             <h3>Your cart is empty</h3>
             <p class="mb-4">Looks like you haven't added any products to your cart yet.</p>
             <a href="{% url 'shop:product_list' %}" class="btn btn-primary">
-                Start Shopping
+                <i class="fas fa-shopping-bag me-2"></i>Start Shopping
             </a>
         </div>
     {% endif %}

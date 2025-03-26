@@ -39,6 +39,171 @@ class CartManager {
 
         // Handle quantity buttons on product detail page
         this.initQuantityButtons();
+        
+        // Handle cart quantity buttons
+        this.initCartQuantityButtons();
+    }
+    
+    /**
+     * Initialize quantity buttons in the cart page
+     * Sets up custom quantity controls with AJAX updates
+     */
+    initCartQuantityButtons() {
+        // Support both class naming conventions for backward compatibility
+        const decreaseButtons = document.querySelectorAll('.quantity-decrease, .btn-decrease');
+        const increaseButtons = document.querySelectorAll('.quantity-increase, .btn-increase');
+        
+        // Set up decrease buttons
+        decreaseButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                console.log('Decrease button clicked');
+                const form = button.closest('.update-cart-form');
+                if (!form) {
+                    console.error('Could not find parent form for decrease button:', button);
+                    return;
+                }
+                
+                const input = form.querySelector('.quantity-input');
+                const currentValue = parseInt(input.value);
+                
+                if (currentValue > 1) {
+                    // Decrease the value and update
+                    input.value = currentValue - 1;
+                    this.updateCartItemQuantity(form);
+                }
+            });
+        });
+        
+        // Set up increase buttons
+        increaseButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                console.log('Increase button clicked');
+                const form = button.closest('.update-cart-form');
+                if (!form) {
+                    console.error('Could not find parent form for increase button:', button);
+                    return;
+                }
+                
+                const input = form.querySelector('.quantity-input');
+                const currentValue = parseInt(input.value);
+                const maxStock = parseInt(input.dataset.maxStock || Number.MAX_SAFE_INTEGER);
+                
+                if (currentValue < maxStock) {
+                    // Increase the value and update
+                    input.value = currentValue + 1;
+                    this.updateCartItemQuantity(form);
+                } else {
+                    this.showNotification('Maximum Quantity', `Sorry, only ${maxStock} units available.`, 'info');
+                }
+            });
+        });
+        
+        // Handle direct input changes
+        document.querySelectorAll('.quantity-input').forEach(input => {
+            input.addEventListener('change', (e) => {
+                console.log('Quantity input changed');
+                const form = input.closest('.update-cart-form');
+                if (!form) {
+                    console.error('Could not find parent form for quantity input:', input);
+                    return;
+                }
+                
+                const maxStock = parseInt(input.dataset.maxStock || Number.MAX_SAFE_INTEGER);
+                let newValue = parseInt(input.value);
+                
+                // Validate input value
+                if (isNaN(newValue) || newValue < 1) {
+                    newValue = 1;
+                    input.value = newValue;
+                } else if (newValue > maxStock) {
+                    newValue = maxStock;
+                    input.value = newValue;
+                    this.showNotification('Maximum Quantity', `Sorry, only ${maxStock} units available.`, 'info');
+                }
+                
+                // Trigger the update
+                this.updateCartItemQuantity(form);
+            });
+        });
+    }
+    
+    /**
+     * Update cart item quantity via AJAX
+     * @param {HTMLFormElement} form - The quantity update form
+     */
+    updateCartItemQuantity(form) {
+        if (!form || !form.action) {
+            console.error('Invalid form or form action:', form);
+            return;
+        }
+        
+        // Show loading indicator on the quantity controls
+        const quantityControl = form.querySelector('.quantity-control');
+        if (quantityControl) {
+            quantityControl.classList.add('updating');
+        }
+        
+        // Get form data
+        const formData = new FormData(form);
+        
+        console.log('Making AJAX request to:', form.action);
+        this.api.post(form.action, formData)
+            .then(response => {
+                console.log('AJAX response:', response);
+                if (response.success) {
+                    // Remove loading indicator
+                    if (quantityControl) {
+                        quantityControl.classList.remove('updating');
+                    }
+                    
+                    // Update the item subtotal
+                    const row = form.closest('tr');
+                    const subtotalCell = row.querySelector('.item-subtotal');
+                    if (subtotalCell) {
+                        subtotalCell.textContent = `$${response.item_subtotal}`;
+                        subtotalCell.classList.add('highlight-update');
+                        setTimeout(() => {
+                            subtotalCell.classList.remove('highlight-update');
+                        }, 1000);
+                    }
+                    
+                    // Update cart total
+                    if (this.cartTotal) {
+                        this.cartTotal.textContent = `$${response.cart_total}`;
+                        this.cartTotal.classList.add('highlight-update');
+                        setTimeout(() => {
+                            this.cartTotal.classList.remove('highlight-update');
+                        }, 1000);
+                    }
+                    
+                    // Update cart count badge if it exists
+                    if (this.cartCountBadge) {
+                        this.cartCountBadge.textContent = response.cart_count;
+                    }
+                    
+                    // Update item quantity (in case the server modified it)
+                    const quantityInput = form.querySelector('.quantity-input');
+                    if (quantityInput && response.item_quantity) {
+                        quantityInput.value = response.item_quantity;
+                    }
+                    
+                    // Show a brief notification
+                    this.showNotification('Cart Updated', 'Your cart has been updated successfully.', 'success', true, {
+                        timer: 2000,
+                        timerProgressBar: true,
+                        showConfirmButton: false
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Update cart error:', error);
+                // Remove loading indicator
+                if (quantityControl) {
+                    quantityControl.classList.remove('updating');
+                }
+                
+                this.handleApiError(error);
+            });
     }
 
     /**
@@ -130,45 +295,16 @@ class CartManager {
      */
     handleUpdateSubmit(event) {
         event.preventDefault();
+        
+        // Get the form and ensure it exists
         const form = event.target;
-        const url = form.action;
-        const formData = new FormData(form);
-
-        this.api.post(url, formData)
-            .then(response => {
-                if (response.success) {
-                    // Update the item subtotal
-                    const row = form.closest('tr');
-                    const subtotalCell = row.querySelector('.item-subtotal');
-                    if (subtotalCell) {
-                        subtotalCell.textContent = `$${response.item_subtotal}`;
-                        subtotalCell.classList.add('highlight-update');
-                        setTimeout(() => {
-                            subtotalCell.classList.remove('highlight-update');
-                        }, 1000);
-                    }
-                    
-                    // Update cart total
-                    if (this.cartTotal) {
-                        this.cartTotal.textContent = `$${response.cart_total}`;
-                        this.cartTotal.classList.add('highlight-update');
-                        setTimeout(() => {
-                            this.cartTotal.classList.remove('highlight-update');
-                        }, 1000);
-                    }
-                    
-                    // Update cart count badge if it exists
-                    if (this.cartCountBadge) {
-                        this.cartCountBadge.textContent = response.cart_count;
-                    }
-                    
-                    this.showNotification('Cart Updated', 'Your cart has been updated successfully.', 'success', true, {
-                        timer: 2000,
-                        timerProgressBar: true,
-                        showConfirmButton: false
-                    });
-                }
-            });
+        if (!form || !form.action) {
+            console.error('Invalid form or form action in handleUpdateSubmit:', form);
+            return;
+        }
+        
+        // Use the updateCartItemQuantity method to handle the update
+        this.updateCartItemQuantity(form);
     }
 
     /**

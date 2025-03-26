@@ -7,8 +7,9 @@ from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
+from django.db.models import Prefetch
 
-from ..models import Order
+from ..models import Order, OrderItem
 
 logger = logging.getLogger(__name__)
 
@@ -22,9 +23,16 @@ class OrderHistoryView(LoginRequiredMixin, ListView):
     
     def get_queryset(self):
         """
-        Get orders for current user, ordered by most recent first
+        Get orders for current user, ordered by most recent first.
+        Use prefetch_related to optimize database queries.
         """
-        return Order.objects.filter(user=self.request.user).order_by('-created_at')
+        # Optimize queries with prefetch_related and select_related
+        order_items = OrderItem.objects.select_related('product')
+        
+        # Prefetch related items with the optimized queryset
+        return Order.objects.filter(user=self.request.user).prefetch_related(
+            Prefetch('items', queryset=order_items)
+        ).order_by('-created_at')
     
     def get_context_data(self, **kwargs):
         """
@@ -32,6 +40,45 @@ class OrderHistoryView(LoginRequiredMixin, ListView):
         """
         context = super().get_context_data(**kwargs)
         context['order_count'] = context['orders'].count()
+        return context
+
+
+class OrderDetailView(LoginRequiredMixin, DetailView):
+    """
+    View to display details of a specific order
+    """
+    model = Order
+    template_name = 'shop/order_detail.html'
+    context_object_name = 'order'
+    
+    def get_object(self, queryset=None):
+        """
+        Get the order object and ensure user has permission to view it
+        """
+        # Get the order ID from the URL
+        order_id = self.kwargs.get('order_id')
+        
+        # Create a base queryset if none was provided
+        if queryset is None:
+            queryset = self.get_queryset()
+        
+        # Prefetch related items with select_related for products
+        queryset = queryset.prefetch_related(
+            Prefetch(
+                'items',
+                queryset=OrderItem.objects.select_related('product')
+            )
+        )
+        
+        # Get the order and make sure it belongs to the current user
+        order = get_object_or_404(queryset, id=order_id, user=self.request.user)
+        return order
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add any additional context data if needed
+        order = self.get_object()
+        context['order_items'] = order.items.all()
         return context
 
 
@@ -44,10 +91,24 @@ class OrderCompleteView(DetailView):
     context_object_name = 'order'
     pk_url_kwarg = 'order_id'
     
+    def get_queryset(self):
+        """
+        Get the queryset and prefetch related items with a restricted queryset
+        """
+        return super().get_queryset().prefetch_related(
+            Prefetch(
+                'items',
+                queryset=OrderItem.objects.select_related('product')
+            )
+        )
+    
     def get_object(self, queryset=None):
         """
         Get the order object and ensure user has permission to view it
         """
+        if queryset is None:
+            queryset = self.get_queryset()
+            
         order = super().get_object(queryset)
         
         # Check if user has permission to view this order

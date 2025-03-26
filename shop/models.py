@@ -298,6 +298,20 @@ class OrderItem(models.Model):
         Calculate total price for this item
         """
         return self.price * self.quantity
+    
+    @property
+    def subtotal(self):
+        """
+        Calculate subtotal for this item
+        """
+        return self.price * self.quantity
+    
+    @property
+    def subtotal_formatted(self):
+        """
+        Return formatted subtotal with 2 decimal places
+        """
+        return f"{self.subtotal:.2f}"
 
 
 class WishlistItem(models.Model):
@@ -353,156 +367,3 @@ class ComparisonList(models.Model):
     
     def __str__(self):
         return f"{self.name} for {self.user.username}"
-
-
-class CartAccessMixin:
-    """
-    Mixin for views that require access to the cart.
-    """
-    def dispatch(self, request, *args, **kwargs):
-        self.cart = request.cart
-        return super().dispatch(request, *args, **kwargs)
-
-
-def product_list_ajax(request):
-    """
-    AJAX endpoint for dynamic product filtering
-    """
-    category = request.GET.get('category')
-    search = request.GET.get('search', '').lower()
-    sort = request.GET.get('sort', 'name-asc')
-    count_only = request.GET.get('count_only') == 'true'
-
-    products = Product.objects.filter(is_active=True)
-
-    # Apply filters
-    if category:
-        if ',' in category:
-            category_ids = [c for c in category.split(',') if c]
-            if category_ids:
-                products = products.filter(category_id__in=category_ids)
-        else:
-            products = products.filter(category_id=category)
-
-    if search:
-        products = products.filter(
-            Q(name__icontains=search) |
-            Q(description__icontains=search) |
-            Q(category__name__icontains=search)
-        )
-
-    # Apply sorting
-    sort_mapping = {
-        'name-asc': 'name',
-        'name-desc': '-name',
-        'price-asc': 'price',
-        'price-desc': '-price',
-        'newest': '-created_at',
-    }
-    products = products.order_by(sort_mapping.get(sort, 'name'))
-
-    product_count = products.count()
-
-    if count_only:
-        return JsonResponse({
-            'count': product_count,
-            'total_count': product_count
-        })
-
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        context = {
-            'products': products,
-            'search': search,
-            'current_sort': sort,
-        }
-
-        html = render_to_string(
-            'shop/includes/product_grid.html',
-            context,
-            request=request
-        )
-
-        return JsonResponse({
-            'html': html,
-            'count': product_count,
-            'total_count': product_count
-        })
-
-    return redirect('shop:product_list')
-
-
-class ProductListView(ListView):
-    """
-    View for displaying products, with optional category filtering and search
-    """
-    model = Product
-    template_name = 'shop/product_list.html'
-    context_object_name = 'products'
-    paginate_by = 12
-
-    def get_queryset(self):
-        queryset = Product.objects.filter(is_active=True)
-
-        category_slug = self.kwargs.get('category_slug')
-        if category_slug:
-            self.current_category = get_object_or_404(
-                Category, slug=category_slug)
-            queryset = queryset.filter(category=self.current_category)
-        else:
-            self.current_category = None
-
-        search_query = self.request.GET.get('q')
-        if search_query:
-            queryset = queryset.filter(
-                Q(name__icontains=search_query) |
-                Q(description__icontains=search_query)
-            )
-        self.search_query = search_query
-
-        sort = self.request.GET.get('sort')
-        if sort == 'name-asc':
-            queryset = queryset.order_by('name')
-        elif sort == 'name-desc':
-            queryset = queryset.order_by('-name')
-        elif sort == 'price-asc':
-            queryset = queryset.order_by('price')
-        elif sort == 'price-desc':
-            queryset = queryset.order_by('-price')
-        elif sort == 'newest':
-            queryset = queryset.order_by('-created_at')
-        else:
-            queryset = queryset.order_by('name')
-
-        return queryset
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['categories'] = Category.objects.all()
-        context['current_category'] = getattr(self, 'current_category', None)
-        context['search_query'] = getattr(self, 'search_query', None)
-
-        context['sort_options'] = [
-            {'value': 'name-asc', 'label': 'Name (A-Z)'},
-            {'value': 'name-desc', 'label': 'Name (Z-A)'},
-            {'value': 'price-asc', 'label': 'Price (Low to High)'},
-            {'value': 'price-desc', 'label': 'Price (High to Low)'},
-            {'value': 'newest', 'label': 'Newest First'},
-        ]
-
-        return context
-
-
-class ProductDetailView(CartAccessMixin, DetailView):
-    """
-    View for displaying product details
-    """
-    model = Product
-    template_name = 'shop/product_detail.html'
-    context_object_name = 'product'
-
-    def get(self, request, *args, **kwargs):
-        response = super().get(request, *args, **kwargs)
-
-        product = self.object
-
-        # Track this product view
