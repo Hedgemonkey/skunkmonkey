@@ -132,41 +132,38 @@ The database is designed using **PostgreSQL** and follows Django's **ORM** struc
 +--------------------+         +--------------------+
 | id (PK)            |         | id (PK)            |
 | name               |         | name               |
-| slug               |         | description        |
-+--------------------+         | price              |
-                               | category_id (FK)   |
-                               | compare_at_price   |
-                               | stock_quantity     |
-                               | stock_quantity     |
-                               | image              |
-                               | created_at         |
-                               | updated_at         |
-                               | slug               |
-                               | is_active          | 
+| slug               |         | slug               |
+| parent (FK, self)  |         | description        |
+| level              |         | price              |
+| order              |         | compare_at_price   |
+| is_active          |         | stock_quantity     |
++--------------------+         | image              |
+      ^                        | created_at         |
+      | 1:M                    | updated_at         |
+      |                        | is_active          |
+      v                        | category_id (FK)   |
++--------------------+         +--------------------+
+|     Product        |                  |
++--------------------+                  | 1:M
+                                        v
++--------------------+         +--------------------+
+| ProductAttribute   |         | ProductAttributeValue|
++--------------------+         +--------------------+
+| id (PK)            |         | id (PK)            |
+| product_id (FK)    |<--------| attribute_type_id(FK)|
+| attribute_value_id |         | value              |
++--------------------+         +--------------------+
+                                        ^
+                                        | 1:M
+                                        |
                                +--------------------+
-                                       |
-                                       | 1:M
-                                       v
-+--------------------+         +----------------------+
-| ProductAttribute   |<------> | ProductAttributeValue|
-+--------------------+         +----------------------+
-| id (PK)            |         | id (PK)              |
-| product_id (FK)    |         | attribute_type_id(FK)|
-| attribute_value_id(FK)|      | value                |
-+--------------------+         +----------------------+
-      ^                             ^
-      |1:M                          |1:M
-      |                             |
-+--------------------+         +--------------------+
-|      Product       |         |ProductAttributeType|
-+--------------------+         +--------------------+
-      |                        | id (PK)            |
-      |                        | name               |
-      |                        | display_name       |
-      |                        +--------------------+
-      |
-      | 1:M
-      v
+                               |ProductAttributeType|
+                               +--------------------+
+                               | id (PK)            |
+                               | name               |
+                               | display_name       |
+                               +--------------------+
+
 +--------------------+         +--------------------+
 |      Review        |         |   InventoryLog     |
 +--------------------+         +--------------------+
@@ -176,98 +173,92 @@ The database is designed using **PostgreSQL** and follows Django's **ORM** struc
 | rating             |         | reason             |
 | comment            |         | created_at         |
 | created_at         |         +--------------------+
-+--------------------+                 |
-         |                             |
-         | M:1                         | M:1
-         v                             v
-+--------------------+         +--------------------+
-|       User         |<------- |  RecentlyViewedItem|
-+--------------------+         +--------------------+
-| id (PK)            |         |  id (PK)           |
-| username           |         |  user_id (FK, opt) |
-| email              |         |  session_id (opt)  |
-| password           |         |  product_id (FK)  |
-| ...                |         |  viewed_at         |
-+--------------------+         +--------------------+
-         ^
-         |1:1
-         |
-+--------------------+         +--------------------+
-|     ComparisonList |<-------  |      Product       |
-+--------------------+         +--------------------+
-| id (PK)            |         | id (PK)            |
-| user_id (FK, opt)  |         | name               |
-| session_id (opt)   |         | description        |
-| created_at         |         | price              |
-| updated_at         |         | category_id (FK)   |
-+--------------------+         | compare_at_price   |
-                               | stock_quantity     |
-                               | image              |
-                               | created_at         |
-                               | updated_at         |
-                               | slug               |
-                               | is_active          |
-                               +--------------------+
-+--------------------+         +--------------------+
-|       User         |<---+    |       Cart         |
-+--------------------+    |    +--------------------+
-| id (PK)            |    |    | id (PK)            |
-| username           |    |    | user_id (FK, opt)  |
-| email              |    |    | session_id (opt)   |
-| password           |    |    | created_at         |
-| ...                |    |    | updated_at         |
-+--------------------+    |    +--------------------+
-         ^                |            |
-         |                |            | 1:M
-         |                |            v
-         |                |    +--------------------+
-         |                |    |     CartItem       |
-         |                |    +--------------------+
-         |                |    | id (PK)            |
-         |                |    | cart_id (FK)       |
-         | 1:1            |    | product_id (FK)    |
-         |                |    | quantity           |
-+--------------------+    |    | added_at           |
-|     WishList       |    |    | updated_at         |
-+--------------------+    |    +--------------------+
-| id (PK)            |    |
-| user_id (FK)       |----+
-| created_at         |
-| updated_at         |
 +--------------------+
-         |
-         | 1:M
-         v
+
 +--------------------+         +--------------------+
-|   WishListItem     |         |       Order        |
+|     UserProfile    |         |       User         |
 +--------------------+         +--------------------+
-| id (PK)            |         | id (PK)            |
-| wishlist_id (FK)   |         | user_id (FK, opt)  |
-| product_id (FK)    |         | full_name          |
-| added_at           |         | email              |
-+--------------------+         | shipping_address   |
-                               | order_number       |
-                               | status             |
-                               | tracking_number    |
-                               | total_price        |
-                               | stripe_pid         |
-                               | is_paid            |
-                               | created_at         |
-                               | updated_at         |
+| id (PK)            |<--------| id (PK)            |
+| user_id (FK)       |         | username           |
+| stripe_customer(FK)|         | email              |
+| stripe_subscription(FK)|     | password           |
++--------------------+         | ...                |
                                +--------------------+
                                         |
                                         | 1:M
                                         v
-                               +--------------------+
-                               |     OrderItem      |
-                               +--------------------+
++--------------------+         +--------------------+
+|   WishlistItem     |         |RecentlyViewedItem  |
++--------------------+         +--------------------+
+| id (PK)            |         | id (PK)            |
+| user_id (FK)       |         | user_id (FK)       |
+| product_id (FK)    |         | product_id (FK)    |
+| added_at           |         | viewed_at          |
++--------------------+         +--------------------+
+
++--------------------+         +--------------------+
+|   ComparisonList   |         |       Cart         |
++--------------------+         +--------------------+
+| id (PK)            |         | id (PK)            |
+| user_id (FK)       |         | user_id (FK, opt)  |
+| name               |         | session_id (opt)   |
+| created_at         |         | created_at         |
+| updated_at         |         | updated_at         |
++--------------------+         +--------------------+
+        |                               |
+        | M:M                           | 1:M
+        v                               v
++--------------------+         +--------------------+
+|      Product       |         |     CartItem       |
++--------------------+         +--------------------+
                                | id (PK)            |
-                               | order_id (FK)      |
+                               | cart_id (FK)       |
                                | product_id (FK)    |
-                               | product_name       |
-                               | price              |
                                | quantity           |
+                               | added_at           |
+                               | updated_at         |
                                +--------------------+
+
++--------------------+         +--------------------+
+|       Order        |         |     OrderItem      |
++--------------------+         +--------------------+
+| id (PK)            |         | id (PK)            |
+| order_number       |-------->| order_id (FK)      |
+| user_id (FK, opt)  |         | product_id (FK)    |
+| full_name          |         | quantity           |
+| email              |         | price              |
+| phone_number       |         +--------------------+
+| shipping_address1  |
+| shipping_address2  |
+| shipping_city      |
+| shipping_state     |
+| shipping_zipcode   |
+| shipping_country   |
+| billing_name       |
+| billing_address1   |
+| billing_address2   |
+| billing_city       |
+| billing_state      |
+| billing_zipcode    |
+| billing_country    |
+| created_at         |
+| updated_at         |
+| status             |
+| payment_status     |
+| shipping_cost      |
+| total_price        |
+| grand_total        |
+| stripe_pid         |
+| stripe_client_secret|
+| payment_method_type|
+| original_cart      |
+| is_paid            |
+| paid_at            |
+| shipped_at         |
+| delivered_at       |
+| tracking_number    |
+| notes              |
++--------------------+
 ```
 
 ### Key Relationships:
