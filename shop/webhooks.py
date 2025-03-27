@@ -7,6 +7,7 @@ import logging
 from djstripe.models import APIKey
 
 from .webhook_handler import StripeWH_Handler
+from .utils.stripe_utils import get_stripe_key
 
 # Get a logger instance for this file
 logger = logging.getLogger(__name__)
@@ -16,18 +17,20 @@ logger = logging.getLogger(__name__)
 def webhook(request):
     """
     Listen for webhooks from Stripe
+    Enhanced for Payment Element integration
     """
     # Setup
     wh_secret = settings.STRIPE_WEBHOOK_SECRET
     logger.info("Webhook received - Starting processing")
 
-    # Get the API key from the database
-    api_key = APIKey.objects.filter(type="sk_test").first()
-    if api_key:
-        stripe.api_key = api_key.secret
-        logger.debug(f"Using API key: {api_key.type} ({api_key.name})")
-    else:
-        logger.warning("No API key found in database, using settings.STRIPE_SECRET_KEY")
+    # Get the Stripe API key
+    stripe_api_key = get_stripe_key('secret')
+    if not stripe_api_key:
+        logger.error("No Stripe API key available for webhook processing")
+        return HttpResponse("Configuration error", status=500)
+    
+    # Set the API key for this request
+    stripe.api_key = stripe_api_key
     
     # Get the webhook data and verify its signature
     payload = request.body
@@ -43,7 +46,7 @@ def webhook(request):
         event = stripe.Webhook.construct_event(
             payload, sig_header, wh_secret
         )
-        logger.info(f"Event constructed successfully: {event.id}")
+        logger.info(f"Event constructed successfully: {event.id}, type: {event.type}")
     except ValueError as e:
         # Invalid payload
         logger.error(f"Webhook error (Invalid payload): {str(e)}")
@@ -62,11 +65,33 @@ def webhook(request):
     logger.debug("Webhook handler initialized")
 
     # Map webhook events to relevant handler functions
-    # Removed subscription-related handlers that aren't needed for this project
+    # Enhanced to support Payment Element events
     event_map = {
+        # Payment Intent events
         'payment_intent.succeeded': handler.handle_payment_intent_succeeded,
         'payment_intent.payment_failed': handler.handle_payment_intent_payment_failed,
+        'payment_intent.created': handler.handle_event,
+        'payment_intent.canceled': handler.handle_event,
+        
+        # Payment Method events
         'payment_method.attached': handler.handle_payment_method_attached,
+        'payment_method.detached': handler.handle_event,
+        'payment_method.updated': handler.handle_event,
+        
+        # Setup Intent events (for saving payment methods)
+        'setup_intent.created': handler.handle_event,
+        'setup_intent.setup_failed': handler.handle_event,
+        'setup_intent.succeeded': handler.handle_event,
+        
+        # Customer events
+        'customer.created': handler.handle_event,
+        'customer.updated': handler.handle_event,
+        'customer.deleted': handler.handle_event,
+        
+        # Checkout Session events (if using Checkout)
+        'checkout.session.completed': handler.handle_event,
+        'checkout.session.async_payment_succeeded': handler.handle_event,
+        'checkout.session.async_payment_failed': handler.handle_event,
     }
 
     # Get the webhook type from Stripe

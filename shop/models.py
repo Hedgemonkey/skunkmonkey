@@ -159,6 +159,8 @@ class Order(models.Model):
     
     order_number = models.CharField(max_length=32, unique=True, editable=False)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='orders')
+    
+    # Contact information
     full_name = models.CharField(max_length=100)
     email = models.EmailField()
     phone_number = models.CharField(max_length=20, blank=True)
@@ -172,6 +174,7 @@ class Order(models.Model):
     shipping_country = models.CharField(max_length=100)
     
     # Billing address
+    billing_name = models.CharField(max_length=100)
     billing_address1 = models.CharField(max_length=100)
     billing_address2 = models.CharField(max_length=100, blank=True)
     billing_city = models.CharField(max_length=100)
@@ -191,6 +194,7 @@ class Order(models.Model):
     # Payment details
     stripe_pid = models.CharField(max_length=255, blank=True, null=True)
     stripe_client_secret = models.CharField(max_length=255, blank=True, null=True)
+    payment_method_type = models.CharField(max_length=50, blank=True)  # card, sepa_debit, etc.
     original_cart = models.TextField(blank=True, null=True)
     is_paid = models.BooleanField(default=False)
     paid_at = models.DateTimeField(null=True, blank=True)
@@ -212,10 +216,13 @@ class Order(models.Model):
     def save(self, *args, **kwargs):
         """
         Override save method to generate order number if it doesn't exist
+        and ensure full_name is properly set
         """
         if not self.order_number:
             self.order_number = self._generate_order_number()
         
+        # No need to set full_name anymore as it's the primary field now
+            
         # Calculate grand total if not set
         if not self.grand_total and self.total_price is not None:
             self.grand_total = decimal.Decimal(self.total_price) + decimal.Decimal(self.shipping_cost)
@@ -274,6 +281,10 @@ class Order(models.Model):
         Get the absolute URL for this order
         """
         return reverse('shop:order_detail', args=[self.id])
+    
+    # No need for shipping_full_name property as we now use full_name directly
+    
+    # No need for billing_full_name property as we now use billing_name directly
 
 
 class OrderItem(models.Model):
@@ -344,7 +355,10 @@ class RecentlyViewedItem(models.Model):
         ordering = ('-viewed_at',)
         verbose_name = 'Recently Viewed Item'
         verbose_name_plural = 'Recently Viewed Items'
-        unique_together = ('user', 'product')
+        # Remove the unique_together constraint to allow multiple views of the same product
+        indexes = [
+            models.Index(fields=['user', 'product'], name='shop_recent_user_prod_idx'),
+        ]
     
     def __str__(self):
         return f"{self.product.name} viewed by {self.user.username}"

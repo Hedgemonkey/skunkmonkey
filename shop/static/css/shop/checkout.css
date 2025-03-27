@@ -1,68 +1,250 @@
-/* Checkout page specific styles */
+/* Checkout Page Styling with Stripe Payment Element Support */
 
-/* Loading overlay */
-#loading-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: 9999;
-    justify-content: center;
-    align-items: center;
+/* Card Styling */
+.card {
+    border-radius: 0.5rem;
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
 }
 
-.loading-spinner {
-    background: white;
-    padding: 20px;
-    border-radius: 5px;
-    text-align: center;
+.card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    background: linear-gradient(to right, #f8f9fa, #ffffff);
 }
 
-/* Product images */
+/* Item Images with improved size control */
 .checkout-item-img {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     object-fit: cover;
-    border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    border-radius: 0.25rem;
+    border: 1px solid #eeeeee;
+    max-width: 100%; /* Ensure images don't exceed container */
+    display: block; /* Fix alignment issues */
 }
 
-/* Stripe test mode banner */
-.stripe-test-mode-banner {
-    position: fixed;
-    bottom: 0;
-    left: 0;
+/* Prevent image container from stretching */
+.order-items .flex-shrink-0 {
+    width: 60px;
+    height: 60px;
+    overflow: hidden; /* Hide overflow if image loads incorrectly */
+    flex: 0 0 60px; /* Prevent flex container from changing size */
+}
+
+/* Ensure order item containers are responsive */
+.order-items .d-flex {
+    align-items: center;
+    flex-wrap: nowrap;
+    margin-bottom: 1rem;
     width: 100%;
-    background-color: #ffdd57;
-    color: #544800;
-    text-align: center;
-    padding: 10px;
-    font-size: 14px;
-    z-index: 1000;
-    border-top: 1px solid #e6c700;
 }
 
-/* Payment form elements */
-#card-element {
-    padding: 12px;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    background-color: white;
+/* Make sure the product info wraps properly */
+.order-items .flex-grow-1 {
+    min-width: 0; /* Allow content to shrink */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
-#card-errors {
-    color: #dc3545;
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
+/* Product name truncation for small screens */
+.order-items h6 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 
-/* Secure checkout badge */
+/* Price formatting */
+.item-price {
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* Order Summary */
+.checkout-summary {
+    position: sticky;
+    top: 2rem;
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.checkout-total {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #212529;
+}
+
+/* Forms and Inputs */
+.form-control:focus,
+.custom-select:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+}
+
+.form-label {
+    font-weight: 500;
+}
+
+/* ===== STRIPE PAYMENT ELEMENT FIX ===== */
+
+/* Stripe container - isolate it from other content */
+.payment-element-container {
+    position: relative !important;
+    width: 100% !important;
+    min-height: 350px !important;
+    z-index: 1 !important;
+    margin: 1.5rem 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    
+    /* Create a containing block for the payment element */
+    transform: translateZ(0) !important;
+    backface-visibility: hidden !important;
+}
+
+/* Add wrapper for additional containment */
+.stripe-element-wrapper {
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important; /* Allow auto height expansion */
+    min-height: 300px !important; /* Fallback minimum */
+    padding: 0 !important;
+    margin: 0 !important;
+    transform: translateZ(0) !important;
+}
+
+/* Style the payment element container */
+#payment-element {
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important; /* Allow auto height expansion */
+    min-height: 280px !important; /* Fallback minimum */
+    margin: 0 !important;
+    padding: 10px !important;
+    border-radius: 0.375rem !important;
+    background-color: #f8f9fa !important;
+    overflow: visible !important;
+    transform: none !important;
+    
+    /* Fix for common Stripe bugs */
+    isolation: isolate !important;
+}
+
+/* Directly target Stripe's private element */
+#payment-element > div.__PrivateStripeElement,
+#payment-element > .__PrivateStripeElement {
+    display: block !important;
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important; /* Allow auto height expansion */
+    min-height: 250px !important; /* Fallback minimum */
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    clear: none !important;
+}
+
+/* Force iframe to behave properly */
+#payment-element iframe,
+#payment-element .__PrivateStripeElement iframe {
+    display: block !important;
+    position: static !important; /* Force static position */
+    width: 100% !important; /* Override calc(100% + 8px) */
+    height: auto !important; /* Enable height expansion */
+    min-height: 250px !important; /* Fallback minimum */
+    margin: 0 !important; /* Override -4px margin */
+    padding: 0 !important;
+    border: none !important;
+    transform: none !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+    
+    /* Specific override for calc width */
+    max-width: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: 0 !important;
+}
+
+/* Ensure elements appear above the stripe frame */
+.checkout-form h3,
+.checkout-form p,
+.checkout-form label,
+.checkout-form button,
+.checkout-form .form-check,
+.above-payment-element {
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+/* Make sure errors display correctly */
+#payment-errors {
+    margin-top: 0.5rem !important;
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+/* Create a clean slate area after the payment element */
+.payment-element-container::after {
+    content: '';
+    display: block;
+    clear: both;
+    height: 20px;
+}
+
+/* Ensure content after payment element is visible */
+.payment-element-container + * {
+    position: relative !important;
+    z-index: 10 !important;
+    margin-top: 1rem !important;
+}
+
+/* Target Stripe's CSS with higher specificity */
+#payment-element iframe[title="Secure payment input frame"],
+body #payment-element .__PrivateStripeElement iframe {
+    width: 100% !important;
+    min-width: 100% !important;
+    margin: 0 !important;
+    transform: none !important;
+}
+
+/* ===== End of Aggressive Stripe Fix ===== */
+
+#payment-element:hover {
+    background-color: #f1f3f5;
+}
+
+#payment-element.StripeElement--focus {
+    background-color: #ffffff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+#payment-element.StripeElement--invalid {
+    border-color: #dc3545;
+}
+
+/* Error Messages */
+.alert-danger {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Security Badge */
 .secured-badge {
-    font-size: 0.9rem;
     color: #6c757d;
+    font-size: 0.875rem;
     display: flex;
     align-items: center;
 }
@@ -72,20 +254,41 @@
     color: #198754;
 }
 
-/* Checkout summary styling */
-.checkout-summary {
-    background-color: #f8f9fa;
-    border-radius: 0.5rem;
-    padding: 1.5rem;
-    position: sticky;
-    top: 20px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+/* Loading Overlay */
+#loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    display: none;
+    justify-content: center;
+    align-items: center;
 }
 
-.checkout-total {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: var(--bs-primary);
+.loading-spinner {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Stripe Test Mode Banner */
+.stripe-test-mode-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #ffc107;
+    color: #212529;
+    text-align: center;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+    z-index: 1000;
+    border-top: 1px solid #e6c700;
 }
 
 /* Order items */
@@ -105,11 +308,82 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Responsive adjustments */
+/* ===== RESPONSIVE ADJUSTMENTS ===== */
+
+/* Medium devices (tablets) */
+@media (max-width: 991.98px) {
+    /* Make the form and summary full width on tablets */
+    .col-lg-8, .col-lg-4 {
+        width: 100%;
+    }
+    
+    /* Keep order summary visible without scrolling too far */
+    .checkout-summary {
+        position: relative; /* Not sticky on tablets */
+        top: 0;
+        margin-bottom: 2rem;
+    }
+    
+    /* Add some spacing between sections */
+    .col-lg-8 {
+        margin-bottom: 2rem;
+    }
+    
+    /* Make buttons more touch-friendly */
+    .btn {
+        padding-top: 0.625rem;
+        padding-bottom: 0.625rem;
+    }
+}
+
+/* Small devices (landscape phones) */
 @media (max-width: 767.98px) {
+    /* Adjustments for product images */
     .checkout-item-img {
-        width: 40px;
-        height: 40px;
+        width: 50px;
+        height: 50px;
+    }
+    
+    .order-items .flex-shrink-0 {
+        width: 50px;
+        height: 50px;
+        flex: 0 0 50px;
+    }
+    
+    /* Create more compact form sections */
+    .card-body {
+        padding: 1.25rem;
+    }
+    
+    /* Add some vertical spacing between form fields */
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    
+    /* Make card shadows less pronounced */
+    .shadow-sm {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05) !important;
+    }
+    
+    /* Adjust header spacing */
+    .py-4 {
+        padding-top: 1.5rem !important;
+        padding-bottom: 1.5rem !important;
+    }
+    
+    /* Reduce container margin */
+    .my-5 {
+        margin-top: 2rem !important;
+        margin-bottom: 2rem !important;
+    }
+    
+    /* Make checkout total a bit smaller */
+    .checkout-total {
+        font-size: 1.1rem;
+    }
+    
+    h3 {
+        font-size: 1.5rem;
     }
     
     .checkout-summary {
@@ -120,11 +394,126 @@
     .checkout-summary .h5 {
         font-size: 1.15rem;
     }
+    
+    /* Adjust payment element container on small screens */
+    .payment-element-container {
+        min-height: 350px !important; /* More space on mobile */
+    }
 }
 
+/* Extra small devices (phones) */
 @media (max-width: 575.98px) {
+    /* Further reduce padding */
+    .card-body {
+        padding: 1rem;
+    }
+    
+    /* Make form headers smaller */
+    h5 {
+        font-size: 1.1rem;
+    }
+    
+    /* Make container full width on small screens */
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    /* Adjust form section spacing */
+    .mb-4 {
+        margin-bottom: 1.5rem !important;
+    }
+    
+    /* Tighten up the order items */
+    .order-items .d-flex {
+        margin-bottom: 0.75rem;
+    }
+    
+    /* Make sure payment element container doesn't get too large on mobile */
+    .payment-element-container {
+        min-height: 300px !important;
+    }
+    
+    /* Add spacing below checkout form */
+    #checkout-form {
+        margin-bottom: 1rem;
+    }
+    
     .btn-lg {
         padding: 0.5rem 1rem;
         font-size: 1rem;
     }
+}
+
+/* Very small devices */
+@media (max-width: 375px) {
+    .checkout-item-img {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .order-items .flex-shrink-0 {
+        width: 45px;
+        height: 45px;
+        flex: 0 0 45px;
+    }
+    
+    .order-items .flex-grow-1 {
+        font-size: 0.9rem;
+    }
+    
+    .order-items .flex-grow-1 h6 {
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+    }
+}
+
+/* Ensure buttons stay visible and usable on small screens */
+@media (max-width: 360px) {
+    /* Make text and buttons more compact */
+    .btn {
+        font-size: 0.9rem;
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .fw-bold, .checkout-total {
+        font-size: 1rem;
+    }
+    
+    /* Ensure proper spacing for checkboxes */
+    .form-check-label {
+        font-size: 0.9rem;
+        padding-left: 0.25rem;
+    }
+}
+
+/* Animation for Payment Element */
+@keyframes highlightField {
+    0% { background-color: #ffffff; }
+    50% { background-color: #e3f2fd; }
+    100% { background-color: #ffffff; }
+}
+
+.field-highlight {
+    animation: highlightField 1s ease;
+}
+
+/* Styles for billing address toggle */
+#billing-address-fields {
+    transition: all 0.3s ease-in-out;
+    overflow: hidden;
+}
+
+#billing-address-fields.d-none {
+    display: block !important;
+    max-height: 0;
+    opacity: 0;
+    margin: 0;
+    padding: 0;
+}
+
+#billing-address-fields:not(.d-none) {
+    max-height: 1000px;
+    opacity: 1;
+    margin-top: 1rem;
 }

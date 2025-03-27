@@ -18,6 +18,11 @@ from ..models import Order, OrderItem
 from ..forms import CheckoutForm
 from .mixins import CartAccessMixin
 from ..utils.stripe_utils import get_stripe_key, create_payment_intent
+from ..utils.session_utils import (
+    is_client_secret_valid,
+    store_stripe_session_data,
+    clear_stripe_session_data
+)
 
 
 logger = logging.getLogger(__name__)
@@ -48,12 +53,26 @@ class CheckoutView(CartAccessMixin, View):
         # Get Stripe publishable key from utils
         stripe_public_key = get_stripe_key('publishable')
         
-        # Create a new payment intent for the checkout
-        client_secret, error = create_payment_intent(request)
+        # Check if we have a valid client secret for the current cart
+        has_valid_client_secret = is_client_secret_valid(request, cart)
         
-        if error:
-            logger.error(f"Error creating payment intent: {error}")
-            messages.error(request, f"Payment error: {error}. Please try again.")
+        if has_valid_client_secret:
+            logger.debug("Using existing valid client_secret from session")
+            client_secret = request.session.get('client_secret')
+        else:
+            # Clear any existing invalid client secret
+            clear_stripe_session_data(request)
+            
+            # Create a new payment intent for the checkout
+            logger.debug("Creating new payment intent for checkout")
+            client_secret, error = create_payment_intent(request)
+            
+            if error:
+                logger.error(f"Error creating payment intent: {error}")
+                messages.error(request, f"Payment error: {error}. Please try again.")
+            else:
+                # Store the new client secret and cart signature
+                store_stripe_session_data(request, cart, client_secret)
         
         # Initialize empty form
         form = CheckoutForm()
@@ -90,9 +109,32 @@ class CheckoutView(CartAccessMixin, View):
             messages.error(request, "Payment configuration error. Please contact support.")
             return redirect('shop:checkout')
 
-        form = CheckoutForm(request.POST)
+        # Check if "billing address same as shipping" is checked
+        billing_same_as_shipping = request.POST.get('billing_same_as_shipping') == 'on'
+        
+        # If billing_same_as_shipping is checked, copy shipping address to billing address
+        form_data = request.POST.copy()
+        if billing_same_as_shipping:
+            # Copy all shipping fields to billing fields
+            form_data['billing_address1'] = form_data.get('shipping_address1', '')
+            form_data['billing_address2'] = form_data.get('shipping_address2', '')
+            form_data['billing_city'] = form_data.get('shipping_city', '')
+            form_data['billing_state'] = form_data.get('shipping_state', '')
+            form_data['billing_zipcode'] = form_data.get('shipping_zipcode', '')
+            form_data['billing_country'] = form_data.get('shipping_country', '')
+            # Also copy name fields if they exist in the form
+            if 'shipping_first_name' in form_data:
+                form_data['billing_first_name'] = form_data.get('shipping_first_name', '')
+            if 'shipping_last_name' in form_data:
+                form_data['billing_last_name'] = form_data.get('shipping_last_name', '')
+            logger.debug("Copied shipping address to billing address")
 
-        # Get or create client_secret - do this once regardless of form validity
+        # Create form with potentially modified data
+        form = CheckoutForm(form_data)
+
+        # Validate client_secret against current cart state
+        has_valid_client_secret = is_client_secret_valid(request, cart)
+        
         # Get client_secret from POST or session
         client_secret = request.POST.get('client_secret')
         if client_secret:
@@ -102,8 +144,11 @@ class CheckoutView(CartAccessMixin, View):
             client_secret = request.session.get('client_secret')
 
         # Check if we need to create a new payment intent
-        if not client_secret:
-            logger.warning("No client_secret found in POST or session, creating new payment intent")
+        if not client_secret or not has_valid_client_secret:
+            logger.warning("No valid client_secret found, creating new payment intent")
+            # Clear any existing invalid client secret
+            clear_stripe_session_data(request)
+            
             # Create a new payment intent
             client_secret, error = create_payment_intent(request)
             
@@ -112,6 +157,8 @@ class CheckoutView(CartAccessMixin, View):
                 messages.error(request, f"Payment error: {error}. Please try again.")
                 return redirect('shop:checkout')
             
+            # Store the new client secret and cart signature
+            store_stripe_session_data(request, cart, client_secret)
             logger.info(f"Created new payment intent, client_secret: {client_secret[:10]}...")
 
         # At this point, we should have a client_secret
@@ -184,6 +231,9 @@ class CheckoutView(CartAccessMixin, View):
                 order.total_price = cart.total_price
                 order.grand_total = cart.total_price  # Add shipping cost if needed
                 
+                # Store whether billing address is same as shipping
+                order.billing_same_as_shipping = billing_same_as_shipping
+                
                 # The webhook will mark this as paid once confirmed by Stripe
                 # Set as pending for now
                 order.is_paid = False
@@ -198,6 +248,7 @@ class CheckoutView(CartAccessMixin, View):
                 # Save the order to generate order number
                 order.save()
                 logger.info(f"Order created with number: {order.order_number}")
+                logger.debug(f"Billing same as shipping: {billing_same_as_shipping}")
 
                 # Populate order with items from cart
                 logger.debug("Adding cart items to order")
@@ -261,6 +312,9 @@ class CheckoutSuccessView(TemplateView):
                 
                 # Additional context based on payment status
                 context['payment_confirmed'] = order.is_paid
+                
+                # Clear Stripe session data after successful checkout
+                clear_stripe_session_data(self.request)
                 
                 logger.info(f"Displaying checkout success page for order {order.order_number}")
             except Order.DoesNotExist:
@@ -326,9 +380,7 @@ def reset_payment_intent(request):
     logger.info("Reset payment intent requested")
     
     # Clear any existing payment intent from the session
-    if 'client_secret' in request.session:
-        logger.info("Removing existing client_secret from session")
-        del request.session['client_secret']
+    clear_stripe_session_data(request)
     
     # Redirect to checkout to create a new payment intent
     messages.info(request, "Your payment session has been refreshed. You can now proceed with checkout.")

@@ -8,6 +8,8 @@
         <meta name="description" content="SkunkMonkey for all your CBD needs!" >
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <!-- This meta tag helps control iframe content -->
+        <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'self' https://js.stripe.com">
     {% endblock %}
         <title>{% block title %}SkunkMonkey{% endblock %}</title>
     {% block css %}
