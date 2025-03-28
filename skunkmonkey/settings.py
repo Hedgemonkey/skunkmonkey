@@ -78,6 +78,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'shop.middleware.ComparisonMiddleware',
     'shop.middleware.CartMiddleware',  # Add the shop cart middleware
 ]
 
@@ -98,6 +99,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.media',
+                'shop.context_processors.wishlist_processor',
             ],
         },
     },
@@ -304,28 +306,38 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': os.path.join(LOGS_DIR, 'django.log'),
             'formatter': 'detailed',
+            'mode': 'a',  # Append mode
         },
         'stripe_file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': os.path.join(LOGS_DIR, 'stripe.log'),
             'formatter': 'stripe',
+            'mode': 'a',  # Append mode
         },
         'webhook_file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': os.path.join(LOGS_DIR, 'webhooks.log'),
             'formatter': 'detailed',
+            'mode': 'a',  # Append mode
+        },
+        'error_file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOGS_DIR, 'error.log'),
+            'formatter': 'detailed',
+            'mode': 'a',  # Append mode
         },
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console', 'file', 'error_file'],
             'level': 'INFO',
             'propagate': True,
         },
         'django.request': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console', 'file', 'error_file'],
             'level': 'DEBUG',
             'propagate': False,
         },
@@ -334,8 +346,33 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
         },
+        'django.template': {
+            'handlers': ['console', 'file', 'error_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',  # Set to DEBUG to log all SQL queries
+            'propagate': False,
+        },
         'shop': {
-            'handlers': ['console', 'file', 'stripe_file'],
+            'handlers': ['console', 'file', 'stripe_file', 'error_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'home': {  # Add specific logger for home app
+            'handlers': ['console', 'file', 'error_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'products': {  # Add specific logger for products app
+            'handlers': ['console', 'file', 'error_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'users': {  # Add specific logger for users app
+            'handlers': ['console', 'file', 'error_file'],
             'level': 'DEBUG',
             'propagate': False,
         },

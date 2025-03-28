@@ -17,6 +17,10 @@ module.exports = {
       './static/css/main.css',
     ],
     
+    // Home page entries
+    'js/home': './home/static/js/home/home.js',
+    'css/home': './home/static/css/home.css',
+    
     // Product grid entries
     'js/product_grid': './static/js/product_grid.js',
     'css/product_grid': './static/css/product_grid.css',

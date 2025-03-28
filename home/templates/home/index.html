@@ -1,32 +1,219 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% load static %}
-{% block content %}
-<section class="py-5">
-    <div class="container my-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-6">
-                <h2>Full Width Backgrounds</h2>
-                <p class="lead">A single, lightweight helper class allows you to add engaging, full width background images to sections of your page.</p>
-                <p class="mb-0">The universe is almost 14 billion years old, and, wow! Life had no problem starting here on Earth! I think it would be inexcusably egocentric of us to suggest that we're alone in the universe.</p>
-            </div>
-        </div>
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block page_header %}
+<div class="container header-container">
+    <div class="row">
+        <div class="col"></div>
     </div>
-</section>
-<!-- Image element - set the background image for the header in the line below-->
-<div class="py-5 bg-image-full" style="background-image: url('')">
-    <!-- Put anything you want here! The spacer below with inline CSS is just for demo purposes!-->
-    <div style="height: 20rem"></div>
 </div>
-<!-- Content section-->
-<section class="py-5">
-    <div class="container my-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-6">
-                <h2>Engaging Background Images</h2>
-                <p class="lead">The background images used in this template are sourced from Unsplash and are open source and free to use.</p>
-                <p class="mb-0">I can't tell you how many people say they were turned off from science because of a science teacher that completely sucked out all the inspiration and enthusiasm they had for the course.</p>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="row align-items-center">
+            <div class="col-12 col-md-6 my-auto hero-content">
+                <h1 class="display-4 logo-font">Welcome to Skunk Monkey</h1>
+                <div class="my-4">
+                    <p class="lead mb-4">
+                        Premium quality products with secure checkout and fast delivery.
+                        Discover our wide selection of items at competitive prices.
+                    </p>
+                    <div class="my-5">
+                        <a href="{% url 'shop:product_list' %}" class="shop-now-button btn btn-lg rounded-0 text-uppercase py-3">Shop Now</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 my-auto d-none d-md-block">
+                <img src="{% static 'images/homepage-hero.jpg' %}" alt="Skunk Monkey Products" class="img-fluid rounded">
             </div>
         </div>
-    </div>
-</section>
+    </section>
+    
+    <!-- Categories Section -->
+    <section class="category-section">
+        <h2 class="section-heading">Shop by Category</h2>
+        <div class="row">
+            {% for category in categories %}
+            <div class="col-12 col-sm-6 col-md-4 mb-4">
+                <div class="category-card h-100">
+                    <a href="{% url 'shop:product_list' %}?category={{ category.name }}">
+                        {% if category.image %}
+                            <div class="card-category-img" style="background-image: url('{{ category.image.url }}')"></div>
+                        {% else %}
+                            <div class="card-category-img" style="background-image: url('{% static "images/noimage.png" %}')"></div>
+                        {% endif %}
+                    </a>
+                    <div class="category-card-body">
+                        <h3 class="category-card-title">{{ category.friendly_name }}</h3>
+                        <a href="{% url 'shop:product_list' %}?category={{ category.name }}" class="btn-view-category">
+                            View Products
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p>No categories found.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    
+    <!-- Featured Products Section -->
+    <section class="featured-products">
+        <h2 class="section-heading">Featured Products</h2>
+        
+        <div class="row">
+            {% for product in featured_products %}
+            <div class="col-6 col-md-4 col-lg-3 mb-4 product-item" data-category="{{ product.category.name|lower }}">
+                <div class="product-card h-100">
+                    <a href="{% url 'shop:product_detail' product.id %}">
+                        <div class="product-img-container">
+                            {% if product.image %}
+                                <img class="product-img" src="{{ product.image.url }}" alt="{{ product.name }}">
+                            {% else %}
+                                <img class="product-img" src="{{ MEDIA_URL }}noimage.png" alt="{{ product.name }}">
+                            {% endif %}
+                        </div>
+                    </a>
+                    <div class="product-card-body">
+                        <a href="{% url 'shop:product_detail' product.id %}" class="text-decoration-none">
+                            <h3 class="product-title">{{ product.name }}</h3>
+                        </a>
+                        <div class="product-price">
+                            <span>${{ product.price }}</span>
+                        </div>
+                        <div class="product-card-footer">
+                            <form class="form" action="{% url 'shop:cart_add' product.id %}" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="quantity" value="1">
+                                <input type="hidden" name="redirect_url" value="{{ request.path }}">
+                                <button type="submit" class="btn-add-to-cart">Add to Cart</button>
+                            </form>
+                            {% if product.category %}
+                            <p class="small mt-1 mb-0">
+                                <a class="text-muted" href="{% url 'shop:product_list' %}?category={{ product.category.name }}">
+                                    <i class="fas fa-tag mr-1"></i>{{ product.category.friendly_name }}
+                                </a>
+                            </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p>No featured products found.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    
+    <!-- Testimonials Section -->
+    <section class="testimonials-section">
+        <h2 class="section-heading">What Our Customers Say</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="testimonial-card">
+                    <div class="testimonial-quote">
+                        <i class="fas fa-quote-left"></i>
+                    </div>
+                    <p class="testimonial-text">"Great products and fast delivery. Will definitely shop here again!"</p>
+                    <p class="testimonial-author">- Sarah J.</p>
+                    <div class="star-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="testimonial-card">
+                    <div class="testimonial-quote">
+                        <i class="fas fa-quote-left"></i>
+                    </div>
+                    <p class="testimonial-text">"The checkout process was smooth and secure. Excellent service!"</p>
+                    <p class="testimonial-author">- Michael T.</p>
+                    <div class="star-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="testimonial-card">
+                    <div class="testimonial-quote">
+                        <i class="fas fa-quote-left"></i>
+                    </div>
+                    <p class="testimonial-text">"Quality products at reasonable prices. Highly recommend!"</p>
+                    <p class="testimonial-author">- Lisa M.</p>
+                    <div class="star-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="row text-center mb-5">
+            <div class="col-md-4 mb-4">
+                <div class="feature-icon">
+                    <i class="fas fa-truck fa-3x mb-3"></i>
+                </div>
+                <h3 class="feature-title">Fast Delivery</h3>
+                <p class="feature-text">Quick and reliable shipping on all orders.</p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="feature-icon">
+                    <i class="fas fa-lock fa-3x mb-3"></i>
+                </div>
+                <h3 class="feature-title">Secure Payments</h3>
+                <p class="feature-text">Your transactions are always safe with us.</p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="feature-icon">
+                    <i class="fas fa-headset fa-3x mb-3"></i>
+                </div>
+                <h3 class="feature-title">Customer Support</h3>
+                <p class="feature-text">We're here to help whenever you need us.</p>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block postloadjs %}
+{{ block.super }}
+<script>
+    // Simple category filter functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const productCards = document.querySelectorAll('.product-card');
+        productCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.classList.add('shadow');
+            });
+        card.addEventListener('mouseleave', function() {
+            this.classList.remove('shadow');
+        });
+        });
+    });
+</script>
 {% endblock %}
