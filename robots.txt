@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+Sitemap: {{ request.scheme }}://{{ request.get_host }}/sitemap.xml
+
+# Disallow admin and account areas
+Disallow: /admin/
+Disallow: /accounts/
+Disallow: /checkout/
+
+# Disallow cart and wishlist
+Disallow: /cart/
+Disallow: /wishlist/
+
+# Disallow private user sections
+Disallow: /profile/
