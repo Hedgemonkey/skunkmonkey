@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load cart_filters %}  <!-- Add this line to load our custom filter -->
 
 {% block title %}SkunkMonkey - Product Management{% endblock %}
 
@@ -70,6 +71,10 @@
                         <div class="accordion-body bg-light-grey">
                             <div id="product-cards-container">
                                 <!-- Product cards will be loaded via AJAX -->
+                                <!-- Fix: Use safe_item_count filter for any cart references -->
+                                {% if cart %}
+                                <span class="item-count">{{ cart|safe_item_count }}</span>
+                                {% endif %}
                             </div>
                         </div>
                     </div>

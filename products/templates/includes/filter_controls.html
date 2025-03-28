@@ -1,5 +1,6 @@
 <!-- products/templates/includes/filter_controls.html -->
 {% load static %}
+{% load product_filters %}
 
 <div class="filter-controls mb-4">
     <div class="filter-panel p-3 bg-light rounded border">
@@ -36,9 +37,9 @@
                     <label class="form-label small fw-bold">Sort By</label>
                     <select class="form-select filter-sort">
                         {% for option in sort_options %}
-                            <option value="{{ option.value }}"
-                                    {% if current_sort == option.value %}selected{% endif %}>
-                                {{ option.label }}
+                            <option value="{{ option|safe_attr:'value' }}"
+                                    {% if current_sort == option|safe_attr:'value' %}selected{% endif %}>
+                                {{ option|safe_attr:'text' }}
                             </option>
                         {% endfor %}
                     </select>
@@ -52,15 +53,29 @@
                     <label class="form-label small fw-bold">Categories</label>
                     <select class="form-select filter-category mb-2" multiple data-placeholder="Select Categories" aria-label="Select Categories">
                         {% for category in categories %}
-                            <option value="{{ category.id }}"
-                                    {% if category.id in selected_categories %}selected{% endif %}>
-                                {{ category.name }}
+                            <option value="{{ category|safe_attr:'id' }}"
+                                    {% if selected_categories %}
+                                        {% with category_id=category|safe_attr:'id'|stringformat:"i" %}
+                                            {% with selected_list=selected_categories|stringformat:"s"|split:"," %}
+                                                {% if category_id in selected_list %}selected{% endif %}
+                                            {% endwith %}
+                                        {% endwith %}
+                                    {% endif %}>
+                                {{ category|safe_attr:'name' }}
                             </option>
                         {% endfor %}
                     </select>
                     <div class="selected-categories-tags mt-2" id="selectedCategoriesTags"></div>
                     <div class="d-flex justify-content-between align-items-center mt-2 category-summary">
-                        <small class="text-muted">Selected: <span class="category-count">{{ selected_categories|length }}</span></small>
+                        <small class="text-muted">Selected: <span class="category-count">
+                            {% if selected_categories %}
+                                {% with selected_list=selected_categories|stringformat:"s"|split:"," %}
+                                    {{ selected_list|length }}
+                                {% endwith %}
+                            {% else %}
+                                0
+                            {% endif %}
+                        </span></small>
                         <div class="category-action-buttons">
                             <button class="btn btn-sm btn-outline-secondary clear-categories-btn" type="button">
                                 <i class="fas fa-times me-1"></i>Clear Selection
@@ -85,8 +100,16 @@
                             <span class="search-display {% if not search %}d-none{% endif %}">
                                 Search: "<span class="search-term">{{ search }}</span>"
                             </span>
-                            <span class="categories-display {% if not selected_categories %}d-none{% endif %}">
-                                Categories: <span class="category-count-display">{{ selected_categories|length }}</span>
+                            <span class="categories-display {% if selected_categories %}{% else %}d-none{% endif %}">
+                                Categories: <span class="category-count-display">
+                                    {% if selected_categories %}
+                                        {% with selected_list=selected_categories|stringformat:"s"|split:"," %}
+                                            {{ selected_list|length }}
+                                        {% endwith %}
+                                    {% else %}
+                                        0
+                                    {% endif %}
+                                </span>
                             </span>
                         </small>
                     </div>
@@ -105,9 +128,17 @@
                             <button class="btn-close btn-close-white ms-1" type="button" style="font-size: 0.5rem;" aria-label="Clear search"></button>
                         </span>
                     </span>
-                    <span class="categories-summary {% if not selected_categories %}d-none{% endif %}">
+                    <span class="categories-summary {% if selected_categories %}{% else %}d-none{% endif %}">
                         <span class="badge bg-secondary">
-                            Categories: <span class="category-count-summary">{{ selected_categories|length }}</span>
+                            Categories: <span class="category-count-summary">
+                                {% if selected_categories %}
+                                    {% with selected_list=selected_categories|stringformat:"s"|split:"," %}
+                                        {{ selected_list|length }}
+                                    {% endwith %}
+                                {% else %}
+                                    0
+                                {% endif %}
+                            </span>
                             <button class="btn-close btn-close-white ms-1" type="button" style="font-size: 0.5rem;" aria-label="Clear categories"></button>
                         </span>
                     </span>

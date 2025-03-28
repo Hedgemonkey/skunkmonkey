@@ -166,7 +166,26 @@ def product_management(request):
     """Main view for product management dashboard."""
     # Now this function only renders the template 
     # All data loading is handled by AJAX requests to get_product_cards and get_category_cards
-    return render(request, 'products/manage/product_manage.html')
+    
+    # Create the context dictionary
+    context = {}
+    
+    # Add the cart to the context if the user is authenticated
+    if request.user.is_authenticated:
+        try:
+            # Import Cart here to avoid circular imports
+            from shop.models import Cart
+            # Get the user's cart
+            cart = Cart.objects.get(user=request.user)
+            context['cart'] = cart
+        except Cart.DoesNotExist:
+            # If no cart exists, set cart to None in the context
+            context['cart'] = None
+        except ImportError:
+            # Handle the case where the Cart model might not be available
+            pass
+    
+    return render(request, 'products/manage/product_manage.html', context)
 
 
 @staff_member_required

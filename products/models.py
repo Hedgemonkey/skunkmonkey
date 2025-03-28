@@ -8,11 +8,18 @@ from django.utils import timezone
 User = get_user_model()
 
 class Category(models.Model):
+
     name = models.CharField(max_length=255, unique=True)
-    slug = models.SlugField(max_length=255, unique=True, blank=True)  # Allow blank for auto-generation
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
+    slug = models.SlugField(max_length=255, unique=True, blank=True)
+    # Allow blank for auto-generation
+    parent = models.ForeignKey(
+        'self', on_delete=models.CASCADE, null=True, blank=True,
+        related_name='children')
     level = models.PositiveIntegerField(default=0, editable=False)
     order = models.PositiveIntegerField(default=0)
+    friendly_name = models.CharField(max_length=255, blank=True)
+    image = models.ImageField(
+        upload_to='category_images/', blank=True, null=True)
     is_active = models.BooleanField(default=True)
 
     class Meta:
@@ -57,14 +64,18 @@ class Category(models.Model):
         return descendants
 
 class Product(models.Model):
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
+
+    category = models.ForeignKey(
+        Category, on_delete=models.CASCADE, related_name='products')
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True, blank=True)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    compare_at_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    compare_at_price = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True)
     stock_quantity = models.PositiveIntegerField(default=0)
-    image = models.ImageField(upload_to='product_images/', blank=True, null=True)
+    image = models.ImageField(
+        upload_to='product_images/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
@@ -83,7 +94,8 @@ class Product(models.Model):
     @property
     def is_new(self):
         """Return True if product was created in the last 30 days"""
-        return self.created_at >= (timezone.now() - timezone.timedelta(days=30))
+        return self.created_at >= (
+            timezone.now() - timezone.timedelta(days=30))
     
     @property
     def is_sale(self):
@@ -104,12 +116,19 @@ class Product(models.Model):
     def discount_percentage(self):
         """Return the discount percentage if the product is on sale"""
         if self.is_sale:
-            return int(((self.compare_at_price - self.price) / self.compare_at_price) * 100)
+            discount = (
+                (self.compare_at_price - self.price)
+                / self.compare_at_price
+            ) * 100
+            return int(discount)
         return 0
 
 class Review(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
+
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='reviews')
     rating = models.PositiveSmallIntegerField()
     comment = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -118,7 +137,9 @@ class Review(models.Model):
         return f"Review by {self.user.username} on {self.product.name}"
 
 class InventoryLog(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='inventory_logs')
+
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name='inventory_logs')
     change = models.IntegerField()
     reason = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -128,6 +149,7 @@ class InventoryLog(models.Model):
 
 class ProductAttributeType(models.Model):
     """Define types of attributes (e.g., Color, Size, Material)"""
+
     name = models.CharField(max_length=100, unique=True)
     display_name = models.CharField(max_length=100)
 
@@ -136,6 +158,7 @@ class ProductAttributeType(models.Model):
 
 class ProductAttributeValue(models.Model):
     """Define possible values for each attribute type"""
+
     attribute_type = models.ForeignKey(
         ProductAttributeType,
         on_delete=models.CASCADE,
@@ -151,6 +174,7 @@ class ProductAttributeValue(models.Model):
 
 class ProductAttribute(models.Model):
     """Associate products with attribute values"""
+
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
