@@ -75,20 +75,40 @@ class ComparisonMiddleware:
     def __call__(self, request):
         # Get or create comparison list for the current user/session
         if request.user.is_authenticated:
-            comparison_list, created = ComparisonList.objects.get_or_create(
-                user=request.user
-            )
+            # For authenticated users, use user_id
+            comparison_lists = ComparisonList.objects.filter(user=request.user).order_by('-updated_at')
+            
+            if comparison_lists.exists():
+                comparison_list = comparison_lists.first()
+                
+                # If there are duplicates, log it
+                if comparison_lists.count() > 1:
+                    logger.warning(f"Multiple comparison lists found for user {request.user.id}. Using most recent.")
+            else:
+                # Create a new list if none exists
+                comparison_list = ComparisonList.objects.create(user=request.user)
         else:
+            # For anonymous users, use session_id
             session_id = request.session.get('comparison_id')
+            
             if not session_id:
                 # If no session ID exists, create a new comparison list with a new session ID
                 session_id = str(uuid.uuid4())
                 request.session['comparison_id'] = session_id
                 comparison_list = ComparisonList.objects.create(session_id=session_id)
             else:
-                comparison_list, created = ComparisonList.objects.get_or_create(
-                    session_id=session_id
-                )
+                # Get the comparison lists for this session
+                comparison_lists = ComparisonList.objects.filter(session_id=session_id).order_by('-updated_at')
+                
+                if comparison_lists.exists():
+                    comparison_list = comparison_lists.first()
+                    
+                    # If there are duplicates, log it
+                    if comparison_lists.count() > 1:
+                        logger.warning(f"Multiple comparison lists found for session {session_id}. Using most recent.")
+                else:
+                    # Create a new list if none exists for this session
+                    comparison_list = ComparisonList.objects.create(session_id=session_id)
         
         # Attach the comparison list to the request
         request.comparison_list = comparison_list

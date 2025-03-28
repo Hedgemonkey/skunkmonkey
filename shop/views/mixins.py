@@ -5,8 +5,10 @@ This module contains mixins used by shop views to handle common functionality:
 - Cart access
 - Order access permissions
 - Staff-only access
+- Ownership verification
+- Secure checkout requirements
 """
-from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.shortcuts import redirect
 from django.contrib import messages
 import logging
@@ -73,3 +75,38 @@ class StaffRequiredMixin(UserPassesTestMixin):
     def handle_no_permission(self):
         messages.error(self.request, "Staff access required.")
         return redirect('shop:product_list')
+
+
+class OwnershipRequiredMixin(UserPassesTestMixin):
+    """
+    Mixin that checks if the current user is the owner of the object.
+    The view implementing this mixin must define get_object() method.
+    """
+    
+    def test_func(self):
+        obj = self.get_object()
+        return obj.user == self.request.user
+
+    def handle_no_permission(self):
+        messages.error(self.request, "You don't have permission to access this resource.")
+        return redirect('shop:product_list')
+
+
+class SecureCheckoutMixin(LoginRequiredMixin):
+    """
+    Mixin to ensure user is authenticated before accessing checkout-related views
+    and that they have an active cart with items.
+    """
+    
+    def dispatch(self, request, *args, **kwargs):
+        # First check if user is authenticated
+        if not request.user.is_authenticated:
+            messages.warning(request, "Please log in to proceed with checkout.")
+            return self.handle_no_permission()
+        
+        # Check if cart exists and has items
+        if not request.cart or not request.cart.items.exists():
+            messages.warning(request, "Your cart is empty. Add items before checkout.")
+            return redirect('shop:cart')
+            
+        return super().dispatch(request, *args, **kwargs)

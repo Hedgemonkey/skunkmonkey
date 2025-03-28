@@ -150,6 +150,9 @@ class ProductListView(ListView):
         context['search_query'] = getattr(self, 'search_query', '')
         context['current_sort'] = getattr(self, 'current_sort', 'name-asc')
         
+        # Fix: Add selected_categories for filter_controls.html
+        context['selected_categories'] = self.request.GET.getlist('category') if self.request.GET.getlist('category') else []
+        
         # Add sort options
         context['sort_options'] = [
             {'value': 'name-asc', 'text': 'Name (A-Z)'},

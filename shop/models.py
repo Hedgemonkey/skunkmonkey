@@ -42,6 +42,14 @@ class Cart(models.Model):
         return self.items.count()
     
     @property
+    def item_count(self):
+        """
+        Returns the total number of items in the cart.
+        This property is used in templates.
+        """
+        return len(self)  # Use the existing __len__ method
+    
+    @property
     def total_price(self):
         """
         Calculate total price of all items in the cart
@@ -368,7 +376,8 @@ class ComparisonList(models.Model):
     """
     Products in a user's comparison list
     """
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comparison_lists')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comparison_lists', null=True, blank=True)
+    session_id = models.CharField(max_length=255, null=True, blank=True)
     products = models.ManyToManyField(Product, related_name='in_comparisons')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -380,4 +389,6 @@ class ComparisonList(models.Model):
         verbose_name_plural = 'Comparison Lists'
     
     def __str__(self):
-        return f"{self.name} for {self.user.username}"
+        if self.user:
+            return f"{self.name} for {self.user.username}"
+        return f"{self.name} (session: {self.session_id[:8] if self.session_id else 'None'})"

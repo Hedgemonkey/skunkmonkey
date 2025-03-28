@@ -4,10 +4,28 @@
 <head>
     {% block meta %}
         <meta charset="UTF-8">
-        <meta name="author" content="Hedgemonkey">
-        <meta name="description" content="SkunkMonkey for all your CBD needs!" >
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <meta name="author" content="Hedgemonkey">
+        <meta name="description" content="SkunkMonkey for all your CBD needs! Premium products with secure checkout and fast delivery">
+        <meta name="keywords" content="CBD, hemp, SkunkMonkey, online shopping, e-commerce, secure checkout, quality products, fast delivery">
+        
+        <!-- Open Graph tags for social media sharing -->
+        <meta property="og:title" content="{% block og_title %}SkunkMonkey{% endblock %}">
+        <meta property="og:description" content="{% block og_description %}Premium CBD products with secure checkout and fast delivery{% endblock %}">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="{{ request.build_absolute_uri }}">
+        <meta property="og:image" content="{% static 'media/skunkmonkey_logo.jpg' %}">
+        
+        <!-- Twitter Card data -->
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="{% block twitter_title %}SkunkMonkey{% endblock %}">
+        <meta name="twitter:description" content="{% block twitter_description %}Premium CBD products with secure checkout and fast delivery{% endblock %}">
+        <meta name="twitter:image" content="{% static 'media/skunkmonkey_logo.jpg' %}">
+        
+        <!-- Canonical link -->
+        <link rel="canonical" href="{{ request.build_absolute_uri }}">
+        
         <!-- This meta tag helps control iframe content -->
         <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'self' https://js.stripe.com">
     {% endblock %}

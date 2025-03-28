@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from ..models import Product
+from products.models import ProductAttributeType, ProductAttribute
 
 logger = logging.getLogger(__name__)
 
@@ -39,13 +40,32 @@ class ComparisonView(ListView):
         context = super().get_context_data(**kwargs)
         products = context['products']
         
-        # Get all unique attributes across products
-        all_attributes = set()
-        for product in products:
-            if hasattr(product, 'attributes'):
-                all_attributes.update(product.attributes.keys())
+        # Get all attribute types used by these products
+        attribute_types = ProductAttributeType.objects.filter(
+            values__productattribute__product__in=products
+        ).distinct()
         
-        context['attributes'] = sorted(all_attributes)
+        # Build a dictionary of product attributes organized by product id and attribute type id
+        product_attributes = {}
+        
+        for product in products:
+            product_attributes[product.id] = {}
+            
+            # Get all attributes for this product
+            for attr in product.attributes.select_related('attribute_value__attribute_type'):
+                attr_type_id = attr.attribute_value.attribute_type.id
+                attr_value = attr.attribute_value.value
+                
+                # Initialize list for this attribute type if it doesn't exist
+                if attr_type_id not in product_attributes[product.id]:
+                    product_attributes[product.id][attr_type_id] = []
+                
+                # Add the attribute value to the list
+                product_attributes[product.id][attr_type_id].append(attr_value)
+        
+        context['attribute_types'] = attribute_types
+        context['product_attributes'] = product_attributes
+        
         return context
 
 
