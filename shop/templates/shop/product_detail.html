@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load wishlist_tags %}
 
 {% block title %}{{ product.name }} - SkunkMonkey Shop{% endblock %}
 
@@ -8,6 +9,7 @@
 {% endblock %}
 
 {% block content %}
+{% get_wishlist_items as wishlist_product_ids %}
 <div class="container my-5">
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
@@ -48,14 +50,11 @@
                         
                         <!-- Wishlist button -->
                         {% if user.is_authenticated %}
-                        <a href="{% url 'shop:add_to_wishlist' product.id %}"
-                           class="btn btn-outline-danger add-to-wishlist-btn"
-                           data-product-id="{{ product.id }}">
-                            {% if user.wishlist.has_product %}
-                                <i class="fas fa-heart"></i>
-                            {% else %}
-                                <i class="far fa-heart"></i>
-                            {% endif %}
+                        <a href="{% url 'shop:toggle_wishlist' product.id %}"
+                           class="btn wishlist-btn {% if product.id in wishlist_product_ids %}remove-wishlist-btn btn-danger{% else %}add-to-wishlist-btn btn-outline-danger{% endif %}"
+                           data-product-id="{{ product.id }}"
+                           data-product-name="{{ product.name }}">
+                            <i class="{% if product.id in wishlist_product_ids %}fas{% else %}far{% endif %} fa-heart"></i>
                         </a>
                         {% endif %}
                     </div>
@@ -83,22 +82,34 @@
                 
                 <!-- Add to Cart Form -->
                 {% if product.stock_quantity > 0 %}
-                    <form method="post" action="{% url 'shop:cart_add' product.id %}" class="add-to-cart-form">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label for="quantity" class="form-label">Quantity</label>
-                            <div class="input-group quantity-selector">
-                                <button class="btn btn-outline-secondary" type="button" id="decrease-quantity">-</button>
-                                <input type="number" name="quantity" id="quantity" class="form-control text-center" value="1" min="1" max="{{ product.stock_quantity }}">
-                                <button class="btn btn-outline-secondary" type="button" id="increase-quantity">+</button>
+                    <div class="product-actions d-flex gap-2 my-4">
+                        <form method="post" action="{% url 'shop:cart_add' product.id %}" class="add-to-cart-form flex-grow-1">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="quantity" class="form-label">Quantity</label>
+                                <div class="input-group quantity-selector">
+                                    <button class="btn btn-outline-secondary" type="button" id="decrease-quantity">-</button>
+                                    <input type="number" name="quantity" id="quantity" class="form-control text-center" value="1" min="1" max="{{ product.stock_quantity }}">
+                                    <button class="btn btn-outline-secondary" type="button" id="increase-quantity">+</button>
+                                </div>
                             </div>
-                        </div>
-                        <div class="product-actions">
                             <button type="submit" class="btn btn-primary btn-lg">
                                 <i class="fas fa-shopping-cart me-2"></i> Add to Cart
                             </button>
-                        </div>
-                    </form>
+                        </form>
+                        
+                        <!-- Wishlist button -->
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'shop:toggle_wishlist' product.id %}"
+                               class="btn wishlist-btn {% if product.id in wishlist_product_ids %}remove-wishlist-btn btn-danger{% else %}add-to-wishlist-btn btn-outline-danger{% endif %} align-self-end"
+                               data-product-id="{{ product.id }}"
+                               data-product-name="{{ product.name }}"
+                               title="{% if product.id in wishlist_product_ids %}Remove from{% else %}Add to{% endif %} wishlist">
+                                <i class="{% if product.id in wishlist_product_ids %}fas{% else %}far{% endif %} fa-heart me-2"></i>
+                                {% if product.id in wishlist_product_ids %}Remove from{% else %}Add to{% endif %} Wishlist
+                            </a>
+                        {% endif %}
+                    </div>
                 {% else %}
                     <div class="alert alert-danger">
                         This product is currently out of stock.
@@ -172,7 +183,7 @@
 {% block postloadjs %}
     {{ block.super }}
     <script src="{% static 'bundles/js/shop/cart.js' %}"></script>
-    <script src="{% static 'bundles/js/shop/wishlist.js' %}"></script>
+    <script src="{% static 'bundles/js/shop/wishlist-manager.js' %}"></script>
     <script src="{% static 'bundles/js/shop/comparison-manager.js' %}"></script>
     <script src="{% static 'bundles/js/shop/product-detail.js' %}"></script>
 {% endblock %}

@@ -17,9 +17,6 @@ from .views import (
     payment_cancel, recover_payment_intent, cache_checkout_data,
     reset_payment_intent,
     
-    # Wishlist views
-    WishlistView, AddToWishlistView, RemoveFromWishlistView,
-    
     # Comparison views
     ComparisonView, AddToComparisonView, RemoveFromComparisonView,
     
@@ -27,8 +24,20 @@ from .views import (
     OrderHistoryView, OrderCompleteView, OrderDetailView
 )
 
+# Import wishlist views separately for better organization
+from .views.wishlist_views import (
+    WishlistView, 
+    ToggleWishlistView
+)
+
 
 app_name = 'shop'
+
+# Define wishlist URL patterns separately for better organization
+wishlist_patterns = [
+    path('wishlist/', WishlistView.as_view(), name='wishlist'),
+    path('wishlist/toggle/<int:product_id>/', ToggleWishlistView.as_view(), name='toggle_wishlist'),
+]
 
 urlpatterns = [
     # Product list and detail views
@@ -59,11 +68,6 @@ urlpatterns = [
     path('order/complete/<int:order_id>/', OrderCompleteView.as_view(), name='order_complete'),
     path('order/<int:order_id>/', OrderDetailView.as_view(), name='order_detail'),
 
-    # Wishlist
-    path('wishlist/', WishlistView.as_view(), name='wishlist'),
-    path('wishlist/add/<int:product_id>/', AddToWishlistView.as_view(), name='add_to_wishlist'),
-    path('wishlist/remove/<int:product_id>/', RemoveFromWishlistView.as_view(), name='remove_from_wishlist'),
-
     # Comparison
     path('comparison/', ComparisonView.as_view(), name='comparison'),
     path('comparison/add/<int:product_id>/', AddToComparisonView.as_view(), name='add_to_comparison'),
@@ -78,3 +82,6 @@ urlpatterns = [
     path('payment-methods/<str:payment_method_id>/delete/', payment_methods.delete_payment_method, name='delete_payment_method'),
     path('payment-methods/<str:payment_method_id>/set-default/', payment_methods.set_default_payment_method, name='set_default_payment_method'),
 ]
+
+# Add wishlist patterns to the main URL patterns
+urlpatterns += wishlist_patterns

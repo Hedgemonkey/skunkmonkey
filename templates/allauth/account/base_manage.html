@@ -12,7 +12,7 @@
             <div class="mt-4">
                 <h2>{% trans "Account Management" %}</h2>
 
-                <p>{% blocktrans %}Welcome,  {% endblocktrans %}{{ user.username|default:user.email }}!</p>
+                <p>{% blocktrans %}Welcome,  {% endblocktrans %}{{ user.username|default:"user.email "\}\}!</p>
 
                 <div class="list-group top-card">
 

@@ -17,6 +17,7 @@ import environ
 import dj_database_url
 from django.urls import reverse
 import djstripe.settings as djstripe_settings
+import logging
 
 # Initialize environment variables
 env = environ.Env()
@@ -388,4 +389,3 @@ LOGGING = {
         },
     },
 }
-

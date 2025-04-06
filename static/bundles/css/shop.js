@@ -78,16 +78,6 @@ eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extr
 
 eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extract-plugin\n\n\n//# sourceURL=webpack://skunkmonkey/./shop/static/css/shop/stripe.css?");
 
-/***/ }),
-
-/***/ "./shop/static/css/shop/wishlist.css":
-/*!*******************************************!*\
-  !*** ./shop/static/css/shop/wishlist.css ***!
-  \*******************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extract-plugin\n\n\n//# sourceURL=webpack://skunkmonkey/./shop/static/css/shop/wishlist.css?");
-
 /***/ })
 
 /******/ 	});
@@ -118,7 +108,6 @@ eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extr
 /******/ 	__webpack_modules__["./shop/static/css/shop/checkout.css"](0, {}, __webpack_require__);
 /******/ 	__webpack_modules__["./shop/static/css/shop/order-complete.css"](0, {}, __webpack_require__);
 /******/ 	__webpack_modules__["./shop/static/css/shop/order-history.css"](0, {}, __webpack_require__);
-/******/ 	__webpack_modules__["./shop/static/css/shop/wishlist.css"](0, {}, __webpack_require__);
 /******/ 	var __webpack_exports__ = {};
 /******/ 	__webpack_modules__["./shop/static/css/shop/stripe.css"](0, __webpack_exports__, __webpack_require__);
 /******/ 	

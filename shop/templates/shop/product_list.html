@@ -13,6 +13,7 @@
 
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'bundles/css/shop.css' %}">
+    <link rel="stylesheet" href="{% static 'bundles/css/shop/wishlist.css' %}">
 {% endblock %}
 
 {% block header %}
@@ -63,10 +64,12 @@
                         All Products
                     </a>
                     {% for category in categories %}
-                        <a href="{% url 'shop:product_list_by_category' category.slug %}" 
-                           class="list-group-item list-group-item-action {% if current_category.id == category.id %}active{% endif %}">
-                            {{ category.name }}
-                        </a>
+                        {% if category %}
+                            <a href="{% url 'shop:product_list_by_category' category.slug %}" 
+                               class="list-group-item list-group-item-action {% if current_category and category and current_category.id == category.id %}active{% endif %}">
+                                {{ category.name }}
+                            </a>
+                        {% endif %}
                     {% endfor %}
                 </div>
             </div>
@@ -89,9 +92,9 @@
             <!-- Dynamic filter controls -->
             <div id="dynamic-filter-container" 
                  data-product-list-url="{% url 'shop:product_list_ajax' %}"
-                 data-current-category="{% if current_category %}{{ current_category.id }}{% endif %}"
+                 data-current-category="{% if current_category and current_category.id %}{{ current_category.id }}{% endif %}"
                  data-search-query="{{ search_query|default:'' }}">
-                {% include 'includes/filter_controls.html' with sort_options=sort_options categories=categories current_sort=current_sort|default:'name-asc' search=search_query item_type='products' show_category_filter=True selected_categories=selected_categories|default:'' %}
+                {% include 'includes/filter_controls.html' with sort_options=sort_options|default:'' categories=categories current_sort=current_sort|default:'name-asc' search=search_query item_type='products' show_category_filter=True selected_categories=selected_categories|default:'' %}
             </div>
             
             <!-- Results Count Display -->
@@ -104,7 +107,7 @@
             <!-- Product Grid Container -->
             <div id="product-grid-container">
                 {% if products %}
-                    {% include 'shop/includes/product_grid.html' with products=products %}
+                    {% include 'shop/includes/product_grid.html' with products=products wishlist_product_ids=wishlist_product_ids|default:'' %}
                     
                     <!-- Pagination -->
                     {% if is_paginated %}
@@ -148,6 +151,6 @@
 {% block postloadjs %}
     {{ block.super }}
     <script src="{% static 'bundles/js/shop/product-list.js' %}"></script>
-    <script src="{% static 'bundles/js/shop/wishlist.js' %}"></script>
     <script src="{% static 'bundles/js/shop/comparison-manager.js' %}"></script>
+    <script src="{% static 'bundles/js/shop/product-grid.js' %}"></script>
 {% endblock %}

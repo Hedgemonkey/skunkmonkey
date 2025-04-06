@@ -162,6 +162,18 @@ class ProductListView(ListView):
             {'value': 'newest', 'text': 'Newest First'},
         ]
         
+        # Ensure wishlist_items is always defined
+        if self.request.user.is_authenticated:
+            from ..models import WishlistItem
+            context['wishlist_items'] = WishlistItem.objects.filter(user=self.request.user)
+            context['wishlist_product_ids'] = list(context['wishlist_items'].values_list('product_id', flat=True))
+        else:
+            context['wishlist_items'] = []
+            context['wishlist_product_ids'] = []
+        
+        # Initialize other potentially used context variables to avoid None references
+        context['comparison_list'] = getattr(self, 'comparison_list', None)
+        
         return context
 
 

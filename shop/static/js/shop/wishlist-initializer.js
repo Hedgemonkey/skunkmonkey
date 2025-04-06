@@ -1,26 +1,56 @@
 /**
  * Wishlist Initializer
- * 
- * This script initializes the wishlist functionality by importing and instantiating
- * the WishlistManager class. It serves as an entry point for webpack to bundle
- * the wishlist functionality.
+ * Bootstraps the wishlist functionality when the page loads
  */
 
-import WishlistManager from './wishlist-manager.js';
+import wishlistManager from './wishlist-manager.js';
 
-// Initialize wishlist functionality
-console.log('Initializing wishlist functionality');
-
-// Create a global instance of the WishlistManager
-let wishlistManager;
-
-document.addEventListener('DOMContentLoaded', () => {
-    // Initialize the wishlist manager
-    wishlistManager = new WishlistManager();
+/**
+ * Initialize wishlist functionality
+ */
+function initWishlist() {
+    // The wishlist manager is automatically initialized on import,
+    // but we can perform additional initialization here if needed
     
-    // Make it available globally
-    window.wishlistManager = wishlistManager;
-});
+    // Check if we're on the wishlist page
+    const isWishlistPage = window.location.pathname.includes('/wishlist/');
+    
+    if (isWishlistPage) {
+        // Initialize special wishlist page functionality
+        initWishlistPage();
+    }
+    
+    console.log('[WishlistInitializer] Wishlist functionality initialized');
+}
 
-// Export the wishlist manager for module usage
-export default wishlistManager;
+/**
+ * Initialize wishlist page specific functionality
+ */
+function initWishlistPage() {
+    // Add any wishlist page specific functionality here
+    console.log('[WishlistInitializer] Wishlist page specific functionality initialized');
+    
+    // Example: Add empty wishlist check
+    const wishlistItems = document.querySelectorAll('.wishlist-item, .product-card');
+    if (wishlistItems.length === 0) {
+        const container = document.querySelector('.container main, .wishlist-container');
+        if (container) {
+            container.innerHTML = `
+                <div class="empty-wishlist alert alert-info text-center my-5">
+                    <i class="fas fa-heart-broken mb-3" style="font-size: 3rem;"></i>
+                    <h3>Your wishlist is empty</h3>
+                    <p class="mb-3">You haven't added any products to your wishlist yet.</p>
+                    <a href="/shop/" class="btn btn-primary">
+                        <i class="fas fa-shopping-bag me-2"></i>Browse Products
+                    </a>
+                </div>
+            `;
+        }
+    }
+}
+
+// Initialize when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', initWishlist);
+
+// Also export the init function to allow manual initialization
+export { initWishlist };

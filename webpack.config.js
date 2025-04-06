@@ -21,8 +21,7 @@ module.exports = {
     'js/home': './home/static/js/home/home.js',
     'css/home': './home/static/css/home.css',
     
-    // Product grid entries
-    'js/product_grid': './static/js/product_grid.js',
+    // Product grid CSS (keeping the CSS entry)
     'css/product_grid': './static/css/product_grid.css',
     
     // Products app entries
@@ -33,12 +32,12 @@ module.exports = {
     // Shop app entries
     'js/shop/cart': './shop/static/js/shop/cart-manager.js',
     'js/shop/catalog': './shop/static/js/shop/catalog-manager.js',
-    'js/shop/wishlist': './shop/static/js/shop/wishlist-manager.js',
-    'js/shop/wishlist-initializer': './shop/static/js/shop/wishlist-initializer.js', // New entry
+    'js/shop/wishlist': './shop/static/js/shop/wishlist-initializer.js', // Fixed: Using initializer as entry point
     'js/shop/product-list': './shop/static/js/shop/product-list-manager.js',
     'js/shop/product-detail': './shop/static/js/shop/product-detail-manager.js',
     'js/shop/comparison-manager': './shop/static/js/shop/comparison-manager.js',
     'js/shop/checkout': './shop/static/js/shop/checkout.js',
+    'js/shop/product-grid': './shop/static/js/shop/product-grid.js', // Added proper entry for product-grid.js
     
     // Shop CSS
     'css/shop': [
@@ -48,9 +47,13 @@ module.exports = {
       './shop/static/css/shop/checkout.css',
       './shop/static/css/shop/order-complete.css',
       './shop/static/css/shop/order-history.css',
-      './shop/static/css/shop/wishlist.css',
+      // './shop/static/css/shop/wishlist.css', // Removed from here
       './shop/static/css/shop/stripe.css'
-    ]
+    ],
+
+    // --- NEW ENTRY FOR WISHLIST CSS ---
+    'css/shop/wishlist': './shop/static/css/shop/wishlist.css', // Added separate entry
+
   },
   output: {
     path: path.resolve(__dirname, 'static/bundles/'),

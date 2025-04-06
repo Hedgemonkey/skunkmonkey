@@ -11,7 +11,7 @@ from .checkout_views import (
     CheckoutView, CheckoutSuccessView, OrderDetailView,
     payment_cancel, recover_payment_intent
 )
-from .wishlist_views import WishlistView, AddToWishlistView, RemoveFromWishlistView
+from .wishlist_views import WishlistView, ToggleWishlistView, toggle_wishlist
 from .ajax_views import AjaxCartCountView, AjaxProductListView, AjaxQuickViewView
 
 # Import comparison views
@@ -45,13 +45,13 @@ __all__ = [
     'payment_cancel', 'recover_payment_intent',
     
     # Wishlist views
-    'WishlistView', 'AddToWishlistView', 'RemoveFromWishlistView',
+    'WishlistView', 'ToggleWishlistView', 'toggle_wishlist',
     
     # Comparison views
     'ComparisonView', 'AddToComparisonView', 'RemoveFromComparisonView',
     
     # Order views
-    'OrderHistoryView', 'OrderCompleteView', 'OrderDetailView'
+    'OrderHistoryView', 'OrderCompleteView', 'OrderDetailView',
     
     # AJAX views
     'AjaxCartCountView', 'AjaxProductListView', 'AjaxQuickViewView',

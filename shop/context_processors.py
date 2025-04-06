@@ -2,21 +2,19 @@ from .models import WishlistItem
 
 def wishlist_processor(request):
     """
-    Context processor that adds wishlist data to the context
+    Context processor to make wishlist information available in all templates.
     """
-    context = {
-        'wishlist_items': [],
-        'wishlist_product_ids': [],
-    }
+    wishlist_items = []
+    wishlist_product_ids = []
     
     if request.user.is_authenticated:
-        # Get the wishlist items for the user
+        # Get the user's wishlist items
         wishlist_items = WishlistItem.objects.filter(user=request.user).select_related('product')
         
-        # Create a list of product IDs for easy checking
-        product_ids = [item.product_id for item in wishlist_items]
-        
-        context['wishlist_items'] = wishlist_items
-        context['wishlist_product_ids'] = product_ids
+        # Extract product IDs
+        wishlist_product_ids = [item.product.id for item in wishlist_items if item.product]
     
-    return context
+    return {
+        'wishlist_items': wishlist_items,
+        'wishlist_product_ids': wishlist_product_ids,
+    }
