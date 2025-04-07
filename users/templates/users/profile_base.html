@@ -18,34 +18,68 @@
 {% block content %}
 <div class="overlay"></div>
 <div class="container my-5">
-    <div class="row">
-        <div class="col-12">
-            <h2 class="logo-font mb-4">My Profile</h2>
-            <hr>
+    <!-- Improved Profile Header -->
+    <div class="profile-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-12 col-md-8">
+                <div class="d-flex align-items-center">
+                    <div class="profile-avatar me-4">
+                        {% if user.socialaccount_set.all.0.get_avatar_url %}
+                            <img src="{{ user.socialaccount_set.all.0.get_avatar_url }}" alt="{{ user.username }}" class="rounded-circle">
+                        {% else %}
+                            <div class="profile-avatar-placeholder">
+                                {{ user.username|first|upper }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <h1 class="profile-title mb-0">{{ user.get_full_name|default:user.username }}</h1>
+                        <p class="profile-subtitle text-muted mb-2">
+                            <small>Member since {{ user.date_joined|date:"F Y" }}</small>
+                        </p>
+                        {% if user.email %}
+                            <p class="profile-email mb-0">
+                                <span class="text-muted">
+                                    <i class="fas fa-envelope me-1"></i>{{ user.email }}
+                                </span>
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4 text-md-end mt-3 mt-md-0">
+                <div class="profile-actions">
+                    <span class="badge bg-light text-dark border mb-2 d-block d-md-inline-block">
+                        <i class="fas fa-clock me-1"></i>Last login: {{ user.last_login|date:"M d, Y" }}
+                    </span>
+                </div>
+            </div>
         </div>
+        <hr class="profile-divider my-4">
     </div>
+
     <div class="row">
         <!-- Sidebar Navigation -->
         <div class="col-12 col-md-3 mb-4">
-            <div class="list-group">
+            <div class="list-group profile-sidebar">
                 <a href="{% url 'users:profile_dashboard' %}" class="list-group-item list-group-item-action {% if active_tab == 'dashboard' %}active{% endif %}">
-                    Dashboard
+                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
                 </a>
                 <a href="{% url 'users:manage_addresses' %}" class="list-group-item list-group-item-action {% if active_tab == 'addresses' %}active{% endif %}">
-                    Manage Addresses
+                    <i class="fas fa-map-marker-alt me-2"></i>Manage Addresses
                 </a>
                 <a href="{% url 'users:order_history' %}" class="list-group-item list-group-item-action {% if active_tab == 'orders' %}active{% endif %}">
-                    Order History
+                    <i class="fas fa-shopping-bag me-2"></i>Order History
                 </a>
                 <!-- Link to other relevant allauth views -->
-                 <a href="{% url 'account_email' %}" class="list-group-item list-group-item-action {% if active_tab == 'email' %}active{% endif %}">
-                    Manage Email
+                <a href="{% url 'account_email' %}" class="list-group-item list-group-item-action {% if active_tab == 'email' %}active{% endif %}">
+                    <i class="fas fa-envelope me-2"></i>Manage Email
                 </a>
-                 <a href="{% url 'account_change_password' %}" class="list-group-item list-group-item-action {% if active_tab == 'password' %}active{% endif %}">
-                    Change Password
+                <a href="{% url 'account_change_password' %}" class="list-group-item list-group-item-action {% if active_tab == 'password' %}active{% endif %}">
+                    <i class="fas fa-key me-2"></i>Change Password
                 </a>
-                 <a href="{% url 'users:account_manage_connected_accounts' %}" class="list-group-item list-group-item-action {% if active_tab == 'social' %}active{% endif %}">
-                    Social Accounts
+                <a href="{% url 'users:account_manage_connected_accounts' %}" class="list-group-item list-group-item-action {% if active_tab == 'social' %}active{% endif %}">
+                    <i class="fas fa-share-alt me-2"></i>Social Accounts
                 </a>
                 <!-- Add more links as needed -->
             </div>
