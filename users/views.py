@@ -504,7 +504,9 @@ def order_detail(request, order_number):
 
 def users_contact(request):
     """Render the contact page for users."""
+    form = ContactForm()  # Add a ContactForm instance
     return render(request, 'users/contact.html', {
         'title': 'Contact Us',
         'active_tab': 'contact',
+        'form': form,  # Pass the form to the template
     })
