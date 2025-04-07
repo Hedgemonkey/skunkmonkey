@@ -3,8 +3,8 @@
 
 {% block extra_css %}
     {{ block.super }}
-    <!-- Link to dedicated profile CSS if needed -->
-    <!-- <link rel="stylesheet" href="{% static 'css/profile.css' %}"> -->
+    <!-- Load webpack bundled profile CSS -->
+    <link rel="stylesheet" href="{% static 'bundles/css/profile.css' %}">
 {% endblock %}
 
 {% block page_header %}
@@ -63,6 +63,6 @@
 
 {% block extra_js %}
     {{ block.super }}
-    <!-- Link to dedicated profile JS if needed -->
-    <!-- <script src="{% static 'js/profile.js' %}"></script> -->
+    <!-- Load webpack bundled profile JS -->
+    <script src="{% static 'bundles/js/profile.js' %}"></script>
 {% endblock %}

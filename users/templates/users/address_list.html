@@ -10,7 +10,7 @@
     </div>
 
     {% if addresses %}
-        <div class="list-group">
+        <div class="list-group address-list-container">
             {% for address in addresses %}
                 <div class="list-group-item list-group-item-action flex-column align-items-start mb-3 border rounded p-3">
                     <div class="d-flex w-100 justify-content-between">
@@ -39,7 +39,7 @@
                              <i class="fas fa-trash-alt me-1"></i>Delete
                          </button>
                          {% if address.id != default_address_id %}
-                         <button type="button" class="btn btn-sm btn-outline-success btn-set-default-address"
+                         <button type="button" class="btn btn-sm btn-outline-success btn-set-default"
                                  data-address-id="{{ address.id }}"
                                  data-setdefault-url="{% url 'users:set_default_address' address.id %}"
                                  data-address-info="{{ address.get_short_address }}">
@@ -59,121 +59,15 @@
         {% csrf_token %}
     </form>
 
+    <!-- Add CSRF token and URL templates for JS -->
+    <script>
+        window.csrfToken = "{{ csrf_token }}";
+        window.deleteAddressUrlTemplate = "{% url 'users:delete_address' 0 %}".replace('0', '{address_id}');
+        window.setDefaultAddressUrlTemplate = "{% url 'users:set_default_address' 0 %}".replace('0', '{address_id}');
+    </script>
 {% endblock %}
 
 {% block extra_js %}
     {{ block.super }}
-    <!-- Add specific JS for address management (AJAX delete/set default) -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
-            // --- Delete Address ---
-            document.querySelectorAll('.btn-delete-address').forEach(button => {
-                button.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const addressId = this.dataset.addressId;
-                    const deleteUrl = this.dataset.deleteUrl;
-                    const addressInfo = this.dataset.addressInfo;
-
-                    Swal.fire({
-                        title: 'Are you sure?',
-                        text: `Do you really want to delete the address "${addressInfo}"? This cannot be undone.`,
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#d33',
-                        cancelButtonColor: '#6c757d',
-                        confirmButtonText: 'Yes, delete it!'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            fetch(deleteUrl, {
-                                method: 'POST', // Using POST to simulate DELETE via @require_POST
-                                headers: {
-                                    'X-CSRFToken': csrfToken,
-                                    'X-Requested-With': 'XMLHttpRequest', // Important for Django view
-                                    'Content-Type': 'application/json' // Optional, depends on view
-                                },
-                                // body: JSON.stringify({ id: addressId }) // Optional body data
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    Swal.fire(
-                                        'Deleted!',
-                                        data.message || 'Address has been deleted.',
-                                        'success'
-                                    ).then(() => {
-                                        window.location.reload(); // Reload to show changes
-                                    });
-                                } else {
-                                    Swal.fire(
-                                        'Error!',
-                                        data.message || 'Could not delete address.',
-                                        'error'
-                                    );
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                Swal.fire(
-                                    'Error!',
-                                    'An unexpected error occurred.',
-                                    'error'
-                                );
-                            });
-                        }
-                    });
-                });
-            });
-
-            // --- Set Default Address ---
-            document.querySelectorAll('.btn-set-default-address').forEach(button => {
-                button.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const addressId = this.dataset.addressId;
-                    const setDefaultUrl = this.dataset.setdefaultUrl;
-                    const addressInfo = this.dataset.addressInfo;
-
-                     Swal.fire({
-                        title: 'Set as Default?',
-                        text: `Set "${addressInfo}" as your default delivery address?`,
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonColor: '#28a745',
-                        cancelButtonColor: '#6c757d',
-                        confirmButtonText: 'Yes, set as default!'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                             fetch(setDefaultUrl, {
-                                method: 'POST',
-                                headers: {
-                                    'X-CSRFToken': csrfToken,
-                                    'X-Requested-With': 'XMLHttpRequest',
-                                    'Content-Type': 'application/json'
-                                },
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    Swal.fire(
-                                        'Success!',
-                                        data.message || 'Address set as default.',
-                                        'success'
-                                    ).then(() => {
-                                        window.location.reload(); // Reload
-                                    });
-                                } else {
-                                     Swal.fire('Error!', data.message || 'Could not set default address.', 'error');
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                Swal.fire('Error!', 'An unexpected error occurred.', 'error');
-                            });
-                        }
-                    });
-                });
-            });
-        });
-    </script>
+    <!-- The webpack bundled profile.js will be included via base template -->
 {% endblock %}
