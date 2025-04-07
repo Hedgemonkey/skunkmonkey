@@ -5,7 +5,7 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Submit, HTML
 from django.contrib.auth import get_user_model
-from .models import Address
+from .models import Address, UserProfile
 
 
 class ContactForm(forms.Form):
@@ -127,3 +127,39 @@ class AddressForm(forms.ModelForm):
             Submit('submit', 'Save Address', css_class='btn btn-primary'),
         )
         self.fields['address_line_1'].label = 'Address Line 1'
+
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = [
+            'phone_number',
+            'bio',
+            'birth_date',
+            'profile_image',
+            'notification_preference',
+            'receive_marketing_emails',
+            'theme_preference',
+        ]
+        widgets = {
+            'birth_date': forms.DateInput(attrs={'type': 'date'}),
+            'bio': forms.Textarea(attrs={'rows': 3}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.fields['bio'].help_text = (
+            "Tell us a little about yourself (max 500 characters)"
+        )
+        self.fields['phone_number'].help_text = (
+            "For order-related communications only"
+        )
+        self.fields['receive_marketing_emails'].label = (
+            "I want to receive promotional emails"
+        )
+        self.fields['notification_preference'].label = (
+            "Email notification preferences"
+        )
+        self.fields['theme_preference'].label = "Site theme preference"
