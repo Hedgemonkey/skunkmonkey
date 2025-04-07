@@ -2,16 +2,110 @@
 from django.urls import path
 from . import views
 
+app_name = 'users'  # Define the namespace for reversing URLs (e.g., {% url 'users:profile_dashboard' %})
+
 urlpatterns = [
-    path('inactive-message/', views.account_inactive_message, name='account_inactive_message'),
-    path('deleted/', views.deleted_account, name='account_deleted'),
-    path('deactivate/', views.deactivate_account, name='deactivate_account'),
-    path('delete/', views.delete_account, name='delete_account'),
-    path('manage/', views.manage_account, name='users_manage'),
-    path('details/', views.manage_details, name='manage_details'),
-    path('contact/', views.contact, name='users_contact'),
-    path("email/", views.manage_email, name="manage_email"), # Add url for manage email
-    path("password/", views.manage_password, name="manage_password"), # Add url for manage password
-    path("social/", views.manage_social, name="manage_social"), # Add url for manage social
-    path('details/update/', views.manage_details_update, name='manage_details_update'), # Add url for updating user details
+    path(
+        'inactive-message/',
+        views.account_inactive_message,
+        name='account_inactive_message',
+    ),
+    path(
+        'deleted/',
+        views.deleted_account,
+        name='account_deleted',
+    ),
+    path(
+        'deactivate/',
+        views.deactivate_account,
+        name='deactivate_account',
+    ),
+    path(
+        'delete/',
+        views.delete_account,
+        name='delete_account',
+    ),
+    path(
+        'manage/',
+        views.manage_account,
+        name='users_manage',
+    ),
+    path(
+        'details/',
+        views.manage_details,
+        name='manage_details',
+    ),
+    path(
+        'contact/',
+        views.contact,
+        name='users_contact',
+    ),
+    path(
+        'email/',
+        views.manage_email,
+        name='manage_email',
+    ),
+    path(
+        'password/',
+        views.manage_password,
+        name='manage_password',
+    ),
+    path(
+        'social/',
+        views.manage_social,
+        name='manage_social',
+    ),
+    path(
+        'details/update/',
+        views.manage_details_update,
+        name='manage_details_update',
+    ),
+    path(
+        'dashboard/',
+        views.profile_dashboard,
+        name='profile_dashboard',
+    ),
+    path(
+        'addresses/',
+        views.manage_addresses,
+        name='manage_addresses',
+    ),
+    path(
+        'addresses/add/',
+        views.add_address,
+        name='add_address',
+    ),
+    path(
+        'addresses/edit/<int:address_id>/',
+        views.edit_address,
+        name='edit_address',
+    ),
+    path(
+        'addresses/delete/<int:address_id>/',
+        views.delete_address,
+        name='delete_address',
+    ),
+    path(
+        'addresses/set_default/<int:address_id>/',
+        views.set_default_address,
+        name='set_default_address',
+    ),
+    path(
+        'orders/',
+        views.order_history,
+        name='order_history',
+    ),
+    path(
+        'orders/<str:order_number>/',
+        views.order_detail,
+        name='order_detail',
+    ),
+    path(
+        'social/accounts/',
+        views.manage_social,
+        name='account_manage_connected_accounts',
+    ),
 ]
+
+# Ensure you have included this urls.py in your main project urls.py
+# e.g., path('profile/', include('users.urls', namespace='users')),

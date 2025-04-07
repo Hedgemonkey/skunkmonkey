@@ -1,32 +1,361 @@
-/*
- * ATTENTION: The "eval" devtool has been used (maybe by default in mode: "development").
- * This devtool is neither made for production nor for readable output files.
- * It uses "eval()" calls to create a separate source file in the browser devtools.
- * If you are trying to read the output file, select a different devtool (https://webpack.js.org/configuration/devtool/)
- * or disable the default devtool with "devtool: false".
- * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
- */
 /******/ (() => { // webpackBootstrap
-/******/ 	var __webpack_modules__ = ({
-
-/***/ "./home/static/js/home/home.js":
 /*!*************************************!*\
   !*** ./home/static/js/home/home.js ***!
   \*************************************/
-/***/ (() => {
+function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
+function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
+function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t["return"] || t["return"](); } finally { if (u) throw o; } } }; }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+/**
+ * Home page JavaScript functionality
+ */
 
-eval("function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }\nfunction _nonIterableRest() { throw new TypeError(\"Invalid attempt to destructure non-iterable instance.\\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.\"); }\nfunction _iterableToArrayLimit(r, l) { var t = null == r ? null : \"undefined\" != typeof Symbol && r[Symbol.iterator] || r[\"@@iterator\"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t[\"return\"] && (u = t[\"return\"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }\nfunction _arrayWithHoles(r) { if (Array.isArray(r)) return r; }\nfunction _createForOfIteratorHelper(r, e) { var t = \"undefined\" != typeof Symbol && r[Symbol.iterator] || r[\"@@iterator\"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && \"number\" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError(\"Invalid attempt to iterate non-iterable instance.\\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.\"); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t[\"return\"] || t[\"return\"](); } finally { if (u) throw o; } } }; }\nfunction _unsupportedIterableToArray(r, a) { if (r) { if (\"string\" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return \"Object\" === t && r.constructor && (t = r.constructor.name), \"Map\" === t || \"Set\" === t ? Array.from(r) : \"Arguments\" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }\nfunction _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }\n/**\n * Home page JavaScript functionality\n */\n\ndocument.addEventListener('DOMContentLoaded', function () {\n  // Initialize featured products carousel if present\n  var carousel = document.querySelector('.home-carousel');\n  if (carousel) {\n    initializeCarousel(carousel);\n  }\n\n  // Initialize featured products hover effects\n  var productCards = document.querySelectorAll('.product-card');\n  productCards.forEach(function (card) {\n    card.addEventListener('mouseenter', function () {\n      this.classList.add('shadow');\n    });\n    card.addEventListener('mouseleave', function () {\n      this.classList.remove('shadow');\n    });\n  });\n\n  // Lazy load testimonial images\n  var testimonialImages = document.querySelectorAll('.testimonial-img[data-src]');\n  if ('IntersectionObserver' in window) {\n    var imageObserver = new IntersectionObserver(function (entries, observer) {\n      entries.forEach(function (entry) {\n        if (entry.isIntersecting) {\n          var img = entry.target;\n          var src = img.getAttribute('data-src');\n          if (src) {\n            img.src = src;\n            img.removeAttribute('data-src');\n          }\n          imageObserver.unobserve(img);\n        }\n      });\n    });\n    testimonialImages.forEach(function (img) {\n      imageObserver.observe(img);\n    });\n  } else {\n    // Fallback for browsers that don't support IntersectionObserver\n    testimonialImages.forEach(function (img) {\n      var src = img.getAttribute('data-src');\n      if (src) {\n        img.src = src;\n        img.removeAttribute('data-src');\n      }\n    });\n  }\n\n  // Add category filtering functionality\n  var categoryButtons = document.querySelectorAll('.category-filter-btn');\n  categoryButtons.forEach(function (button) {\n    button.addEventListener('click', function () {\n      var category = this.getAttribute('data-category');\n\n      // Remove active class from all buttons\n      categoryButtons.forEach(function (btn) {\n        return btn.classList.remove('active');\n      });\n\n      // Add active class to clicked button\n      this.classList.add('active');\n\n      // Show all products if 'all' category is selected\n      if (category === 'all') {\n        document.querySelectorAll('.product-item').forEach(function (item) {\n          item.style.display = 'block';\n        });\n        return;\n      }\n\n      // Hide all products\n      document.querySelectorAll('.product-item').forEach(function (item) {\n        item.style.display = 'none';\n      });\n\n      // Show products with matching category\n      document.querySelectorAll(\".product-item[data-category=\\\"\".concat(category, \"\\\"]\")).forEach(function (item) {\n        item.style.display = 'block';\n      });\n    });\n  });\n\n  // Add to cart functionality for home page product cards\n  var addToCartButtons = document.querySelectorAll('.btn-add-to-cart');\n  addToCartButtons.forEach(function (button) {\n    button.addEventListener('click', function (e) {\n      var _this = this;\n      e.preventDefault();\n      var productId = this.getAttribute('data-product-id');\n\n      // Disable button during AJAX request to prevent double-clicks\n      this.disabled = true;\n      var originalText = this.innerHTML;\n      this.innerHTML = '<i class=\"fas fa-spinner fa-spin\"></i>';\n\n      // Send AJAX request to add product to cart\n      fetch(\"/cart/add/\".concat(productId, \"/\"), {\n        method: 'POST',\n        headers: {\n          'Content-Type': 'application/x-www-form-urlencoded',\n          'X-Requested-With': 'XMLHttpRequest',\n          'X-CSRFToken': getCSRFToken()\n        },\n        body: 'quantity=1&update=False'\n      }).then(function (response) {\n        return response.json();\n      }).then(function (data) {\n        // Re-enable button\n        _this.disabled = false;\n        _this.innerHTML = originalText;\n        if (data.success) {\n          // Show success message\n          showToast('success', data.message);\n\n          // Update cart count in navbar if it exists\n          var cartCount = document.querySelector('.cart-count');\n          if (cartCount) {\n            cartCount.textContent = data.item_count;\n          }\n        } else {\n          // Show error message\n          showToast('error', data.errors || 'Error adding to cart');\n        }\n      })[\"catch\"](function (error) {\n        // Re-enable button\n        _this.disabled = false;\n        _this.innerHTML = originalText;\n\n        // Show error message\n        showToast('error', 'Error adding to cart');\n        console.error('Error:', error);\n      });\n    });\n  });\n\n  // Add wishlist functionality for home page product cards\n  var wishlistButtons = document.querySelectorAll('.btn-wishlist');\n  wishlistButtons.forEach(function (button) {\n    button.addEventListener('click', function (e) {\n      var _this2 = this;\n      e.preventDefault();\n      var productId = this.getAttribute('data-product-id');\n\n      // Disable button during AJAX request\n      this.disabled = true;\n\n      // Send AJAX request to toggle wishlist status\n      fetch(\"/wishlist/toggle/\".concat(productId, \"/\"), {\n        method: 'POST',\n        headers: {\n          'X-Requested-With': 'XMLHttpRequest',\n          'X-CSRFToken': getCSRFToken()\n        }\n      }).then(function (response) {\n        return response.json();\n      }).then(function (data) {\n        // Re-enable button\n        _this2.disabled = false;\n        if (data.success) {\n          // Update wishlist icon\n          var icon = _this2.querySelector('i');\n          if (data.action === 'added') {\n            icon.classList.remove('far');\n            icon.classList.add('fas');\n            showToast('success', 'Added to wishlist');\n          } else {\n            icon.classList.remove('fas');\n            icon.classList.add('far');\n            showToast('success', 'Removed from wishlist');\n          }\n        } else {\n          // Show error or login message\n          if (data.error === 'login_required') {\n            showToast('info', 'Please log in to add items to your wishlist');\n          } else {\n            showToast('error', data.error || 'Error updating wishlist');\n          }\n        }\n      })[\"catch\"](function (error) {\n        // Re-enable button\n        _this2.disabled = false;\n        showToast('error', 'Error updating wishlist');\n        console.error('Error:', error);\n      });\n    });\n  });\n});\n\n/**\n * Initialize carousel with default settings\n * @param {HTMLElement} carouselElement - The carousel container element\n */\nfunction initializeCarousel(carouselElement) {\n  // Get all slides\n  var slides = carouselElement.querySelectorAll('.carousel-slide');\n  if (slides.length === 0) return;\n  var currentSlide = 0;\n  var totalSlides = slides.length;\n\n  // Show first slide, hide others\n  slides.forEach(function (slide, index) {\n    slide.style.display = index === 0 ? 'block' : 'none';\n  });\n\n  // Create navigation dots\n  var dotsContainer = document.createElement('div');\n  dotsContainer.className = 'carousel-dots';\n  var _loop = function _loop(i) {\n    var dot = document.createElement('span');\n    dot.className = 'carousel-dot';\n    if (i === 0) dot.classList.add('active');\n    dot.addEventListener('click', function () {\n      goToSlide(i);\n    });\n    dotsContainer.appendChild(dot);\n  };\n  for (var i = 0; i < totalSlides; i++) {\n    _loop(i);\n  }\n  carouselElement.appendChild(dotsContainer);\n\n  // Create prev/next buttons\n  var prevButton = document.createElement('button');\n  prevButton.className = 'carousel-button carousel-prev';\n  prevButton.innerHTML = '&lt;';\n  prevButton.addEventListener('click', function () {\n    goToSlide((currentSlide - 1 + totalSlides) % totalSlides);\n  });\n  var nextButton = document.createElement('button');\n  nextButton.className = 'carousel-button carousel-next';\n  nextButton.innerHTML = '&gt;';\n  nextButton.addEventListener('click', function () {\n    goToSlide((currentSlide + 1) % totalSlides);\n  });\n  carouselElement.appendChild(prevButton);\n  carouselElement.appendChild(nextButton);\n\n  // Auto-rotate slides\n  var intervalTime = 5000; // 5 seconds\n  var slideInterval = setInterval(function () {\n    goToSlide((currentSlide + 1) % totalSlides);\n  }, intervalTime);\n\n  // Pause on hover\n  carouselElement.addEventListener('mouseenter', function () {\n    clearInterval(slideInterval);\n  });\n  carouselElement.addEventListener('mouseleave', function () {\n    slideInterval = setInterval(function () {\n      goToSlide((currentSlide + 1) % totalSlides);\n    }, intervalTime);\n  });\n\n  // Function to change slides\n  function goToSlide(slideIndex) {\n    // Hide current slide\n    slides[currentSlide].style.display = 'none';\n\n    // Update dots\n    dotsContainer.querySelectorAll('.carousel-dot').forEach(function (dot, index) {\n      dot.classList.toggle('active', index === slideIndex);\n    });\n\n    // Show new slide\n    slides[slideIndex].style.display = 'block';\n    currentSlide = slideIndex;\n  }\n}\n\n/**\n * Get CSRF token from cookies\n * @returns {string} CSRF token\n */\nfunction getCSRFToken() {\n  var cookies = document.cookie.split(';');\n  var _iterator = _createForOfIteratorHelper(cookies),\n    _step;\n  try {\n    for (_iterator.s(); !(_step = _iterator.n()).done;) {\n      var cookie = _step.value;\n      var _cookie$trim$split = cookie.trim().split('='),\n        _cookie$trim$split2 = _slicedToArray(_cookie$trim$split, 2),\n        name = _cookie$trim$split2[0],\n        value = _cookie$trim$split2[1];\n      if (name === 'csrftoken') {\n        return value;\n      }\n    }\n  } catch (err) {\n    _iterator.e(err);\n  } finally {\n    _iterator.f();\n  }\n  return '';\n}\n\n/**\n * Show toast message\n * @param {string} type - Type of toast (success, error, info)\n * @param {string} message - Message to display\n */\nfunction showToast(type, message) {\n  // Check if we have a toast container, create one if not\n  var toastContainer = document.querySelector('.toast-container');\n  if (!toastContainer) {\n    toastContainer = document.createElement('div');\n    toastContainer.className = 'toast-container';\n    document.body.appendChild(toastContainer);\n  }\n\n  // Create toast element\n  var toast = document.createElement('div');\n  toast.className = \"toast toast-\".concat(type);\n  toast.innerHTML = \"\\n        <div class=\\\"toast-header\\\">\\n            <i class=\\\"fas fa-\".concat(type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle', \"\\\"></i>\\n            <span class=\\\"toast-title\\\">\").concat(type.charAt(0).toUpperCase() + type.slice(1), \"</span>\\n            <button class=\\\"toast-close\\\">&times;</button>\\n        </div>\\n        <div class=\\\"toast-body\\\">\").concat(message, \"</div>\\n    \");\n\n  // Add to container\n  toastContainer.appendChild(toast);\n\n  // Show toast with animation\n  setTimeout(function () {\n    toast.classList.add('show');\n  }, 10);\n\n  // Add close button functionality\n  toast.querySelector('.toast-close').addEventListener('click', function () {\n    toast.classList.remove('show');\n    setTimeout(function () {\n      toast.remove();\n    }, 300);\n  });\n\n  // Auto-remove after 5 seconds\n  setTimeout(function () {\n    if (toast.parentNode) {\n      toast.classList.remove('show');\n      setTimeout(function () {\n        if (toast.parentNode) {\n          toast.remove();\n        }\n      }, 300);\n    }\n  }, 5000);\n}\n\n//# sourceURL=webpack://skunkmonkey/./home/static/js/home/home.js?");
+document.addEventListener('DOMContentLoaded', function () {
+  // Initialize featured products carousel if present
+  var carousel = document.querySelector('.home-carousel');
+  if (carousel) {
+    initializeCarousel(carousel);
+  }
 
-/***/ })
+  // Initialize featured products hover effects
+  var productCards = document.querySelectorAll('.product-card');
+  productCards.forEach(function (card) {
+    card.addEventListener('mouseenter', function () {
+      this.classList.add('shadow');
+    });
+    card.addEventListener('mouseleave', function () {
+      this.classList.remove('shadow');
+    });
+  });
 
-/******/ 	});
-/************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module can't be inlined because the eval devtool is used.
-/******/ 	var __webpack_exports__ = {};
-/******/ 	__webpack_modules__["./home/static/js/home/home.js"]();
-/******/ 	
+  // Lazy load testimonial images
+  var testimonialImages = document.querySelectorAll('.testimonial-img[data-src]');
+  if ('IntersectionObserver' in window) {
+    var imageObserver = new IntersectionObserver(function (entries, observer) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          var img = entry.target;
+          var src = img.getAttribute('data-src');
+          if (src) {
+            img.src = src;
+            img.removeAttribute('data-src');
+          }
+          imageObserver.unobserve(img);
+        }
+      });
+    });
+    testimonialImages.forEach(function (img) {
+      imageObserver.observe(img);
+    });
+  } else {
+    // Fallback for browsers that don't support IntersectionObserver
+    testimonialImages.forEach(function (img) {
+      var src = img.getAttribute('data-src');
+      if (src) {
+        img.src = src;
+        img.removeAttribute('data-src');
+      }
+    });
+  }
+
+  // Add category filtering functionality
+  var categoryButtons = document.querySelectorAll('.category-filter-btn');
+  categoryButtons.forEach(function (button) {
+    button.addEventListener('click', function () {
+      var category = this.getAttribute('data-category');
+
+      // Remove active class from all buttons
+      categoryButtons.forEach(function (btn) {
+        return btn.classList.remove('active');
+      });
+
+      // Add active class to clicked button
+      this.classList.add('active');
+
+      // Show all products if 'all' category is selected
+      if (category === 'all') {
+        document.querySelectorAll('.product-item').forEach(function (item) {
+          item.style.display = 'block';
+        });
+        return;
+      }
+
+      // Hide all products
+      document.querySelectorAll('.product-item').forEach(function (item) {
+        item.style.display = 'none';
+      });
+
+      // Show products with matching category
+      document.querySelectorAll(".product-item[data-category=\"".concat(category, "\"]")).forEach(function (item) {
+        item.style.display = 'block';
+      });
+    });
+  });
+
+  // Add to cart functionality for home page product cards
+  var addToCartButtons = document.querySelectorAll('.btn-add-to-cart');
+  addToCartButtons.forEach(function (button) {
+    button.addEventListener('click', function (e) {
+      var _this = this;
+      e.preventDefault();
+      var productId = this.getAttribute('data-product-id');
+
+      // Disable button during AJAX request to prevent double-clicks
+      this.disabled = true;
+      var originalText = this.innerHTML;
+      this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+      // Send AJAX request to add product to cart
+      fetch("/cart/add/".concat(productId, "/"), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRFToken': getCSRFToken()
+        },
+        body: 'quantity=1&update=False'
+      }).then(function (response) {
+        return response.json();
+      }).then(function (data) {
+        // Re-enable button
+        _this.disabled = false;
+        _this.innerHTML = originalText;
+        if (data.success) {
+          // Show success message
+          showToast('success', data.message);
+
+          // Update cart count in navbar if it exists
+          var cartCount = document.querySelector('.cart-count');
+          if (cartCount) {
+            cartCount.textContent = data.item_count;
+          }
+        } else {
+          // Show error message
+          showToast('error', data.errors || 'Error adding to cart');
+        }
+      })["catch"](function (error) {
+        // Re-enable button
+        _this.disabled = false;
+        _this.innerHTML = originalText;
+
+        // Show error message
+        showToast('error', 'Error adding to cart');
+        console.error('Error:', error);
+      });
+    });
+  });
+
+  // Add wishlist functionality for home page product cards
+  var wishlistButtons = document.querySelectorAll('.btn-wishlist');
+  wishlistButtons.forEach(function (button) {
+    button.addEventListener('click', function (e) {
+      var _this2 = this;
+      e.preventDefault();
+      var productId = this.getAttribute('data-product-id');
+
+      // Disable button during AJAX request
+      this.disabled = true;
+
+      // Send AJAX request to toggle wishlist status
+      fetch("/wishlist/toggle/".concat(productId, "/"), {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRFToken': getCSRFToken()
+        }
+      }).then(function (response) {
+        return response.json();
+      }).then(function (data) {
+        // Re-enable button
+        _this2.disabled = false;
+        if (data.success) {
+          // Update wishlist icon
+          var icon = _this2.querySelector('i');
+          if (data.action === 'added') {
+            icon.classList.remove('far');
+            icon.classList.add('fas');
+            showToast('success', 'Added to wishlist');
+          } else {
+            icon.classList.remove('fas');
+            icon.classList.add('far');
+            showToast('success', 'Removed from wishlist');
+          }
+        } else {
+          // Show error or login message
+          if (data.error === 'login_required') {
+            showToast('info', 'Please log in to add items to your wishlist');
+          } else {
+            showToast('error', data.error || 'Error updating wishlist');
+          }
+        }
+      })["catch"](function (error) {
+        // Re-enable button
+        _this2.disabled = false;
+        showToast('error', 'Error updating wishlist');
+        console.error('Error:', error);
+      });
+    });
+  });
+});
+
+/**
+ * Initialize carousel with default settings
+ * @param {HTMLElement} carouselElement - The carousel container element
+ */
+function initializeCarousel(carouselElement) {
+  // Get all slides
+  var slides = carouselElement.querySelectorAll('.carousel-slide');
+  if (slides.length === 0) return;
+  var currentSlide = 0;
+  var totalSlides = slides.length;
+
+  // Show first slide, hide others
+  slides.forEach(function (slide, index) {
+    slide.style.display = index === 0 ? 'block' : 'none';
+  });
+
+  // Create navigation dots
+  var dotsContainer = document.createElement('div');
+  dotsContainer.className = 'carousel-dots';
+  var _loop = function _loop(i) {
+    var dot = document.createElement('span');
+    dot.className = 'carousel-dot';
+    if (i === 0) dot.classList.add('active');
+    dot.addEventListener('click', function () {
+      goToSlide(i);
+    });
+    dotsContainer.appendChild(dot);
+  };
+  for (var i = 0; i < totalSlides; i++) {
+    _loop(i);
+  }
+  carouselElement.appendChild(dotsContainer);
+
+  // Create prev/next buttons
+  var prevButton = document.createElement('button');
+  prevButton.className = 'carousel-button carousel-prev';
+  prevButton.innerHTML = '&lt;';
+  prevButton.addEventListener('click', function () {
+    goToSlide((currentSlide - 1 + totalSlides) % totalSlides);
+  });
+  var nextButton = document.createElement('button');
+  nextButton.className = 'carousel-button carousel-next';
+  nextButton.innerHTML = '&gt;';
+  nextButton.addEventListener('click', function () {
+    goToSlide((currentSlide + 1) % totalSlides);
+  });
+  carouselElement.appendChild(prevButton);
+  carouselElement.appendChild(nextButton);
+
+  // Auto-rotate slides
+  var intervalTime = 5000; // 5 seconds
+  var slideInterval = setInterval(function () {
+    goToSlide((currentSlide + 1) % totalSlides);
+  }, intervalTime);
+
+  // Pause on hover
+  carouselElement.addEventListener('mouseenter', function () {
+    clearInterval(slideInterval);
+  });
+  carouselElement.addEventListener('mouseleave', function () {
+    slideInterval = setInterval(function () {
+      goToSlide((currentSlide + 1) % totalSlides);
+    }, intervalTime);
+  });
+
+  // Function to change slides
+  function goToSlide(slideIndex) {
+    // Hide current slide
+    slides[currentSlide].style.display = 'none';
+
+    // Update dots
+    dotsContainer.querySelectorAll('.carousel-dot').forEach(function (dot, index) {
+      dot.classList.toggle('active', index === slideIndex);
+    });
+
+    // Show new slide
+    slides[slideIndex].style.display = 'block';
+    currentSlide = slideIndex;
+  }
+}
+
+/**
+ * Get CSRF token from cookies
+ * @returns {string} CSRF token
+ */
+function getCSRFToken() {
+  var cookies = document.cookie.split(';');
+  var _iterator = _createForOfIteratorHelper(cookies),
+    _step;
+  try {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+      var cookie = _step.value;
+      var _cookie$trim$split = cookie.trim().split('='),
+        _cookie$trim$split2 = _slicedToArray(_cookie$trim$split, 2),
+        name = _cookie$trim$split2[0],
+        value = _cookie$trim$split2[1];
+      if (name === 'csrftoken') {
+        return value;
+      }
+    }
+  } catch (err) {
+    _iterator.e(err);
+  } finally {
+    _iterator.f();
+  }
+  return '';
+}
+
+/**
+ * Show toast message
+ * @param {string} type - Type of toast (success, error, info)
+ * @param {string} message - Message to display
+ */
+function showToast(type, message) {
+  // Check if we have a toast container, create one if not
+  var toastContainer = document.querySelector('.toast-container');
+  if (!toastContainer) {
+    toastContainer = document.createElement('div');
+    toastContainer.className = 'toast-container';
+    document.body.appendChild(toastContainer);
+  }
+
+  // Create toast element
+  var toast = document.createElement('div');
+  toast.className = "toast toast-".concat(type);
+  toast.innerHTML = "\n        <div class=\"toast-header\">\n            <i class=\"fas fa-".concat(type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle', "\"></i>\n            <span class=\"toast-title\">").concat(type.charAt(0).toUpperCase() + type.slice(1), "</span>\n            <button class=\"toast-close\">&times;</button>\n        </div>\n        <div class=\"toast-body\">").concat(message, "</div>\n    ");
+
+  // Add to container
+  toastContainer.appendChild(toast);
+
+  // Show toast with animation
+  setTimeout(function () {
+    toast.classList.add('show');
+  }, 10);
+
+  // Add close button functionality
+  toast.querySelector('.toast-close').addEventListener('click', function () {
+    toast.classList.remove('show');
+    setTimeout(function () {
+      toast.remove();
+    }, 300);
+  });
+
+  // Auto-remove after 5 seconds
+  setTimeout(function () {
+    if (toast.parentNode) {
+      toast.classList.remove('show');
+      setTimeout(function () {
+        if (toast.parentNode) {
+          toast.remove();
+        }
+      }, 300);
+    }
+  }, 5000);
+}
 /******/ })()
 ;
+//# sourceMappingURL=home.js.map

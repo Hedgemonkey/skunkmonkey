@@ -1,15 +1,20 @@
 # users/forms.py
-from allauth.account.forms import AddEmailForm, ChangePasswordForm
+from allauth.account.forms import AddEmailForm, ChangePasswordForm, LoginForm
 from allauth.account.models import EmailAddress
 from django import forms
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Field, Submit
+from crispy_forms.layout import Layout, Field, Submit, HTML
 from django.contrib.auth import get_user_model
-from allauth.account.forms import LoginForm
+from .models import Address # Import the new Address model
 
-class ContactForm(forms.Form):  # Correct: defined at top level
+class ContactForm(forms.Form):
     email = forms.EmailField(required=True)
     message = forms.CharField(widget=forms.Textarea, required=True)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.add_input(Submit('submit', 'Send Message'))
 
 class ResendVerificationForm(forms.Form):
     email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'class': 'form-control'}))
@@ -72,3 +77,32 @@ class CustomLoginForm(LoginForm):
         )
         self.helper.form_tag = False
 
+
+class AddressForm(forms.ModelForm):
+    """ Form for creating and editing Address objects """
+    class Meta:
+        model = Address
+        fields = [
+            'address_line_1', 'address_line_2', 'town_or_city',
+            'county', 'postcode', 'country', 'phone_number'
+        ]
+        # Exclude 'user' as it will be set in the view
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.layout = Layout(
+            Field('address_line_1', placeholder='Street Address 1'),
+            Field('address_line_2', placeholder='Street Address 2 (Optional)'),
+            Field('town_or_city', placeholder='Town or City'),
+            Field('county', placeholder='County (Optional)'),
+            Field('postcode', placeholder='Postcode'),
+            Field('country', placeholder='Country'), # Consider making this a dropdown if using django-countries
+            Field('phone_number', placeholder='Phone Number (Optional)'),
+            HTML('<hr>'), # Add a visual separator
+             Submit('submit', 'Save Address', css_class='btn btn-primary')
+        )
+        # Set labels or placeholders as needed
+        self.fields['address_line_1'].label = 'Address Line 1'
+        # ... add labels for other fields if desired

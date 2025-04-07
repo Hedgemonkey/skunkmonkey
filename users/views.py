@@ -6,13 +6,28 @@ from allauth.socialaccount.models import SocialAccount
 from allauth.account.utils import send_email_confirmation
 from allauth.account import app_settings as account_settings
 from allauth.socialaccount.forms import DisconnectForm
-from .forms import ContactForm, CustomAddEmailForm, CustomChangePasswordForm, UserForm, CustomLoginForm
-from django.shortcuts import render, redirect, reverse
+# Updated form imports
+from .forms import (
+    ContactForm, CustomAddEmailForm, CustomChangePasswordForm,
+    UserForm, CustomLoginForm, AddressForm
+)
+from .models import UserProfile, Address # Import Address
+from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import logout, REDIRECT_FIELD_NAME
+from django.contrib.auth import logout, REDIRECT_FIELD_NAME, get_user_model
 from django.contrib import messages
 from django.urls import reverse_lazy
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
+from django.views.decorators.http import require_POST # For delete/set_default
+
+# Import Order model from shop app (adjust import path as necessary)
+try:
+    from shop.models import Order
+except ImportError:
+    Order = None # Handle case where shop app or Order model doesn't exist yet
+
+
+User = get_user_model()
 
 
 
@@ -253,4 +268,216 @@ def deleted_account(request):
 
 def account_inactive_message(request):
     messages.info(request, 'Your account is currently inactive. Please login or reactivate your account.')  # Or a custom message
-    return render(request, 'allauth/account/account_inactive.html') 
+    return render(request, 'allauth/account/account_inactive.html')
+
+
+# --- New Profile Views ---
+
+@login_required
+def profile_dashboard(request):
+    """ Display the main user profile dashboard. Creates profile if missing. """
+    # Use get_or_create to handle users who might not have a profile yet
+    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+
+    if created:
+        # Optional: Log or message if a profile was just created
+        print(f"Created UserProfile for {request.user.username}")
+        messages.info(request, "Your profile has been initialized.")
+
+    context = {
+        'profile': user_profile,
+        'active_tab': 'dashboard' # For highlighting navigation
+    }
+    return render(request, 'users/profile_dashboard.html', context) # Ensure template path is correct
+
+
+# --- Address Management Views ---
+
+@login_required
+def manage_addresses(request):
+    """ Display and manage user's saved addresses """
+    addresses = Address.objects.filter(user=request.user)
+    # Also use get_or_create here for robustness, though dashboard might create it first
+    user_profile, _ = UserProfile.objects.get_or_create(user=request.user)
+    context = {
+        'addresses': addresses,
+        'default_address_id': user_profile.default_delivery_address.id if user_profile.default_delivery_address else None,
+        'active_tab': 'addresses'
+    }
+    return render(request, 'users/address_list.html', context) # Ensure template path is correct
+
+@login_required
+def add_address(request):
+    """ Handle adding a new address """
+    user_profile, _ = UserProfile.objects.get_or_create(user=request.user) # Ensure profile exists
+
+    if request.method == 'POST':
+        form = AddressForm(request.POST)
+        if form.is_valid():
+            address = form.save(commit=False)
+            address.user = request.user
+            address.save()
+
+            # Optionally set as default if it's the first address
+            if not user_profile.default_delivery_address:
+                 user_profile.default_delivery_address = address
+                 user_profile.save()
+                 messages.success(request, 'Address added and set as default.')
+            else:
+                messages.success(request, 'Address added successfully.')
+
+            return redirect('users:manage_addresses') # Redirect to the address list
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = AddressForm()
+
+    context = {
+        'form': form,
+        'form_title': 'Add New Address',
+        'active_tab': 'addresses'
+    }
+    return render(request, 'users/address_form.html', context) # Ensure template path is correct
+
+@login_required
+def edit_address(request, address_id):
+    """ Handle editing an existing address """
+    address = get_object_or_404(Address, id=address_id, user=request.user) # Ensure user owns address
+
+    if request.method == 'POST':
+        form = AddressForm(request.POST, instance=address)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Address updated successfully.')
+            return redirect('users:manage_addresses')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = AddressForm(instance=address)
+
+    context = {
+        'form': form,
+        'form_title': 'Edit Address',
+        'address': address, # Pass address for context if needed
+        'active_tab': 'addresses'
+    }
+    return render(request, 'users/address_form.html', context) # Ensure template path is correct
+
+@login_required
+@require_POST # Ensure this view only accepts POST requests for safety
+def delete_address(request, address_id):
+    """ Delete an address """
+    address = get_object_or_404(Address, id=address_id, user=request.user)
+    user_profile, _ = UserProfile.objects.get_or_create(user=request.user) # Ensure profile exists
+
+    # Check if it's the default address
+    if user_profile.default_delivery_address == address:
+         user_profile.default_delivery_address = None
+         user_profile.save()
+         # Optionally find and set another address as default if one exists
+         # next_default = Address.objects.filter(user=request.user).exclude(id=address_id).first()
+         # if next_default:
+         #    request.user.userprofile.default_delivery_address = next_default
+         #    request.user.userprofile.save()
+
+    address_info = address.get_short_address() # Get info before deleting
+    address.delete()
+
+    # Use JSON response for AJAX calls, otherwise use messages + redirect
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+         return JsonResponse({'success': True, 'message': f'Address "{address_info}" deleted.'})
+    else:
+        messages.success(request, f'Address "{address_info}" deleted.')
+        return redirect('users:manage_addresses')
+
+
+@login_required
+@require_POST # Ensure this view only accepts POST requests
+def set_default_address(request, address_id):
+    """ Set an address as the default delivery address """
+    address = get_object_or_404(Address, id=address_id, user=request.user)
+    user_profile, _ = UserProfile.objects.get_or_create(user=request.user) # Ensure profile exists
+    user_profile.default_delivery_address = address
+    user_profile.save()
+
+    address_info = address.get_short_address()
+    # Use JSON response for AJAX calls, otherwise use messages + redirect
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({'success': True, 'message': f'Address "{address_info}" set as default.'})
+    else:
+        messages.success(request, f'Address "{address_info}" set as default.')
+        return redirect('users:manage_addresses')
+
+
+# --- Order History Views ---
+
+@login_required
+def order_history(request):
+    """ Display the user's order history """
+    orders = []
+    user_profile, _ = UserProfile.objects.get_or_create(user=request.user) # Ensure profile exists
+
+    if Order: # Check if Order model was imported successfully
+        try:
+            # Adjust the query based on your actual Order model structure
+            orders = Order.objects.filter(user=request.user).order_by('-created_at') # Primary attempt
+        except FieldError: # Handle cases where the field name is different
+             try:
+                 # Try linking through UserProfile if Order links there
+                 orders = Order.objects.filter(user_profile=user_profile).order_by('-created_at') # Use the fetched user_profile
+             except (AttributeError, FieldError):
+                  messages.error(request, "Could not retrieve order history. Order model linkage mismatch.")
+                  orders = [] # Ensure orders is an empty list on error
+        except Exception as e:
+             # Catch other potential errors during query
+             messages.error(request, f"An error occurred retrieving order history: {e}")
+             orders = []
+
+
+    else:
+        messages.warning(request, "Order history feature is not available.")
+
+    context = {
+        'orders': orders,
+        'active_tab': 'orders'
+    }
+    return render(request, 'users/order_history.html', context) # Ensure template path is correct
+
+@login_required
+def order_detail(request, order_number):
+    """ Display details for a specific order """
+    order = None
+    user_profile, _ = UserProfile.objects.get_or_create(user=request.user) # Ensure profile exists
+
+    if Order:
+        try:
+            # Fetch the specific order
+             order = get_object_or_404(Order, order_number=order_number)
+             # Security check: Ensure the order belongs to the current user
+             # Adjust the check based on how Order links to User/UserProfile
+             if hasattr(order, 'user') and order.user == request.user:
+                 pass # Order linked directly to user and matches
+             elif hasattr(order, 'user_profile') and order.user_profile == user_profile:
+                 pass # Order linked to user_profile and matches
+             else:
+                 # If neither matches, deny access
+                 raise Http404("Order not found or access denied.")
+
+        except Order.DoesNotExist:
+             messages.error(request, "Order not found.")
+             return redirect('users:order_history')
+        except Http404: # Catch the explicit Http404 raised above
+             messages.error(request, "Order not found or access denied.")
+             return redirect('users:order_history')
+        except Exception as e:
+             messages.error(request, f"An error occurred retrieving the order: {e}")
+             return redirect('users:order_history')
+    else:
+        messages.warning(request, "Order detail feature is not available.")
+        return redirect('users:order_history')
+
+    context = {
+        'order': order,
+        'active_tab': 'orders'
+    }
+    return render(request, 'users/order_detail.html', context) # Ensure template path is correct

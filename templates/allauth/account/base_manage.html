@@ -12,17 +12,17 @@
             <div class="mt-4">
                 <h2>{% trans "Account Management" %}</h2>
 
-                <p>{% blocktrans %}Welcome,  {% endblocktrans %}{{ user.username|default:"user.email "\}\}!</p>
+                <p>{% blocktrans %}Welcome,  {% endblocktrans %} {{ user.username|default:"user.email" }}!</p>
 
                 <div class="list-group top-card">
 
-                    <a href="#" id="change-email-link" class="list-group-item list-group-item-action" data-url="{% url 'manage_email' %}">{% trans "Change Email" %}</a>
+                    <a href="#" id="change-email-link" class="list-group-item list-group-item-action" data-url="{% url 'users:manage_email' %}">{% trans "Change Email" %}</a>
 
-                    <a href="#" id="change-password-link" class="list-group-item list-group-item-action" data-url="{% url 'manage_password' %}">{% trans "Change Password" %}</a>
+                    <a href="#" id="change-password-link" class="list-group-item list-group-item-action" data-url="{% url 'users:manage_password' %}">{% trans "Change Password" %}</a>
 
-                    <a href="#" id="social-connections-link" class="list-group-item list-group-item-action" data-url="{% url 'manage_social' %}">{% trans "Social Account Connections" %}</a>
+                    <a href="#" id="social-connections-link" class="list-group-item list-group-item-action" data-url="{% url 'users:manage_social' %}">{% trans "Social Account Connections" %}</a>
 
-                    <a href="#" id="view-details" class="list-group-item list-group-item-action" data-url="{% url 'manage_details' %}">View Account Details</a>
+                    <a href="#" id="view-details" class="list-group-item list-group-item-action" data-url="{% url 'users:manage_details' %}">View Account Details</a>
 
 
                 </div>
@@ -51,5 +51,5 @@
 
 {% block postloadjs %}
     {{ block.super }}
-    <script src="{% static 'bundles/js/user_manage.js' %}"></script>
+    <script src="{% static 'bundles/js/user/user_manage.js' %}"></script>
 {% endblock postloadjs %}

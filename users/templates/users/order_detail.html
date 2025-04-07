@@ -1,0 +1,102 @@
+{% extends "users/profile_base.html" %}
+{% load static %}
+
+{% block profile_content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 >Order Details</h3>
+        <a href="{% url 'users:order_history' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Order History
+        </a>
+    </div>
+
+    {% if order %}
+        <div class="card mb-4">
+            <div class="card-header">
+                 Order Summary - #{{ order.order_number }}
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p><strong>Order Date:</strong> {{ order.created_at|date:"d M Y, H:i" }}</p>
+                        <p><strong>Order Total:</strong> £{{ order.grand_total|floatformat:2 }}</p>
+                        <p><strong>Status:</strong>
+                            {% if order.status %}
+                                <span class="badge {% if order.status == 'Completed' %}bg-success{% elif order.status == 'Processing' %}bg-warning text-dark{% elif order.status == 'Cancelled' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                    {{ order.get_status_display|default:order.status }}
+                                </span>
+                            {% else %}
+                                <span class="badge bg-secondary">Pending</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                         <h5>Delivery Address</h5>
+                         {% if order.delivery_address %} <!-- Check if delivery address is stored on the order -->
+                            <address>
+                                {{ order.delivery_address.get_full_address|linebreaksbr }}
+                                {% if order.delivery_address.phone_number %}
+                                    <br>Tel: {{ order.delivery_address.phone_number }}
+                                {% endif %}
+                             </address>
+                         {% elif user.userprofile.default_delivery_address %}
+                             <p><em>(Using default address at time of order)</em></p>
+                             <address>
+                                {{ user.userprofile.default_delivery_address.get_full_address|linebreaksbr }}
+                             </address>
+                         {% else %}
+                             <p class="text-danger">No delivery address recorded for this order.</p>
+                         {% endif %}
+                    </div>
+                </div>
+
+                <hr>
+                <h5>Order Items</h5>
+                 <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col">Product</th>
+                                <th scope="col" class="text-center">Quantity</th>
+                                <th scope="col" class="text-end">Price</th>
+                                <th scope="col" class="text-end">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.lineitems.all %} {# Adjust related name if needed #}
+                                <tr>
+                                    <td>
+                                        {% if item.product %}
+                                             <a href="{{ item.product.get_absolute_url }}">{{ item.product.name }}</a>
+                                             {% if item.product_variant %}
+                                                <small class="text-muted d-block">{{ item.product_variant.get_display_name }}</small> {# Example for variants #}
+                                             {% endif %}
+                                        {% else %}
+                                            <span class="text-muted">Product not found</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">{{ item.quantity }}</td>
+                                    <td class="text-end">£{{ item.price|floatformat:2 }}</td>
+                                    <td class="text-end">£{{ item.lineitem_total|floatformat:2 }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                         <tfoot>
+                            <tr>
+                                <td colspan="3" class="text-end"><strong>Delivery:</strong></td>
+                                <td class="text-end">£{{ order.delivery_cost|floatformat:2 }}</td>
+                            </tr>
+                             <tr>
+                                <td colspan="3" class="text-end"><strong>Grand Total:</strong></td>
+                                <td class="text-end"><strong>£{{ order.grand_total|floatformat:2 }}</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    {% else %}
+         <p>The requested order could not be found.</p>
+    {% endif %}
+
+{% endblock %}

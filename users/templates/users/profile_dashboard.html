@@ -1,0 +1,46 @@
+{% extends "users/profile_base.html" %}
+{% load static %}
+
+{% block profile_content %}
+    <h3 class="mb-4">Dashboard</h3>
+    <p>Welcome back, {{ user.get_full_name|default:user.username }}!</p>
+
+    <div class="card mb-3">
+        <div class="card-header">Account Overview</div>
+        <div class="card-body">
+            <p><strong>Username:</strong> {{ user.username }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            {% if user.userprofile.default_delivery_address %}
+                <p><strong>Default Delivery Address:</strong></p>
+                <address>
+                    {{ user.userprofile.default_delivery_address.get_full_address|linebreaksbr }}
+                </address>
+            {% else %}
+                 <p>You haven't set a default delivery address yet. <a href="{% url 'users:add_address' %}">Add one now?</a></p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Add links or summaries for recent orders, etc. -->
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <div class="card h-100">
+                 <div class="card-body text-center">
+                     <h5 class="card-title">Manage Addresses</h5>
+                     <p class="card-text">View, add, or edit your delivery addresses.</p>
+                     <a href="{% url 'users:manage_addresses' %}" class="btn btn-outline-primary">Go to Addresses</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card h-100">
+                 <div class="card-body text-center">
+                     <h5 class="card-title">Order History</h5>
+                     <p class="card-text">Review your past orders and their status.</p>
+                     <a href="{% url 'users:order_history' %}" class="btn btn-outline-primary">View Orders</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

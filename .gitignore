@@ -16,3 +16,6 @@ skunkmonkey*.log
 .qodo/history.sqlite
 logs
 logs/
+extensions.txt
+*.sqlite
+*.sqlite3

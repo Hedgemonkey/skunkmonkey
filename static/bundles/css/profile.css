@@ -1,0 +1,48 @@
+/*!**************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./users/static/users/css/profile.css ***!
+  \**************************************************************************************/
+/* /users/static/css/profile.css */
+
+/* Styling for the profile sidebar */
+.profile-sidebar .list-group-item.active {
+    /* Add specific active styles if needed, Bootstrap handles basic styling */
+    font-weight: bold;
+}
+
+/* Styling for address cards */
+.address-list .list-group-item {
+    margin-bottom: 1rem; /* Add spacing between address cards */
+    border: 1px solid #dee2e6; /* Ensure border visibility */
+    border-radius: .25rem; /* Match Bootstrap's card rounding */
+    padding: 1.25rem;
+}
+
+.address-actions .btn {
+    margin-right: 0.5rem; /* Space out action buttons */
+}
+
+/* Styling for order history table */
+.order-history-table th {
+    font-weight: bold;
+}
+
+.order-history-table .badge {
+    font-size: 0.9em;
+}
+
+/* Responsive adjustments if needed */
+@media (max-width: 767.98px) {
+    .profile-sidebar {
+        margin-bottom: 2rem;
+    }
+    .address-actions .btn {
+        margin-bottom: 0.5rem; /* Stack buttons nicely on small screens */
+        display: block; /* Make buttons take full width if desired */
+        width: fit-content; /* Or adjust width as needed */
+    }
+}
+
+/* Add more specific styles as required */
+
+
+/*# sourceMappingURL=profile.css.map*/

@@ -1,24 +1,6 @@
-/*
- * ATTENTION: The "eval" devtool has been used (maybe by default in mode: "development").
- * This devtool is neither made for production nor for readable output files.
- * It uses "eval()" calls to create a separate source file in the browser devtools.
- * If you are trying to read the output file, select a different devtool (https://webpack.js.org/configuration/devtool/)
- * or disable the default devtool with "devtool: false".
- * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
- */
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
-
-/***/ "./shop/static/js/shop/cart-manager.js":
-/*!*********************************************!*\
-  !*** ./shop/static/js/shop/cart-manager.js ***!
-  \*********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _static_js_api_client_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../static/js/api-client.js */ \"./static/js/api-client.js\");\nfunction _typeof(o) { \"@babel/helpers - typeof\"; return _typeof = \"function\" == typeof Symbol && \"symbol\" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && \"function\" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? \"symbol\" : typeof o; }, _typeof(o); }\nfunction ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }\nfunction _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }\nfunction _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }\nfunction _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError(\"Cannot call a class as a function\"); }\nfunction _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, \"value\" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }\nfunction _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, \"prototype\", { writable: !1 }), e; }\nfunction _toPropertyKey(t) { var i = _toPrimitive(t, \"string\"); return \"symbol\" == _typeof(i) ? i : i + \"\"; }\nfunction _toPrimitive(t, r) { if (\"object\" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || \"default\"); if (\"object\" != _typeof(i)) return i; throw new TypeError(\"@@toPrimitive must return a primitive value.\"); } return (\"string\" === r ? String : Number)(t); }\n/**\n * CartManager - handles all cart functionality\n * Manages adding, removing, and updating items in the shopping cart\n */\n\nvar CartManager = /*#__PURE__*/function () {\n  function CartManager() {\n    _classCallCheck(this, CartManager);\n    this.api = new _static_js_api_client_js__WEBPACK_IMPORTED_MODULE_0__.ApiClient({\n      errorHandler: this.handleApiError.bind(this)\n    });\n    this.cartContainer = document.getElementById('cart-container');\n    this.cartTotal = document.getElementById('cart-total');\n    this.cartCount = document.getElementById('cart-count');\n    this.cartCountBadge = document.querySelector('.cart-count-badge');\n    this.initEventListeners();\n  }\n\n  /**\n   * Initialize all event listeners\n   * Sets up event handlers for adding, updating and removing cart items\n   */\n  return _createClass(CartManager, [{\n    key: \"initEventListeners\",\n    value: function initEventListeners() {\n      var _this = this;\n      // Handle add to cart form submissions\n      document.querySelectorAll('.add-to-cart-form').forEach(function (form) {\n        form.addEventListener('submit', _this.handleAddToCart.bind(_this));\n      });\n\n      // Handle quantity update form submissions\n      document.querySelectorAll('.update-cart-form').forEach(function (form) {\n        form.addEventListener('submit', _this.handleUpdateSubmit.bind(_this));\n      });\n\n      // Handle remove item links\n      document.querySelectorAll('.remove-cart-item').forEach(function (link) {\n        link.addEventListener('click', _this.handleRemoveItem.bind(_this));\n      });\n\n      // Handle quantity buttons on product detail page\n      this.initQuantityButtons();\n\n      // Handle cart quantity buttons\n      this.initCartQuantityButtons();\n    }\n\n    /**\n     * Initialize quantity buttons in the cart page\n     * Sets up custom quantity controls with AJAX updates\n     */\n  }, {\n    key: \"initCartQuantityButtons\",\n    value: function initCartQuantityButtons() {\n      var _this2 = this;\n      // Support both class naming conventions for backward compatibility\n      var decreaseButtons = document.querySelectorAll('.quantity-decrease, .btn-decrease');\n      var increaseButtons = document.querySelectorAll('.quantity-increase, .btn-increase');\n\n      // Set up decrease buttons\n      decreaseButtons.forEach(function (button) {\n        button.addEventListener('click', function (e) {\n          console.log('Decrease button clicked');\n          var form = button.closest('.update-cart-form');\n          if (!form) {\n            console.error('Could not find parent form for decrease button:', button);\n            return;\n          }\n          var input = form.querySelector('.quantity-input');\n          var currentValue = parseInt(input.value);\n          if (currentValue > 1) {\n            // Decrease the value and update\n            input.value = currentValue - 1;\n            _this2.updateCartItemQuantity(form);\n          }\n        });\n      });\n\n      // Set up increase buttons\n      increaseButtons.forEach(function (button) {\n        button.addEventListener('click', function (e) {\n          console.log('Increase button clicked');\n          var form = button.closest('.update-cart-form');\n          if (!form) {\n            console.error('Could not find parent form for increase button:', button);\n            return;\n          }\n          var input = form.querySelector('.quantity-input');\n          var currentValue = parseInt(input.value);\n          var maxStock = parseInt(input.dataset.maxStock || Number.MAX_SAFE_INTEGER);\n          if (currentValue < maxStock) {\n            // Increase the value and update\n            input.value = currentValue + 1;\n            _this2.updateCartItemQuantity(form);\n          } else {\n            _this2.showNotification('Maximum Quantity', \"Sorry, only \".concat(maxStock, \" units available.\"), 'info');\n          }\n        });\n      });\n\n      // Handle direct input changes\n      document.querySelectorAll('.quantity-input').forEach(function (input) {\n        input.addEventListener('change', function (e) {\n          console.log('Quantity input changed');\n          var form = input.closest('.update-cart-form');\n          if (!form) {\n            console.error('Could not find parent form for quantity input:', input);\n            return;\n          }\n          var maxStock = parseInt(input.dataset.maxStock || Number.MAX_SAFE_INTEGER);\n          var newValue = parseInt(input.value);\n\n          // Validate input value\n          if (isNaN(newValue) || newValue < 1) {\n            newValue = 1;\n            input.value = newValue;\n          } else if (newValue > maxStock) {\n            newValue = maxStock;\n            input.value = newValue;\n            _this2.showNotification('Maximum Quantity', \"Sorry, only \".concat(maxStock, \" units available.\"), 'info');\n          }\n\n          // Trigger the update\n          _this2.updateCartItemQuantity(form);\n        });\n      });\n    }\n\n    /**\n     * Update cart item quantity via AJAX\n     * @param {HTMLFormElement} form - The quantity update form\n     */\n  }, {\n    key: \"updateCartItemQuantity\",\n    value: function updateCartItemQuantity(form) {\n      var _this3 = this;\n      if (!form || !form.action) {\n        console.error('Invalid form or form action:', form);\n        return;\n      }\n\n      // Show loading indicator on the quantity controls\n      var quantityControl = form.querySelector('.quantity-control');\n      if (quantityControl) {\n        quantityControl.classList.add('updating');\n      }\n\n      // Get form data\n      var formData = new FormData(form);\n      console.log('Making AJAX request to:', form.action);\n      this.api.post(form.action, formData).then(function (response) {\n        console.log('AJAX response:', response);\n        if (response.success) {\n          // Remove loading indicator\n          if (quantityControl) {\n            quantityControl.classList.remove('updating');\n          }\n\n          // Update the item subtotal\n          var row = form.closest('tr');\n          var subtotalCell = row.querySelector('.item-subtotal');\n          if (subtotalCell) {\n            subtotalCell.textContent = \"$\".concat(response.item_subtotal);\n            subtotalCell.classList.add('highlight-update');\n            setTimeout(function () {\n              subtotalCell.classList.remove('highlight-update');\n            }, 1000);\n          }\n\n          // Update cart total\n          if (_this3.cartTotal) {\n            _this3.cartTotal.textContent = \"$\".concat(response.cart_total);\n            _this3.cartTotal.classList.add('highlight-update');\n            setTimeout(function () {\n              _this3.cartTotal.classList.remove('highlight-update');\n            }, 1000);\n          }\n\n          // Update cart count badge if it exists\n          if (_this3.cartCountBadge) {\n            _this3.cartCountBadge.textContent = response.cart_count;\n          }\n\n          // Update item quantity (in case the server modified it)\n          var quantityInput = form.querySelector('.quantity-input');\n          if (quantityInput && response.item_quantity) {\n            quantityInput.value = response.item_quantity;\n          }\n\n          // Show a brief notification\n          _this3.showNotification('Cart Updated', 'Your cart has been updated successfully.', 'success', true, {\n            timer: 2000,\n            timerProgressBar: true,\n            showConfirmButton: false\n          });\n        }\n      })[\"catch\"](function (error) {\n        console.error('Update cart error:', error);\n        // Remove loading indicator\n        if (quantityControl) {\n          quantityControl.classList.remove('updating');\n        }\n        _this3.handleApiError(error);\n      });\n    }\n\n    /**\n     * Initialize quantity selector controls for product detail page\n     * Sets up increment/decrement functionality with quantity limits\n     */\n  }, {\n    key: \"initQuantityButtons\",\n    value: function initQuantityButtons() {\n      var _this4 = this;\n      var quantityInput = document.getElementById('quantity');\n      var decreaseBtn = document.getElementById('decrease-quantity');\n      var increaseBtn = document.getElementById('increase-quantity');\n      if (decreaseBtn && increaseBtn && quantityInput) {\n        decreaseBtn.addEventListener('click', function () {\n          var currentValue = parseInt(quantityInput.value);\n          if (currentValue > 1) {\n            quantityInput.value = currentValue - 1;\n          }\n        });\n        increaseBtn.addEventListener('click', function () {\n          var currentValue = parseInt(quantityInput.value);\n          var maxValue = parseInt(quantityInput.getAttribute('max'));\n          if (currentValue < maxValue) {\n            quantityInput.value = currentValue + 1;\n          } else {\n            _this4.showNotification('Maximum Quantity', \"Sorry, only \".concat(maxValue, \" units available.\"), 'info');\n          }\n        });\n      }\n    }\n\n    /**\n     * Handle adding a product to cart\n     * @param {Event} event - The form submit event\n     */\n  }, {\n    key: \"handleAddToCart\",\n    value: function handleAddToCart(event) {\n      var _form$closest,\n        _this5 = this;\n      event.preventDefault();\n      var form = event.target;\n      var url = form.action;\n      var formData = new FormData(form);\n      var productName = ((_form$closest = form.closest('.product-info')) === null || _form$closest === void 0 || (_form$closest = _form$closest.querySelector('h1')) === null || _form$closest === void 0 ? void 0 : _form$closest.textContent) || 'Product';\n      var button = form.querySelector('button[type=\"submit\"]');\n      this.showNotification('Adding to Cart...', 'Please wait...', 'info', false);\n      this.api.post(url, formData).then(function (response) {\n        if (response.success) {\n          // Add animation to the add to cart button\n          if (button) {\n            button.classList.add('add-to-cart-animation');\n            setTimeout(function () {\n              button.classList.remove('add-to-cart-animation');\n            }, 1500);\n          }\n\n          // Update cart count\n          if (_this5.cartCount) {\n            _this5.cartCount.textContent = response.cart_count;\n            _this5.cartCount.classList.add('cart-count-updated');\n            setTimeout(function () {\n              _this5.cartCount.classList.remove('cart-count-updated');\n            }, 500);\n          }\n\n          // Update cart badge in navbar if it exists\n          if (_this5.cartCountBadge) {\n            _this5.cartCountBadge.textContent = response.cart_count;\n            _this5.cartCountBadge.classList.remove('d-none');\n          }\n          _this5.showNotification('Added to Cart!', \"\".concat(productName, \" has been added to your cart.\"), 'success', true, {\n            showDenyButton: true,\n            denyButtonText: 'View Cart',\n            denyButtonColor: '#198754',\n            confirmButtonText: 'Continue Shopping'\n          }).then(function (result) {\n            if (result.isDenied) {\n              window.location.href = '/shop/cart/';\n            }\n          });\n        }\n      });\n    }\n\n    /**\n     * Handle cart item quantity update\n     * @param {Event} event - The form submit event\n     */\n  }, {\n    key: \"handleUpdateSubmit\",\n    value: function handleUpdateSubmit(event) {\n      event.preventDefault();\n\n      // Get the form and ensure it exists\n      var form = event.target;\n      if (!form || !form.action) {\n        console.error('Invalid form or form action in handleUpdateSubmit:', form);\n        return;\n      }\n\n      // Use the updateCartItemQuantity method to handle the update\n      this.updateCartItemQuantity(form);\n    }\n\n    /**\n     * Handle removing an item from the cart\n     * @param {Event} event - The click event\n     */\n  }, {\n    key: \"handleRemoveItem\",\n    value: function handleRemoveItem(event) {\n      var _this6 = this;\n      event.preventDefault();\n      var link = event.currentTarget;\n      var url = link.href;\n      var productName = link.dataset.productName || 'this item';\n      this.showConfirmation('Remove Item?', \"Are you sure you want to remove \".concat(productName, \" from your cart?\"), function () {\n        _this6.api.get(url).then(function (response) {\n          if (response.success) {\n            // Add fade-out animation to the row\n            var row = link.closest('tr');\n            row.classList.add('fade-out');\n            setTimeout(function () {\n              // Remove the row from the table\n              row.remove();\n\n              // Update cart total\n              if (_this6.cartTotal) {\n                _this6.cartTotal.textContent = \"$\".concat(response.cart_total);\n              }\n\n              // Update cart count badge in navbar if it exists\n              if (_this6.cartCountBadge) {\n                if (response.cart_count > 0) {\n                  _this6.cartCountBadge.textContent = response.cart_count;\n                } else {\n                  _this6.cartCountBadge.classList.add('d-none');\n                }\n              }\n\n              // If cart is empty, refresh the page to show empty state\n              if (response.cart_count === 0) {\n                window.location.reload();\n              }\n            }, 300);\n            _this6.showNotification('Item Removed', \"\".concat(productName, \" has been removed from your cart.\"), 'success');\n          }\n        });\n      });\n    }\n\n    /**\n     * Show a confirmation dialog before removing item\n     * @param {string} title - The dialog title\n     * @param {string} message - The dialog message\n     * @param {Function} confirmCallback - Function to call when confirmed\n     */\n  }, {\n    key: \"showConfirmation\",\n    value: function showConfirmation(title, message, confirmCallback) {\n      if (typeof Swal !== 'undefined') {\n        Swal.fire({\n          title: title,\n          text: message,\n          icon: 'question',\n          showCancelButton: true,\n          confirmButtonColor: '#dc3545',\n          cancelButtonColor: '#6c757d',\n          confirmButtonText: 'Yes, remove it',\n          cancelButtonText: 'No, keep it'\n        }).then(function (result) {\n          if (result.isConfirmed) {\n            confirmCallback();\n          }\n        });\n      } else if (confirm(message)) {\n        confirmCallback();\n      }\n    }\n\n    /**\n     * Handle API errors\n     * @param {Error} error - Error object\n     */\n  }, {\n    key: \"handleApiError\",\n    value: function handleApiError(error) {\n      console.error('API Error:', error);\n      this.showNotification('Error', error.message || 'There was a problem with your request.', 'error');\n    }\n\n    /**\n     * Show notifications using SweetAlert when available, fallback to alert\n     * @param {string} title - The notification title\n     * @param {string} message - The notification message\n     * @param {string} type - The notification type (success, error, info)\n     * @param {boolean} autoClose - Whether to auto-close the notification\n     * @param {Object} options - Additional SweetAlert options\n     * @returns {Promise} SweetAlert promise or resolved promise for alert fallback\n     */\n  }, {\n    key: \"showNotification\",\n    value: function showNotification(title, message, type) {\n      var autoClose = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;\n      var options = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};\n      if (typeof Swal !== 'undefined') {\n        return Swal.fire(_objectSpread({\n          title: title,\n          text: message,\n          icon: type,\n          confirmButtonColor: '#0d6efd'\n        }, options));\n      } else {\n        alert(\"\".concat(title, \": \").concat(message));\n        return Promise.resolve();\n      }\n    }\n  }]);\n}(); // Initialize the cart manager when the DOM is loaded\ndocument.addEventListener('DOMContentLoaded', function () {\n  window.cartManager = new CartManager();\n});\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (CartManager);\n\n//# sourceURL=webpack://skunkmonkey/./shop/static/js/shop/cart-manager.js?");
-
-/***/ }),
 
 /***/ "./static/js/ajax_helper.js":
 /*!**********************************!*\
@@ -26,7 +8,110 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \**********************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   getCookie: () => (/* binding */ getCookie),\n/* harmony export */   makeAjaxRequest: () => (/* binding */ makeAjaxRequest)\n/* harmony export */ });\n/**\n * ajax_helper.js - Utility functions for AJAX requests\n * \n * Provides standardized AJAX request functionality with CSRF protection\n * and consistent error handling.\n */\n\n/**\n * Get the CSRF token from cookies\n * @param {string} name - Cookie name\n * @returns {string} - CSRF token value\n */\nfunction getCookie(name) {\n  var cookieValue = null;\n  if (document.cookie && document.cookie !== '') {\n    var cookies = document.cookie.split(';');\n    for (var i = 0; i < cookies.length; i++) {\n      var cookie = cookies[i].trim();\n      if (cookie.substring(0, name.length + 1) === name + '=') {\n        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));\n        break;\n      }\n    }\n  }\n  return cookieValue;\n}\n\n/**\n * Makes an AJAX request and returns the jqXHR object to allow aborting the request if needed\n * @param {string} url - The URL to send the request to\n * @param {string} method - The HTTP method to use (GET, POST, etc.)\n * @param {Object|FormData} data - The data to send with the request\n * @param {Function} successCallback - Called when the request succeeds\n * @param {Function} errorCallback - Called when the request fails\n * @param {boolean} abortable - Whether to return the jqXHR object for aborting (default: true)\n * @param {boolean} processData - Whether to process the data (set to false for FormData)\n * @param {string|boolean} contentType - Content type header or false to let jQuery set it\n * @returns {Object} The jqXHR object if abortable is true, otherwise undefined\n */\nfunction makeAjaxRequest(url, method, data, successCallback, errorCallback) {\n  var abortable = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : true;\n  var processData = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : true;\n  var contentType = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : 'application/x-www-form-urlencoded; charset=UTF-8';\n  // Determine if data is FormData and set appropriate options\n  var isFormData = data instanceof FormData;\n  if (isFormData) {\n    processData = false;\n    contentType = false;\n  }\n\n  // Set up AJAX options\n  var ajaxOptions = {\n    url: url,\n    method: method,\n    data: data,\n    processData: processData,\n    contentType: contentType,\n    headers: {\n      'X-CSRFToken': getCookie('csrftoken'),\n      'X-Requested-With': 'XMLHttpRequest'\n    },\n    success: function success(response) {\n      if (typeof successCallback === \"function\") {\n        // Handle both JSON and HTML responses\n        if (typeof response === 'string' && response.trim().startsWith('<')) {\n          // If it's HTML content\n          successCallback({\n            html: response\n          });\n        } else {\n          // If it's JSON or other data\n          successCallback(response);\n        }\n      }\n    },\n    error: function error(jqXHR, textStatus, errorThrown) {\n      // Don't log aborted requests as errors\n      if (textStatus !== 'abort') {\n        console.error(\"AJAX Request failed:\", textStatus, errorThrown);\n        if (typeof errorCallback === \"function\") {\n          errorCallback(jqXHR, textStatus, errorThrown);\n        }\n      }\n    }\n  };\n\n  // Try to auto-detect the response type\n  if (url.includes('/api/') || url.endsWith('.json')) {\n    ajaxOptions.dataType = 'json';\n  }\n\n  // Make the request\n  var ajaxRequest = $.ajax(ajaxOptions);\n\n  // Return the jqXHR object if the request should be abortable\n  if (abortable) {\n    return ajaxRequest;\n  }\n}\n\n//# sourceURL=webpack://skunkmonkey/./static/js/ajax_helper.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getCookie: () => (/* binding */ getCookie),
+/* harmony export */   makeAjaxRequest: () => (/* binding */ makeAjaxRequest)
+/* harmony export */ });
+/**
+ * ajax_helper.js - Utility functions for AJAX requests
+ * 
+ * Provides standardized AJAX request functionality with CSRF protection
+ * and consistent error handling.
+ */
+
+/**
+ * Get the CSRF token from cookies
+ * @param {string} name - Cookie name
+ * @returns {string} - CSRF token value
+ */
+function getCookie(name) {
+  var cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    var cookies = document.cookie.split(';');
+    for (var i = 0; i < cookies.length; i++) {
+      var cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === name + '=') {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+/**
+ * Makes an AJAX request and returns the jqXHR object to allow aborting the request if needed
+ * @param {string} url - The URL to send the request to
+ * @param {string} method - The HTTP method to use (GET, POST, etc.)
+ * @param {Object|FormData} data - The data to send with the request
+ * @param {Function} successCallback - Called when the request succeeds
+ * @param {Function} errorCallback - Called when the request fails
+ * @param {boolean} abortable - Whether to return the jqXHR object for aborting (default: true)
+ * @param {boolean} processData - Whether to process the data (set to false for FormData)
+ * @param {string|boolean} contentType - Content type header or false to let jQuery set it
+ * @returns {Object} The jqXHR object if abortable is true, otherwise undefined
+ */
+function makeAjaxRequest(url, method, data, successCallback, errorCallback) {
+  var abortable = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : true;
+  var processData = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : true;
+  var contentType = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : 'application/x-www-form-urlencoded; charset=UTF-8';
+  // Determine if data is FormData and set appropriate options
+  var isFormData = data instanceof FormData;
+  if (isFormData) {
+    processData = false;
+    contentType = false;
+  }
+
+  // Set up AJAX options
+  var ajaxOptions = {
+    url: url,
+    method: method,
+    data: data,
+    processData: processData,
+    contentType: contentType,
+    headers: {
+      'X-CSRFToken': getCookie('csrftoken'),
+      'X-Requested-With': 'XMLHttpRequest'
+    },
+    success: function success(response) {
+      if (typeof successCallback === "function") {
+        // Handle both JSON and HTML responses
+        if (typeof response === 'string' && response.trim().startsWith('<')) {
+          // If it's HTML content
+          successCallback({
+            html: response
+          });
+        } else {
+          // If it's JSON or other data
+          successCallback(response);
+        }
+      }
+    },
+    error: function error(jqXHR, textStatus, errorThrown) {
+      // Don't log aborted requests as errors
+      if (textStatus !== 'abort') {
+        console.error("AJAX Request failed:", textStatus, errorThrown);
+        if (typeof errorCallback === "function") {
+          errorCallback(jqXHR, textStatus, errorThrown);
+        }
+      }
+    }
+  };
+
+  // Try to auto-detect the response type
+  if (url.includes('/api/') || url.endsWith('.json')) {
+    ajaxOptions.dataType = 'json';
+  }
+
+  // Make the request
+  var ajaxRequest = $.ajax(ajaxOptions);
+
+  // Return the jqXHR object if the request should be abortable
+  if (abortable) {
+    return ajaxRequest;
+  }
+}
 
 /***/ }),
 
@@ -36,7 +121,212 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \*********************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   ApiClient: () => (/* binding */ ApiClient),\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _ajax_helper_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ajax_helper.js */ \"./static/js/ajax_helper.js\");\nfunction _typeof(o) { \"@babel/helpers - typeof\"; return _typeof = \"function\" == typeof Symbol && \"symbol\" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && \"function\" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? \"symbol\" : typeof o; }, _typeof(o); }\nfunction _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError(\"Cannot call a class as a function\"); }\nfunction _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, \"value\" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }\nfunction _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, \"prototype\", { writable: !1 }), e; }\nfunction _toPropertyKey(t) { var i = _toPrimitive(t, \"string\"); return \"symbol\" == _typeof(i) ? i : i + \"\"; }\nfunction _toPrimitive(t, r) { if (\"object\" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || \"default\"); if (\"object\" != _typeof(i)) return i; throw new TypeError(\"@@toPrimitive must return a primitive value.\"); } return (\"string\" === r ? String : Number)(t); }\n/**\n * api-client.js - Standardized API client for consistent AJAX operations\n * \n * Provides a higher-level wrapper around AJAX requests with standardized\n * error handling, response parsing, and consistent promise handling.\n */\n\n\n/**\n * API Client for consistent handling of AJAX requests\n */\nvar ApiClient = /*#__PURE__*/function () {\n  /**\n   * Create a new ApiClient instance\n   * @param {Object} options - Configuration options\n   * @param {Function} options.errorHandler - Global error handler function\n   * @param {string} options.baseUrl - Base URL for API requests\n   */\n  function ApiClient() {\n    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};\n    _classCallCheck(this, ApiClient);\n    this.errorHandler = options.errorHandler || console.error;\n    this.baseUrl = options.baseUrl || '';\n    this.csrfToken = (0,_ajax_helper_js__WEBPACK_IMPORTED_MODULE_0__.getCookie)('csrftoken');\n    this.pendingRequests = [];\n  }\n\n  /**\n   * Builds a complete URL for the API request\n   * @param {string} endpoint - API endpoint\n   * @returns {string} - Complete URL\n   */\n  return _createClass(ApiClient, [{\n    key: \"buildUrl\",\n    value: function buildUrl(endpoint) {\n      // If endpoint is already a full URL, return it as is\n      if (endpoint.startsWith('http') || endpoint.startsWith('/')) {\n        return endpoint;\n      }\n\n      // Otherwise, join baseUrl and endpoint\n      return \"\".concat(this.baseUrl, \"/\").concat(endpoint).replace(/([^:]\\/)\\/+/g, '$1');\n    }\n\n    /**\n     * Make a GET request to fetch data\n     * @param {string} endpoint - API endpoint\n     * @param {Object} params - Query parameters\n     * @param {Object} options - Additional options\n     * @returns {Promise} - Promise resolving with response\n     */\n  }, {\n    key: \"get\",\n    value: function get(endpoint) {\n      var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};\n      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};\n      return this.request('GET', endpoint, params, options);\n    }\n\n    /**\n     * Make a POST request to create or update data\n     * @param {string} endpoint - API endpoint\n     * @param {Object|FormData} data - Data to send\n     * @param {Object} options - Additional options\n     * @returns {Promise} - Promise resolving with response\n     */\n  }, {\n    key: \"post\",\n    value: function post(endpoint) {\n      var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};\n      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};\n      return this.request('POST', endpoint, data, options);\n    }\n\n    /**\n     * Make a DELETE request to remove data\n     * @param {string} endpoint - API endpoint\n     * @param {Object} data - Data to send\n     * @param {Object} options - Additional options\n     * @returns {Promise} - Promise resolving with response\n     */\n  }, {\n    key: \"delete\",\n    value: function _delete(endpoint) {\n      var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};\n      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};\n      return this.request('DELETE', endpoint, data, options);\n    }\n\n    /**\n     * Make a generic request with specified method\n     * @param {string} method - HTTP method\n     * @param {string} endpoint - API endpoint\n     * @param {Object|FormData} data - Data to send\n     * @param {Object} options - Additional options\n     * @returns {Promise} - Promise resolving with response\n     */\n  }, {\n    key: \"request\",\n    value: function request(method, endpoint) {\n      var _this = this;\n      var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};\n      var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};\n      var url = this.buildUrl(endpoint);\n      var abortable = options.abortable !== false;\n\n      // Determine if we should process the data (false for FormData)\n      var processData = !(data instanceof FormData);\n      var contentType = processData ? 'application/x-www-form-urlencoded; charset=UTF-8' : false;\n      return new Promise(function (resolve, reject) {\n        try {\n          var ajaxRequest = (0,_ajax_helper_js__WEBPACK_IMPORTED_MODULE_0__.makeAjaxRequest)(url, method, data, function (response) {\n            // Remove from pending requests\n            _this.removePendingRequest(ajaxRequest);\n            resolve(response);\n          }, function (jqXHR, textStatus, errorThrown) {\n            var _jqXHR$responseJSON;\n            // Remove from pending requests\n            _this.removePendingRequest(ajaxRequest);\n\n            // Create standardized error object\n            var error = {\n              status: jqXHR.status,\n              statusText: jqXHR.statusText,\n              responseJSON: jqXHR.responseJSON,\n              message: ((_jqXHR$responseJSON = jqXHR.responseJSON) === null || _jqXHR$responseJSON === void 0 ? void 0 : _jqXHR$responseJSON.error) || errorThrown || \"Request failed\"\n            };\n\n            // Call the global error handler if provided\n            if (_this.errorHandler && !options.skipGlobalErrorHandler) {\n              _this.errorHandler(error);\n            }\n            reject(error);\n          }, abortable, processData, contentType);\n\n          // Track the request if abortable\n          if (abortable && ajaxRequest) {\n            _this.pendingRequests.push(ajaxRequest);\n          }\n\n          // If there's a timeout option, handle it\n          if (options.timeout) {\n            setTimeout(function () {\n              if (ajaxRequest && ajaxRequest.readyState < 4) {\n                ajaxRequest.abort();\n                reject({\n                  message: 'Request timed out',\n                  status: 0,\n                  statusText: 'timeout'\n                });\n              }\n            }, options.timeout);\n          }\n        } catch (error) {\n          console.error(\"Error making request:\", error);\n          reject({\n            message: error.message || \"Failed to make request\",\n            error: error\n          });\n        }\n      });\n    }\n\n    /**\n     * Remove a request from the pending requests list\n     * @param {Object} request - The request to remove\n     */\n  }, {\n    key: \"removePendingRequest\",\n    value: function removePendingRequest(request) {\n      var index = this.pendingRequests.indexOf(request);\n      if (index !== -1) {\n        this.pendingRequests.splice(index, 1);\n      }\n    }\n\n    /**\n     * Abort all pending requests\n     */\n  }, {\n    key: \"abortAll\",\n    value: function abortAll() {\n      this.pendingRequests.forEach(function (request) {\n        if (request && typeof request.abort === 'function') {\n          request.abort();\n        }\n      });\n      this.pendingRequests = [];\n    }\n  }]);\n}();\n\n// Create a default instance\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (new ApiClient());\n\n//# sourceURL=webpack://skunkmonkey/./static/js/api-client.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ApiClient: () => (/* binding */ ApiClient),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _ajax_helper_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ajax_helper.js */ "./static/js/ajax_helper.js");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+/**
+ * api-client.js - Standardized API client for consistent AJAX operations
+ * 
+ * Provides a higher-level wrapper around AJAX requests with standardized
+ * error handling, response parsing, and consistent promise handling.
+ */
+
+
+/**
+ * API Client for consistent handling of AJAX requests
+ */
+var ApiClient = /*#__PURE__*/function () {
+  /**
+   * Create a new ApiClient instance
+   * @param {Object} options - Configuration options
+   * @param {Function} options.errorHandler - Global error handler function
+   * @param {string} options.baseUrl - Base URL for API requests
+   */
+  function ApiClient() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    _classCallCheck(this, ApiClient);
+    this.errorHandler = options.errorHandler || console.error;
+    this.baseUrl = options.baseUrl || '';
+    this.csrfToken = (0,_ajax_helper_js__WEBPACK_IMPORTED_MODULE_0__.getCookie)('csrftoken');
+    this.pendingRequests = [];
+  }
+
+  /**
+   * Builds a complete URL for the API request
+   * @param {string} endpoint - API endpoint
+   * @returns {string} - Complete URL
+   */
+  return _createClass(ApiClient, [{
+    key: "buildUrl",
+    value: function buildUrl(endpoint) {
+      // If endpoint is already a full URL, return it as is
+      if (endpoint.startsWith('http') || endpoint.startsWith('/')) {
+        return endpoint;
+      }
+
+      // Otherwise, join baseUrl and endpoint
+      return "".concat(this.baseUrl, "/").concat(endpoint).replace(/([^:]\/)\/+/g, '$1');
+    }
+
+    /**
+     * Make a GET request to fetch data
+     * @param {string} endpoint - API endpoint
+     * @param {Object} params - Query parameters
+     * @param {Object} options - Additional options
+     * @returns {Promise} - Promise resolving with response
+     */
+  }, {
+    key: "get",
+    value: function get(endpoint) {
+      var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+      return this.request('GET', endpoint, params, options);
+    }
+
+    /**
+     * Make a POST request to create or update data
+     * @param {string} endpoint - API endpoint
+     * @param {Object|FormData} data - Data to send
+     * @param {Object} options - Additional options
+     * @returns {Promise} - Promise resolving with response
+     */
+  }, {
+    key: "post",
+    value: function post(endpoint) {
+      var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+      return this.request('POST', endpoint, data, options);
+    }
+
+    /**
+     * Make a DELETE request to remove data
+     * @param {string} endpoint - API endpoint
+     * @param {Object} data - Data to send
+     * @param {Object} options - Additional options
+     * @returns {Promise} - Promise resolving with response
+     */
+  }, {
+    key: "delete",
+    value: function _delete(endpoint) {
+      var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+      return this.request('DELETE', endpoint, data, options);
+    }
+
+    /**
+     * Make a generic request with specified method
+     * @param {string} method - HTTP method
+     * @param {string} endpoint - API endpoint
+     * @param {Object|FormData} data - Data to send
+     * @param {Object} options - Additional options
+     * @returns {Promise} - Promise resolving with response
+     */
+  }, {
+    key: "request",
+    value: function request(method, endpoint) {
+      var _this = this;
+      var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+      var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+      var url = this.buildUrl(endpoint);
+      var abortable = options.abortable !== false;
+
+      // Determine if we should process the data (false for FormData)
+      var processData = !(data instanceof FormData);
+      var contentType = processData ? 'application/x-www-form-urlencoded; charset=UTF-8' : false;
+      return new Promise(function (resolve, reject) {
+        try {
+          var ajaxRequest = (0,_ajax_helper_js__WEBPACK_IMPORTED_MODULE_0__.makeAjaxRequest)(url, method, data, function (response) {
+            // Remove from pending requests
+            _this.removePendingRequest(ajaxRequest);
+            resolve(response);
+          }, function (jqXHR, textStatus, errorThrown) {
+            var _jqXHR$responseJSON;
+            // Remove from pending requests
+            _this.removePendingRequest(ajaxRequest);
+
+            // Create standardized error object
+            var error = {
+              status: jqXHR.status,
+              statusText: jqXHR.statusText,
+              responseJSON: jqXHR.responseJSON,
+              message: ((_jqXHR$responseJSON = jqXHR.responseJSON) === null || _jqXHR$responseJSON === void 0 ? void 0 : _jqXHR$responseJSON.error) || errorThrown || "Request failed"
+            };
+
+            // Call the global error handler if provided
+            if (_this.errorHandler && !options.skipGlobalErrorHandler) {
+              _this.errorHandler(error);
+            }
+            reject(error);
+          }, abortable, processData, contentType);
+
+          // Track the request if abortable
+          if (abortable && ajaxRequest) {
+            _this.pendingRequests.push(ajaxRequest);
+          }
+
+          // If there's a timeout option, handle it
+          if (options.timeout) {
+            setTimeout(function () {
+              if (ajaxRequest && ajaxRequest.readyState < 4) {
+                ajaxRequest.abort();
+                reject({
+                  message: 'Request timed out',
+                  status: 0,
+                  statusText: 'timeout'
+                });
+              }
+            }, options.timeout);
+          }
+        } catch (error) {
+          console.error("Error making request:", error);
+          reject({
+            message: error.message || "Failed to make request",
+            error: error
+          });
+        }
+      });
+    }
+
+    /**
+     * Remove a request from the pending requests list
+     * @param {Object} request - The request to remove
+     */
+  }, {
+    key: "removePendingRequest",
+    value: function removePendingRequest(request) {
+      var index = this.pendingRequests.indexOf(request);
+      if (index !== -1) {
+        this.pendingRequests.splice(index, 1);
+      }
+    }
+
+    /**
+     * Abort all pending requests
+     */
+  }, {
+    key: "abortAll",
+    value: function abortAll() {
+      this.pendingRequests.forEach(function (request) {
+        if (request && typeof request.abort === 'function') {
+          request.abort();
+        }
+      });
+      this.pendingRequests = [];
+    }
+  }]);
+}();
+
+// Create a default instance
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (new ApiClient());
 
 /***/ })
 
@@ -96,11 +386,458 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module can't be inlined because the eval devtool is used.
-/******/ 	var __webpack_exports__ = __webpack_require__("./shop/static/js/shop/cart-manager.js");
-/******/ 	
+var __webpack_exports__ = {};
+// This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
+(() => {
+/*!*********************************************!*\
+  !*** ./shop/static/js/shop/cart-manager.js ***!
+  \*********************************************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _static_js_api_client_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../static/js/api-client.js */ "./static/js/api-client.js");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+/**
+ * CartManager - handles all cart functionality
+ * Manages adding, removing, and updating items in the shopping cart
+ */
+
+var CartManager = /*#__PURE__*/function () {
+  function CartManager() {
+    _classCallCheck(this, CartManager);
+    this.api = new _static_js_api_client_js__WEBPACK_IMPORTED_MODULE_0__.ApiClient({
+      errorHandler: this.handleApiError.bind(this)
+    });
+    this.cartContainer = document.getElementById('cart-container');
+    this.cartTotal = document.getElementById('cart-total');
+    this.cartCount = document.getElementById('cart-count');
+    this.cartCountBadge = document.querySelector('.cart-count-badge');
+    this.initEventListeners();
+  }
+
+  /**
+   * Initialize all event listeners
+   * Sets up event handlers for adding, updating and removing cart items
+   */
+  return _createClass(CartManager, [{
+    key: "initEventListeners",
+    value: function initEventListeners() {
+      var _this = this;
+      // Handle add to cart form submissions
+      document.querySelectorAll('.add-to-cart-form').forEach(function (form) {
+        form.addEventListener('submit', _this.handleAddToCart.bind(_this));
+      });
+
+      // Handle quantity update form submissions
+      document.querySelectorAll('.update-cart-form').forEach(function (form) {
+        form.addEventListener('submit', _this.handleUpdateSubmit.bind(_this));
+      });
+
+      // Handle remove item links
+      document.querySelectorAll('.remove-cart-item').forEach(function (link) {
+        link.addEventListener('click', _this.handleRemoveItem.bind(_this));
+      });
+
+      // Handle quantity buttons on product detail page
+      this.initQuantityButtons();
+
+      // Handle cart quantity buttons
+      this.initCartQuantityButtons();
+    }
+
+    /**
+     * Initialize quantity buttons in the cart page
+     * Sets up custom quantity controls with AJAX updates
+     */
+  }, {
+    key: "initCartQuantityButtons",
+    value: function initCartQuantityButtons() {
+      var _this2 = this;
+      // Support both class naming conventions for backward compatibility
+      var decreaseButtons = document.querySelectorAll('.quantity-decrease, .btn-decrease');
+      var increaseButtons = document.querySelectorAll('.quantity-increase, .btn-increase');
+
+      // Set up decrease buttons
+      decreaseButtons.forEach(function (button) {
+        button.addEventListener('click', function (e) {
+          console.log('Decrease button clicked');
+          var form = button.closest('.update-cart-form');
+          if (!form) {
+            console.error('Could not find parent form for decrease button:', button);
+            return;
+          }
+          var input = form.querySelector('.quantity-input');
+          var currentValue = parseInt(input.value);
+          if (currentValue > 1) {
+            // Decrease the value and update
+            input.value = currentValue - 1;
+            _this2.updateCartItemQuantity(form);
+          }
+        });
+      });
+
+      // Set up increase buttons
+      increaseButtons.forEach(function (button) {
+        button.addEventListener('click', function (e) {
+          console.log('Increase button clicked');
+          var form = button.closest('.update-cart-form');
+          if (!form) {
+            console.error('Could not find parent form for increase button:', button);
+            return;
+          }
+          var input = form.querySelector('.quantity-input');
+          var currentValue = parseInt(input.value);
+          var maxStock = parseInt(input.dataset.maxStock || Number.MAX_SAFE_INTEGER);
+          if (currentValue < maxStock) {
+            // Increase the value and update
+            input.value = currentValue + 1;
+            _this2.updateCartItemQuantity(form);
+          } else {
+            _this2.showNotification('Maximum Quantity', "Sorry, only ".concat(maxStock, " units available."), 'info');
+          }
+        });
+      });
+
+      // Handle direct input changes
+      document.querySelectorAll('.quantity-input').forEach(function (input) {
+        input.addEventListener('change', function (e) {
+          console.log('Quantity input changed');
+          var form = input.closest('.update-cart-form');
+          if (!form) {
+            console.error('Could not find parent form for quantity input:', input);
+            return;
+          }
+          var maxStock = parseInt(input.dataset.maxStock || Number.MAX_SAFE_INTEGER);
+          var newValue = parseInt(input.value);
+
+          // Validate input value
+          if (isNaN(newValue) || newValue < 1) {
+            newValue = 1;
+            input.value = newValue;
+          } else if (newValue > maxStock) {
+            newValue = maxStock;
+            input.value = newValue;
+            _this2.showNotification('Maximum Quantity', "Sorry, only ".concat(maxStock, " units available."), 'info');
+          }
+
+          // Trigger the update
+          _this2.updateCartItemQuantity(form);
+        });
+      });
+    }
+
+    /**
+     * Update cart item quantity via AJAX
+     * @param {HTMLFormElement} form - The quantity update form
+     */
+  }, {
+    key: "updateCartItemQuantity",
+    value: function updateCartItemQuantity(form) {
+      var _this3 = this;
+      if (!form || !form.action) {
+        console.error('Invalid form or form action:', form);
+        return;
+      }
+
+      // Show loading indicator on the quantity controls
+      var quantityControl = form.querySelector('.quantity-control');
+      if (quantityControl) {
+        quantityControl.classList.add('updating');
+      }
+
+      // Get form data
+      var formData = new FormData(form);
+      console.log('Making AJAX request to:', form.action);
+      this.api.post(form.action, formData).then(function (response) {
+        console.log('AJAX response:', response);
+        if (response.success) {
+          // Remove loading indicator
+          if (quantityControl) {
+            quantityControl.classList.remove('updating');
+          }
+
+          // Update the item subtotal
+          var row = form.closest('tr');
+          var subtotalCell = row.querySelector('.item-subtotal');
+          if (subtotalCell) {
+            subtotalCell.textContent = "$".concat(response.item_subtotal);
+            subtotalCell.classList.add('highlight-update');
+            setTimeout(function () {
+              subtotalCell.classList.remove('highlight-update');
+            }, 1000);
+          }
+
+          // Update cart total
+          if (_this3.cartTotal) {
+            _this3.cartTotal.textContent = "$".concat(response.cart_total);
+            _this3.cartTotal.classList.add('highlight-update');
+            setTimeout(function () {
+              _this3.cartTotal.classList.remove('highlight-update');
+            }, 1000);
+          }
+
+          // Update cart count badge if it exists
+          if (_this3.cartCountBadge) {
+            _this3.cartCountBadge.textContent = response.cart_count;
+          }
+
+          // Update item quantity (in case the server modified it)
+          var quantityInput = form.querySelector('.quantity-input');
+          if (quantityInput && response.item_quantity) {
+            quantityInput.value = response.item_quantity;
+          }
+
+          // Show a brief notification
+          _this3.showNotification('Cart Updated', 'Your cart has been updated successfully.', 'success', true, {
+            timer: 2000,
+            timerProgressBar: true,
+            showConfirmButton: false
+          });
+        }
+      })["catch"](function (error) {
+        console.error('Update cart error:', error);
+        // Remove loading indicator
+        if (quantityControl) {
+          quantityControl.classList.remove('updating');
+        }
+        _this3.handleApiError(error);
+      });
+    }
+
+    /**
+     * Initialize quantity selector controls for product detail page
+     * Sets up increment/decrement functionality with quantity limits
+     */
+  }, {
+    key: "initQuantityButtons",
+    value: function initQuantityButtons() {
+      var _this4 = this;
+      var quantityInput = document.getElementById('quantity');
+      var decreaseBtn = document.getElementById('decrease-quantity');
+      var increaseBtn = document.getElementById('increase-quantity');
+      if (decreaseBtn && increaseBtn && quantityInput) {
+        decreaseBtn.addEventListener('click', function () {
+          var currentValue = parseInt(quantityInput.value);
+          if (currentValue > 1) {
+            quantityInput.value = currentValue - 1;
+          }
+        });
+        increaseBtn.addEventListener('click', function () {
+          var currentValue = parseInt(quantityInput.value);
+          var maxValue = parseInt(quantityInput.getAttribute('max'));
+          if (currentValue < maxValue) {
+            quantityInput.value = currentValue + 1;
+          } else {
+            _this4.showNotification('Maximum Quantity', "Sorry, only ".concat(maxValue, " units available."), 'info');
+          }
+        });
+      }
+    }
+
+    /**
+     * Handle adding a product to cart
+     * @param {Event} event - The form submit event
+     */
+  }, {
+    key: "handleAddToCart",
+    value: function handleAddToCart(event) {
+      var _form$closest,
+        _this5 = this;
+      event.preventDefault();
+      var form = event.target;
+      var url = form.action;
+      var formData = new FormData(form);
+      var productName = ((_form$closest = form.closest('.product-info')) === null || _form$closest === void 0 || (_form$closest = _form$closest.querySelector('h1')) === null || _form$closest === void 0 ? void 0 : _form$closest.textContent) || 'Product';
+      var button = form.querySelector('button[type="submit"]');
+      this.showNotification('Adding to Cart...', 'Please wait...', 'info', false);
+      this.api.post(url, formData).then(function (response) {
+        if (response.success) {
+          // Add animation to the add to cart button
+          if (button) {
+            button.classList.add('add-to-cart-animation');
+            setTimeout(function () {
+              button.classList.remove('add-to-cart-animation');
+            }, 1500);
+          }
+
+          // Update cart count
+          if (_this5.cartCount) {
+            _this5.cartCount.textContent = response.cart_count;
+            _this5.cartCount.classList.add('cart-count-updated');
+            setTimeout(function () {
+              _this5.cartCount.classList.remove('cart-count-updated');
+            }, 500);
+          }
+
+          // Update cart badge in navbar if it exists
+          if (_this5.cartCountBadge) {
+            _this5.cartCountBadge.textContent = response.cart_count;
+            _this5.cartCountBadge.classList.remove('d-none');
+          }
+          _this5.showNotification('Added to Cart!', "".concat(productName, " has been added to your cart."), 'success', true, {
+            showDenyButton: true,
+            denyButtonText: 'View Cart',
+            denyButtonColor: '#198754',
+            confirmButtonText: 'Continue Shopping'
+          }).then(function (result) {
+            if (result.isDenied) {
+              window.location.href = '/shop/cart/';
+            }
+          });
+        }
+      });
+    }
+
+    /**
+     * Handle cart item quantity update
+     * @param {Event} event - The form submit event
+     */
+  }, {
+    key: "handleUpdateSubmit",
+    value: function handleUpdateSubmit(event) {
+      event.preventDefault();
+
+      // Get the form and ensure it exists
+      var form = event.target;
+      if (!form || !form.action) {
+        console.error('Invalid form or form action in handleUpdateSubmit:', form);
+        return;
+      }
+
+      // Use the updateCartItemQuantity method to handle the update
+      this.updateCartItemQuantity(form);
+    }
+
+    /**
+     * Handle removing an item from the cart
+     * @param {Event} event - The click event
+     */
+  }, {
+    key: "handleRemoveItem",
+    value: function handleRemoveItem(event) {
+      var _this6 = this;
+      event.preventDefault();
+      var link = event.currentTarget;
+      var url = link.href;
+      var productName = link.dataset.productName || 'this item';
+      this.showConfirmation('Remove Item?', "Are you sure you want to remove ".concat(productName, " from your cart?"), function () {
+        _this6.api.get(url).then(function (response) {
+          if (response.success) {
+            // Add fade-out animation to the row
+            var row = link.closest('tr');
+            row.classList.add('fade-out');
+            setTimeout(function () {
+              // Remove the row from the table
+              row.remove();
+
+              // Update cart total
+              if (_this6.cartTotal) {
+                _this6.cartTotal.textContent = "$".concat(response.cart_total);
+              }
+
+              // Update cart count badge in navbar if it exists
+              if (_this6.cartCountBadge) {
+                if (response.cart_count > 0) {
+                  _this6.cartCountBadge.textContent = response.cart_count;
+                } else {
+                  _this6.cartCountBadge.classList.add('d-none');
+                }
+              }
+
+              // If cart is empty, refresh the page to show empty state
+              if (response.cart_count === 0) {
+                window.location.reload();
+              }
+            }, 300);
+            _this6.showNotification('Item Removed', "".concat(productName, " has been removed from your cart."), 'success');
+          }
+        });
+      });
+    }
+
+    /**
+     * Show a confirmation dialog before removing item
+     * @param {string} title - The dialog title
+     * @param {string} message - The dialog message
+     * @param {Function} confirmCallback - Function to call when confirmed
+     */
+  }, {
+    key: "showConfirmation",
+    value: function showConfirmation(title, message, confirmCallback) {
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({
+          title: title,
+          text: message,
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#dc3545',
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: 'Yes, remove it',
+          cancelButtonText: 'No, keep it'
+        }).then(function (result) {
+          if (result.isConfirmed) {
+            confirmCallback();
+          }
+        });
+      } else if (confirm(message)) {
+        confirmCallback();
+      }
+    }
+
+    /**
+     * Handle API errors
+     * @param {Error} error - Error object
+     */
+  }, {
+    key: "handleApiError",
+    value: function handleApiError(error) {
+      console.error('API Error:', error);
+      this.showNotification('Error', error.message || 'There was a problem with your request.', 'error');
+    }
+
+    /**
+     * Show notifications using SweetAlert when available, fallback to alert
+     * @param {string} title - The notification title
+     * @param {string} message - The notification message
+     * @param {string} type - The notification type (success, error, info)
+     * @param {boolean} autoClose - Whether to auto-close the notification
+     * @param {Object} options - Additional SweetAlert options
+     * @returns {Promise} SweetAlert promise or resolved promise for alert fallback
+     */
+  }, {
+    key: "showNotification",
+    value: function showNotification(title, message, type) {
+      var autoClose = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
+      var options = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
+      if (typeof Swal !== 'undefined') {
+        return Swal.fire(_objectSpread({
+          title: title,
+          text: message,
+          icon: type,
+          confirmButtonColor: '#0d6efd'
+        }, options));
+      } else {
+        alert("".concat(title, ": ").concat(message));
+        return Promise.resolve();
+      }
+    }
+  }]);
+}(); // Initialize the cart manager when the DOM is loaded
+document.addEventListener('DOMContentLoaded', function () {
+  window.cartManager = new CartManager();
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (CartManager);
+})();
+
 /******/ })()
 ;
+//# sourceMappingURL=cart.js.map

@@ -8,7 +8,7 @@
                 <li class="nav-item"><a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">Home</a></li>
                 <li class="nav-item"><a class="nav-link {% if '/shop/' in request.path %}active{% endif %}" href="{% url 'shop:product_list' %}">Shop</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">About</a></li>
-                <li class="nav-item"><a class="nav-link {% if '/users/contact/' in request.path %}active{% endif %}" href="{% url 'users_contact' %}">Contact</a></li>
+                <li class="nav-item"><a class="nav-link {% if '/users/contact/' in request.path %}active{% endif %}" href="{% url 'users:users_contact' %}">Contact</a></li>
 
                 <!-- Cart icon with item count -->
                 <li class="nav-item">
@@ -45,14 +45,15 @@
                 {% if user.is_authenticated %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            My Account ({{ user.username|default:"user.email "}})
+                             My Account ({{ user.username|default:user.email }}) {# Corrected default filter usage #}
                         </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="{% url 'users_manage' %}">Account Management</a>
-                            <a class="dropdown-item" href="{% url 'shop:order_history' %}">My Orders</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{% url 'account_logout' %}">Log Out</a>
-                        </div>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown"> {# Used <ul> and <li> for semantic correctness, added dropdown-menu-end #}
+                             <li><a class="dropdown-item" href="{% url 'users:profile_dashboard' %}">My Profile</a></li> {# Link to the new profile dashboard #}
+                             <li><a class="dropdown-item" href="{% url 'users:manage_addresses' %}">Manage Addresses</a></li> {# Optional direct link #}
+                             <li><a class="dropdown-item" href="{% url 'users:order_history' %}">My Orders</a></li> {# Corrected link to users:order_history #}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'account_logout' %}">Log Out</a></li>
+                        </ul>
                     </li>
                 {% else %}
                     <li class="nav-item"><a class="nav-link" href="{% url 'account_login' %}">Log In</a></li>

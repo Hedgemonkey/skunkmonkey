@@ -1,0 +1,179 @@
+{% extends "users/profile_base.html" %}
+{% load static %}
+
+{% block profile_content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3>Manage Addresses</h3>
+        <a href="{% url 'users:add_address' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Add New Address
+        </a>
+    </div>
+
+    {% if addresses %}
+        <div class="list-group">
+            {% for address in addresses %}
+                <div class="list-group-item list-group-item-action flex-column align-items-start mb-3 border rounded p-3">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">
+                            {{ address.address_line_1 }}
+                             {% if address.id == default_address_id %}
+                                <span class="badge bg-success ms-2">Default</span>
+                             {% endif %}
+                        </h5>
+                        <small class="text-muted">Added: {{ address.created_at|date:"d M Y" }}</small>
+                    </div>
+                    <address class="mb-2">
+                        {{ address.get_full_address|linebreaksbr }}
+                        {% if address.phone_number %}
+                            <br>Tel: {{ address.phone_number }}
+                        {% endif %}
+                    </address>
+                    <div class="address-actions">
+                         <a href="{% url 'users:edit_address' address.id %}" class="btn btn-sm btn-outline-secondary me-2">
+                             <i class="fas fa-edit me-1"></i>Edit
+                         </a>
+                         <button type="button" class="btn btn-sm btn-outline-danger me-2 btn-delete-address"
+                                 data-address-id="{{ address.id }}"
+                                 data-delete-url="{% url 'users:delete_address' address.id %}"
+                                 data-address-info="{{ address.get_short_address }}">
+                             <i class="fas fa-trash-alt me-1"></i>Delete
+                         </button>
+                         {% if address.id != default_address_id %}
+                         <button type="button" class="btn btn-sm btn-outline-success btn-set-default-address"
+                                 data-address-id="{{ address.id }}"
+                                 data-setdefault-url="{% url 'users:set_default_address' address.id %}"
+                                 data-address-info="{{ address.get_short_address }}">
+                             <i class="fas fa-check-circle me-1"></i>Set as Default
+                         </button>
+                         {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>You haven't added any addresses yet.</p>
+    {% endif %}
+
+    <!-- Hidden form for CSRF token for AJAX POST/DELETE requests -->
+    <form id="address-action-form" method="post" style="display: none;">
+        {% csrf_token %}
+    </form>
+
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+    <!-- Add specific JS for address management (AJAX delete/set default) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            // --- Delete Address ---
+            document.querySelectorAll('.btn-delete-address').forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const addressId = this.dataset.addressId;
+                    const deleteUrl = this.dataset.deleteUrl;
+                    const addressInfo = this.dataset.addressInfo;
+
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: `Do you really want to delete the address "${addressInfo}"? This cannot be undone.`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch(deleteUrl, {
+                                method: 'POST', // Using POST to simulate DELETE via @require_POST
+                                headers: {
+                                    'X-CSRFToken': csrfToken,
+                                    'X-Requested-With': 'XMLHttpRequest', // Important for Django view
+                                    'Content-Type': 'application/json' // Optional, depends on view
+                                },
+                                // body: JSON.stringify({ id: addressId }) // Optional body data
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire(
+                                        'Deleted!',
+                                        data.message || 'Address has been deleted.',
+                                        'success'
+                                    ).then(() => {
+                                        window.location.reload(); // Reload to show changes
+                                    });
+                                } else {
+                                    Swal.fire(
+                                        'Error!',
+                                        data.message || 'Could not delete address.',
+                                        'error'
+                                    );
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                Swal.fire(
+                                    'Error!',
+                                    'An unexpected error occurred.',
+                                    'error'
+                                );
+                            });
+                        }
+                    });
+                });
+            });
+
+            // --- Set Default Address ---
+            document.querySelectorAll('.btn-set-default-address').forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const addressId = this.dataset.addressId;
+                    const setDefaultUrl = this.dataset.setdefaultUrl;
+                    const addressInfo = this.dataset.addressInfo;
+
+                     Swal.fire({
+                        title: 'Set as Default?',
+                        text: `Set "${addressInfo}" as your default delivery address?`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#28a745',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Yes, set as default!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                             fetch(setDefaultUrl, {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRFToken': csrfToken,
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'Content-Type': 'application/json'
+                                },
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire(
+                                        'Success!',
+                                        data.message || 'Address set as default.',
+                                        'success'
+                                    ).then(() => {
+                                        window.location.reload(); // Reload
+                                    });
+                                } else {
+                                     Swal.fire('Error!', data.message || 'Could not set default address.', 'error');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                Swal.fire('Error!', 'An unexpected error occurred.', 'error');
+                            });
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+{% endblock %}

@@ -54,11 +54,16 @@ module.exports = {
     // --- NEW ENTRY FOR WISHLIST CSS ---
     'css/shop/wishlist': './shop/static/css/shop/wishlist.css', // Added separate entry
 
+    // --- User Profile Entries (Corrected Paths) ---
+    'js/profile': './users/static/users/js/profile.js',       // CORRECTED JS entry path
+    'css/profile': './users/static/users/css/profile.css',   // CORRECTED CSS entry path
+
   },
   output: {
-    path: path.resolve(__dirname, 'static/bundles/'),
-    filename: '[name].js',
-    publicPath: '/static/bundles/',
+    path: path.resolve(__dirname, 'static/bundles/'), // Output directory for bundles
+    filename: '[name].js',                            // Output JS filename pattern
+    publicPath: '/static/bundles/',                   // Public path for accessing bundles
+    clean: true, // Clean the output directory before emit
   },
   module: {
     rules: [
@@ -76,6 +81,21 @@ module.exports = {
           },
         },
       },
+      // Add loaders for fonts or images if needed
+      {
+        test: /\.(woff|woff2|eot|ttf|otf|svg)$/i,
+        type: 'asset/resource',
+        generator: {
+           filename: 'fonts/[hash][ext][query]' // Output fonts to a fonts subdirectory
+        }
+      },
+      {
+        test: /\.(png|jpg|jpeg|gif|webp)$/i,
+        type: 'asset/resource',
+        generator: {
+           filename: 'images/[hash][ext][query]' // Output images to an images subdirectory
+        }
+      }
     ],
   },
   plugins: [
@@ -92,6 +112,7 @@ module.exports = {
     alias: {
       jquery: "jquery/src/jquery"
     },
-    extensions: ['.js', '.jsx']
-  }
+    extensions: ['.js', '.jsx'] // Allow importing JS/JSX without extension
+  },
+  devtool: 'source-map', // Add source maps for easier debugging
 };
