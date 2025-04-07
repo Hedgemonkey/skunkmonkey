@@ -41,21 +41,21 @@
     <h5 class="card-header">Profile Management</h5>
     <div class="card-body" id="profile-management-buttons">
         <button 
-            data-url="{% url 'manage_details_update' %}" 
+            data-url="{% url 'users:manage_details_update' %}" 
             id="save-user-link" 
             class="btn btn-success btn-block mb-2" 
             style="display: none;">
             Save
         </button>
         <button 
-            data-url="{% url 'manage_details' %}" 
+            data-url="{% url 'users:manage_details' %}" 
             id="cancel-edit" 
             class="btn btn-secondary btn-block mb-2" 
             style="display: none;">
             Cancel
         </button>
         <button 
-            data-url="{% url 'manage_details_update' %}" 
+            data-url="{% url 'users:manage_details_update' %}" 
             id="edit-user-link" 
             class="btn btn-primary btn-block mb-2">
             Edit Account
@@ -63,10 +63,10 @@
         <div id="manage-account-actions">
             <button
                 data-account-action="manage"  
-                data-deactivate-url="{% url 'deactivate_account' %}"  
-                data-deactivate-redirect-url="{% url 'account_inactive_message' %}"
-                data-delete-url="{% url 'delete_account' %}"
-                data-delete-redirect-url="{% url 'account_deleted' %}"
+                data-deactivate-url="{% url 'users:deactivate_account' %}"  
+                data-deactivate-redirect-url="{% url 'users:account_inactive_message' %}"
+                data-delete-url="{% url 'users:delete_account' %}"
+                data-delete-redirect-url="{% url 'users:account_deleted' %}"
                 id="deactivate-delete-link"
                 class="btn btn-warning btn-block mb-2">
                 Deactivate/Delete Account
