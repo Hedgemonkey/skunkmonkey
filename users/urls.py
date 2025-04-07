@@ -53,6 +53,11 @@ urlpatterns = [
         views.contact,
         name='contact',
     ),
+    path(
+        'contact/',
+        views.users_contact,
+        name='users_contact',
+    ),
     
     # Account status
     path(

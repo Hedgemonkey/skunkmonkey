@@ -45,7 +45,7 @@ def contact(request):
             email = form.cleaned_data['email']
             message = form.cleaned_data['message']
             # ... send email logic using email and message
-            return redirect(reverse('users_contact')+'?ok') # redirect to contact page on success
+            return redirect(reverse('users:contact')+'?ok')  # Use correct namespaced URL name
     else:
         form = ContactForm()
     return render(request, 'users/contact.html', {'form': form})
@@ -502,3 +502,10 @@ def order_detail(request, order_number):
         'active_tab': 'orders'
     }
     return render(request, 'users/order_detail.html', context) # Ensure template path is correct
+
+def users_contact(request):
+    """Render the contact page for users."""
+    return render(request, 'users/contact.html', {
+        'title': 'Contact Us',
+        'active_tab': 'contact',
+    })
