@@ -192,7 +192,12 @@ def manage_email(request):
 
 
     email_addresses = EmailAddress.objects.filter(user=request.user) # Get email addresses *after* form processing
-    return render(request, 'users/email.html', {'form': form, 'title': "Manage Email Addresses", 'email_addresses': email_addresses})  # Pass email_addresses to template
+    return render(request, 'users/email.html', {
+        'form': form, 
+        'title': "Manage Email Addresses", 
+        'email_addresses': email_addresses,
+        'active_tab': 'email'  # Add active_tab for navigation highlighting
+    })
 
 @login_required
 def manage_password(request):
@@ -201,19 +206,24 @@ def manage_password(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Your password has been changed successfully.") # Send success message for regular POST
-            return render(request, 'users/password_change_done.html') # Redirect after success
-
+            return render(request, 'users/password_change_done.html', {'active_tab': 'password'}) # Add active_tab for navigation highlighting
 
     else:
         form = CustomChangePasswordForm(request)  # Correct: request and user
 
-    return render(request, 'users/password_change.html', {'form': form, 'title': "Change Password"})
-
+    return render(request, 'users/password_change.html', {
+        'form': form, 
+        'title': "Change Password",
+        'active_tab': 'password'  # Add active_tab for navigation highlighting
+    })
 
 
 @login_required
 def manage_social(request):
-    return render(request, 'users/social.html', {'title': "Manage Social Connections"})  # Correct template
+    return render(request, 'users/social.html', {
+        'title': "Manage Social Connections",
+        'active_tab': 'social'  # Add active_tab for navigation highlighting
+    })
 
 
 @login_required

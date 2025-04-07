@@ -75,14 +75,14 @@
                 <a href="{% url 'users:order_history' %}" class="list-group-item list-group-item-action {% if active_tab == 'orders' %}active{% endif %}">
                     <i class="fas fa-shopping-bag me-2"></i>Order History
                 </a>
-                <!-- Link to other relevant allauth views -->
-                <a href="{% url 'account_email' %}" class="list-group-item list-group-item-action {% if active_tab == 'email' %}active{% endif %}">
+                <!-- Updated to use our custom views instead of allauth views -->
+                <a href="{% url 'users:manage_email' %}" class="list-group-item list-group-item-action {% if active_tab == 'email' %}active{% endif %}">
                     <i class="fas fa-envelope me-2"></i>Manage Email
                 </a>
-                <a href="{% url 'account_change_password' %}" class="list-group-item list-group-item-action {% if active_tab == 'password' %}active{% endif %}">
+                <a href="{% url 'users:manage_password' %}" class="list-group-item list-group-item-action {% if active_tab == 'password' %}active{% endif %}">
                     <i class="fas fa-key me-2"></i>Change Password
                 </a>
-                <a href="{% url 'users:account_manage_connected_accounts' %}" class="list-group-item list-group-item-action {% if active_tab == 'social' %}active{% endif %}">
+                <a href="{% url 'users:manage_social' %}" class="list-group-item list-group-item-action {% if active_tab == 'social' %}active{% endif %}">
                     <i class="fas fa-share-alt me-2"></i>Social Accounts
                 </a>
                 <!-- Add more links as needed -->
