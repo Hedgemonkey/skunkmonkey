@@ -13,7 +13,7 @@
             <h5 class="mb-0">Add Email Address</h5>
         </div>
         <div class="card-body">
-            <form method="post" action="{% url 'manage_email' %}" class="email_change">
+            <form method="post" action="{% url 'users:manage_email' %}" class="email_change">
                 {% csrf_token %}
                 {% crispy form %}
                 <button type="submit" class="btn btn-primary mt-3">
@@ -45,7 +45,7 @@
 
                         <div class="email-actions">
                             {% if not email.verified %}
-                                <form method="post" action="{% url 'manage_email' %}" class="d-inline">
+                                <form method="post" action="{% url 'users:manage_email' %}" class="d-inline">
                                     {% csrf_token %}
                                     <input type="hidden" name="resend_email" value="{{ email.email }}">
                                     <button name="resend" value="Resend" class="btn btn-sm btn-info" type="submit">
@@ -55,7 +55,7 @@
                             {% endif %}
                             
                             {% if not email.primary %}
-                                <form method="post" action="{% url 'manage_email' %}" class="d-inline ms-2">
+                                <form method="post" action="{% url 'users:manage_email' %}" class="d-inline ms-2">
                                     {% csrf_token %}
                                     <input type="hidden" name="email" value="{{ email.email }}">
                                     <button name="make_primary" value="Primary" class="btn btn-sm btn-outline-primary" type="submit">
@@ -63,7 +63,7 @@
                                     </button>
                                 </form>
                                 
-                                <form method="post" action="{% url 'manage_email' %}" class="d-inline ms-2">
+                                <form method="post" action="{% url 'users:manage_email' %}" class="d-inline ms-2">
                                     {% csrf_token %}
                                     <input type="hidden" name="email" value="{{ email.email }}">
                                     <button name="remove" value="Remove" class="btn btn-sm btn-outline-danger" type="submit">
