@@ -1,0 +1,27 @@
+{% load static %}
+
+<div class="custom-file-upload">
+  {% if widget.is_initial %}
+    <div class="profile-image-preview-container">
+      <img src="{{ widget.image_url }}" alt="{{ widget.image_name }}" class="profile-image-preview img-fluid rounded">
+      {% if not widget.required %}
+        <div class="custom-control custom-checkbox mt-2">
+          <input class="custom-control-input" type="checkbox" name="{{ widget.checkbox_name }}" id="{{ widget.checkbox_id }}" {% if widget.attrs.disabled %} disabled{% endif %}>
+          <label class="custom-control-label text-danger" for="{{ widget.checkbox_id }}">{{ widget.clear_checkbox_label }}</label>
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+  
+  <div class="input-group">
+    <input type="{{ widget.type }}" name="{{ widget.name }}"{% if widget.value != None %} value="{{ widget.value|stringformat:'s' }}"{% endif %}{% include "django/forms/widgets/attrs.html" %}>
+    <label for="{{ widget.attrs.id }}" class="btn btn-secondary">
+      {{ widget.input_text }}
+    </label>
+  </div>
+  
+  <!-- Hidden field to store the cropped image data -->
+  <input type="hidden" name="cropped_image_data" id="cropped-image-data">
+  
+  <!-- We don't include the modal here as it's already included in the manage_profile.html template -->
+</div>

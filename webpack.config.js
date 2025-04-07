@@ -59,7 +59,11 @@ module.exports = {
       import: './users/static/users/js/profile.js',
       dependOn: 'shared',
     },
+    'js/users/profile_cropper': './users/static/js/users/profile_cropper.js', // Updated path to correct location
     'css/profile': './users/static/users/css/profile.css',
+    
+    // Common modules
+    'js/common/image_cropper': './static/js/common/image_cropper.js', // Added shared image cropper module
     
     // Shared dependencies
     'shared': ['jquery', 'bootstrap'],

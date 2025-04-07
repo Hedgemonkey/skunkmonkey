@@ -328,10 +328,33 @@ def manage_profile(request):
             request.FILES,
             instance=user_profile
         )
-
+        
+        # Process cropped image data if provided
+        cropped_image_data = request.POST.get('cropped_image_data')
+        
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
-            profile_form.save()
+            profile = profile_form.save(commit=False)
+            
+            # Handle cropped image if available
+            if cropped_image_data and cropped_image_data.startswith('data:image'):
+                # Import necessary modules
+                import base64
+                import uuid
+                from django.core.files.base import ContentFile
+                
+                # Parse the base64 image data
+                format, imgstr = cropped_image_data.split(';base64,')
+                ext = format.split('/')[-1]
+                
+                # Generate a unique filename
+                filename = f"{uuid.uuid4()}.{ext}"
+                
+                # Convert base64 to file and save to profile
+                data = ContentFile(base64.b64decode(imgstr), name=filename)
+                profile.profile_image = data
+            
+            profile.save()
             messages.success(
                 request, 'Your profile has been updated successfully.'
             )
