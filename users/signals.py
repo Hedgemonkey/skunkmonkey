@@ -13,8 +13,9 @@ def update_user_email(sender, request, email_address, **kwargs):
     email_address.set_as_primary()
     # Delete old, non-primary addresses
     EmailAddress.objects.filter(user=email_address.user).exclude(primary=True).delete()
-    # Send a message to the user
-    messages.info(request, f"{email_address} has been verified and set as primary email address. Old E-Mail deleted.")
+    # Send a message to the user if request is not None
+    if request:
+        messages.info(request, f"{email_address} has been verified and set as primary email address. Old E-Mail deleted.")
 
 
 @receiver(email_added)
@@ -32,7 +33,7 @@ User = get_user_model()
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     """
-    Create a UserProfile for each new user.
+    Create a UserProfile for each new user if it doesn't already exist.
     """
     if created:
-        UserProfile.objects.create(user=instance)
+        UserProfile.objects.get_or_create(user=instance)

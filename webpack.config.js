@@ -54,10 +54,15 @@ module.exports = {
     // --- NEW ENTRY FOR WISHLIST CSS ---
     'css/shop/wishlist': './shop/static/css/shop/wishlist.css', // Added separate entry
 
-    // --- User Profile Entries (Corrected Paths) ---
-    'js/profile': './users/static/users/js/profile.js',       // CORRECTED JS entry path
-    'css/profile': './users/static/users/css/profile.css',   // CORRECTED CSS entry path
-
+    // --- User Profile Entries ---
+    'js/profile': {
+      import: './users/static/users/js/profile.js',
+      dependOn: 'shared',
+    },
+    'css/profile': './users/static/users/css/profile.css',
+    
+    // Shared dependencies
+    'shared': ['jquery', 'bootstrap'],
   },
   output: {
     path: path.resolve(__dirname, 'static/bundles/'), // Output directory for bundles
@@ -105,7 +110,14 @@ module.exports = {
   ],
   optimization: {
     splitChunks: {
-      cacheGroups: {},
+      chunks: 'all',
+      cacheGroups: {
+        vendors: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all',
+        },
+      },
     },
   },
   resolve: {
