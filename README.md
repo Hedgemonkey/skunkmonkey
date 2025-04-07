@@ -181,13 +181,31 @@ The database is designed using **PostgreSQL** and follows Django's **ORM** struc
 +--------------------+         +--------------------+
 | id (PK)            |<--------| id (PK)            |
 | user_id (FK)       |         | username           |
-| stripe_customer(FK)|         | email              |
-| stripe_subscription(FK)|     | password           |
-+--------------------+         | ...                |
+| bio                |         | email              |
+| birth_date         |         | password           |
+| profile_image      |         | ...                |
+| phone_number       |         +--------------------+
+| theme_preference   |                 |
+| notification_pref  |                 | 1:M
+| marketing_emails   |                 v
+| default_del_addr(FK)|        +--------------------+
++--------------------+         |      Address       |
+      ^                        +--------------------+
+      | 1:1                    | id (PK)            |
+      |                        | user_id (FK)       |
+      v                        | name               |
++--------------------+         | address_line1      |
+|   UserProfile      |         | address_line2      |
++--------------------+         | city               |
+                               | state              |
+                               | postal_code        |
+                               | country            |
+                               | phone_number       |
+                               | is_default         |
+                               | created_at         |
+                               | updated_at         |
                                +--------------------+
-                                        |
-                                        | 1:M
-                                        v
+
 +--------------------+         +--------------------+
 |   WishlistItem     |         |RecentlyViewedItem  |
 +--------------------+         +--------------------+
@@ -201,11 +219,12 @@ The database is designed using **PostgreSQL** and follows Django's **ORM** struc
 |   ComparisonList   |         |       Cart         |
 +--------------------+         +--------------------+
 | id (PK)            |         | id (PK)            |
-| user_id (FK)       |         | user_id (FK, opt)  |
-| name               |         | session_id (opt)   |
-| created_at         |         | created_at         |
-| updated_at         |         | updated_at         |
-+--------------------+         +--------------------+
+| user_id (FK, opt)  |         | user_id (FK, opt)  |
+| session_id (opt)   |         | session_id (opt)   |
+| name               |         | created_at         |
+| created_at         |         | updated_at         |
+| updated_at         |         +--------------------+
++--------------------+
         |                               |
         | M:M                           | 1:M
         v                               v
@@ -228,8 +247,8 @@ The database is designed using **PostgreSQL** and follows Django's **ORM** struc
 | user_id (FK, opt)  |         | product_id (FK)    |
 | full_name          |         | quantity           |
 | email              |         | price              |
-| phone_number       |         +--------------------+
-| shipping_address1  |
+| phone_number       |         | item_total         |
+| shipping_address1  |         +--------------------+
 | shipping_address2  |
 | shipping_city      |
 | shipping_state     |
@@ -270,6 +289,12 @@ The database is designed using **PostgreSQL** and follows Django's **ORM** struc
 - `Product` ↔️ `InventoryLog`: One-to-Many (tracks stock changes over time)  
 - `Review` ↔️ `User`: Many-to-One (a user can leave many reviews)
 
+**Users Module:**
+- `User` ↔️ `UserProfile`: One-to-One (each user has exactly one profile)
+- `UserProfile` ↔️ `Address`: One-to-Many (a user can have multiple addresses)
+- `UserProfile` ↔️ `Address` (default): One-to-One (a user profile has one default delivery address)
+- `User` ↔️ `Address`: One-to-Many (a user can have multiple addresses)
+
 **Shop Module:**
 - `User` ↔️ `Cart`: One-to-One (a user has one cart)
 - `User` ↔️ `ComparisonList`: One-to-One (a user has one comparison list)
@@ -281,15 +306,19 @@ The database is designed using **PostgreSQL** and follows Django's **ORM** struc
 - `User` ↔️ `Order`: One-to-Many (a user can have many orders)
 - `Order` ↔️ `OrderItem`: One-to-Many (an order contains multiple items)
 - `OrderItem` ↔️ `Product`: Many-to-One (many order items can reference the same product)
-- `User` ↔️ `WishList`: One-to-One (a user has one wishlist)
-- `WishList` ↔️ `WishListItem`: One-to-Many (a wishlist contains multiple items)
-- `WishListItem` ↔️ `Product`: Many-to-One (many wishlist items can reference the same product)
+- `User` ↔️ `WishlistItem`: One-to-Many (a user can have many wishlist items)
+- `WishlistItem` ↔️ `Product`: Many-to-One (many wishlist items can reference the same product)
 
 **Notable Features:**
+- User profiles support customization with biographical information, preferences, and a profile image
+- Multiple delivery addresses can be saved and managed per user
+- Users can designate a default delivery address for faster checkout
+- Theme preferences support light/dark mode UI customization
+- Communication preferences help control how users receive notifications
+- Marketing email opt-in/out is managed through user profiles
 - Carts can be associated with either registered users or anonymous sessions
 - Orders store product information at time of purchase to maintain historical records
 - Inventory is managed through both product stock levels and a log of changes
-- Wishlists allow users to save products for future purchase
 - Products now support a `compare_at_price` field to enable sale pricing and discount display (original price vs. current price)
 - Comparison lists allow users to compare up to 4 products side-by-side
 - Recently viewed items are tracked to provide personalized recommendations
