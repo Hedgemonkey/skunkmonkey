@@ -9,7 +9,7 @@ from allauth.account.models import EmailAddress
 from allauth.account.utils import send_email_confirmation
 from .forms import (
     CustomAddEmailForm, CustomChangePasswordForm, UserForm, AddressForm,
-    ContactForm, CustomLoginForm
+    ContactForm, CustomLoginForm, ProfileForm
 )
 from .models import UserProfile, Address
 from shop.models import Order
@@ -313,6 +313,40 @@ def profile_dashboard(request):
     return render(
         request, 'users/profile_dashboard.html', context
     )  # Ensure template path is correct
+
+
+@login_required
+def manage_profile(request):
+    """View for managing user profile information."""
+    user = request.user
+    user_profile, _ = UserProfile.objects.get_or_create(user=user)
+
+    if request.method == 'POST':
+        user_form = UserForm(request.POST, instance=user)
+        profile_form = ProfileForm(
+            request.POST,
+            request.FILES,
+            instance=user_profile
+        )
+
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(
+                request, 'Your profile has been updated successfully.'
+            )
+            return redirect('users:manage_profile')
+    else:
+        user_form = UserForm(instance=user)
+        profile_form = ProfileForm(instance=user_profile)
+
+    context = {
+        'user_form': user_form,
+        'profile_form': profile_form,
+        'profile': user_profile,
+        'active_tab': 'profile',
+    }
+    return render(request, 'users/manage_profile.html', context)
 
 
 # --- Address Management Views ---
