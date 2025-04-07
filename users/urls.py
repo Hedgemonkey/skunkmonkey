@@ -19,6 +19,11 @@ urlpatterns = [
         name='manage_account',
     ),
     path(
+        'profile/',
+        views.manage_profile,
+        name='manage_profile',
+    ),
+    path(
         'details/',
         views.manage_details,
         name='manage_details',
