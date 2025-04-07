@@ -22,7 +22,7 @@
                         <tr>
                             <td>{{ order.order_number }}</td>
                             <td>{{ order.created_at|date:"d M Y, H:i" }}</td>
-                            <td>{{ order.lineitems.count }}</td> <!-- Adjust if related name is different -->
+                            <td>{{ order.items.count }}</td> <!-- Adjust if related name is different -->
                             <td>£{{ order.grand_total|floatformat:2 }}</td>
                             <td>
                                 <!-- Display order status (customize based on your model) -->
