@@ -18,6 +18,179 @@ Each entry follows this structure:
 
 ## 🔄 Migration History
 
+### **Version: v1.4.1**
+📅 **Date**: 2025-04-07
+📝 **Description**: Enhanced user profiles with additional fields for personalization and preferences.
+
+📂 **Migration File**: `users/migrations/0003_userprofile_bio_userprofile_birth_date_and_more.py`
+
+🛠 **Impact**:
+- Added biographical fields (`bio`, `birth_date`, `profile_image`, `phone_number`) to `UserProfile`.
+- Added communication preference controls (`notification_preference`).
+- Added marketing preference (`receive_marketing_emails`).
+- Added display preference (`theme_preference`) to support light/dark mode.
+- No data migration required as all fields are nullable with defaults.
+
+🔄 **Rollback Plan**:
+```bash
+python manage.py migrate users 0002_address_userprofile_default_delivery_address   # Reverts to the previous migration
+```
+
+---
+
+### **Version: v1.4.0**
+📅 **Date**: 2025-04-07
+📝 **Description**: Added default delivery address functionality to UserProfile.
+
+📂 **Migration File**: `users/migrations/0002_address_userprofile_default_delivery_address.py`
+
+🛠 **Impact**:
+- Added `default_delivery_address` field to the `UserProfile` model as a ForeignKey to `Address`.
+- This allows users to set a default delivery address for checkout.
+
+🔄 **Rollback Plan**:
+```bash
+python manage.py migrate users 0001_initial   # Reverts to the previous migration
+```
+
+---
+
+### **Version: v1.3.9**
+📅 **Date**: 2025-04-07
+📝 **Description**: Added initial user profile and address models to the `users` app.
+
+📂 **Migration File**: `users/migrations/0001_initial.py`
+
+🛠 **Impact**:
+- Created `users_address` table to store user delivery addresses.
+- Created `users_userprofile` table with basic user profile functionality.
+- Established relationships between users and their profile information.
+
+🔄 **Rollback Plan**:
+```bash
+python manage.py migrate users zero   # Reverts all migrations
+```
+
+---
+
+### **Version: v1.3.10**
+📅 **Date**: 2025-03-27
+📝 **Description**: Added session_id field to the ComparisonList model to support anonymous comparisons.
+
+📂 **Migration File**: `shop/migrations/0006_comparisonlist_session_id.py`
+
+🛠 **Impact**:
+- Added `session_id` field (CharField with max_length=255, nullable) to the `ComparisonList` model.
+- This allows guests users without accounts to use product comparison features.
+- No data migration required as the field is nullable.
+
+🔄 **Rollback Plan**:
+```bash
+python manage.py migrate shop 0005_order_billing_name_order_payment_method_type_and_more   # Reverts to the previous migration
+```
+
+---
+
+### **Version: v1.3.8**
+📅 **Date**: 2025-03-27
+📝 **Description**: Added billing name and payment method type to the Order model, and added an index to the RecentlyViewedItem model.
+
+📂 **Migration File**: `shop/migrations/0005_order_billing_name_order_payment_method_type_and_more.py`
+
+🛠 **Impact**:
+- Added `billing_name` field to the `Order` model.
+- Added `payment_method_type` field to the `Order` model.
+- Added an index to the `RecentlyViewedItem` model: `shop_recent_user_prod_idx` on fields `user` and `product`.
+
+🔄 **Rollback Plan**:
+```bash
+python manage.py migrate shop 0004_remove_payment_order_remove_wishlist_products_and_more   # Reverts to the previous migration
+```
+
+---
+
+### **Version: v1.3.7**
+📅 **Date**: 2025-03-26
+📝 **Description**: Removed the `Payment` model, wishlist products, and session id. Altered various models and fields.
+
+📂 **Migration File**: `shop/migrations/0004_remove_payment_order_remove_wishlist_products_and_more.py`
+
+🛠 **Impact**:
+- Removed the `Payment` model.
+- Removed the `products` and `user` fields from the `Wishlist` model.
+- Altered model options (verbose names, ordering) for various models.
+- Removed constraints from `Cart`, `ComparisonList`, and `RecentlyViewedItem`.
+- Removed fields from `ComparisonList`, `Order`, `OrderItem`, and `RecentlyViewedItem`.
+- Added fields to `ComparisonList`, `Order`, and `WishlistItem`.
+- Altered fields in various models.
+- Removed the `WishList` model.
+- Added a unique together constraint to `WishlistItem`.
+
+🔄 **Rollback Plan**:
+```bash
+python manage.py migrate shop 0003_remove_order_shipping_address_order_billing_address1_and_more   # Reverts to the previous migration
+```
+
+---
+
+### **Version: v1.3.6**
+📅 **Date**: 2025-03-24
+📝 **Description**: Added billing address fields, payment information, and shipping cost to the `Order` model. Created the `Payment` model.
+
+📂 **Migration File**: `shop/migrations/0003_remove_order_shipping_address_order_billing_address1_and_more.py`
+
+🛠 **Impact**:
+- Removed `shipping_address` field from the `Order` model.
+- Added billing address fields (`billing_address1`, `billing_address2`, `billing_city`, `billing_country`, `billing_state`, `billing_zipcode`) to the `Order` model.
+- Added payment-related fields (`grand_total`, `original_cart`, `payment_intent_id`, `payment_method_id`, `payment_status`, `stripe_client_secret`) to the `Order` model.
+- Added shipping address fields (`shipping_address1`, `shipping_address2`, `shipping_city`, `shipping_country`, `shipping_state`, `shipping_zipcode`, `shipping_cost`) to the `Order` model.
+- Added `stripe_customer` field (ForeignKey to `djstripe.Customer`) to the `Order` model.
+- Added `item_total` field to the `OrderItem` model.
+- Altered the `status` field in the `Order` model to use a `CharField` with specific choices.
+- Created a new `Payment` model with fields for `stripe_charge_id`, `amount`, `timestamp`, `status`, and a OneToOneField to `Order`.
+
+🔄 **Rollback Plan**:
+```bash
+python manage.py migrate shop 0002_comparisonlist_recentlyvieweditem   # Reverts to the previous migration
+```
+
+---
+
+### **Version: v1.3.5**
+📅 **Date**: 2025-03-24
+📝 **Description**: Added `ComparisonList` and `RecentlyViewedItem` models to the `shop` app.
+
+📂 **Migration File**: `shop/migrations/0002_comparisonlist_recentlyvieweditem.py`
+
+🛠 **Impact**:
+- Created `shop_comparisonlist` table to store products being compared by users.
+- Created `shop_recentlyvieweditem` table to track recently viewed products.
+
+🔄 **Rollback Plan**:
+```bash
+python manage.py migrate shop 0001_initial   # Reverts to the previous migration
+```
+
+---
+
+### **Version: v1.3.4**
+📅 **Date**: 2025-03-24
+📝 **Description**: Added `ProductAttribute`, `ProductAttributeType`, and `ProductAttributeValue` models to the `products` app.
+
+📂 **Migration File**: `products/migrations/0003_productattributetype_alter_category_options_and_more.py`
+
+🛠 **Impact**:
+- Created `products_productattribute` table to store product attributes.
+- Created `products_productattributetype` table to store product attribute types.
+- Created `products_productattributevalue` table to store product attribute values.
+
+🔄 **Rollback Plan**:
+```bash
+python manage.py migrate products 0002_product_compare_at_price   # Reverts to the previous migration
+```
+
+---
+
 ### **Version: v1.3.3**
 📅 **Date**: 2025-03-23
 📝 **Description**: Added `ComparisonList` and `RecentlyViewedItem` models to the `shop` app.
@@ -145,107 +318,7 @@ python manage.py migrate sessions zero
 ---
 
 **Maintainer**: `@Hedgemonkey`
-_Last updated: 2025-03-27_
-
----
-
-### **Version: v1.3.4**
-📅 **Date**: 2025-03-24
-📝 **Description**: Added `ProductAttribute`, `ProductAttributeType`, and `ProductAttributeValue` models to the `products` app.
-
-📂 **Migration File**: `products/migrations/0003_productattributetype_alter_category_options_and_more.py`
-
-🛠 **Impact**:
-- Created `products_productattribute` table to store product attributes.
-- Created `products_productattributetype` table to store product attribute types.
-- Created `products_productattributevalue` table to store product attribute values.
-
-🔄 **Rollback Plan**:
-```bash
-python manage.py migrate products 0002_product_compare_at_price   # Reverts to the previous migration
-```
-
----
-
-### **Version: v1.3.5**
-📅 **Date**: 2025-03-24
-📝 **Description**: Added `ComparisonList` and `RecentlyViewedItem` models to the `shop` app.
-
-📂 **Migration File**: `shop/migrations/0002_comparisonlist_recentlyvieweditem.py`
-
-🛠 **Impact**:
-- Created `shop_comparisonlist` table to store products being compared by users.
-- Created `shop_recentlyvieweditem` table to track recently viewed products.
-
-🔄 **Rollback Plan**:
-```bash
-python manage.py migrate shop 0001_initial   # Reverts to the previous migration
-```
-
----
-
-### **Version: v1.3.6**
-📅 **Date**: 2025-03-24
-📝 **Description**: Added billing address fields, payment information, and shipping cost to the `Order` model. Created the `Payment` model.
-
-📂 **Migration File**: `shop/migrations/0003_remove_order_shipping_address_order_billing_address1_and_more.py`
-
-🛠 **Impact**:
-- Removed `shipping_address` field from the `Order` model.
-- Added billing address fields (`billing_address1`, `billing_address2`, `billing_city`, `billing_country`, `billing_state`, `billing_zipcode`) to the `Order` model.
-- Added payment-related fields (`grand_total`, `original_cart`, `payment_intent_id`, `payment_method_id`, `payment_status`, `stripe_client_secret`) to the `Order` model.
-- Added shipping address fields (`shipping_address1`, `shipping_address2`, `shipping_city`, `shipping_country`, `shipping_state`, `shipping_zipcode`, `shipping_cost`) to the `Order` model.
-- Added `stripe_customer` field (ForeignKey to `djstripe.Customer`) to the `Order` model.
-- Added `item_total` field to the `OrderItem` model.
-- Altered the `status` field in the `Order` model to use a `CharField` with specific choices.
-- Created a new `Payment` model with fields for `stripe_charge_id`, `amount`, `timestamp`, `status`, and a OneToOneField to `Order`.
-
-🔄 **Rollback Plan**:
-```bash
-python manage.py migrate shop 0002_comparisonlist_recentlyvieweditem   # Reverts to the previous migration
-```
-
----
-
-### **Version: v1.3.7**
-📅 **Date**: 2025-03-26
-📝 **Description**: Removed the `Payment` model, wishlist products, and session id. Altered various models and fields.
-
-📂 **Migration File**: `shop/migrations/0004_remove_payment_order_remove_wishlist_products_and_more.py`
-
-🛠 **Impact**:
-- Removed the `Payment` model.
-- Removed the `products` and `user` fields from the `Wishlist` model.
-- Altered model options (verbose names, ordering) for various models.
-- Removed constraints from `Cart`, `ComparisonList`, and `RecentlyViewedItem`.
-- Removed fields from `ComparisonList`, `Order`, `OrderItem`, and `RecentlyViewedItem`.
-- Added fields to `ComparisonList`, `Order`, and `WishlistItem`.
-- Altered fields in various models.
-- Removed the `WishList` model.
-- Added a unique together constraint to `WishlistItem`.
-
-🔄 **Rollback Plan**:
-```bash
-python manage.py migrate shop 0003_remove_order_shipping_address_order_billing_address1_and_more   # Reverts to the previous migration
-```
-
----
-
-### **Version: v1.3.8**
-📅 **Date**: 2025-03-27
-📝 **Description**: Added billing name and payment method type to the Order model, and added an index to the RecentlyViewedItem model.
-
-📂 **Migration File**: `shop/migrations/0005_order_billing_name_order_payment_method_type_and_more.py`
-
-🛠 **Impact**:
-- Added `billing_name` field to the `Order` model.
-- Added `payment_method_type` field to the `Order` model.
-- Added an index to the `RecentlyViewedItem` model: `shop_recent_user_prod_idx` on fields `user` and `product`.
-
-🔄 **Rollback Plan**:
-```bash
-python manage.py migrate shop 0004_remove_payment_order_remove_wishlist_products_and_more   # Reverts to the previous migration
-```
+_Last updated: 2025-04-07_
 
 ---
 
@@ -273,4 +346,4 @@ python manage.py migrate
 Rollback to a previous migration:  
 ```sh
 python manage.py migrate app_name 0002
-```  
+```
