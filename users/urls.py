@@ -11,7 +11,7 @@ urlpatterns = [
         views.profile_dashboard,
         name='profile_dashboard',
     ),
-    
+
     # Account management
     path(
         'manage/',
@@ -75,7 +75,7 @@ urlpatterns = [
         views.account_inactive_message,
         name='account_inactive_message',
     ),
-    
+
     # Address management
     path(
         'addresses/',
@@ -102,7 +102,7 @@ urlpatterns = [
         views.set_default_address,
         name='set_default_address',
     ),
-    
+
     # Order history
     path(
         'orders/',
