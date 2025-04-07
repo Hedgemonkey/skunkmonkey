@@ -78,6 +78,42 @@ class UserProfile(models.Model):
         blank=True,
         related_name='+',
     )
+    # New fields
+    phone_number = models.CharField(max_length=20, null=True, blank=True)
+    bio = models.TextField(max_length=500, null=True, blank=True)
+    birth_date = models.DateField(null=True, blank=True)
+    profile_image = models.ImageField(
+        upload_to='profile_images/',
+        null=True,
+        blank=True
+    )
+
+    # Communication preferences
+    NOTIFICATION_CHOICES = (
+        ('all', 'All notifications'),
+        ('important', 'Important notifications only'),
+        ('none', 'No notifications'),
+    )
+    notification_preference = models.CharField(
+        max_length=10,
+        choices=NOTIFICATION_CHOICES,
+        default='all'
+    )
+
+    # Marketing preferences
+    receive_marketing_emails = models.BooleanField(default=True)
+
+    # Display preferences
+    THEME_CHOICES = (
+        ('light', 'Light'),
+        ('dark', 'Dark'),
+        ('system', 'System default'),
+    )
+    theme_preference = models.CharField(
+        max_length=10,
+        choices=THEME_CHOICES,
+        default='system'
+    )
 
     def __str__(self):
         return self.user.username
