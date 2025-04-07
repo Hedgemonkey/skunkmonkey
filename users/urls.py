@@ -2,33 +2,21 @@
 from django.urls import path
 from . import views
 
-app_name = 'users'  # Define the namespace for reversing URLs (e.g., {% url 'users:profile_dashboard' %})
+app_name = 'users'
 
 urlpatterns = [
+    # Dashboard
     path(
-        'inactive-message/',
-        views.account_inactive_message,
-        name='account_inactive_message',
+        'dashboard/',
+        views.profile_dashboard,
+        name='profile_dashboard',
     ),
-    path(
-        'deleted/',
-        views.deleted_account,
-        name='account_deleted',
-    ),
-    path(
-        'deactivate/',
-        views.deactivate_account,
-        name='deactivate_account',
-    ),
-    path(
-        'delete/',
-        views.delete_account,
-        name='delete_account',
-    ),
+    
+    # Account management
     path(
         'manage/',
         views.manage_account,
-        name='users_manage',
+        name='manage_account',
     ),
     path(
         'details/',
@@ -36,9 +24,9 @@ urlpatterns = [
         name='manage_details',
     ),
     path(
-        'contact/',
-        views.contact,
-        name='users_contact',
+        'details/update/',
+        views.manage_details_update,
+        name='manage_details_update',
     ),
     path(
         'email/',
@@ -56,15 +44,39 @@ urlpatterns = [
         name='manage_social',
     ),
     path(
-        'details/update/',
-        views.manage_details_update,
-        name='manage_details_update',
+        'social/accounts/',
+        views.manage_social,
+        name='account_manage_connected_accounts',
     ),
     path(
-        'dashboard/',
-        views.profile_dashboard,
-        name='profile_dashboard',
+        'contact/',
+        views.contact,
+        name='contact',
     ),
+    
+    # Account status
+    path(
+        'deactivate/',
+        views.deactivate_account,
+        name='deactivate_account',
+    ),
+    path(
+        'delete/',
+        views.delete_account,
+        name='delete_account',
+    ),
+    path(
+        'deleted/',
+        views.deleted_account,
+        name='deleted_account',
+    ),
+    path(
+        'inactive/',
+        views.account_inactive_message,
+        name='account_inactive_message',
+    ),
+    
+    # Address management
     path(
         'addresses/',
         views.manage_addresses,
@@ -76,20 +88,22 @@ urlpatterns = [
         name='add_address',
     ),
     path(
-        'addresses/edit/<int:address_id>/',
+        'addresses/<int:address_id>/edit/',
         views.edit_address,
         name='edit_address',
     ),
     path(
-        'addresses/delete/<int:address_id>/',
+        'addresses/<int:address_id>/delete/',
         views.delete_address,
         name='delete_address',
     ),
     path(
-        'addresses/set_default/<int:address_id>/',
+        'addresses/<int:address_id>/set-default/',
         views.set_default_address,
         name='set_default_address',
     ),
+    
+    # Order history
     path(
         'orders/',
         views.order_history,
@@ -99,11 +113,6 @@ urlpatterns = [
         'orders/<str:order_number>/',
         views.order_detail,
         name='order_detail',
-    ),
-    path(
-        'social/accounts/',
-        views.manage_social,
-        name='account_manage_connected_accounts',
     ),
 ]
 
