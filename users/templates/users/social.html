@@ -1,27 +1,65 @@
 {# users/social.html #}
+{% extends "users/profile_base.html" %}
+{% load static %}
 {% load i18n %}
 {% load crispy_forms_tags %}
-{% include "users/includes/_messages.html" %}
-<h2>{% trans "Social Account Connections" %}</h2>
+
+{% block profile_content %}
+    {% include "users/includes/_messages.html" %}
+    
+    <h2>{% trans "Social Account Connections" %}</h2>
+    
     {% if user.socialaccount_set.all %}
-
-        <p>{% blocktrans %}You are currently connected with the following social accounts.{% endblocktrans %}</p>
-        <form method="post">
-        {% csrf_token %}
-        {% for account in user.socialaccount_set.all %}
-            <div class="socialaccount_provider socialaccount_provider_{{account.provider}}">
-              <span class="socialaccount_provider_name">{{ account.provider }}</span>
-
-              <button type="submit" name="socialaccount_disconnect_{{account.provider}}" class="btn btn-danger">{% trans 'Disconnect' %}</button>
-
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">{% blocktrans %}Connected Social Accounts{% endblocktrans %}</h5>
             </div>
-        {% endfor %}
-        </form>
-
-
+            <div class="card-body">
+                <p>{% blocktrans %}You are currently connected with the following social accounts.{% endblocktrans %}</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="list-group">
+                        {% for account in user.socialaccount_set.all %}
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <div class="social-icon me-3">
+                                        {% if account.provider == 'google' %}
+                                            <i class="fab fa-google text-danger fa-2x"></i>
+                                        {% elif account.provider == 'facebook' %}
+                                            <i class="fab fa-facebook text-primary fa-2x"></i>
+                                        {% elif account.provider == 'twitter' %}
+                                            <i class="fab fa-twitter text-info fa-2x"></i>
+                                        {% else %}
+                                            <i class="fas fa-external-link-alt text-secondary fa-2x"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <strong class="socialaccount_provider_name text-capitalize">{{ account.provider }}</strong>
+                                        {% if account.extra_data.email %}
+                                            <div class="text-muted small">{{ account.extra_data.email }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <button type="submit" name="socialaccount_disconnect_{{account.provider}}" class="btn btn-outline-danger">
+                                    <i class="fas fa-unlink me-1"></i>{% trans 'Disconnect' %}
+                                </button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </form>
+            </div>
+        </div>
     {% endif %}
 
-
-<p>{% blocktrans %}Coming soon...{% endblocktrans %}</p>
-
-    {% include "socialaccount/snippets/provider_list.html" with process="connect" %}
+    <div class="card">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">{% blocktrans %}Connect More Accounts{% endblocktrans %}</h5>
+        </div>
+        <div class="card-body">
+            <p>{% blocktrans %}Connect your account to one of the following services to enable easier login and account management.{% endblocktrans %}</p>
+            <div class="social-providers mt-4">
+                {% include "socialaccount/snippets/provider_list.html" with process="connect" %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
