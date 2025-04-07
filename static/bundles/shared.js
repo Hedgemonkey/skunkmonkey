@@ -1,127 +1,6 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
-/******/ 	var __webpack_modules__ = ({
-
-/***/ "./products/static/js/cropper_init.js":
-/*!********************************************!*\
-  !*** ./products/static/js/cropper_init.js ***!
-  \********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var cropperjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! cropperjs */ "./node_modules/cropperjs/dist/cropper.js");
-/* harmony import */ var cropperjs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(cropperjs__WEBPACK_IMPORTED_MODULE_0__);
-
-$(function () {
-  var cropper;
-  function initializeCropper(imageElement) {
-    if (cropper) {
-      cropper.destroy();
-    }
-    cropper = new (cropperjs__WEBPACK_IMPORTED_MODULE_0___default())(imageElement, {
-      aspectRatio: 1,
-      viewMode: 1,
-      autoCropArea: 0.8,
-      movable: true,
-      zoomable: true,
-      rotatable: true,
-      scalable: true,
-      responsive: true,
-      background: false,
-      guides: false,
-      highlight: false,
-      cropBoxResizable: true,
-      cropBoxMovable: true
-    });
-  }
-  function setupEventListeners() {
-    $('#zoom-in').off('click').on('click', function () {
-      cropper.zoom(0.1);
-    });
-    $('#zoom-out').off('click').on('click', function () {
-      cropper.zoom(-0.1);
-    });
-    $('#move-left').off('click').on('click', function () {
-      cropper.move(-10, 0);
-    });
-    $('#move-right').off('click').on('click', function () {
-      cropper.move(10, 0);
-    });
-    $('#move-up').off('click').on('click', function () {
-      cropper.move(0, -10);
-    });
-    $('#move-down').off('click').on('click', function () {
-      cropper.move(0, 10);
-    });
-    $('#rotate-left').off('click').on('click', function () {
-      cropper.rotate(-45);
-    });
-    $('#rotate-right').off('click').on('click', function () {
-      cropper.rotate(45);
-    });
-    $('#rotate-slider').off('input').on('input', function () {
-      var angle = parseFloat($(this).val());
-      cropper.rotateTo(angle);
-    });
-    $('#crop-image-button').off('click').on('click', function () {
-      if (cropper) {
-        var canvas = cropper.getCroppedCanvas();
-        canvas.toBlob(function (blob) {
-          var url = URL.createObjectURL(blob);
-          $('#cropped-image-display').attr('src', url);
-          var reader = new FileReader();
-          reader.onloadend = function () {
-            $('#cropped-image-data').val(reader.result);
-            // Show the preview image and name using classes
-            $('#preview-image').attr('src', reader.result).removeClass('hidden');
-            $('#image-name').text('cropped-image.png').removeClass('hidden');
-          };
-          reader.readAsDataURL(blob);
-        });
-        $('#cropperModal').modal('hide');
-      }
-    });
-    $('#cropperModal').on('hidden.bs.modal', function () {
-      $('#cropperModal').css({
-        'display': 'none',
-        'z-index': 1040
-      });
-      $('.swal2-actions').css({
-        visibility: 'visible'
-      });
-      if (cropper) {
-        cropper.destroy();
-        cropper = null;
-      }
-    });
-  }
-  $(document).on('change', 'input[type="file"]', function (event) {
-    var files = event.target.files;
-    if (files && files.length > 0) {
-      var reader = new FileReader();
-      reader.onload = function (e) {
-        $('#cropper-image').attr('src', e.target.result);
-        $('#cropperModal').css({
-          'display': 'flex',
-          'z-index': 2000
-        }).modal('show');
-        $('.swal2-actions').css({
-          visibility: 'hidden'
-        });
-        $('#cropperModal').on('shown.bs.modal', function () {
-          var imageElement = document.getElementById('cropper-image');
-          initializeCropper(imageElement);
-          setupEventListeners();
-        });
-      };
-      reader.readAsDataURL(files[0]);
-    }
-  });
-});
-
-/***/ })
-
-/******/ 	});
+/******/ 	var __webpack_modules__ = ({});
 /************************************************************************/
 /******/ 	// The module cache
 /******/ 	var __webpack_module_cache__ = {};
@@ -183,18 +62,6 @@ $(function () {
 /******/ 		};
 /******/ 	})();
 /******/ 	
-/******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
@@ -231,7 +98,7 @@ $(function () {
 /******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
 /******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
 /******/ 		var installedChunks = {
-/******/ 			"js/products/cropper_init": 0
+/******/ 			"shared": 0
 /******/ 		};
 /******/ 		
 /******/ 		// no chunk on demand loading
@@ -281,9 +148,10 @@ $(function () {
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
-/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["vendors"], () => (__webpack_require__("./products/static/js/cropper_init.js")))
+/******/ 	__webpack_require__.O(undefined, ["vendors"], () => (__webpack_require__("./node_modules/jquery/src/jquery.js")))
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["vendors"], () => (__webpack_require__("./node_modules/bootstrap/dist/js/bootstrap.esm.js")))
 /******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=cropper_init.js.map
+//# sourceMappingURL=shared.js.map

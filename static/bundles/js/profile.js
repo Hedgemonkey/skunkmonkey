@@ -1,7 +1,11 @@
-/******/ (() => { // webpackBootstrap
+(self["webpackChunkskunkmonkey"] = self["webpackChunkskunkmonkey"] || []).push([["js/profile"],{
+
+/***/ "./users/static/users/js/profile.js":
 /*!******************************************!*\
   !*** ./users/static/users/js/profile.js ***!
   \******************************************/
+/***/ (() => {
+
 // /users/static/users/js/profile.js
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -142,6 +146,14 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 }); // End DOMContentLoaded
-/******/ })()
-;
+
+/***/ })
+
+},
+/******/ __webpack_require__ => { // webpackRuntimeModules
+/******/ var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s = moduleId))
+/******/ __webpack_require__.O(0, ["vendors"], () => (__webpack_exec__("./users/static/users/js/profile.js")));
+/******/ var __webpack_exports__ = __webpack_require__.O();
+/******/ }
+]);
 //# sourceMappingURL=profile.js.map
