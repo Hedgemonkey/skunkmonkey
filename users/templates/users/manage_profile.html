@@ -1,0 +1,264 @@
+{% extends "users/profile_base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block profile_content %}
+    <h2 class="mb-4">Manage Your Profile</h2>
+    <div class="row">
+        <div class="col-12">
+            {% include "users/includes/_messages.html" %}
+
+            <form method="post" action="{% url 'users:manage_profile' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- Basic Information -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Personal Information</h5>
+                    </div>
+                    <div class="card-body">
+                        {% crispy user_form %}
+                    </div>
+                </div>
+                
+                <!-- Contact Information -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Contact Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            {{ profile_form.phone_number|as_crispy_field }}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Profile Details -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Profile Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            {{ profile_form.bio|as_crispy_field }}
+                        </div>
+                        <div class="mb-3">
+                            {{ profile_form.birth_date|as_crispy_field }}
+                        </div>
+                        
+                        <!-- Profile Image -->
+                        <div class="mb-3">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    {{ profile_form.profile_image|as_crispy_field }}
+                                </div>
+                                <div class="col-md-4">
+                                    {% if profile.profile_image %}
+                                        <div class="current-profile-image text-center">
+                                            <p class="text-muted mb-2">Current Profile Image</p>
+                                            <img src="{{ profile.profile_image.url }}" alt="Profile Image" class="img-thumbnail" style="max-height: 150px;">
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Preferences -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Your Preferences</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            {{ profile_form.notification_preference|as_crispy_field }}
+                        </div>
+                        <div class="mb-3">
+                            {{ profile_form.receive_marketing_emails|as_crispy_field }}
+                        </div>
+                        <div class="mb-3">
+                            {{ profile_form.theme_preference|as_crispy_field }}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Submit Button -->
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Save Profile Changes
+                    </button>
+                </div>
+            </form>
+
+            <!-- Account Actions Card -->
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Account Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'users:manage_email' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-envelope me-2"></i>Manage Email Addresses
+                        </a>
+                        <a href="{% url 'users:manage_password' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-key me-2"></i>Change Password
+                        </a>
+                        <button 
+                            data-account-action="manage"
+                            data-deactivate-url="{% url 'users:deactivate_account' %}"
+                            data-deactivate-redirect-url="{% url 'users:account_inactive_message' %}"
+                            data-delete-url="{% url 'users:delete_account' %}"
+                            data-delete-redirect-url="{% url 'users:deleted_account' %}"
+                            class="btn btn-outline-danger mt-3">
+                            <i class="fas fa-user-slash me-2"></i>Deactivate/Delete Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle deactivate/delete account button
+            const accountActionButton = document.querySelector('[data-account-action="manage"]');
+            if (accountActionButton) {
+                accountActionButton.addEventListener('click', function() {
+                    // Show confirmation modal
+                    const confirmModal = new bootstrap.Modal(document.getElementById('accountActionModal'));
+                    confirmModal.show();
+                });
+            }
+            
+            // Handle deactivate account confirmation
+            const deactivateButton = document.getElementById('deactivateAccount');
+            if (deactivateButton) {
+                deactivateButton.addEventListener('click', function() {
+                    const deactivateUrl = accountActionButton.dataset.deactivateUrl;
+                    const redirectUrl = accountActionButton.dataset.deactivateRedirectUrl;
+                    
+                    // Send deactivate request
+                    fetch(deactivateUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken'),
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.href = data.redirect_url || redirectUrl;
+                        } else {
+                            showAlert('warning', data.error || 'An error occurred while deactivating your account.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showAlert('danger', 'An unexpected error occurred. Please try again later.');
+                    });
+                });
+            }
+            
+            // Handle delete account confirmation
+            const deleteButton = document.getElementById('deleteAccount');
+            if (deleteButton) {
+                deleteButton.addEventListener('click', function() {
+                    const deleteUrl = accountActionButton.dataset.deleteUrl;
+                    const redirectUrl = accountActionButton.dataset.deleteRedirectUrl;
+                    
+                    // Send delete request
+                    fetch(deleteUrl, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken'),
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.deleted) {
+                            window.location.href = redirectUrl;
+                        } else {
+                            showAlert('warning', data.error || 'An error occurred while deleting your account.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showAlert('danger', 'An unexpected error occurred. Please try again later.');
+                    });
+                });
+            }
+            
+            // Helper function to get CSRF token from cookies
+            function getCookie(name) {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop().split(';').shift();
+            }
+            
+            // Helper function to show alerts
+            function showAlert(type, message) {
+                const alertsContainer = document.createElement('div');
+                alertsContainer.className = 'alerts-container';
+                alertsContainer.style.position = 'fixed';
+                alertsContainer.style.top = '20px';
+                alertsContainer.style.right = '20px';
+                alertsContainer.style.zIndex = '9999';
+                
+                const alert = document.createElement('div');
+                alert.className = `alert alert-${type} alert-dismissible fade show`;
+                alert.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                
+                alertsContainer.appendChild(alert);
+                document.body.appendChild(alertsContainer);
+                
+                // Auto-remove after 5 seconds
+                setTimeout(() => {
+                    alert.classList.remove('show');
+                    setTimeout(() => alertsContainer.remove(), 150);
+                }, 5000);
+            }
+        });
+    </script>
+    
+    <!-- Account Action Modal -->
+    <div class="modal fade" id="accountActionModal" tabindex="-1" aria-labelledby="accountActionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="accountActionModalLabel">Account Actions</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Please select what you'd like to do with your account:
+                    </div>
+                    <div class="d-grid gap-3">
+                        <button id="deactivateAccount" class="btn btn-warning">
+                            <i class="fas fa-user-slash me-2"></i>Deactivate Account
+                            <small class="d-block mt-1">(You can reactivate later)</small>
+                        </button>
+                        <button id="deleteAccount" class="btn btn-danger">
+                            <i class="fas fa-trash-alt me-2"></i>Delete Account Permanently
+                            <small class="d-block mt-1">(This cannot be undone)</small>
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
