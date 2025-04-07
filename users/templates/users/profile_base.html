@@ -71,6 +71,9 @@
                 <a href="{% url 'users:profile_dashboard' %}" class="list-group-item list-group-item-action {% if active_tab == 'dashboard' %}active{% endif %}">
                     <i class="fas fa-tachometer-alt me-2"></i>Dashboard
                 </a>
+                <a href="{% url 'users:manage_profile' %}" class="list-group-item list-group-item-action {% if active_tab == 'profile' %}active{% endif %}">
+                    <i class="fas fa-user me-2"></i>Manage Profile
+                </a>
                 <a href="{% url 'users:manage_addresses' %}" class="list-group-item list-group-item-action {% if active_tab == 'addresses' %}active{% endif %}">
                     <i class="fas fa-map-marker-alt me-2"></i>Manage Addresses
                 </a>
