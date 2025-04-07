@@ -5,7 +5,6 @@ from allauth.account.models import EmailAddress
 from allauth.socialaccount.models import SocialAccount
 from allauth.account.utils import send_email_confirmation
 from allauth.account import app_settings as account_settings
-from allauth.socialaccount.forms import DisconnectForm
 # Updated form imports
 from .forms import (
     ContactForm, CustomAddEmailForm, CustomChangePasswordForm,
@@ -17,7 +16,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout, REDIRECT_FIELD_NAME, get_user_model
 from django.contrib import messages
 from django.urls import reverse_lazy
-from django.http import JsonResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
+from django.http import JsonResponse, HttpResponseRedirect, Http404
 from django.views.decorators.http import require_POST # For delete/set_default
 
 # Import Order model from shop app (adjust import path as necessary)
