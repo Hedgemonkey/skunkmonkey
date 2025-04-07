@@ -139,7 +139,10 @@ def manage_details(request):
     email_addresses = EmailAddress.objects.filter(user=user)
 
     return render(
-        request, "users/details.html", {'email_addresses': email_addresses}
+        request, "users/details.html", {
+            'email_addresses': email_addresses,
+            'active_tab': 'email',  # Add this to highlight the email tab
+        }
     )  # New template
 
 
@@ -161,8 +164,9 @@ def manage_email(request):
         'email_addresses': email_addresses,
         'form': form,
         'title': "Manage Email Addresses",
+        'active_tab': 'email',  # Add this to highlight the correct tab
     }
-    return render(request, "users/details.html", context)
+    return render(request, "users/email.html", context)
 
 
 @login_required

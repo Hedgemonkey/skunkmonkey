@@ -13,7 +13,7 @@
         <dt>Last name:</dt>
         <dd>{{ user.last_name }}</dd>
 
-        <dt>Member Since:</dt> <dd>{{ user.date_joined|date }}</dd>  </head> {# Format date as needed #}
+        <dt>Member Since:</dt> <dd>{{ user.date_joined|date }}</dd> {# Format date as needed #}
         <dt>Last Login:</dt> <dd>{{ user.last_login|date }}</dd> {# Format date as needed #}
 
         {% if user.is_staff or user.is_superuser %} 
@@ -29,8 +29,8 @@
             <dt>Permissions:</dt>
             <dd>
                 <ul>
-                    {% for permission in user.user_permissions.all %}  </head>
-                        <li>{{ permission.name }}</li>  </head>
+                    {% for permission in user.user_permissions.all %}
+                        <li>{{ permission.name }}</li>
                     {% endfor %}
                 </ul>
             </dd>
@@ -66,7 +66,7 @@
                 data-deactivate-url="{% url 'users:deactivate_account' %}"  
                 data-deactivate-redirect-url="{% url 'users:account_inactive_message' %}"
                 data-delete-url="{% url 'users:delete_account' %}"
-                data-delete-redirect-url="{% url 'users:account_deleted' %}"
+                data-delete-redirect-url="{% url 'users:deleted_account' %}"
                 id="deactivate-delete-link"
                 class="btn btn-warning btn-block mb-2">
                 Deactivate/Delete Account
