@@ -135,7 +135,7 @@ def manage_details(request):
 
 def manage_email(request):
     """Email management view"""
-    form = CustomAddEmailForm()
+    form = CustomAddEmailForm(request)
     if request.method == "POST":
         if 'resend' in request.POST:  # Resend verification
             email_to_verify = request.POST.get('resend_email')
@@ -144,7 +144,7 @@ def manage_email(request):
                 if email_address.verified:
                     messages.info(request, "Email is already verified")
                 else:
-                    send_email_confirmation(request, email_address, signup=False) # Resend verification email. email_address.verified = False done automatically.
+                    send_email_confirmation(request, request.user, signup=False, email=email_address.email) # Resend verification email
                     messages.success(request, f"Verification email resent to {email_to_verify}")
             except EmailAddress.DoesNotExist:
                 messages.error(request, "Email address not found")
@@ -154,7 +154,7 @@ def manage_email(request):
             email_to_primary = request.POST.get('email') # get the address
             try:
                 email_address = EmailAddress.objects.get(user=request.user, email__iexact=email_to_primary) # add user to the query
-                if email_address.verified == True: # check email is verified
+                if email_address.verified: # check email is verified (removed == True for cleaner code)
                     email_address.set_as_primary() # Set as primary
                     messages.success(request, f"{email_to_primary} set as your primary email address.")
                 else:
@@ -164,34 +164,45 @@ def manage_email(request):
 
 
         elif 'remove' in request.POST:
-            # ... (remove logic)
-            pass
+            email_to_remove = request.POST.get('email')
+            try:
+                email_address = EmailAddress.objects.get(user=request.user, email__iexact=email_to_remove)
+                
+                # Don't allow removing the primary email
+                if email_address.primary:
+                    messages.error(request, "You cannot remove your primary email address. Set another email as primary first.")
+                else:
+                    email_address.delete()
+                    messages.success(request, f"{email_to_remove} has been removed.")
+            except EmailAddress.DoesNotExist:
+                messages.error(request, "Email address not found")
 
-        elif 'email' in request.POST: # Add email form submission
-            if not request.user.is_authenticated: #check if user is authenticated
+        else:  # Add email form submission - simplified condition
+            if not request.user.is_authenticated:
                 return redirect('account_login')
             
-            form = CustomAddEmailForm(request, request.POST) # Create form with request and initial data
+            form = CustomAddEmailForm(request, request.POST) # Create form with request and POST data
             if form.is_valid():
-                email_address = form.save(request) # Save the email address
-
-                if account_settings.EMAIL_VERIFICATION == account_settings.EmailVerificationMethod.MANDATORY:
-                    # send_email_confirmation(request, request.user, signup=False)
-                    messages.info(request, f"Confirmation email sent to {email_address}. Please verify.")
-
-                else:
-                    messages.success(request, f"{email_address} added.")
-
-                form = CustomAddEmailForm(request) # Create a new blank form
+                try:
+                    email_address = form.save(request) # Save the email address
+                    
+                    if account_settings.EMAIL_VERIFICATION == account_settings.EmailVerificationMethod.MANDATORY:
+                        messages.info(request, f"Confirmation email sent to {form.cleaned_data['email']}. Please verify.")
+                    else:
+                        messages.success(request, f"{form.cleaned_data['email']} added.")
+                    
+                    # Create a new blank form
+                    form = CustomAddEmailForm(request)
+                except Exception as e:
+                    messages.error(request, f"Error adding email address: {str(e)}")
             else:
-                messages.error(request, "Error adding email address")
+                # Form validation errors will be displayed on the form itself
+                messages.error(request, "Please correct the errors below.")
 
 
-    else:  # GET request (initial load)
-        form = CustomAddEmailForm(request)
-
-
-    email_addresses = EmailAddress.objects.filter(user=request.user) # Get email addresses *after* form processing
+    # Get email addresses *after* form processing to ensure the data is fresh
+    email_addresses = EmailAddress.objects.filter(user=request.user)
+    
     return render(request, 'users/email.html', {
         'form': form, 
         'title': "Manage Email Addresses", 
