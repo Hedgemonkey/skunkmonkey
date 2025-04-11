@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse, Http404
 from django.urls import reverse, reverse_lazy
-from django.contrib.auth import logout, get_user_model
+from django.contrib.auth import logout, get_user_model, login as auth_login
 from django.views.decorators.http import require_POST
 from allauth.account.models import EmailAddress
 from allauth.account.utils import send_email_confirmation
@@ -45,6 +45,7 @@ def contact(request):
 class CustomLoginView(LoginView):
     success_url = reverse_lazy('home')
     form_class = CustomLoginForm
+    template_name = 'allauth/account/login.html'
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -56,13 +57,16 @@ class CustomLoginView(LoginView):
         return context
 
     def form_valid(self, form):
+        # Set session expiry based on remember me checkbox
         if form.cleaned_data.get('remember'):
             self.request.session.set_expiry(60 * 60 * 24 * 7)  # 1 week
         else:
             self.request.session.set_expiry(0)  # Expire on browser close
 
-        response = super().form_valid(form)
+        # Call the parent class form_valid method which handles authentication
+        auth_login(self.request, form.get_user())
 
+        # Check user status after login
         user = self.request.user
         if user:
             if not user.is_active:
@@ -89,7 +93,7 @@ class CustomLoginView(LoginView):
                 )
                 return redirect(reverse('account_email_verification_required'))
 
-        return response
+        return redirect(self.get_success_url())
 
 
 login = CustomLoginView.as_view()
@@ -328,32 +332,33 @@ def manage_profile(request):
             request.FILES,
             instance=user_profile
         )
-        
+
         # Process cropped image data if provided
         cropped_image_data = request.POST.get('cropped_image_data')
-        
+
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile = profile_form.save(commit=False)
-            
+
             # Handle cropped image if available
-            if cropped_image_data and cropped_image_data.startswith('data:image'):
+            if cropped_image_data and cropped_image_data.startswith(
+                    'data:image'):
                 # Import necessary modules
                 import base64
                 import uuid
                 from django.core.files.base import ContentFile
-                
+
                 # Parse the base64 image data
                 format, imgstr = cropped_image_data.split(';base64,')
                 ext = format.split('/')[-1]
-                
+
                 # Generate a unique filename
                 filename = f"{uuid.uuid4()}.{ext}"
-                
+
                 # Convert base64 to file and save to profile
                 data = ContentFile(base64.b64decode(imgstr), name=filename)
                 profile.profile_image = data
-            
+
             profile.save()
             messages.success(
                 request, 'Your profile has been updated successfully.'

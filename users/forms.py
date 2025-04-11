@@ -6,6 +6,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Submit, HTML
 from django.contrib.auth import get_user_model
 from .models import Address, UserProfile
+from .widgets import ProfileImageCropperWidget
 
 
 class ContactForm(forms.Form):
@@ -95,6 +96,12 @@ class CustomLoginForm(LoginForm):
         )
         self.helper.form_tag = False
 
+    def get_user(self):
+        """Return authenticated user after successful login."""
+        if not hasattr(self, '_user'):
+            self._user = self.user
+        return self._user
+
 
 class AddressForm(forms.ModelForm):
     """Form for creating and editing Address objects."""
@@ -144,6 +151,7 @@ class ProfileForm(forms.ModelForm):
         widgets = {
             'birth_date': forms.DateInput(attrs={'type': 'date'}),
             'bio': forms.Textarea(attrs={'rows': 3}),
+            'profile_image': ProfileImageCropperWidget(),
         }
 
     def __init__(self, *args, **kwargs):
