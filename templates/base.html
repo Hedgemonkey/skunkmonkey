@@ -37,9 +37,7 @@
     {% block extra_css %}
         {# Template-specific CSS files can be included here #}
     {% endblock %}
-    {% block js %}
-        <script src="{% static 'bundles/js/main.js' %}?v=2"></script>
-    {% endblock %}
+
     {% block messages-js %}
     <script>
         const messages = []; // Initialize an empty array
@@ -49,8 +47,6 @@
                 tags: "{{ message.tags|escapejs }}"
             });
         {% endfor %}
-    
-        // Now you can use the 'messages' array in your JavaScript
     </script>
     {% endblock %}
 
@@ -89,7 +85,21 @@
             </div>
         </footer>
     {% endblock %}
+    
+    <!-- Main JavaScript bundle - at end of body for better performance -->
+    {% block js %}
+        <!-- Load vendors.js first (contains Bootstrap dependencies) -->
+        <script src="{% static 'bundles/vendors.js' %}?v=2"></script>
+        <!-- Load shared dependencies -->
+        <script src="{% static 'bundles/shared.js' %}?v=2"></script>
+        <!-- Load main application JS -->
+        <script src="{% static 'bundles/js/main.js' %}?v=2"></script>
+    {% endblock %}
+    
     {% block postloadjs %}
+    {% endblock %}
+    
+    {% block extra_js %}
     {% endblock %}
 </body>
 </html>
