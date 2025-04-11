@@ -1,6 +1,7 @@
 // webpack.config.js
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const webpack = require('webpack');
 
 module.exports = {
   mode: 'development',
@@ -60,19 +61,28 @@ module.exports = {
       dependOn: 'shared',
     },
     'js/users/profile_cropper': './users/static/js/users/profile_cropper.js', // Updated path to correct location
+    'js/users/account_actions': './users/static/js/users/account_actions.js', // Added account actions JS
     'css/profile': './users/static/users/css/profile.css',
     
     // Common modules
     'js/common/image_cropper': './static/js/common/image_cropper.js', // Added shared image cropper module
     
     // Shared dependencies
-    'shared': ['jquery', 'bootstrap'],
+    'shared': ['jquery', 'bootstrap', 'cropperjs', 'cropperjs/dist/cropper.min.css'],
   },
   output: {
     path: path.resolve(__dirname, 'static/bundles/'), // Output directory for bundles
     filename: '[name].js',                            // Output JS filename pattern
     publicPath: '/static/bundles/',                   // Public path for accessing bundles
     clean: true, // Clean the output directory before emit
+    // Ensure proper library name for global access
+    library: {
+      name: '[name]',
+      type: 'window',
+      export: 'default',
+      umdNamedDefine: true,
+    },
+    globalObject: 'this', // Use 'this' to ensure exports are globally accessible
   },
   module: {
     rules: [
@@ -111,6 +121,19 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: '[name].css',
     }),
+    // Explicitly provide jQuery and Bootstrap to all modules
+    new webpack.ProvidePlugin({
+      $: 'jquery',
+      jQuery: 'jquery',
+      'window.jQuery': 'jquery',
+      'window.$': 'jquery',
+      bootstrap: ['bootstrap/dist/js/bootstrap.bundle.js', 'default'],
+      Cropper: 'cropperjs',
+      // Expose image cropper globally
+      ImageCropper: ['./static/js/common/image_cropper.js', 'default'],
+      // Expose profile cropper globally
+      ProfileCropper: ['./users/static/js/users/profile_cropper.js', 'default'],
+    }),
   ],
   optimization: {
     splitChunks: {
@@ -120,6 +143,7 @@ module.exports = {
           test: /[\\/]node_modules[\\/]/,
           name: 'vendors',
           chunks: 'all',
+          enforce: true
         },
       },
     },
