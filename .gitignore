@@ -20,3 +20,14 @@ logs/
 extensions.txt
 *.sqlite
 *.sqlite3
+
+# Generated webpack bundles
+static/bundles/
+staticfiles/bundles/
+
+# Media files (user uploads)
+media/profile_images/
+media/product_images/
+
+# Generated sourcemaps
+*.map
