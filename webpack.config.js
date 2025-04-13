@@ -15,6 +15,7 @@ module.exports = {
     'css/styles': [
       './node_modules/select2/dist/css/select2.css',
       './node_modules/select2-bootstrap-5-theme/dist/select2-bootstrap-5-theme.min.css',
+      './node_modules/@fortawesome/fontawesome-free/css/all.min.css', // Add Font Awesome CSS
       './static/css/main.css',
     ],
     
@@ -68,21 +69,16 @@ module.exports = {
     'js/common/image_cropper': './static/js/common/image_cropper.js', // Added shared image cropper module
     
     // Shared dependencies
-    'shared': ['jquery', 'bootstrap', 'cropperjs', 'cropperjs/dist/cropper.min.css'],
+    'shared': ['jquery', 'bootstrap', 'cropperjs', 'cropperjs/dist/cropper.min.css', '@fortawesome/fontawesome-free/js/all.min.js'], // Add Font Awesome JS
   },
   output: {
     path: path.resolve(__dirname, 'static/bundles/'), // Output directory for bundles
     filename: '[name].js',                            // Output JS filename pattern
     publicPath: '/static/bundles/',                   // Public path for accessing bundles
     clean: true, // Clean the output directory before emit
-    // Ensure proper library name for global access
-    library: {
-      name: '[name]',
-      type: 'window',
-      export: 'default',
-      umdNamedDefine: true,
-    },
-    globalObject: 'this', // Use 'this' to ensure exports are globally accessible
+    // Simpler library configuration - treat every module as a library that assigns to window
+    libraryTarget: 'window',
+    library: '[name]'
   },
   module: {
     rules: [
@@ -129,10 +125,6 @@ module.exports = {
       'window.$': 'jquery',
       bootstrap: ['bootstrap/dist/js/bootstrap.bundle.js', 'default'],
       Cropper: 'cropperjs',
-      // Expose image cropper globally
-      ImageCropper: ['./static/js/common/image_cropper.js', 'default'],
-      // Expose profile cropper globally
-      ProfileCropper: ['./users/static/js/users/profile_cropper.js', 'default'],
     }),
   ],
   optimization: {
