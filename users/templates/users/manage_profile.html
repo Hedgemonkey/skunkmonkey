@@ -223,6 +223,11 @@
     </div>
 {% endblock %}
 
+{% block extra_css %}
+    {{ block.super }}
+    <!-- No external CSS references needed -->
+{% endblock %}
+
 {% block extra_js %}
     {{ block.super }}
     
