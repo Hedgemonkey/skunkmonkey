@@ -1,11 +1,11 @@
 /**
- * api-client-examples.js - Examples of how to use the API client
+ * API Client Examples
  * 
- * This file provides practical examples of using the API client
- * with the product and category management functionality.
+ * This file contains example usage of the API client.
  */
+
 import apiClient from './api-client.js';
-import notifications from '../products/static/js/utilities/notifications.js';
+import notifications from '@products/utilities/notifications.js';
 
 /**
  * Example: Integrating API client with ProductManager

@@ -3,7 +3,7 @@
  * Handles wishlist functionality for the shop
  */
 
-import apiClient from '/static/js/api-client.js';
+import apiClient from '@core/api-client.js';
 
 /**
  * WishlistManager class for handling wishlist functionality

@@ -7,7 +7,8 @@
  * updating the UI, and displaying notifications.
  */
 
-import apiClient from '/static/js/api-client.js';
+// Use path alias instead of absolute path
+import apiClient from '@core/api-client.js';
 
 /**
  * ComparisonManager class for handling product comparison functionality

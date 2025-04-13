@@ -2,8 +2,8 @@
  * Catalog Manager - handles product catalog browsing
  * Leverages existing api-client.js for API interactions
  */
-import apiClient from '../../../../static/js/api-client.js';
-import { BaseManager } from '../../../../products/static/js/utilities/base-manager.js';
+import apiClient from '@core/api-client.js';
+import { BaseManager } from '@products/utilities/base-manager.js';
 import Swal from 'sweetalert2';
 
 /**
