@@ -1,6 +1,6 @@
 /**
  * notifications.js - Utility module for handling notifications
- * 
+ *
  * Provides consistent notification methods using SweetAlert2
  */
 import Swal from 'sweetalert2';
@@ -23,7 +23,7 @@ export class NotificationManager {
             timerProgressBar: true
         });
     }
-    
+
     /**
      * Display error notification
      * @param {string} message - Error message to display
@@ -36,7 +36,7 @@ export class NotificationManager {
             confirmButtonColor: '#0d6efd'
         });
     }
-    
+
     /**
      * Display warning notification
      * @param {string} message - Warning message to display
@@ -49,7 +49,7 @@ export class NotificationManager {
             confirmButtonColor: '#0d6efd'
         });
     }
-    
+
     /**
      * Display information notification
      * @param {string} message - Information message to display
@@ -62,7 +62,7 @@ export class NotificationManager {
             confirmButtonColor: '#0d6efd'
         });
     }
-    
+
     /**
      * Display error notification from AJAX response
      * @param {Object} error - Error object from AJAX response
@@ -70,16 +70,16 @@ export class NotificationManager {
      */
     displayAjaxError(error, defaultMessage = 'An error occurred. Please try again.') {
         let errorMessage = defaultMessage;
-        
+
         if (error.responseJSON && error.responseJSON.error) {
             errorMessage = error.responseJSON.error;
         } else if (error.message) {
             errorMessage = error.message;
         }
-        
+
         this.displayError(errorMessage);
     }
-    
+
     /**
      * Display confirmation dialog
      * @param {Object} options - Configuration options for the dialog
@@ -96,10 +96,10 @@ export class NotificationManager {
             confirmButtonText: 'Yes',
             cancelButtonText: 'No'
         };
-        
+
         return Swal.fire({...defaults, ...options});
     }
-    
+
     /**
      * Display prompt dialog
      * @param {Object} options - Configuration options for the dialog
@@ -119,10 +119,10 @@ export class NotificationManager {
                 }
             }
         };
-        
+
         return Swal.fire({...defaults, ...options});
     }
-    
+
     /**
      * Show loading indicator
      * @param {string} message - Message to display with the loading indicator
@@ -136,7 +136,7 @@ export class NotificationManager {
             }
         });
     }
-    
+
     /**
      * Close any open notification
      */

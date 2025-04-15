@@ -3,56 +3,60 @@ Shop application views
 Organized by functionality into separate modules
 """
 
-# Import all views to make them available from the views module
-from .cart_views import CartDetailView, CartAddView, CartRemoveView, CartUpdateQuantityView
-from .product_views import ProductListView, ProductDetailView, ProductSearchView, product_list_ajax
-from .payment_views import CreatePaymentIntentView, cache_checkout_data, reset_payment_intent
-from .checkout_views import (
-    CheckoutView, CheckoutSuccessView, OrderDetailView,
-    payment_cancel, recover_payment_intent
+from .ajax_views import (
+    AjaxCartCountView, AjaxProductListView, AjaxQuickViewView,
 )
-from .wishlist_views import WishlistView, ToggleWishlistView, toggle_wishlist
-from .ajax_views import AjaxCartCountView, AjaxProductListView, AjaxQuickViewView
-
-# Import comparison views
-from .comparison_views import ComparisonView, AddToComparisonView, RemoveFromComparisonView
-
-# Import order history views
-from .order_views import OrderHistoryView, OrderCompleteView, OrderDetailView
-
 # For backwards compatibility
+# Import all views to make them available from the views module
 from .cart_views import (
-    CartDetailView as cart_detail,
-    CartAddView as cart_add,
-    CartRemoveView as cart_remove,
-    CartUpdateQuantityView as cart_update_quantity
+    CartAddView, CartAddView as cart_add, CartDetailView,
+    CartDetailView as cart_detail, CartRemoveView,
+    CartRemoveView as cart_remove, CartUpdateQuantityView,
+    CartUpdateQuantityView as cart_update_quantity,
 )
+from .checkout_views import (
+    CheckoutSuccessView, CheckoutView, payment_cancel, recover_payment_intent,
+)
+# Import comparison views
+from .comparison_views import (
+    AddToComparisonView, ComparisonView, RemoveFromComparisonView,
+)
+# Import OrderDetailView from only one module to avoid redefinition
+# Import order history views
+from .order_views import OrderCompleteView, OrderDetailView, OrderHistoryView
+from .payment_views import (
+    CreatePaymentIntentView, cache_checkout_data, reset_payment_intent,
+)
+from .product_views import (
+    ProductDetailView, ProductListView, ProductSearchView, product_list_ajax,
+)
+from .wishlist_views import ToggleWishlistView, WishlistView, toggle_wishlist
 
 # Expose all views at package level
 __all__ = [
     # Cart views
     'CartDetailView', 'CartAddView', 'CartRemoveView', 'CartUpdateQuantityView',
     'cart_detail', 'cart_add', 'cart_remove', 'cart_update_quantity',
-    
+
     # Product views
     'ProductListView', 'ProductDetailView', 'ProductSearchView', 'product_list_ajax',
-    
+
     # Payment views
     'CreatePaymentIntentView', 'cache_checkout_data', 'reset_payment_intent',
-    
+
     # Checkout views
     'CheckoutView', 'CheckoutSuccessView', 'OrderDetailView',
     'payment_cancel', 'recover_payment_intent',
-    
+
     # Wishlist views
     'WishlistView', 'ToggleWishlistView', 'toggle_wishlist',
-    
+
     # Comparison views
     'ComparisonView', 'AddToComparisonView', 'RemoveFromComparisonView',
-    
+
     # Order views
     'OrderHistoryView', 'OrderCompleteView', 'OrderDetailView',
-    
+
     # AJAX views
     'AjaxCartCountView', 'AjaxProductListView', 'AjaxQuickViewView',
 ]
