@@ -11,15 +11,15 @@ import wishlistManager from './wishlist-manager.js';
 function initWishlist() {
     // The wishlist manager is automatically initialized on import,
     // but we can perform additional initialization here if needed
-    
+
     // Check if we're on the wishlist page
     const isWishlistPage = window.location.pathname.includes('/wishlist/');
-    
+
     if (isWishlistPage) {
         // Initialize special wishlist page functionality
         initWishlistPage();
     }
-    
+
     console.log('[WishlistInitializer] Wishlist functionality initialized');
 }
 
@@ -29,7 +29,7 @@ function initWishlist() {
 function initWishlistPage() {
     // Add any wishlist page specific functionality here
     console.log('[WishlistInitializer] Wishlist page specific functionality initialized');
-    
+
     // Example: Add empty wishlist check
     const wishlistItems = document.querySelectorAll('.wishlist-item, .product-card');
     if (wishlistItems.length === 0) {

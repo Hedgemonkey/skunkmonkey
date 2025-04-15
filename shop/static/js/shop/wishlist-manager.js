@@ -31,7 +31,7 @@ class WishlistManager {
             this.initializeWishlistItems();
             this.initEventListeners();
             this.checkSweetAlert2Availability();
-            
+
             // Process any queued toasts once SweetAlert2 is available
             document.addEventListener('swal2-initialized', () => {
                 this.log('SweetAlert2 initialized event received, processing queued toasts');
@@ -120,7 +120,7 @@ class WishlistManager {
     loadSweetAlert2Dynamically() {
         if (typeof window.Swal === 'undefined') {
             this.log('Attempting to load SweetAlert2 dynamically');
-            
+
             const script = document.createElement('script');
             script.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
             script.onload = () => {
@@ -140,7 +140,7 @@ class WishlistManager {
     initEventListeners() {
         // Use a single unified selector for all wishlist buttons
         const wishlistBtnSelector = '.wishlist-btn, .add-to-wishlist-btn, .remove-wishlist-btn';
-        
+
         // Handle existing buttons
         document.querySelectorAll(wishlistBtnSelector).forEach(btn => {
             if (!btn.hasAttribute('data-event-bound')) {

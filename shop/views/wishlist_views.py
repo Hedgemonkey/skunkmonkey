@@ -10,10 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.http import (
-    HttpRequest,
-    HttpResponse,
-    HttpResponseNotAllowed,
-    HttpResponseRedirect,
+    HttpRequest, HttpResponse, HttpResponseNotAllowed, HttpResponseRedirect,
     JsonResponse,
 )
 from django.shortcuts import get_object_or_404, redirect
@@ -23,6 +20,7 @@ from django.views.generic import ListView, View
 
 # Local Imports
 from products.models import Product
+
 from ..models import WishlistItem
 
 # Configure logger for this module
