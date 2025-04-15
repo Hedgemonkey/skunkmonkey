@@ -16,7 +16,8 @@ with open(template_path, 'r') as f:
 # Search for incorrect default filter usages
 incorrect_patterns = [
     r'\{\{\s*([^}|]+)\|default\s*\}\}',  # {{ value|default }}
-    r'\{\{\s*([^}|]+)\|default:\s+"?([^"}]+)"?\s*\}\}',  # {{ value|default: "value" }}
+    r'\{\{\s*([^}|]+)\|default:\s+"?([^"}]+)"?\s*\}\}',
+    # {{ value|default: "value" }}
 ]
 
 print("Analyzing template for default filter errors...")
@@ -27,13 +28,13 @@ for pattern in incorrect_patterns:
     for match in matches:
         found_errors = True
         print(f"Found incorrect default filter: {match.group(0)}")
-        
+
         # For the first pattern (missing default value)
         if "|default }}" in match.group(0):
             variable = match.group(1).strip()
             suggested_fix = f"{{ {variable}|default:\"\" }}"
             print(f"  Suggested fix: {suggested_fix}")
-            
+
         # For the second pattern (space after colon)
         elif "|default: " in match.group(0):
             variable = match.group(1).strip()

@@ -11,7 +11,7 @@ echo "=== Making structured git commits for code quality improvements ==="
 commit_changes() {
   local message=$1
   local scope=$2
-  
+
   # Stage specific files based on scope
   if [ "$scope" = "all" ]; then
     git add .
@@ -31,7 +31,7 @@ commit_changes() {
       fi
     done
   fi
-  
+
   # Check if there are staged changes before committing
   if git diff --staged --quiet; then
     echo "No changes to commit for: $message"
@@ -72,3 +72,4 @@ echo "6. Made structured git commits for each improvement type"
 echo ""
 echo "You should periodically run the fix_code_quality.sh script to maintain code quality"
 echo "New applications will be automatically detected and processed"
+

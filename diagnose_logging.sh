@@ -40,9 +40,9 @@ if [ -d "$LOGS_DIR" ]; then
     PERMISSIONS=$(ls -ld "$LOGS_DIR" | awk '{print $1}')
     OWNER=$(ls -ld "$LOGS_DIR" | awk '{print $3}')
     GROUP=$(ls -ld "$LOGS_DIR" | awk '{print $4}')
-    
+
     echo "Logs directory permissions: $PERMISSIONS ($OWNER:$GROUP)"
-    
+
     # Check if the directory is writable by the current user
     if [ -w "$LOGS_DIR" ]; then
         echo -e "${GREEN}✓ Logs directory is writable by the current user${NC}"
@@ -52,7 +52,7 @@ if [ -d "$LOGS_DIR" ]; then
         chmod -R 755 "$LOGS_DIR"
         echo "Permissions updated to allow writing."
     fi
-    
+
     # Create a test file to verify write permissions
     TEST_FILE="$LOGS_DIR/test_permissions.log"
     if touch "$TEST_FILE" 2>/dev/null; then
@@ -74,28 +74,28 @@ SETTINGS_FILE="$PROJECT_DIR/skunkmonkey/settings.py"
 
 if [ -f "$SETTINGS_FILE" ]; then
     echo -e "${GREEN}✓ Found settings.py file${NC}"
-    
+
     # Check if LOGS_DIR is defined in settings
     if grep -q "LOGS_DIR" "$SETTINGS_FILE"; then
         echo -e "${GREEN}✓ LOGS_DIR is defined in settings.py${NC}"
     else
         echo -e "${RED}✗ LOGS_DIR is not defined in settings.py${NC}"
     fi
-    
+
     # Check if logging configuration exists
     if grep -q "'handlers': {" "$SETTINGS_FILE"; then
         echo -e "${GREEN}✓ Logging handlers configuration found${NC}"
     else
         echo -e "${RED}✗ Logging handlers configuration not found${NC}"
     fi
-    
+
     # Check for file handlers
     if grep -q "'class': 'logging.FileHandler'" "$SETTINGS_FILE"; then
         echo -e "${GREEN}✓ FileHandler configuration found${NC}"
     else
         echo -e "${RED}✗ FileHandler configuration not found${NC}"
     fi
-    
+
     # Check if DEBUG mode is enabled
     if grep -q "DEBUG = True" "$SETTINGS_FILE" || grep -q "DEBUG = env.bool" "$SETTINGS_FILE"; then
         echo -e "${GREEN}DEBUG mode is likely enabled (check environment variables too)${NC}"
