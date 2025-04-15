@@ -147,7 +147,7 @@ $(function () {
 
     async function handleAccountAction(action) {
         let actionUrl, actionText, successMessage, method;
-    
+
         if (action === 'deactivate') {
             actionUrl = $("#deactivate-delete-link").data('deactivate-url');
             actionText = 'deactivate';
@@ -161,8 +161,8 @@ $(function () {
         } else {
             return; // Invalid action, do nothing
         }
-    
-    
+
+
         try {
             const response = await fetch(actionUrl, {
                 method: method,
@@ -171,19 +171,19 @@ $(function () {
                     'X-CSRFToken': getCookie('csrftoken')
                 }
             });
-    
+
             if (!response.ok) { //check for server errors first
                 const data = await response.json();  // Attempt to parse server error response as JSON
                     if (data && data.messages){
                         displayMessages(data.messages);
-    
+
                     } else {
                         const errorText = (data && data.error) ? data.error : `Server responded with status ${response.status} (${response.statusText})`; //Check for error messages from server
                         throw new Error(errorText);
-    
+
                     }
-    
-    
+
+
             } else {
                 Swal.fire(
                     `${successMessage}!`,
@@ -192,26 +192,26 @@ $(function () {
                 ).then(() => {
                     if (action === 'delete'){
                         setTimeout(() => { window.location.href = redirectUrl; }, 2000) //Redirect after slight delay to allow message to be seen
-    
+
                     } else {
                         window.location.href = redirectUrl; // Redirect immediately after deactivation
-    
+
                     }
-    
+
                 });
-    
+
             }
-    
-    
-    
-    
+
+
+
+
         } catch (error) {  // Catch any errors during the fetch or processing
-    
+
            displayMessage('Error', error.message, 'error'); // Show error message from server if received, or the generic message.
         }
-    
+
     }
-    
+
 
     $(document).on('click', '#deactivate-delete-link', function (event) {
         event.preventDefault();
@@ -243,7 +243,7 @@ $(function () {
             denyButtonColor: '#d33',     // Red for Delete
             confirmButtonText: 'Deactivate',
             denyButtonText: `Delete`, // Text for delete button
-            
+
             // Function to disable/enable delete button based on checkbox
             didOpen: () => {
                 const deleteCheckbox = document.getElementById('permanent-delete-checkbox');

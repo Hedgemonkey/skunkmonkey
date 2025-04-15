@@ -1,6 +1,6 @@
 /**
  * Common Image Cropper Module
- * 
+ *
  * This module provides reusable image cropping functionality using Cropper.js.
  * It can be imported by any application that needs image cropping capabilities.
  */
@@ -17,16 +17,16 @@ console.log('Image Cropper module loading...');
 const ImageCropper = {
     // Track if we're initialized
     initialized: false,
-    
+
     // Store the current cropper instance
     cropperInstance: null,
-    
+
     // Store references to DOM elements
     elements: {},
-    
+
     /**
      * Initialize image cropper functionality
-     * 
+     *
      * @param {Object} options - Configuration options
      * @param {string} options.fileInputSelector - Selector for the file input element
      * @param {string} options.modalSelector - Selector for the modal element
@@ -43,9 +43,9 @@ const ImageCropper = {
             console.log('ImageCropper already initialized, cleaning up first');
             this.cleanUp();
         }
-        
+
         console.log('ImageCropper.init() called with options:', options);
-        
+
         // Default options
         const defaultOptions = {
             cropperOptions: {
@@ -62,13 +62,13 @@ const ImageCropper = {
                 toggleDragModeOnDblclick: false,
             }
         };
-        
+
         // Merge provided options with defaults
         const config = { ...defaultOptions, ...options };
-        
+
         // Store config for later reference
         this.config = config;
-        
+
         // Elements
         this.elements.fileInput = document.querySelector(config.fileInputSelector);
         this.elements.cropperModal = document.querySelector(config.modalSelector);
@@ -77,7 +77,7 @@ const ImageCropper = {
         this.elements.previewImage = config.previewSelector ? document.querySelector(config.previewSelector) : null;
         this.elements.previewContainer = config.previewContainerSelector ? document.querySelector(config.previewContainerSelector) : null;
         this.elements.croppedImageData = document.querySelector(config.croppedDataInputSelector);
-        
+
         console.log('Elements found:', {
             fileInput: this.elements.fileInput ? 'Yes' : 'No',
             cropperModal: this.elements.cropperModal ? 'Yes' : 'No',
@@ -87,7 +87,7 @@ const ImageCropper = {
             previewContainer: this.elements.previewContainer ? 'Yes' : 'No',
             croppedImageData: this.elements.croppedImageData ? 'Yes' : 'No'
         });
-        
+
         // Enhanced debugging - show IDs of elements that were found
         if (this.elements.fileInput) {
             console.log(`File input found with ID: ${this.elements.fileInput.id}`);
@@ -95,7 +95,7 @@ const ImageCropper = {
             console.warn(`File input not found with selector: ${config.fileInputSelector}`);
             console.log('Available file inputs:', Array.from(document.querySelectorAll('input[type="file"]')).map(el => el.id || 'no-id'));
         }
-        
+
         // Control elements
         this.elements.zoomInButton = document.querySelector('#zoom-in');
         this.elements.zoomOutButton = document.querySelector('#zoom-out');
@@ -106,11 +106,11 @@ const ImageCropper = {
         this.elements.rotateLeftButton = document.querySelector('#rotate-left');
         this.elements.rotateRightButton = document.querySelector('#rotate-right');
         this.elements.rotateSlider = document.querySelector('#rotate-slider');
-        
+
         // Only proceed if we have the necessary elements
         if (!this.elements.fileInput || !this.elements.cropperModal || !this.elements.cropperImage || !this.elements.cropButton || !this.elements.croppedImageData) {
             console.error('Missing required elements. Cropper initialization aborted.');
-            
+
             // Enhanced debugging for missing elements
             const missingElements = [];
             if (!this.elements.fileInput) missingElements.push(`fileInput (${config.fileInputSelector})`);
@@ -118,13 +118,13 @@ const ImageCropper = {
             if (!this.elements.cropperImage) missingElements.push(`cropperImage (${config.cropperImageSelector})`);
             if (!this.elements.cropButton) missingElements.push(`cropButton (${config.cropButtonSelector})`);
             if (!this.elements.croppedImageData) missingElements.push(`croppedImageData (${config.croppedDataInputSelector})`);
-            
+
             console.error('Missing elements:', missingElements.join(', '));
             return;
         }
-        
+
         // Bootstrap modal instance
-        this.bsModal = null; 
+        this.bsModal = null;
 
         // Initialize Bootstrap modal if available
         if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
@@ -133,38 +133,38 @@ const ImageCropper = {
         } else {
             console.log('Bootstrap Modal not available, will use jQuery fallback');
         }
-        
+
         // Setup event listeners
         this.setupEventListeners();
-        
+
         // Mark as initialized
         this.initialized = true;
-        
+
         console.log('Image cropper setup complete');
     },
-    
+
     /**
      * Set up event listeners
      */
     setupEventListeners: function() {
         // Remove any existing event listeners first to prevent duplicates
         this.removeEventListeners();
-        
+
         // File input change event
         this.fileChangeHandler = this.handleFileInputChange.bind(this);
         this.elements.fileInput.addEventListener('change', this.fileChangeHandler);
-        
+
         // Crop button click event
         this.cropButtonHandler = this.handleCropButtonClick.bind(this);
         this.elements.cropButton.addEventListener('click', this.cropButtonHandler);
-        
+
         // Modal hidden event
         this.modalHiddenHandler = this.handleModalHidden.bind(this);
         this.elements.cropperModal.addEventListener('hidden.bs.modal', this.modalHiddenHandler);
-        
+
         // Set up control button events
         this.setupControlEvents();
-        
+
         // Close button event handler
         const closeButtons = this.elements.cropperModal.querySelectorAll('[data-bs-dismiss="modal"]');
         if (closeButtons.length) {
@@ -174,7 +174,7 @@ const ImageCropper = {
             });
         }
     },
-    
+
     /**
      * Remove event listeners to prevent memory leaks
      */
@@ -184,21 +184,21 @@ const ImageCropper = {
             this.elements.fileInput.removeEventListener('change', this.fileChangeHandler);
             this.fileChangeHandler = null;
         }
-        
+
         if (this.elements.cropButton && this.cropButtonHandler) {
             this.elements.cropButton.removeEventListener('click', this.cropButtonHandler);
             this.cropButtonHandler = null;
         }
-        
+
         if (this.elements.cropperModal && this.modalHiddenHandler) {
             this.elements.cropperModal.removeEventListener('hidden.bs.modal', this.modalHiddenHandler);
             this.modalHiddenHandler = null;
         }
-        
+
         // Control buttons are handled in cleanUpControlEvents
         this.cleanUpControlEvents();
     },
-    
+
     /**
      * Handle file input change event
      */
@@ -211,27 +211,27 @@ const ImageCropper = {
             console.warn('No file selected or change event fired without files');
         }
     },
-    
+
     /**
      * Process the selected file
      */
     processFile: function(file) {
         if (!file) return;
-        
+
         console.log('Processing file:', file.name);
-        
+
         if (!file.type.match('image.*')) {
             alert('Please select an image file');
             return;
         }
-        
+
         // Clean up any existing cropper instance
         this.destroyCropper();
-        
+
         // Create a new blob URL and set the image source
         const blobURL = URL.createObjectURL(file);
         this.elements.cropperImage.src = blobURL;
-        
+
         // Show modal using Bootstrap's API if available, otherwise fallback to jQuery
         if (this.bsModal) {
             this.bsModal.show();
@@ -242,7 +242,7 @@ const ImageCropper = {
             this.elements.cropperModal.style.display = 'block';
             this.elements.cropperModal.classList.add('show');
             document.body.classList.add('modal-open');
-            
+
             // Create backdrop
             let backdrop = document.querySelector('.modal-backdrop');
             if (!backdrop) {
@@ -251,21 +251,21 @@ const ImageCropper = {
                 document.body.appendChild(backdrop);
             }
         }
-        
+
         // Use setTimeout to ensure DOM is ready before initializing cropper
         setTimeout(() => {
             // Initialize the cropper
             this.initializeCropper();
         }, 300);
     },
-    
+
     /**
      * Initialize the cropper instance
      */
     initializeCropper: function() {
         // Make sure any previous cropper instance is destroyed
         this.destroyCropper();
-        
+
         try {
             // Create a new cropper instance
             this.cropperInstance = new Cropper(this.elements.cropperImage, this.config.cropperOptions);
@@ -274,7 +274,7 @@ const ImageCropper = {
             console.error('Error initializing cropper:', error);
         }
     },
-    
+
     /**
      * Destroy the cropper instance if it exists
      */
@@ -289,7 +289,7 @@ const ImageCropper = {
             }
         }
     },
-    
+
     /**
      * Handle crop button click
      */
@@ -298,7 +298,7 @@ const ImageCropper = {
             console.error('No cropper instance found');
             return;
         }
-        
+
         try {
             const canvas = this.cropperInstance.getCroppedCanvas({
                 width: 300,  // Output size
@@ -311,28 +311,28 @@ const ImageCropper = {
                 imageSmoothingEnabled: true,
                 imageSmoothingQuality: 'high',
             });
-            
+
             canvas.toBlob((blob) => {
                 const reader = new FileReader();
                 reader.readAsDataURL(blob);
-                
+
                 reader.onloadend = () => {
                     const base64data = reader.result;
-                    
+
                     // Store the cropped image data
                     this.elements.croppedImageData.value = base64data;
                     console.log('Cropped image data stored');
-                    
+
                     // Update preview if available
                     if (this.elements.previewImage && this.elements.previewContainer) {
                         this.elements.previewImage.src = base64data;
                         this.elements.previewContainer.classList.remove('d-none');
                         console.log('Preview updated');
                     }
-                    
+
                     // Hide modal
                     this.hideModal();
-                    
+
                     // Clean up
                     URL.revokeObjectURL(this.elements.cropperImage.src);
                 };
@@ -341,7 +341,7 @@ const ImageCropper = {
             console.error('Error cropping image:', error);
         }
     },
-    
+
     /**
      * Hide the modal
      */
@@ -355,7 +355,7 @@ const ImageCropper = {
             this.elements.cropperModal.style.display = 'none';
             this.elements.cropperModal.classList.remove('show');
             document.body.classList.remove('modal-open');
-            
+
             // Remove backdrop
             const backdrop = document.querySelector('.modal-backdrop');
             if (backdrop) {
@@ -363,14 +363,14 @@ const ImageCropper = {
             }
         }
     },
-    
+
     /**
      * Handle modal close
      */
     handleModalClose: function() {
         this.hideModal();
     },
-    
+
     /**
      * Handle modal hidden event
      */
@@ -379,11 +379,11 @@ const ImageCropper = {
         if (this.elements.croppedImageData && !this.elements.croppedImageData.value) {
             this.elements.fileInput.value = '';
         }
-        
+
         // Clean up cropper
         this.destroyCropper();
     },
-    
+
     /**
      * Setup image manipulation control events
      */
@@ -392,28 +392,28 @@ const ImageCropper = {
         this.setupButtonControl(this.elements.zoomInButton, () => {
             if (this.cropperInstance) this.cropperInstance.zoom(0.1);
         });
-        
+
         this.setupButtonControl(this.elements.zoomOutButton, () => {
             if (this.cropperInstance) this.cropperInstance.zoom(-0.1);
         });
-        
+
         // Move controls
         this.setupButtonControl(this.elements.moveLeftButton, () => {
             if (this.cropperInstance) this.cropperInstance.move(-10, 0);
         });
-        
+
         this.setupButtonControl(this.elements.moveRightButton, () => {
             if (this.cropperInstance) this.cropperInstance.move(10, 0);
         });
-        
+
         this.setupButtonControl(this.elements.moveUpButton, () => {
             if (this.cropperInstance) this.cropperInstance.move(0, -10);
         });
-        
+
         this.setupButtonControl(this.elements.moveDownButton, () => {
             if (this.cropperInstance) this.cropperInstance.move(0, 10);
         });
-        
+
         // Rotate controls
         this.setupButtonControl(this.elements.rotateLeftButton, () => {
             if (this.cropperInstance) {
@@ -423,7 +423,7 @@ const ImageCropper = {
                 }
             }
         });
-        
+
         this.setupButtonControl(this.elements.rotateRightButton, () => {
             if (this.cropperInstance) {
                 this.cropperInstance.rotate(45);
@@ -432,7 +432,7 @@ const ImageCropper = {
                 }
             }
         });
-        
+
         // Rotate slider
         if (this.elements.rotateSlider) {
             // Store reference to handler for later cleanup
@@ -442,30 +442,30 @@ const ImageCropper = {
                     this.cropperInstance.rotateTo(angle);
                 }
             };
-            
+
             // Add event listener
             this.elements.rotateSlider.addEventListener('input', this.rotateSliderHandler);
         }
     },
-    
+
     /**
      * Helper to setup a button control with proper event handling
      */
     setupButtonControl: function(button, handler) {
         if (!button) return;
-        
+
         // Store the handler in the button's data attribute for later cleanup
         const handlerFunction = () => {
             handler();
         };
-        
+
         // Store reference to handler
         button._cropperHandler = handlerFunction;
-        
+
         // Add event listener
         button.addEventListener('click', handlerFunction);
     },
-    
+
     /**
      * Clean up control events
      */
@@ -479,39 +479,39 @@ const ImageCropper = {
         this.cleanupButtonControl(this.elements.moveDownButton);
         this.cleanupButtonControl(this.elements.rotateLeftButton);
         this.cleanupButtonControl(this.elements.rotateRightButton);
-        
+
         // Clean up rotate slider
         if (this.elements.rotateSlider && this.rotateSliderHandler) {
             this.elements.rotateSlider.removeEventListener('input', this.rotateSliderHandler);
             this.rotateSliderHandler = null;
         }
     },
-    
+
     /**
      * Helper to clean up a button control
      */
     cleanupButtonControl: function(button) {
         if (!button || !button._cropperHandler) return;
-        
+
         // Remove event listener
         button.removeEventListener('click', button._cropperHandler);
-        
+
         // Remove reference
         button._cropperHandler = null;
     },
-    
+
     /**
      * Clean up all resources
      */
     cleanUp: function() {
         console.log('Cleaning up ImageCropper resources');
-        
+
         // Destroy cropper instance
         this.destroyCropper();
-        
+
         // Remove event listeners
         this.removeEventListeners();
-        
+
         // Reset initialization flag
         this.initialized = false;
     }
@@ -523,7 +523,7 @@ const ImageCropper = {
     // First expose Cropper library
     global.Cropper = Cropper;
     console.log('Cropper library explicitly exposed to global scope');
-    
+
     // Then expose ImageCropper module
     global.ImageCropper = ImageCropper;
     console.log('ImageCropper explicitly exposed to global scope');
