@@ -82,8 +82,8 @@
     padding: 0.25rem;
 }
 
-.quantity-input::-webkit-inner-spin-button, 
-.quantity-input::-webkit-outer-spin-button { 
+.quantity-input::-webkit-inner-spin-button,
+.quantity-input::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
@@ -254,24 +254,24 @@
     .table-responsive {
         border: none;
     }
-    
+
     .cart-item-img {
         width: 40px;
         height: 40px;
     }
-    
+
     .cart-quantity-input {
         width: 40px;
     }
-    
+
     .cart-actions .btn {
         font-size: 0.9rem;
     }
-    
+
     .update-cart-form .input-group {
         width: 100px;
     }
-    
+
     .update-cart-form .input-group .btn {
         padding: 0.25rem 0.5rem;
         font-size: 0.875rem;
@@ -282,22 +282,22 @@
     .table th, .table td {
         padding: 0.5rem;
     }
-    
+
     .cart-item-img {
         width: 50px;
         height: 50px;
     }
-    
+
     .cart-quantity-input {
         width: 45px;
     }
-    
+
     .update-cart-form .btn {
         padding-left: 0.25rem;
         padding-right: 0.25rem;
         font-size: 0.75rem;
     }
-    
+
     .cart-total {
         font-size: 1.25rem;
     }
