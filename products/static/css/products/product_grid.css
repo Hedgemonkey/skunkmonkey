@@ -244,17 +244,17 @@
     .product-grid {
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     }
-    
+
     .product-name {
         font-size: 0.95rem;
         min-height: 35px;
     }
-    
+
     .wishlist-btn {
         width: 32px;
         height: 32px;
     }
-    
+
     .wishlist-btn i {
         font-size: 16px;
     }
@@ -266,19 +266,19 @@
         gap: 15px;
         margin-top: 1rem;
     }
-    
+
     .product-tags .badge {
         font-size: 0.7rem;
     }
-    
+
     .card-body {
         padding: 0.75rem;
     }
-    
+
     .card-footer {
         padding: 0.75rem;
     }
-    
+
     .product-name {
         font-size: 0.9rem;
         min-height: 32px;

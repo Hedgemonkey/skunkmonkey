@@ -1,4 +1,4 @@
-/* 
+/*
  * Consistent styling for filter buttons across product and category views
  * This ensures buttons maintain a clean single-line appearance
  */
@@ -103,23 +103,23 @@
         flex-direction: column;
         align-items: flex-start !important;
     }
-    
+
     .filter-summary > div {
         margin-bottom: 0.5rem;
         width: 100%;
     }
-    
+
     .filter-summary .d-flex {
         justify-content: space-between;
         width: 100%;
     }
-    
+
     .filter-summary .collapsed-list-products-btn-container {
         margin-top: 0.5rem;
         text-align: right;
         width: 100%;
     }
-    
+
     .filter-summary .collapsed-list-products-btn-container .list-products-btn {
         margin-left: 0;
     }
