@@ -44,7 +44,9 @@ def check_template_file(file_path):
         if starts > ends:
             errors.append({
                 'filter': f"Missing {end}",
-                'match': f"Found {starts} {start} tags but only {ends} {end} tags",
+                'match': (
+                    f"Found {starts} {start} tags but only {ends} {end} tags"
+                ),
                 'line': None,
                 'suggestion': f"Add missing {end} %}} tag(s)"
             })
@@ -112,7 +114,9 @@ def main():
                                  } error{line_info}: {error['match']}")
                     print(f"    Suggestion: {error['suggestion']}")
         else:
-            print("No common template syntax errors found in any template files")
+            print(
+                "No common template syntax errors found in any template files"
+            )
     else:
         print(f"Path not found: {path}")
 

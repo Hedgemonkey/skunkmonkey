@@ -3,7 +3,9 @@ import os
 import re
 
 # Path to the template file
-template_path = "/home/hedgemonkey/Documents/Work/code_institute/API_boilerplate/skunkmonkey/shop/templates/shop/product_list.html"
+template_path = (
+    "/home/hedgemonkey/Documents/Work/code_institute/API_boilerplate/"
+    "skunkmonkey/shop/templates/shop/product_list.html")
 
 if not os.path.exists(template_path):
     print("Error: Template file not found at {}".format(template_path))
@@ -39,7 +41,8 @@ if not found:
             print("  Should be: {{ variable|default:\"default_value\" }}")
             print()
             found = True
-        elif "|default:" in line and ("|default: " in line or "|default:  " in line):
+        elif "|default:" in line and ("|default: "
+                                      in line or "|default:  " in line):
             print("Line {}: {}".format(i, line.strip()))
             print("  Warning: Possible space after colon in default filter")
             print("  Should be: {{ variable|default:\"default_value\" }}")
@@ -54,4 +57,7 @@ if not found:
         if "|default" in line:
             print("Line {}: {}".format(i, line.strip()))
 
-print("\nRemember: The correct syntax is {{ variable|default:\"default_value\" }} with no space after the colon.")
+print(
+    "\nRemember: The correct syntax is "
+    "{{ variable|default:\"default_value\" }}"
+    " with no space after the colon.")

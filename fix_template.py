@@ -3,7 +3,9 @@ import os
 import re
 
 # Path to the template with the error
-template_path = "/home/hedgemonkey/Documents/Work/code_institute/API_boilerplate/skunkmonkey/shop/templates/shop/product_list.html"
+template_path = (
+    "/home/hedgemonkey/Documents/Work/code_institute/API_boilerplate/"
+    "skunkmonkey/shop/templates/shop/product_list.html")
 
 if not os.path.exists(template_path):
     print(f"Template file not found: {template_path}")
@@ -15,9 +17,8 @@ with open(template_path, 'r') as f:
 
 # Search for incorrect default filter usages
 incorrect_patterns = [
-    r'\{\{\s*([^}|]+)\|default\s*\}\}',  # {{ value|default }}
+    r'\{\{\s*([^}|]+)\|default\s*\}\}',
     r'\{\{\s*([^}|]+)\|default:\s+"?([^"}]+)"?\s*\}\}',
-    # {{ value|default: "value" }}
 ]
 
 print("Analyzing template for default filter errors...")
@@ -47,8 +48,11 @@ if not found_errors:
     default_usages = re.finditer(r'\{\{[^}]*\|default[^}]*\}\}', content)
     for usage in default_usages:
         print(f"Found default filter usage: {usage.group(0)}")
-        print("  Check that the default filter has exactly one value after the colon")
+        print("  Check that the default filter has exactly one value after the"
+              " colon")
         print("  Correct format: {{ value|default:\"default_value\" }}")
 
-print("\nTo fix the template, replace the incorrect usages with the suggested fixes.")
-print("Remember: The default filter requires exactly 2 arguments - the variable and a default value.")
+print("\nTo fix the template, replace the incorrect usages with the suggested"
+      " fixes.")
+print("Remember: The default filter requires exactly 2 arguments - "
+      "the variable and a default value.")

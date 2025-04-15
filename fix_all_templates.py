@@ -16,12 +16,13 @@ def fix_default_filters(content):
     pattern2 = re.compile(r'(\{\{\s*[^}|]+)\|default\s+([^"}][^}]*)\}\}')
     content = pattern2.sub(r'\1|default:"\2"\}\}', content)
 
-    # Pattern 3: {{ var|default: value }} space after colon -> {{
-    # var|default:"value" }}
+    # Pattern 3: {{ var|default: value }} space after colon ->
+    # {{ var|default:"value" }}
     pattern3 = re.compile(r'(\{\{\s*[^}|]+)\|default:\s+([^"}][^}]*)\}\}')
     content = pattern3.sub(r'\1|default:"\2"\}\}', content)
 
-    # Pattern 4: {{ var|default:value }} without quotes -> {{ var|default:"value" }}
+    # Pattern 4: {{ var|default:value }} without quotes ->
+    # {{ var|default:"value" }}
     # This is tricky because we need to avoid matching already correct usage
     # like {{ var|default:"value" }}
     pattern4 = re.compile(r'(\{\{\s*[^}|]+)\|default:([^"][^},"\']*[^"])\}\}')
@@ -65,7 +66,8 @@ def process_directory(directory):
                     # If changes were made
                     if fixed_content != content:
                         # Create backup
-                        backup_path = "{}.bak.{}".format(filepath, datetime.now().strftime('%Y%m%d%H%M%S'))
+                        timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+                        backup_path = f"{filepath}.bak.{timestamp}"
                         shutil.copy2(filepath, backup_path)
 
                         # Write fixed content
@@ -73,25 +75,28 @@ def process_directory(directory):
                             f.write(fixed_content)
 
                         fixed_files += 1
-                        print("Fixed default filter issues in: {}".format(filepath))
+                        print(f"Fixed default filter issues in: {filepath}")
                 except Exception as e:
-                    print("Error processing {}: {}".format(filepath, str(e)))
+                    print(f"Error processing {filepath}: {str(e)}")
 
     return checked_files, fixed_files
 
 
 if __name__ == "__main__":
-    base_dir = "/home/hedgemonkey/Documents/Work/code_institute/API_boilerplate/skunkmonkey"
-    print("Scanning templates in {} for default filter issues...".format(base_dir))
+    base_dir = ("/home/hedgemonkey/Documents/Work/code_institute/"
+                "API_boilerplate/skunkmonkey")
+    print(f"Scanning templates in {base_dir} for default filter issues...")
 
     checked, fixed = process_directory(base_dir)
 
     print("\nProcess complete!")
-    print("Checked {} template files".format(checked))
-    print("Fixed {} files with default filter issues".format(fixed))
+    print(f"Checked {checked} template files")
+    print(f"Fixed {fixed} files with default filter issues")
 
     if fixed > 0:
         print("\nRestart your Django server to apply the changes.")
     else:
-        print("\nNo issues found or fixed. The error might be in a different aspect of your templates.")
-        print("Consider checking for other template syntax errors or mismatched template tags.")
+        print("\nNo issues found or fixed. The error might be in a different "
+              "aspect of your templates.")
+        print("Consider checking for other template syntax errors or "
+              "mismatched template tags.")

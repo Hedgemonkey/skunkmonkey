@@ -42,4 +42,5 @@ except Exception as e:
     print(f"Unexpected error writing to test file: {str(e)}")
     sys.exit(1)
 
-print("Log directory and write permissions verified. Django should be able to create log files.")
+print("Log directory and write permissions verified. Django should be able to"
+      "create log files.")
