@@ -1,32 +1,40 @@
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v4.5.0
     hooks:
     -   id: trailing-whitespace
     -   id: end-of-file-fixer
     -   id: check-yaml
+    -   id: check-added-large-files
+    -   id: check-ast
+    -   id: check-json
+    -   id: debug-statements
+    -   id: detect-private-key
 
--   repo: local
+-   repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+    -   id: isort
+        args: ["--profile", "django", "--line-length", "79"]
+
+-   repo: https://github.com/pycqa/flake8
+    rev: 6.1.0
     hooks:
     -   id: flake8
-        name: flake8
-        entry: flake8
-        language: system
-        types: [python]
-        exclude: migrations/
+        additional_dependencies: [flake8-django==1.4]
 
-    -   id: isort
-        name: isort
-        entry: isort
-        language: system
-        types: [python]
-        args: ["--profile", "django", "--line-length", "79"]
-        exclude: migrations/
+-   repo: https://github.com/pycqa/autoflake
+    rev: v2.3.0
+    hooks:
+    -   id: autoflake
+        args: [
+            --remove-all-unused-imports,
+            --remove-unused-variables,
+            --ignore-init-module-imports,
+        ]
 
+-   repo: https://github.com/hhatto/autopep8
+    rev: v2.1.0
+    hooks:
     -   id: autopep8
-        name: autopep8
-        entry: autopep8
-        language: system
-        types: [python]
-        args: ["--in-place", "--max-line-length", "79", "--aggressive", "--aggressive"]
-        exclude: migrations/
+        args: ["--max-line-length", "79", "--aggressive", "--aggressive"]

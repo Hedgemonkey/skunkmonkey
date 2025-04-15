@@ -90,4 +90,3 @@ find . -name "*.py" -not -path "*/\.*" -not -path "*/.venv*" -not -path "*/migra
 
 echo "=== Code quality improvement process completed ==="
 echo "Please check flake8_report.txt for any remaining issues that need manual attention."
-
