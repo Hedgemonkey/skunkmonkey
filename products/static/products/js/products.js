@@ -1,6 +1,6 @@
 /**
  * products.js - Main application module
- * 
+ *
  * Orchestrates product management functionality using modular components.
  */
 import $ from 'jquery';
@@ -26,7 +26,7 @@ $(function () {
             productBase: '/products/staff/product/',
             categoryBase: '/products/staff/category/'
         },
-        
+
         /**
          * DOM element references
          */
@@ -39,7 +39,7 @@ $(function () {
             productCardsContainer: $('#product-cards-container'),
             managementAccordion: $('#management-accordion')
         },
-        
+
         /**
          * Initialize the application
          */
@@ -48,11 +48,11 @@ $(function () {
             this.initializeManagers();
             this.initializeEventListeners();
             this.initializeAccordion();
-            
+
             // Load initial content (Products tab is expanded by default)
             this.productManager.fetchItems();
         },
-        
+
         /**
          * Initialize manager instances with shared configuration
          */
@@ -63,52 +63,52 @@ $(function () {
                 urls: this.urls,
                 notifications: notifications
             };
-            
+
             this.productManager = new ProductManager(managerOptions);
             this.categoryManager = new CategoryManager(managerOptions);
         },
-        
+
         /**
          * Set up global event listeners
          */
         initializeEventListeners: function() {
             console.log("Setting up event listeners");
-            
+
             // Global category event handlers
-            this.elements.categoryList.on('click', '.delete-category', 
+            this.elements.categoryList.on('click', '.delete-category',
                 (e) => this.categoryManager.handleDelete(e));
-            
+
             // Edit category
             $(document).on('click', '.edit-category', (e) => {
                 e.preventDefault();
                 this.categoryManager.showForm($(e.currentTarget).attr('href'), true);
             });
-            
+
             // Edit product
             $(document).on('click', '.edit-product', (e) => {
                 e.preventDefault();
                 this.productManager.showForm($(e.currentTarget).data('url'), true);
             });
-            
+
             // Add product button - direct binding to ensure it works
             this.elements.addProductButton.on('click', () => {
                 console.log("Add Product button clicked");
                 this.handleAddProduct();
             });
-            
+
             // Add category button - direct binding to ensure it works
             this.elements.addCategoryButton.on('click', () => {
                 console.log("Add Category button clicked");
                 this.handleAddCategory();
             });
         },
-        
+
         /**
          * Handle adding a new product
          */
         handleAddProduct: function() {
             console.log("Handling add product with URL:", this.urls.addProductForm);
-            
+
             // Use API client to fetch the form
             apiClient.get(this.urls.addProductForm)
                 .then(response => {
@@ -125,7 +125,7 @@ $(function () {
                             // Handle form submission when confirmed
                             const form = $('#product-form')[0];
                             const formData = new FormData(form);
-                            
+
                             return apiClient.post(this.urls.addProduct, formData, {
                                 skipGlobalErrorHandler: true
                             })
@@ -151,13 +151,13 @@ $(function () {
                     notifications.displayError("Failed to load product form: " + (error.message || "Unknown error"));
                 });
         },
-        
+
         /**
          * Handle adding a new category
          */
         handleAddCategory: function() {
             console.log("Handling add category");
-            
+
             // Use the prompt function from notifications service
             notifications.prompt({
                 title: 'Add New Category',
@@ -170,7 +170,7 @@ $(function () {
                 },
                 preConfirm: (categoryName) => {
                     console.log("Adding category:", categoryName);
-                    
+
                     // Use API client to add the category
                     return apiClient.post(this.urls.addCategory, { name: categoryName }, {
                         skipGlobalErrorHandler: true
@@ -195,21 +195,21 @@ $(function () {
                 console.error("Error handling add category:", error);
             });
         },
-        
+
         /**
          * Initialize the accordion behavior
          */
         initializeAccordion: function() {
             const accordion = this.elements.managementAccordion;
-            
+
             // Reset previous handlers
             this.resetAccordion(accordion);
-            
+
             // Custom accordion toggle behavior
-            accordion.find('.accordion-button').on('click', (e) => 
+            accordion.find('.accordion-button').on('click', (e) =>
                 this.handleAccordionToggle(e));
         },
-        
+
         /**
          * Reset accordion event handlers and data
          */
@@ -219,22 +219,22 @@ $(function () {
             accordion.find('.accordion-button, .accordion-collapse').removeData('bs.collapse');
             accordion.find('[data-bs-toggle="collapse"]').removeAttr('data-bs-toggle');
         },
-        
+
         /**
          * Handle accordion section toggle
          */
         handleAccordionToggle: function(e) {
             e.preventDefault();
             e.stopPropagation();
-            
+
             const button = $(e.currentTarget);
             const targetId = button.data('bs-target');
             const target = $(targetId);
             const isExpanded = button.attr('aria-expanded') === 'true';
-            
+
             // Update button state
             button.attr('aria-expanded', !isExpanded);
-            
+
             if (isExpanded) {
                 // Collapse section
                 button.addClass('collapsed');
@@ -242,30 +242,30 @@ $(function () {
             } else {
                 // Expand section (collapse others first)
                 this.collapseOtherSections(button, targetId);
-                
+
                 button.removeClass('collapsed');
                 target.addClass('show');
-                
+
                 // Load content
                 const sectionId = targetId.substring(1);
                 this.loadSectionContent(sectionId);
             }
         },
-        
+
         /**
          * Collapse other accordion sections
          */
         collapseOtherSections: function(activeButton, activeTargetId) {
             const accordion = this.elements.managementAccordion;
-            
+
             accordion.find('.accordion-button').not(activeButton)
                 .attr('aria-expanded', 'false')
                 .addClass('collapsed');
-                
+
             accordion.find('.accordion-collapse').not(activeTargetId)
                 .removeClass('show');
         },
-        
+
         /**
          * Load content for an accordion section
          */
@@ -273,7 +273,7 @@ $(function () {
             const section = $(`#${sectionId}`);
             const contentContainer = section.find('.accordion-body > div');
             const contentId = contentContainer.attr('id');
-            
+
             // Load appropriate content based on section
             if (contentId === 'product-cards-container') {
                 this.productManager.fetchItems();
@@ -282,7 +282,7 @@ $(function () {
             }
         }
     };
-    
+
     // Initialize the application
     app.init();
 });

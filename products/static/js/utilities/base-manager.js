@@ -1,6 +1,6 @@
 /**
  * base-manager.js - Base class for item managers
- * 
+ *
  * Provides common functionality for different item type managers
  * (products, categories, etc.) to reduce code duplication.
  */
@@ -24,7 +24,7 @@ export class BaseManager {
         if (new.target === BaseManager) {
             throw new Error('Cannot instantiate BaseManager directly; please use a subclass');
         }
-        
+
         this.elements = options.elements;
         this.urls = options.urls;
         this.notifications = options.notifications;
@@ -57,12 +57,12 @@ export class BaseManager {
     showForm(url, isEdit = false, options = {}) {
         const itemTypeCapitalized = this.capitalizeFirstLetter(this.itemType);
         const formId = isEdit ? `#${this.itemType}-update-form` : `#${this.itemType}-form`;
-        
+
         const title = options.title || (isEdit ? `Edit ${itemTypeCapitalized}` : `Add New ${itemTypeCapitalized}`);
         const confirmText = options.confirmText || (isEdit ? 'Save' : `Add ${itemTypeCapitalized}`);
-        const successMessage = options.successMessage || 
+        const successMessage = options.successMessage ||
             (isEdit ? `${itemTypeCapitalized} updated successfully.` : `${itemTypeCapitalized} added successfully.`);
-        
+
         makeAjaxRequest(
             url,
             'GET',
@@ -94,7 +94,7 @@ export class BaseManager {
             }
         );
     }
-    
+
     /**
      * Handle form submission for add/edit item
      * @param {boolean} isEdit - Whether this is an edit operation
@@ -105,7 +105,7 @@ export class BaseManager {
         Swal.showLoading();
         const form = $(formSelector)[0];
         const formData = new FormData(form);
-        
+
         return makeAjaxRequest(
             form.action,
             'POST',
@@ -135,7 +135,7 @@ export class BaseManager {
             false
         );
     }
-    
+
     /**
      * Format error messages for display
      * @param {Object|string} errors - Error data
@@ -143,7 +143,7 @@ export class BaseManager {
      */
     formatErrorMessage(errors) {
         if (!errors) return 'Unknown error occurred';
-        
+
         if (typeof errors === 'object') {
             return Object.entries(errors)
                 .map(([field, fieldErrors]) => {
@@ -154,7 +154,7 @@ export class BaseManager {
                 })
                 .join('\n');
         }
-        
+
         return errors;
     }
 
@@ -173,10 +173,10 @@ export class BaseManager {
             cancelButtonColor: '#3085d6',
             confirmButtonText: 'Yes, delete it!'
         };
-        
+
         return Swal.fire({...defaults, ...options});
     }
-    
+
     /**
      * Helper to capitalize first letter of a string
      * @param {string} string - String to capitalize
@@ -185,7 +185,7 @@ export class BaseManager {
     capitalizeFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
-    
+
     /**
      * Clean up resources
      * Should be called when manager is no longer needed
@@ -195,7 +195,7 @@ export class BaseManager {
         if (this.filter && typeof this.filter.destroy === 'function') {
             this.filter.destroy();
         }
-        
+
         // Subclasses should override this to clean up their specific resources
         console.log(`Base ${this.itemType} manager destroyed`);
     }

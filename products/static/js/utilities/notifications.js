@@ -1,6 +1,6 @@
 /**
  * notifications.js - Reusable notification utilities
- * 
+ *
  * Provides standardized message displays using SweetAlert2
  */
 import Swal from 'sweetalert2';
@@ -22,7 +22,7 @@ export class NotificationService {
             timer: 2000,
             timerProgressBar: true
         };
-        
+
         Swal.fire({...defaults, ...options});
     }
 
@@ -38,7 +38,7 @@ export class NotificationService {
             text: message,
             showConfirmButton: true
         };
-        
+
         Swal.fire({...defaults, ...options});
     }
 
@@ -52,7 +52,7 @@ export class NotificationService {
         Swal.showValidationMessage(error.responseJSON?.error || defaultMessage);
         return Promise.reject();
     }
-    
+
     /**
      * Display a confirmation dialog
      * @param {Object} options - Configuration options
@@ -67,10 +67,10 @@ export class NotificationService {
             confirmButtonColor: '#d33',
             cancelButtonColor: '#3085d6'
         };
-        
+
         return Swal.fire({...defaults, ...options});
     }
-    
+
     /**
      * Display a prompt for user input
      * @param {Object} options - Configuration options
@@ -82,7 +82,7 @@ export class NotificationService {
             showCancelButton: true,
             inputValidator: (value) => !value && 'Please enter a value.'
         };
-        
+
         return Swal.fire({...defaults, ...options});
     }
 }

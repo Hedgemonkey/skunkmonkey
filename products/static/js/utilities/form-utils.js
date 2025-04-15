@@ -9,7 +9,7 @@
  */
 export function setupSelect2(element, options) {
     if (!element.length) return;
-    
+
     const config = {
         theme: 'bootstrap-5',
         width: '100%',
@@ -24,7 +24,7 @@ export function setupSelect2(element, options) {
             return data.text;
         }
     };
-    
+
     // Add AJAX configuration if URL is provided
     if (options.url) {
         config.ajax = {
@@ -47,7 +47,7 @@ export function setupSelect2(element, options) {
             cache: true
         };
     }
-    
+
     element.select2(config);
 }
 
@@ -59,7 +59,7 @@ export function setupSelect2(element, options) {
 export function toggleElement(element, callbacks = {}) {
     const isExpanded = element.hasClass('show');
     const newState = !isExpanded;
-    
+
     if (newState) {
         element.addClass('show');
         if (callbacks.onShow) callbacks.onShow();
@@ -85,7 +85,7 @@ export function setDisabledState(container, selector, disabled) {
  */
 export function resetForm(form) {
     form[0].reset();
-    
+
     // Reset Select2 dropdowns
     form.find('select').each(function() {
         if ($(this).hasClass('select2-hidden-accessible')) {

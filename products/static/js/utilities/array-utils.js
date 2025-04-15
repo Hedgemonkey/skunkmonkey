@@ -1,6 +1,6 @@
 /**
  * array-utils.js - Utility functions for array operations
- * 
+ *
  * Provides common array manipulation and comparison functions
  */
 
@@ -14,11 +14,11 @@ export function arraysEqual(a, b) {
     if (a === b) return true;
     if (a == null || b == null) return false;
     if (a.length !== b.length) return false;
-    
+
     // Normalize and sort arrays for consistent comparison
     const normalizedA = [...a].map(item => item?.toString()).sort();
     const normalizedB = [...b].map(item => item?.toString()).sort();
-    
+
     // Use JSON.stringify for deep comparison
     return JSON.stringify(normalizedA) === JSON.stringify(normalizedB);
 }
@@ -32,7 +32,7 @@ export function arraysEqual(a, b) {
  */
 export function arrayContains(array, value) {
     if (!array || !Array.isArray(array)) return false;
-    
+
     const valueStr = value?.toString();
     return array.some(item => item?.toString() === valueStr);
 }
@@ -45,11 +45,11 @@ export function arrayContains(array, value) {
  */
 export function addToArray(array, item) {
     if (!array) array = [];
-    
+
     if (!arrayContains(array, item)) {
         array.push(item);
     }
-    
+
     return array;
 }
 
@@ -61,7 +61,7 @@ export function addToArray(array, item) {
  */
 export function removeFromArray(array, item) {
     if (!array || !Array.isArray(array)) return [];
-    
+
     const valueStr = item?.toString();
     return array.filter(arrItem => arrItem?.toString() !== valueStr);
 }
@@ -74,9 +74,9 @@ export function removeFromArray(array, item) {
  */
 export function toggleInArray(array, item) {
     if (!array || !Array.isArray(array)) array = [];
-    
-    return arrayContains(array, item) 
-        ? removeFromArray(array, item) 
+
+    return arrayContains(array, item)
+        ? removeFromArray(array, item)
         : addToArray(array, item);
 }
 
@@ -108,7 +108,7 @@ export function uniqueValues(array) {
  */
 export function groupBy(array, property) {
     if (!array || !Array.isArray(array)) return {};
-    
+
     return array.reduce((result, item) => {
         const key = item[property];
         if (!result[key]) {
