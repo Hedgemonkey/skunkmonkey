@@ -1,4 +1,4 @@
-/* 
+/*
  * Product Detail Styling
  * For SkunkMonkey Shop app
  */
@@ -186,23 +186,23 @@
         height: 350px;
         margin-bottom: 1.5rem;
     }
-    
+
     .product-info {
         padding: 1.5rem;
     }
-    
+
     .product-info h1 {
         font-size: 1.75rem;
     }
-    
+
     .product-price {
         font-size: 1.5rem;
     }
-    
+
     .quantity-selector {
         max-width: 120px;
     }
-    
+
     .related-product-card .card-img-top {
         height: 150px;
     }
@@ -212,20 +212,20 @@
     .product-gallery {
         height: 300px;
     }
-    
+
     .product-info {
         padding: 1.25rem;
     }
-    
+
     .product-info h1 {
         font-size: 1.5rem;
     }
-    
+
     .product-price {
         font-size: 1.5rem;
         margin-bottom: 1rem;
     }
-    
+
     .related-product-card .card-img-top {
         height: 120px;
     }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Product List Styling
  * For SkunkMonkey Shop app
  */
@@ -272,15 +272,15 @@
     .product-image-container {
         height: 180px;
     }
-    
+
     .product-card .card-body {
         height: calc(100% - 180px);
     }
-    
+
     .product-card .card-title {
         font-size: 1.1rem;
     }
-    
+
     .price {
         font-size: 1.1rem;
     }
@@ -290,20 +290,20 @@
     .shop-header {
         padding: 2rem 0;
     }
-    
+
     .shop-header h1 {
         font-size: 2rem;
     }
-    
+
     .product-image-container {
         height: 160px;
     }
-    
+
     .product-card .card-body {
         height: calc(100% - 160px);
         padding: 1rem;
     }
-    
+
     .filter-badge {
         margin-bottom: 5px;
     }

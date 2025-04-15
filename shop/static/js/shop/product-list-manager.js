@@ -10,7 +10,7 @@ class ProductListManager {
         try {
             // Initialize product grid interaction features
             this.initializeProductGridFeatures();
-            
+
             this.filterContainer = document.getElementById('dynamic-filter-container');
             if (!this.filterContainer) {
                 console.warn('Product List Manager: dynamic-filter-container not found in the DOM');
@@ -24,35 +24,35 @@ class ProductListManager {
                     console.warn('Product List Manager: No product list URL provided in data-product-list-url attribute');
                     this.productListUrl = window.location.href; // Fallback to current URL
                 }
-                
+
                 // Initial filter state with safety checks
                 this.filterState = {
                     search: (this.filterContainer.dataset.searchQuery || '').trim(),
                     category: (this.filterContainer.dataset.currentCategory || '').trim(),
                     sort: 'name-asc'
                 };
-                
+
                 // Initialize DOM element references for filtering
                 this.initializeFilterDomReferences();
-                
+
                 // Only proceed with filter setup if essential elements are present
                 if (this.hasEssentialFilterElements()) {
                     this.initializeFilterControls();
                     this.bindFilterEvents();
                     this.updateFilterUI();
-                    
+
                     // Delay initial product fetch to ensure DOM is fully ready
                     setTimeout(() => {
                         this.fetchProducts();
                     }, 100);
                 }
             }
-            
+
         } catch (err) {
             console.error('Error initializing Product List Manager:', err);
         }
     }
-    
+
     /**
      * Initialize product grid interaction features
      */
@@ -60,7 +60,7 @@ class ProductListManager {
         try {
             // Position wishlist buttons correctly
             this.positionWishlistButtons();
-            
+
             // Add event listeners for product grid interactions
             document.addEventListener('click', (event) => {
                 const wishlistBtn = event.target.closest('.add-to-wishlist-btn');
@@ -68,12 +68,12 @@ class ProductListManager {
                     this.handleWishlistButtonClick(event, wishlistBtn);
                 }
             });
-            
+
             // Re-position elements on window resize
             window.addEventListener('resize', () => {
                 this.positionWishlistButtons();
             });
-            
+
             // Re-position elements when products are loaded via AJAX
             document.addEventListener('productsLoaded', () => {
                 this.positionWishlistButtons();
@@ -82,14 +82,14 @@ class ProductListManager {
             console.error('Error initializing product grid features:', err);
         }
     }
-    
+
     /**
      * Initialize all DOM element references for filtering
      */
     initializeFilterDomReferences() {
         // Essential elements
         this.productGridContainer = document.getElementById('product-grid-container');
-        
+
         // Filter elements
         this.searchInput = document.querySelector('.filter-search');
         this.sortSelect = document.querySelector('.filter-sort');
@@ -98,7 +98,7 @@ class ProductListManager {
         this.resetAllBtn = document.querySelector('.reset-all-filters');
         this.filterToggleBtn = document.querySelector('.filter-toggle');
         this.filterOptions = document.getElementById('filterOptions');
-        
+
         // Display elements
         this.searchDisplay = document.querySelector('.search-display');
         this.searchTerm = document.querySelector('.search-term');
@@ -113,7 +113,7 @@ class ProductListManager {
         this.itemCountDisplay = document.querySelector('.item-count');
         this.productCountDisplay = document.getElementById('product-count');
     }
-    
+
     /**
      * Check if essential filter elements are present
      */
@@ -124,7 +124,7 @@ class ProductListManager {
         }
         return true;
     }
-    
+
     /**
      * Initialize filter controls including sorting and filtering
      */
@@ -133,12 +133,12 @@ class ProductListManager {
             // Initialize sorting
             const urlParams = new URLSearchParams(window.location.search);
             const sortParam = urlParams.get('sort');
-            
+
             if (this.sortSelect && sortParam) {
                 this.sortSelect.value = sortParam;
                 this.filterState.sort = sortParam;
             }
-            
+
             // Initialize category select if using a multi-select plugin
             if (this.categorySelect) {
                 if (typeof $ !== 'undefined' && $.fn && typeof $.fn.select2 !== 'undefined') {
@@ -157,7 +157,7 @@ class ProductListManager {
             console.error('Error initializing controls:', err);
         }
     }
-    
+
     /**
      * Bind event listeners to filter DOM elements with error handling
      */
@@ -166,31 +166,31 @@ class ProductListManager {
             if (this.searchInput) {
                 this.searchInput.addEventListener('input', this.handleSearchInput.bind(this));
             }
-            
+
             if (this.sortSelect) {
                 this.sortSelect.addEventListener('change', this.handleSortChange.bind(this));
             }
-            
+
             if (this.categorySelect) {
                 this.categorySelect.addEventListener('change', this.handleCategoryChange.bind(this));
             }
-            
+
             if (this.clearSearchBtn) {
                 this.clearSearchBtn.addEventListener('click', this.handleClearSearch.bind(this));
             }
-            
+
             if (this.clearCategoriesBtn) {
                 this.clearCategoriesBtn.addEventListener('click', this.handleClearCategories.bind(this));
             }
-            
+
             if (this.resetAllBtn) {
                 this.resetAllBtn.addEventListener('click', this.handleResetAll.bind(this));
             }
-            
+
             if (this.filterToggleBtn) {
                 this.filterToggleBtn.addEventListener('click', this.handleFilterToggle.bind(this));
             }
-            
+
             // Document-level event delegation for dynamic elements with error handling
             document.addEventListener('click', (event) => {
                 try {
@@ -198,12 +198,12 @@ class ProductListManager {
                     if (event.target.closest('.search-summary .btn-close')) {
                         this.handleClearSearch();
                     }
-                    
+
                     // Handle click on categories summary close button
                     if (event.target.closest('.categories-summary .btn-close')) {
                         this.handleClearCategories();
                     }
-                    
+
                     // Handle tag remove button click
                     if (event.target.closest('.tag-remove')) {
                         const categoryId = event.target.closest('.tag-remove').dataset.categoryId;
@@ -219,7 +219,7 @@ class ProductListManager {
             console.error('Error binding events:', err);
         }
     }
-    
+
     /**
      * Handle search input changes
      */
@@ -227,7 +227,7 @@ class ProductListManager {
         try {
             this.filterState.search = event.target.value;
             this.updateFilterUI();
-            
+
             // Debounce for performance
             clearTimeout(this.searchTimer);
             this.searchTimer = setTimeout(() => {
@@ -237,7 +237,7 @@ class ProductListManager {
             console.error('Error handling search input:', err);
         }
     }
-    
+
     /**
      * Handle sort selection changes
      */
@@ -250,14 +250,14 @@ class ProductListManager {
             console.error('Error handling sort change:', err);
         }
     }
-    
+
     /**
      * Handle category selection changes
      */
     handleCategoryChange(event) {
         try {
             let selectedCategories = [];
-            
+
             // Handle different selection types
             if (event.target.selectedOptions) {
                 selectedCategories = Array.from(event.target.selectedOptions).map(opt => opt.value);
@@ -268,7 +268,7 @@ class ProductListManager {
             } else if (event.target.value) {
                 selectedCategories = [event.target.value];
             }
-            
+
             this.filterState.category = selectedCategories.join(',');
             this.updateFilterUI();
             this.fetchProducts();
@@ -276,7 +276,7 @@ class ProductListManager {
             console.error('Error handling category change:', err);
         }
     }
-    
+
     /**
      * Clear search term
      */
@@ -290,14 +290,14 @@ class ProductListManager {
             console.error('Error clearing search:', err);
         }
     }
-    
+
     /**
      * Clear category selections
      */
     handleClearCategories() {
         try {
             this.filterState.category = '';
-            
+
             if (this.categorySelect) {
                 if (typeof $ !== 'undefined' && $.fn && typeof $.fn.select2 !== 'undefined') {
                     try {
@@ -311,14 +311,14 @@ class ProductListManager {
                     Array.from(this.categorySelect.options).forEach(opt => opt.selected = false);
                 }
             }
-            
+
             this.updateFilterUI();
             this.fetchProducts();
         } catch (err) {
             console.error('Error clearing categories:', err);
         }
     }
-    
+
     /**
      * Reset all filters to default values
      */
@@ -329,13 +329,13 @@ class ProductListManager {
                 category: '',
                 sort: 'name-asc'
             };
-            
+
             if (this.searchInput) this.searchInput.value = '';
-            
+
             if (this.sortSelect) {
                 this.sortSelect.value = 'name-asc';
             }
-            
+
             if (this.categorySelect) {
                 if (typeof $ !== 'undefined' && $.fn && typeof $.fn.select2 !== 'undefined') {
                     try {
@@ -349,28 +349,28 @@ class ProductListManager {
                     Array.from(this.categorySelect.options).forEach(opt => opt.selected = false);
                 }
             }
-            
+
             this.updateFilterUI();
             this.fetchProducts();
         } catch (err) {
             console.error('Error resetting filters:', err);
         }
     }
-    
+
     /**
      * Toggle filter visibility
      */
     handleFilterToggle() {
         try {
             if (!this.filterOptions) return;
-            
+
             const isCollapsed = this.filterOptions.classList.contains('show');
             this.filterOptions.classList.toggle('show');
-            
+
             if (this.filterToggleBtn) {
                 this.filterToggleBtn.classList.toggle('collapsed', !isCollapsed);
                 this.filterToggleBtn.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
-                
+
                 const toggleText = this.filterToggleBtn.querySelector('.filter-toggle-text');
                 if (toggleText) {
                     toggleText.textContent = isCollapsed ? 'Show Filters' : 'Hide Filters';
@@ -380,19 +380,19 @@ class ProductListManager {
             console.error('Error toggling filter visibility:', err);
         }
     }
-    
+
     /**
      * Remove a specific category by ID
      */
     removeCategoryById(categoryId) {
         try {
             if (!categoryId) return;
-            
+
             const categoryIds = this.filterState.category.split(',').filter(c => c);
             const updatedCategoryIds = categoryIds.filter(id => id !== categoryId);
-            
+
             this.filterState.category = updatedCategoryIds.join(',');
-            
+
             // Update select element
             if (this.categorySelect) {
                 if (typeof $ !== 'undefined' && $.fn && typeof $.fn.select2 !== 'undefined') {
@@ -411,7 +411,7 @@ class ProductListManager {
                     });
                 }
             }
-            
+
             // Update UI and fetch new results
             this.updateUI();
             this.fetchProducts();
@@ -419,7 +419,7 @@ class ProductListManager {
             console.error('Error removing category:', err);
         }
     }
-    
+
     /**
      * Update UI elements based on current filter state
      */
@@ -430,44 +430,44 @@ class ProductListManager {
             if (this.searchTermSummary) this.searchTermSummary.textContent = this.filterState.search;
             if (this.searchDisplay) this.searchDisplay.classList.toggle('d-none', !this.filterState.search);
             if (this.searchSummary) this.searchSummary.classList.toggle('d-none', !this.filterState.search);
-            
+
             // Update category display with validation
             const categoryIds = this.filterState.category ? this.filterState.category.split(',').filter(c => c) : [];
             const categoryCount = categoryIds.length;
-            
+
             if (this.categoryCountDisplay) this.categoryCountDisplay.textContent = categoryCount;
             if (this.categoryCountSummary) this.categoryCountSummary.textContent = categoryCount;
             if (this.categoriesDisplay) this.categoriesDisplay.classList.toggle('d-none', categoryCount === 0);
             if (this.categoriesSummary) this.categoriesSummary.classList.toggle('d-none', categoryCount === 0);
-            
+
             // Update category tags
             this.updateCategoryTags();
         } catch (err) {
             console.error('Error updating UI:', err);
         }
     }
-    
+
     /**
      * Update category tags display
      */
     updateCategoryTags() {
         try {
             if (!this.categoryTagsContainer || !this.categorySelect) return;
-            
+
             this.categoryTagsContainer.innerHTML = '';
-            
+
             if (!this.filterState.category) return;
-            
+
             const categoryIds = this.filterState.category.split(',').filter(c => c);
             if (categoryIds.length === 0) return;
-            
+
             categoryIds.forEach(categoryId => {
                 try {
                     const option = Array.from(this.categorySelect.options).find(opt => opt.value === categoryId);
                     if (!option) return;
-                    
+
                     const categoryName = option.textContent.trim();
-                    
+
                     const tagDiv = document.createElement('div');
                     tagDiv.className = 'category-tag';
                     tagDiv.innerHTML = `
@@ -476,7 +476,7 @@ class ProductListManager {
                             <i class="fas fa-times"></i>
                         </button>
                     `;
-                    
+
                     this.categoryTagsContainer.appendChild(tagDiv);
                 } catch (tagError) {
                     console.warn(`Error creating tag for category ID ${categoryId}:`, tagError);
@@ -486,7 +486,7 @@ class ProductListManager {
             console.error('Error updating category tags:', err);
         }
     }
-    
+
     /**
      * Safely test if a string is a valid URL
      */
@@ -498,7 +498,7 @@ class ProductListManager {
             return false;
         }
     }
-    
+
     /**
      * Get the appropriate base URL for product fetching
      */
@@ -507,16 +507,16 @@ class ProductListManager {
         if (this.productListUrl && this.isValidUrl(this.productListUrl)) {
             return this.productListUrl;
         }
-        
+
         // If we have a relative URL, resolve it against the current page
         if (this.productListUrl && this.productListUrl.startsWith('/')) {
             return new URL(this.productListUrl, window.location.origin).href;
         }
-        
+
         // Fallback to current URL as a last resort
         return window.location.href;
     }
-    
+
     /**
      * Fetch products via AJAX with enhanced error handling
      */
@@ -525,30 +525,30 @@ class ProductListManager {
         if (this.productGridContainer) {
             // Just add the loading class - the CSS will handle the spinner display
             this.productGridContainer.classList.add('loading');
-            
+
             // Store the current HTML to restore in case of an error
             this.originalGridHtml = this.productGridContainer.innerHTML;
         }
-        
+
         try {
             // Get base URL with proper validation
             const baseUrl = this.getBaseUrl();
-            
+
             // Create URL with validation
             const url = new URL(baseUrl);
-            
+
             // Add query parameters
             if (this.filterState.search) url.searchParams.set('search', this.filterState.search);
             if (this.filterState.category) url.searchParams.set('category', this.filterState.category);
             if (this.filterState.sort) url.searchParams.set('sort', this.filterState.sort);
-            
+
             // Add timestamp to prevent caching issues
             url.searchParams.set('_', Date.now());
-            
+
             // Fetch data with timeout for network issues
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
-            
+
             fetch(url, {
                 method: 'GET',
                 headers: {
@@ -559,16 +559,16 @@ class ProductListManager {
             })
             .then(response => {
                 clearTimeout(timeoutId);
-                
+
                 if (!response.ok) {
                     throw new Error(`Server returned ${response.status}: ${response.statusText}`);
                 }
-                
+
                 const contentType = response.headers.get('content-type');
                 if (!contentType || !contentType.includes('application/json')) {
                     throw new Error('Response was not JSON. Received: ' + contentType);
                 }
-                
+
                 return response.json();
             })
             .then(data => {
@@ -580,23 +580,23 @@ class ProductListManager {
                         this.productGridContainer.innerHTML = '<div class="alert alert-info">No products found matching your criteria.</div>';
                     }
                 }
-                
+
                 // Update counts if elements exist
                 const count = data.count || 0;
                 if (this.itemCountDisplay) this.itemCountDisplay.textContent = count;
                 if (this.productCountDisplay) this.productCountDisplay.textContent = count;
-                
+
                 // Trigger event for other components that might need to initialize
                 document.dispatchEvent(new CustomEvent('productsLoaded', { detail: data }));
-                
+
                 // Re-position wishlist buttons after products are loaded
                 this.positionWishlistButtons();
             })
             .catch(error => {
                 console.error('Error fetching products:', error);
-                
+
                 let errorMessage = 'Error loading products. ';
-                
+
                 if (error.name === 'AbortError') {
                     errorMessage += 'Request timed out. Please check your internet connection and try again.';
                 } else if (error.message.includes('JSON')) {
@@ -604,7 +604,7 @@ class ProductListManager {
                 } else {
                     errorMessage += 'Please try again or contact support if the issue persists.';
                 }
-                
+
                 if (this.productGridContainer) {
                     this.productGridContainer.innerHTML = `<div class="alert alert-danger">${errorMessage}</div>`;
                 }
@@ -617,7 +617,7 @@ class ProductListManager {
             });
         } catch (error) {
             console.error('Error constructing request:', error);
-            
+
             // Remove loading class and show error
             if (this.productGridContainer) {
                 this.productGridContainer.classList.remove('loading');
@@ -625,7 +625,7 @@ class ProductListManager {
             }
         }
     }
-    
+
     /**
      * Handle wishlist button click
      * @param {Event} event - Click event
@@ -634,15 +634,15 @@ class ProductListManager {
     handleWishlistButtonClick(event, button) {
         // Prevent default to handle via AJAX instead of full page reload
         event.preventDefault();
-        
+
         const productId = button.dataset.productId;
         const url = button.getAttribute('href');
-        
+
         // Toggle wishlist heart icon
         const heartIcon = button.querySelector('i');
         const originalClass = heartIcon.className;
         heartIcon.className = 'fas fa-spinner fa-spin';
-        
+
         // Send AJAX request to add/remove from wishlist
         fetch(url, {
             method: 'POST',
@@ -680,22 +680,22 @@ class ProductListManager {
             heartIcon.className = originalClass;
         });
     }
-    
+
     /**
      * Position wishlist buttons based on whether badges are present
      */
     positionWishlistButtons() {
         try {
             const productCards = document.querySelectorAll('.product-card');
-            
+
             productCards.forEach(card => {
                 const badges = card.querySelector('.product-badges');
                 const wishlistBtn = card.querySelector('.add-to-wishlist-btn');
-                
+
                 if (badges && wishlistBtn) {
                     // Check if badges container has any badges
                     const hasBadges = badges.querySelectorAll('.badge').length > 0;
-                    
+
                     // Adjust wishlist button position based on badges presence
                     if (hasBadges) {
                         wishlistBtn.style.top = 'auto';
@@ -712,7 +712,7 @@ class ProductListManager {
             console.error('Error positioning wishlist buttons:', err);
         }
     }
-    
+
     /**
      * Get CSRF cookie for AJAX requests
      * @param {string} name - Cookie name

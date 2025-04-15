@@ -6,7 +6,7 @@ class ProductDetailManager {
     constructor() {
         this.initQuantityControls();
     }
-    
+
     /**
      * Initialize quantity controls for the product detail page
      * Sets up increment/decrement buttons with validation
@@ -15,7 +15,7 @@ class ProductDetailManager {
         const quantityInput = document.getElementById('quantity');
         const decreaseBtn = document.getElementById('decrease-quantity');
         const increaseBtn = document.getElementById('increase-quantity');
-        
+
         if (decreaseBtn && increaseBtn && quantityInput) {
             decreaseBtn.addEventListener('click', () => {
                 const currentValue = parseInt(quantityInput.value);
@@ -23,7 +23,7 @@ class ProductDetailManager {
                     quantityInput.value = currentValue - 1;
                 }
             });
-            
+
             increaseBtn.addEventListener('click', () => {
                 const currentValue = parseInt(quantityInput.value);
                 const maxValue = parseInt(quantityInput.getAttribute('max'));
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // No need to create new instances of cart and wishlist managers
     // They've already been initialized by their respective scripts
     // and are available as global variables
-    
+
     // Create our product detail manager
     window.productDetailManager = new ProductDetailManager();
 });
