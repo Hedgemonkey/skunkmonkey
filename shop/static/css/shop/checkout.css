@@ -98,7 +98,7 @@
     margin: 1.5rem 0 !important;
     padding: 0 !important;
     overflow: visible !important;
-    
+
     /* Create a containing block for the payment element */
     transform: translateZ(0) !important;
     backface-visibility: hidden !important;
@@ -127,7 +127,7 @@
     background-color: #f8f9fa !important;
     overflow: visible !important;
     transform: none !important;
-    
+
     /* Fix for common Stripe bugs */
     isolation: isolate !important;
 }
@@ -163,7 +163,7 @@
     box-shadow: none !important;
     opacity: 1 !important;
     overflow: visible !important;
-    
+
     /* Specific override for calc width */
     max-width: 100% !important;
     left: 0 !important;
@@ -316,19 +316,19 @@ body #payment-element .__PrivateStripeElement iframe {
     .col-lg-8, .col-lg-4 {
         width: 100%;
     }
-    
+
     /* Keep order summary visible without scrolling too far */
     .checkout-summary {
         position: relative; /* Not sticky on tablets */
         top: 0;
         margin-bottom: 2rem;
     }
-    
+
     /* Add some spacing between sections */
     .col-lg-8 {
         margin-bottom: 2rem;
     }
-    
+
     /* Make buttons more touch-friendly */
     .btn {
         padding-top: 0.625rem;
@@ -343,58 +343,58 @@ body #payment-element .__PrivateStripeElement iframe {
         width: 50px;
         height: 50px;
     }
-    
+
     .order-items .flex-shrink-0 {
         width: 50px;
         height: 50px;
         flex: 0 0 50px;
     }
-    
+
     /* Create more compact form sections */
     .card-body {
         padding: 1.25rem;
     }
-    
+
     /* Add some vertical spacing between form fields */
     .form-group {
         margin-bottom: 1rem;
     }
-    
+
     /* Make card shadows less pronounced */
     .shadow-sm {
         box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05) !important;
     }
-    
+
     /* Adjust header spacing */
     .py-4 {
         padding-top: 1.5rem !important;
         padding-bottom: 1.5rem !important;
     }
-    
+
     /* Reduce container margin */
     .my-5 {
         margin-top: 2rem !important;
         margin-bottom: 2rem !important;
     }
-    
+
     /* Make checkout total a bit smaller */
     .checkout-total {
         font-size: 1.1rem;
     }
-    
+
     h3 {
         font-size: 1.5rem;
     }
-    
+
     .checkout-summary {
         position: static;
         margin-top: 1.5rem;
     }
-    
+
     .checkout-summary .h5 {
         font-size: 1.15rem;
     }
-    
+
     /* Adjust payment element container on small screens */
     .payment-element-container {
         min-height: 350px !important; /* More space on mobile */
@@ -407,38 +407,38 @@ body #payment-element .__PrivateStripeElement iframe {
     .card-body {
         padding: 1rem;
     }
-    
+
     /* Make form headers smaller */
     h5 {
         font-size: 1.1rem;
     }
-    
+
     /* Make container full width on small screens */
     .container {
         padding-left: 1rem;
         padding-right: 1rem;
     }
-    
+
     /* Adjust form section spacing */
     .mb-4 {
         margin-bottom: 1.5rem !important;
     }
-    
+
     /* Tighten up the order items */
     .order-items .d-flex {
         margin-bottom: 0.75rem;
     }
-    
+
     /* Make sure payment element container doesn't get too large on mobile */
     .payment-element-container {
         min-height: 300px !important;
     }
-    
+
     /* Add spacing below checkout form */
     #checkout-form {
         margin-bottom: 1rem;
     }
-    
+
     .btn-lg {
         padding: 0.5rem 1rem;
         font-size: 1rem;
@@ -451,17 +451,17 @@ body #payment-element .__PrivateStripeElement iframe {
         width: 45px;
         height: 45px;
     }
-    
+
     .order-items .flex-shrink-0 {
         width: 45px;
         height: 45px;
         flex: 0 0 45px;
     }
-    
+
     .order-items .flex-grow-1 {
         font-size: 0.9rem;
     }
-    
+
     .order-items .flex-grow-1 h6 {
         font-size: 0.9rem;
         margin-bottom: 0.25rem;
@@ -475,11 +475,11 @@ body #payment-element .__PrivateStripeElement iframe {
         font-size: 0.9rem;
         padding: 0.5rem 0.75rem;
     }
-    
+
     .fw-bold, .checkout-total {
         font-size: 1rem;
     }
-    
+
     /* Ensure proper spacing for checkboxes */
     .form-check-label {
         font-size: 0.9rem;

@@ -9,26 +9,26 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM fully loaded - initializing checkout script with Payment Element');
-    
+
     // Get Stripe data from the DOM
     const stripeDataElement = document.getElementById('stripe-data');
-    
+
     // Check if the Stripe data element exists
     if (!stripeDataElement) {
         console.error('Stripe data element not found');
         showError('Payment system initialization error. Please refresh the page or contact support.');
         return;
     }
-    
+
     const stripePublishableKey = stripeDataElement.dataset.publishableKey;
     const clientSecret = stripeDataElement.dataset.clientSecret;
     const cacheCheckoutUrl = stripeDataElement.dataset.cacheUrl;
-    
+
     // Debug logging to verify data is available
     console.log('Stripe publishable key:', stripePublishableKey ? 'Available' : 'Missing');
     console.log('Client secret available:', !!clientSecret);
     console.log('Cache checkout URL:', cacheCheckoutUrl);
-    
+
     // Store the client secret in sessionStorage with a timestamp
     if (clientSecret) {
         storeClientSecret(clientSecret);
@@ -39,10 +39,10 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Using stored client secret from session storage');
         }
     }
-    
+
     // Check for expired client secret
     checkClientSecretExpiry();
-    
+
     // Check if required data is present
     if (!stripePublishableKey) {
         console.error('Stripe publishable key is missing');
@@ -50,39 +50,39 @@ document.addEventListener('DOMContentLoaded', function() {
         disableSubmitButton();
         return;
     }
-    
+
     if (!clientSecret) {
         console.error('Client secret is missing');
         showError('Payment session could not be initialized. Please refresh the page or contact support.');
         disableSubmitButton();
         return;
     }
-    
+
     // Initialize Stripe
     const stripe = Stripe(stripePublishableKey);
-    
+
     // Initialize variables
     const form = document.getElementById('checkout-form');
     const submitButton = document.getElementById('submit-button');
     const loadingOverlay = document.getElementById('loading-overlay');
     const paymentElement = document.getElementById('payment-element');
     const paymentErrorsElement = document.getElementById('payment-errors');
-    
+
     if (!form) {
         console.error('Checkout form not found');
         return;
     }
-    
+
     if (!submitButton) {
         console.error('Submit button not found');
         return;
     }
-    
+
     if (!paymentElement) {
         console.error('Payment element container not found');
         return;
     }
-    
+
     // Create Stripe Elements instance
     const options = {
         clientSecret: clientSecret,
@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function() {
             name: 'SkunkMonkey Shop'
         }
     };
-    
+
     // Create the Payment Element
     const elements = stripe.elements(options);
     const paymentElementInstance = elements.create('payment', {
@@ -124,10 +124,10 @@ document.addEventListener('DOMContentLoaded', function() {
             googlePay: 'auto'
         }
     });
-    
+
     // Mount the Payment Element
     paymentElementInstance.mount('#payment-element');
-    
+
     /**
      * Function to fix Stripe iframe styling issues
      */
@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const stripeIframe = document.querySelector('#payment-element iframe');
         if (stripeIframe) {
             console.log('Found Stripe iframe, applying style fixes');
-            
+
             // Create a style element to add to the head
             const styleEl = document.createElement('style');
             styleEl.textContent = `
@@ -161,18 +161,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             `;
             document.head.appendChild(styleEl);
-            
+
             console.log('Added Stripe iframe style fixes');
         } else {
             console.log('Stripe iframe not found yet, will retry');
         }
     }
-    
+
     // Apply fix for Stripe iframe styling immediately and after delays
     fixStripeIframeStyles();
     setTimeout(fixStripeIframeStyles, 500);
     setTimeout(fixStripeIframeStyles, 1000);
-    
+
     // Listen for changes to the Payment Element to handle validation errors and adjust sizing
     paymentElementInstance.on('change', function(event) {
         if (event.error) {
@@ -180,12 +180,12 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             clearError();
         }
-        
+
         // Adjust container height if needed
         adjustContainerHeight();
         enhanceContainerHeightAdjustment();
     });
-    
+
     // Also listen for the ready event to adjust the container height and fix styles
     paymentElementInstance.on('ready', function() {
         console.log('Payment element is ready and fully rendered');
@@ -198,10 +198,10 @@ document.addEventListener('DOMContentLoaded', function() {
         enhanceContainerHeightAdjustment();
         setupExpansionDetection();
     });
-    
+
     // Keep track of form submission status
     let isSubmitting = false;
-    
+
     /**
      * Store client secret in sessionStorage with a timestamp
      * @param {string} clientSecret - The Stripe client secret
@@ -211,16 +211,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const now = new Date().getTime();
         sessionStorage.setItem('client_secret', clientSecret);
         sessionStorage.setItem('client_secret_timestamp', now);
-        
+
         // Store the cart total as an additional verification
-        const cartTotalElement = document.querySelector('.checkout-total') || 
-                               document.querySelector('.cart-total') || 
+        const cartTotalElement = document.querySelector('.checkout-total') ||
+                               document.querySelector('.cart-total') ||
                                document.getElementById('cart-total');
         if (cartTotalElement) {
             sessionStorage.setItem('cart_total', cartTotalElement.textContent.trim());
         }
     }
-    
+
     /**
      * Clear client secret data from sessionStorage
      */
@@ -229,23 +229,23 @@ document.addEventListener('DOMContentLoaded', function() {
         sessionStorage.removeItem('client_secret_timestamp');
         sessionStorage.removeItem('cart_total');
     }
-    
+
     /**
      * Check if the stored client secret is expired
      */
     function checkClientSecretExpiry() {
         const storedSecret = sessionStorage.getItem('client_secret');
         const timestamp = sessionStorage.getItem('client_secret_timestamp');
-        
+
         if (storedSecret && timestamp) {
             const now = new Date().getTime();
             const timeDiff = now - parseInt(timestamp);
-            
+
             // If more than 1 hour old, consider it expired (60 * 60 * 1000 = 3600000 ms)
             if (timeDiff > 3600000) {
                 console.log('Client secret expired, clearing data');
                 clearClientSecretData();
-                
+
                 // Show a message if we're on the checkout page
                 if (window.location.href.includes('checkout')) {
                     handlePaymentIntentIssue('Your payment session has expired. Please refresh the page to continue.');
@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
-    
+
     /**
      * Disable the submit button
      */
@@ -262,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function() {
             submitButton.disabled = true;
         }
     }
-    
+
     /**
      * Show an error message
      * @param {string} message - The error message to display
@@ -273,7 +273,7 @@ document.addEventListener('DOMContentLoaded', function() {
             paymentErrorsElement.classList.remove('d-none');
         }
     }
-    
+
     /**
      * Clear error messages
      */
@@ -283,25 +283,25 @@ document.addEventListener('DOMContentLoaded', function() {
             paymentErrorsElement.classList.add('d-none');
         }
     }
-    
+
     /**
      * Helper function to adjust the container height based on the iframe content
      */
     function adjustContainerHeight() {
         const iframeElement = document.querySelector('#payment-element iframe');
         const containerElement = document.querySelector('.payment-element-container');
-    
+
         if (iframeElement && containerElement) {
             const iframeHeight = iframeElement.scrollHeight || iframeElement.offsetHeight;
-        
+
             // Add some padding to ensure it fits well
             const newHeight = iframeHeight + 50;
-        
+
             // Only update if the new height is larger than the minimum
             if (newHeight > 300) {
                 containerElement.style.minHeight = `${newHeight}px`;
             }
-        
+
             console.log('Adjusted payment element container height to:', newHeight + 'px');
         }
     }
@@ -316,22 +316,22 @@ document.addEventListener('DOMContentLoaded', function() {
         const wrapperElement = document.querySelector('.stripe-element-wrapper');
         const paymentElement = document.getElementById('payment-element');
         const privateElement = document.querySelector('#payment-element .__PrivateStripeElement');
-    
+
         if (!iframeElement) return;
-    
+
         // Function to check and update heights
         function updateHeights() {
             // Get actual height of iframe (try multiple methods)
-            const iframeHeight = iframeElement.scrollHeight || 
-                                iframeElement.offsetHeight || 
-                                iframeElement.clientHeight || 
-                                parseInt(iframeElement.style.height, 10) || 
+            const iframeHeight = iframeElement.scrollHeight ||
+                                iframeElement.offsetHeight ||
+                                iframeElement.clientHeight ||
+                                parseInt(iframeElement.style.height, 10) ||
                                 280; // Fallback
-        
+
             // Only proceed if we got a reasonable height
             if (iframeHeight > 100) {
                 console.log('Propagating iframe height:', iframeHeight);
-            
+
                 // Set explicit height on elements to ensure expansion
                 if (privateElement) privateElement.style.height = (iframeHeight + 5) + 'px';
                 if (paymentElement) paymentElement.style.height = (iframeHeight + 25) + 'px';
@@ -339,27 +339,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (containerElement) containerElement.style.height = (iframeHeight + 50) + 'px';
             }
         }
-    
+
         // Call immediately
         updateHeights();
-    
+
         // Set up mutation observer to detect iframe height changes
         const observer = new MutationObserver(function(mutations) {
             updateHeights();
         });
-    
+
         // Start observing iframe for style changes that could affect height
-        observer.observe(iframeElement, { 
-            attributes: true, 
-            attributeFilter: ['style', 'height', 'class'] 
+        observer.observe(iframeElement, {
+            attributes: true,
+            attributeFilter: ['style', 'height', 'class']
         });
-    
+
         // Also check periodically (as a fallback)
         const heightInterval = setInterval(updateHeights, 1000);
-    
+
         // Stop checking after 60 seconds (when most interactions should be complete)
         setTimeout(() => clearInterval(heightInterval), 60000);
-    
+
         console.log('Enhanced container height adjustment enabled');
     }
 
@@ -374,10 +374,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 clearInterval(expansionChecker);
                 return;
             }
-        
+
             // Store current height to check for changes
             const currentHeight = iframe.style.height || iframe.offsetHeight;
-        
+
             // Check again after a short delay
             setTimeout(function() {
                 const newHeight = iframe.style.height || iframe.offsetHeight;
@@ -388,12 +388,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }, 50);
         }, 500); // Check every 500ms
-    
+
         // Clean up after 1 minute (when most interactions should be complete)
         setTimeout(function() {
             clearInterval(expansionChecker);
         }, 60000);
-    
+
         // Add click listeners to detect user interaction with payment element
         const paymentElement = document.getElementById('payment-element');
         if (paymentElement) {
@@ -404,7 +404,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     enhanceContainerHeightAdjustment();
                 }, 300);
             });
-        
+
             // Also listen for focus events which might trigger expansions
             paymentElement.addEventListener('focusin', function() {
                 setTimeout(function() {
@@ -413,10 +413,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, 300);
             });
         }
-    
+
         console.log('Expansion detection set up');
     }
-    
+
     /**
      * Enhance container height adjustment to capture and propagate iframe height changes
      * This function should be called after adjustContainerHeight
@@ -428,22 +428,22 @@ document.addEventListener('DOMContentLoaded', function() {
         const wrapperElement = document.querySelector('.stripe-element-wrapper');
         const paymentElement = document.getElementById('payment-element');
         const privateElement = document.querySelector('#payment-element .__PrivateStripeElement');
-        
+
         if (!iframeElement) return;
-        
+
         // Function to check and update heights
         function updateHeights() {
             // Get actual height of iframe (try multiple methods)
-            const iframeHeight = iframeElement.scrollHeight || 
-                                iframeElement.offsetHeight || 
-                                iframeElement.clientHeight || 
-                                parseInt(iframeElement.style.height, 10) || 
+            const iframeHeight = iframeElement.scrollHeight ||
+                                iframeElement.offsetHeight ||
+                                iframeElement.clientHeight ||
+                                parseInt(iframeElement.style.height, 10) ||
                                 280; // Fallback
-            
+
             // Only proceed if we got a reasonable height
             if (iframeHeight > 100) {
                 console.log('Propagating iframe height:', iframeHeight);
-                
+
                 // Set explicit height on elements to ensure expansion
                 if (privateElement) privateElement.style.height = (iframeHeight + 5) + 'px';
                 if (paymentElement) paymentElement.style.height = (iframeHeight + 25) + 'px';
@@ -451,30 +451,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (containerElement) containerElement.style.height = (iframeHeight + 50) + 'px';
             }
         }
-        
+
         // Call immediately
         updateHeights();
-        
+
         // Set up mutation observer to detect iframe height changes
         const observer = new MutationObserver(function(mutations) {
             updateHeights();
         });
-        
+
         // Start observing iframe for style changes that could affect height
-        observer.observe(iframeElement, { 
-            attributes: true, 
-            attributeFilter: ['style', 'height', 'class'] 
+        observer.observe(iframeElement, {
+            attributes: true,
+            attributeFilter: ['style', 'height', 'class']
         });
-        
+
         // Also check periodically (as a fallback)
         const heightInterval = setInterval(updateHeights, 1000);
-        
+
         // Stop checking after 60 seconds (when most interactions should be complete)
         setTimeout(() => clearInterval(heightInterval), 60000);
-        
+
         console.log('Enhanced container height adjustment enabled');
     }
-    
+
     /**
      * Handle payment intent issues by showing error and refresh button
      * @param {string} errorMessage - The error message to display
@@ -482,7 +482,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function handlePaymentIntentIssue(errorMessage = 'The payment session has expired. Please refresh the page to continue.') {
         // Show error message
         showError(errorMessage);
-        
+
         // Create a refresh button
         const refreshButton = document.createElement('button');
         refreshButton.className = 'btn btn-warning mt-3';
@@ -490,25 +490,25 @@ document.addEventListener('DOMContentLoaded', function() {
         refreshButton.onclick = function() {
             // Clear any stored client secret data
             clearClientSecretData();
-            
+
             // Force a hard refresh of the page to get a new payment intent
             window.location.href = window.location.href.split('?')[0] + '?refresh=' + new Date().getTime();
         };
-        
+
         // Add the refresh button after the error message
         if (paymentErrorsElement && !document.getElementById('refresh-button')) {
             refreshButton.id = 'refresh-button';
             paymentErrorsElement.parentNode.insertBefore(refreshButton, paymentErrorsElement.nextSibling);
         }
-        
+
         // Reset submission status
         isSubmitting = false;
-        
+
         // Re-enable the submit button and hide overlay
         if (submitButton) submitButton.disabled = false;
         if (loadingOverlay) loadingOverlay.style.display = 'none';
     }
-    
+
     /**
      * Helper function to get value from any field
      * @param {string} fieldName - The name of the field
@@ -516,23 +516,23 @@ document.addEventListener('DOMContentLoaded', function() {
      */
     function getFieldValue(fieldName) {
         // Try with both regular name and id_ prefix (Django convention)
-        const field = form.elements[fieldName] || form.elements[`id_${fieldName}`] || 
+        const field = form.elements[fieldName] || form.elements[`id_${fieldName}`] ||
                       document.getElementById(`id_${fieldName}`);
         return field ? field.value : '';
     }
-    
+
     /**
      * Verify cart total matches stored value
      */
     function verifyCartTotal() {
         const storedTotal = sessionStorage.getItem('cart_total');
-        const currentTotalElement = document.querySelector('.checkout-total') || 
-                                   document.querySelector('.cart-total') || 
+        const currentTotalElement = document.querySelector('.checkout-total') ||
+                                   document.querySelector('.cart-total') ||
                                    document.getElementById('cart-total');
-        
+
         if (storedTotal && currentTotalElement) {
             const currentTotal = currentTotalElement.textContent.trim();
-            
+
             // If cart total has changed, clear the client secret
             if (storedTotal !== currentTotal) {
                 console.log('Cart total changed, clearing client secret data');
@@ -540,43 +540,43 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
-    
+
     // Handle form submission
     form.addEventListener('submit', async function(event) {
         event.preventDefault();
         console.log('Form submission started');
-        
+
         // Prevent multiple submissions
         if (isSubmitting) {
             console.log('Form already submitting, preventing duplicate submission');
             return;
         }
-        
+
         // Verify terms checkbox is checked
         const termsCheckbox = document.getElementById('terms-check');
         if (!termsCheckbox || !termsCheckbox.checked) {
             showError('Please agree to the terms and conditions.');
             return;
         }
-        
+
         // Set submission status
         isSubmitting = true;
-        
+
         // Disable the submit button to prevent double clicks
         submitButton.disabled = true;
-        
+
         // Show loading indicator in button
         const buttonText = document.getElementById('button-text');
         const spinner = document.getElementById('spinner');
-        
+
         if (buttonText) buttonText.classList.add('d-none');
         if (spinner) spinner.classList.remove('d-none');
-        
+
         // Show the loading overlay
         if (loadingOverlay) {
             loadingOverlay.style.display = 'flex';
         }
-        
+
         try {
             // First cache the checkout data on the server
             const csrfTokenElement = form.querySelector('input[name="csrfmiddlewaretoken"]');
@@ -584,14 +584,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error('CSRF token not found in form');
             }
             const csrfToken = csrfTokenElement.value;
-            
+
             // Get form data that we want to pass to the payment intent
             const formData = new FormData();
             formData.append('client_secret', clientSecret);
             formData.append('save_info', document.getElementById('id_save_payment_info')?.checked || false);
-            
+
             console.log('Sending data to cache_checkout_data...');
-            
+
             try {
                 // Send the data to your cache_checkout_data view
                 const response = await fetch(cacheCheckoutUrl, {
@@ -601,7 +601,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     },
                     body: formData
                 });
-                
+
                 let responseData;
                 try {
                     responseData = await response.json();
@@ -609,14 +609,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.error('Failed to parse response JSON:', e);
                     responseData = {};
                 }
-                
+
                 // Check for special payment intent error
                 if (response.status === 409 && responseData.error === 'payment_intent_unexpected_state') {
                     console.error('Payment intent is in an unexpected state');
                     handlePaymentIntentIssue(responseData.message || 'The payment session has expired. Please refresh the page to continue.');
                     return;
                 }
-                
+
                 if (!response.ok) {
                     // Handle server error
                     console.error('Server error:', responseData);
@@ -628,7 +628,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (loadingOverlay) loadingOverlay.style.display = 'none';
                     return;
                 }
-                
+
                 console.log('Cache checkout data successful');
             } catch (fetchError) {
                 console.error('Error during fetch operation:', fetchError);
@@ -640,21 +640,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (loadingOverlay) loadingOverlay.style.display = 'none';
                 return;
             }
-            
+
             // Create return URL for redirect after successful payment
             let returnUrl;
             try {
                 // Get the base URL
                 let baseUrl = window.location.origin;
-                
+
                 // Make sure origin ends with a trailing slash if needed
                 if (!baseUrl.endsWith('/')) {
                     baseUrl += '/';
                 }
-                
+
                 // Get the form action URL
                 let formAction = form.action;
-                
+
                 // If form.action is a relative URL, construct a proper absolute URL
                 if (formAction.startsWith('/') || !formAction.includes('://')) {
                     // If it starts with /, it's already relative to origin
@@ -670,18 +670,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     // It's already an absolute URL
                     returnUrl = formAction.replace('checkout', 'checkout/success');
                 }
-                
+
                 // Ensure we don't have double slashes in the URL (except after protocol)
                 returnUrl = returnUrl.replace(/([^:])\/\//g, '$1/');
-                
+
                 // Log the constructed URL for debugging
                 console.log('Success return URL:', returnUrl);
-                
+
                 // Ensure the return URL is a valid absolute URL
                 if (!returnUrl.startsWith('http')) {
                     throw new Error('Return URL is not absolute: ' + returnUrl);
                 }
-                
+
                 // Additional validation: make sure it doesn't end with two slashes
                 if (returnUrl.endsWith('//')) {
                     returnUrl = returnUrl.slice(0, -1);
@@ -692,10 +692,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 returnUrl = window.location.origin + '/shop/checkout/success/';
                 console.log('Using fallback return URL:', returnUrl);
             }
-            
+
             // Get shipping details to pass to Stripe
             const shipping = getShippingDetails();
-            
+
             // Confirm payment using the Payment Element
             const { error } = await stripe.confirmPayment({
                 elements,
@@ -707,13 +707,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 redirect: 'if_required'
             });
-            
+
             if (error) {
                 // Handle payment confirmation error
                 if (error.type === 'card_error' || error.type === 'validation_error') {
                     showError(error.message);
-                } else if (error.type === 'invalid_request_error' && 
-                          (error.code === 'payment_intent_unexpected_state' || 
+                } else if (error.type === 'invalid_request_error' &&
+                          (error.code === 'payment_intent_unexpected_state' ||
                            error.message.includes('is not available') ||
                            error.message.includes('payment_intent'))) {
                     // Handle payment intent issues
@@ -723,7 +723,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     showError('An unexpected error occurred.');
                     console.error('Payment error:', error);
                 }
-                
+
                 // Reset form state
                 isSubmitting = false;
                 submitButton.disabled = false;
@@ -733,23 +733,23 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 // The payment has been processed!
                 console.log('Payment processing completed, form will be submitted');
-                
+
                 // Add payment intent ID to form if available
                 const paymentIntentIdField = document.getElementById('id_payment_intent_id');
                 if (paymentIntentIdField && clientSecret) {
                     paymentIntentIdField.value = clientSecret.split('_secret')[0];
                 }
-                
+
                 // Update payment method type in form if needed
                 const paymentMethodTypeField = document.getElementById('id_payment_method_type');
                 if (paymentMethodTypeField) {
                     // Default to 'card' if not specified
                     paymentMethodTypeField.value = 'card';
                 }
-                
+
                 // Clear session storage as payment is being processed
                 clearClientSecretData();
-                
+
                 // Submit the form to complete order processing
                 form.submit();
             }
@@ -757,7 +757,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error in checkout process:', error);
             // Show error to user
             showError(error.message || 'An unexpected error occurred. Please try again.');
-            
+
             // Reset form state
             isSubmitting = false;
             submitButton.disabled = false;
@@ -766,7 +766,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (loadingOverlay) loadingOverlay.style.display = 'none';
         }
     });
-    
+
     /**
      * Get shipping details from form fields
      * @returns {Object} Shipping details for Stripe
@@ -784,17 +784,17 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         };
     }
-    
+
     // Auto-propagate contact info to shipping when empty
     const contactFields = [
         { source: 'first_name', target: 'shipping_first_name' },
         { source: 'last_name', target: 'shipping_last_name' }
     ];
-    
+
     contactFields.forEach(pair => {
         const sourceField = document.getElementById(`id_${pair.source}`);
         const targetField = document.getElementById(`id_${pair.target}`);
-        
+
         if (sourceField && targetField) {
             sourceField.addEventListener('change', function() {
                 if (!targetField.value) {
@@ -804,10 +804,10 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
-    
+
     // Run initial cart verification
     verifyCartTotal();
-    
+
     // Listen for resize events which might change the iframe size
     window.addEventListener('resize', function() {
         // Use debounce technique to prevent too many adjustments
@@ -817,6 +817,6 @@ document.addEventListener('DOMContentLoaded', function() {
             enhanceContainerHeightAdjustment();
         }, 200);
     });
-    
+
     console.log('Checkout script with Payment Element initialization complete');
 });

@@ -38,7 +38,7 @@
     animation: rotate-circle 4.25s ease-in;
 }
 
-.success-checkmark .check-icon::before, 
+.success-checkmark .check-icon::before,
 .success-checkmark .check-icon::after {
     content: '';
     height: 100px;
@@ -191,7 +191,7 @@
     .table-responsive {
         border: 0;
     }
-    
+
     .table th, .table td {
         font-size: 0.875rem;
     }
@@ -204,16 +204,16 @@
         margin: 0;
         padding: 0;
     }
-    
+
     .success-checkmark, .text-center .btn {
         display: none;
     }
-    
+
     .card {
         border: none;
         box-shadow: none;
     }
-    
+
     body {
         font-size: 12pt;
         color: #000;
