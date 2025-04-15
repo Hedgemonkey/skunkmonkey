@@ -1,6 +1,6 @@
 /**
  * product-manager.js - Dedicated module for product management
- * 
+ *
  * Handles product CRUD operations, filtering, and event handling
  */
 import { makeAjaxRequest } from '../../../static/js/ajax_helper.js';
@@ -34,13 +34,13 @@ export class ProductManager extends BaseManager {
         // Get saved categories for filtering
         const savedCategories = localStorage.getItem('selectedCategories');
         const categoryParam = savedCategories ? JSON.parse(savedCategories).join(',') : '';
-        
+
         // Prepare params with category filter if available
         const params = {};
         if (categoryParam) {
             params.category = categoryParam;
         }
-        
+
         makeAjaxRequest(
             this.urls.getProductCards,
             'GET',
@@ -51,7 +51,7 @@ export class ProductManager extends BaseManager {
                 } else {
                     this.elements.productListContainer.html(response);
                 }
-                
+
                 this.attachDeleteListeners();
                 this.initializeFilters();
             },
@@ -153,7 +153,7 @@ export class ProductManager extends BaseManager {
             this.handleDelete(button.data('product-slug'), button.data('product-name'));
         });
     }
-    
+
     /**
      * Clean up resources
      * Override of BaseManager.destroy()
@@ -161,10 +161,10 @@ export class ProductManager extends BaseManager {
     destroy() {
         // Clean up event listeners
         $('.delete-product').off('click');
-        
+
         // Call base class destroy
         super.destroy();
-        
+
         console.log("ProductManager destroyed");
     }
 }

@@ -1,6 +1,6 @@
 /**
  * api-client.js - Standardized API client for consistent AJAX operations
- * 
+ *
  * Provides a higher-level wrapper around AJAX requests with standardized
  * error handling, response parsing, and consistent promise handling.
  */
@@ -33,7 +33,7 @@ export class ApiClient {
         if (endpoint.startsWith('http') || endpoint.startsWith('/')) {
             return endpoint;
         }
-        
+
         // Otherwise, join baseUrl and endpoint
         return `${this.baseUrl}/${endpoint}`.replace(/([^:]\/)\/+/g, '$1');
     }
@@ -82,11 +82,11 @@ export class ApiClient {
     request(method, endpoint, data = {}, options = {}) {
         const url = this.buildUrl(endpoint);
         const abortable = options.abortable !== false;
-        
+
         // Determine if we should process the data (false for FormData)
         const processData = !(data instanceof FormData);
         const contentType = processData ? 'application/x-www-form-urlencoded; charset=UTF-8' : false;
-        
+
         return new Promise((resolve, reject) => {
             try {
                 const ajaxRequest = makeAjaxRequest(
@@ -101,7 +101,7 @@ export class ApiClient {
                     (jqXHR, textStatus, errorThrown) => {
                         // Remove from pending requests
                         this.removePendingRequest(ajaxRequest);
-                        
+
                         // Create standardized error object
                         const error = {
                             status: jqXHR.status,
@@ -109,24 +109,24 @@ export class ApiClient {
                             responseJSON: jqXHR.responseJSON,
                             message: jqXHR.responseJSON?.error || errorThrown || "Request failed"
                         };
-                        
+
                         // Call the global error handler if provided
                         if (this.errorHandler && !options.skipGlobalErrorHandler) {
                             this.errorHandler(error);
                         }
-                        
+
                         reject(error);
                     },
                     abortable,
                     processData,
                     contentType
                 );
-                
+
                 // Track the request if abortable
                 if (abortable && ajaxRequest) {
                     this.pendingRequests.push(ajaxRequest);
                 }
-                
+
                 // If there's a timeout option, handle it
                 if (options.timeout) {
                     setTimeout(() => {

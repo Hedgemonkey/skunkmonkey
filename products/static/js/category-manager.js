@@ -1,6 +1,6 @@
 /**
  * category-manager.js - Dedicated module for category management
- * 
+ *
  * Handles category CRUD operations, filtering, and event handling
  */
 import apiClient from '../../../static/js/api-client.js';
@@ -25,7 +25,7 @@ export class CategoryManager extends BaseManager {
             ...options,
             itemType: 'category'
         });
-        
+
         // Store reference to filter
         this.filter = null;
     }
@@ -44,7 +44,7 @@ export class CategoryManager extends BaseManager {
             } else {
                 this.elements.categoryListContainer.html(response);
             }
-            
+
             this.initializeFilters();
             this.attachCategoryEventListeners();
         })
@@ -132,7 +132,7 @@ export class CategoryManager extends BaseManager {
         .then((response) => this.confirmCategoryDeletion(response, categorySlug, categoryName))
         .catch((error) => this.notifications.displaySwalError(error, "Failed to get products for category."));
     }
-    
+
     /**
      * Show confirmation dialog for category deletion
      * @param {Object} response - Response containing products to delete
@@ -180,14 +180,14 @@ export class CategoryManager extends BaseManager {
         // Delete buttons
         $('#category-cards-grid').off('click', '.delete-category')
             .on('click', '.delete-category', (e) => this.handleDelete(e));
-        
+
         // Edit buttons
         $('#category-cards-grid').off('click', '.edit-category')
             .on('click', '.edit-category', (e) => {
                 e.preventDefault();
                 this.showForm($(e.currentTarget).attr('href'), true);
             });
-        
+
         // Category headers - connect with the filter's category manager
         $('#category-cards-grid').off('click', '.category-header')
             .on('click', '.category-header', (e) => {
@@ -203,11 +203,11 @@ export class CategoryManager extends BaseManager {
                     }
                 }
             });
-        
+
         // Add cursor pointer to indicate clickable headers
         $('#category-cards-grid .category-header').css('cursor', 'pointer');
     }
-    
+
     /**
      * Initialize filters for category view
      * Implements abstract method from BaseManager
@@ -215,12 +215,12 @@ export class CategoryManager extends BaseManager {
     initializeFilters() {
         try {
             console.log("Initializing category filters");
-            
+
             // Clean up any existing filter instance
             if (this.filter) {
                 this.filter.destroy();
             }
-            
+
             this.filter = new ItemFilter({
                 containerId: 'category-cards-container',
                 filterUrl: this.urls.getCategoryCards,
@@ -229,30 +229,30 @@ export class CategoryManager extends BaseManager {
                 onUpdate: () => {
                     // Important: Re-attach category event listeners after filter updates the DOM
                     this.attachCategoryEventListeners();
-                    
+
                     // Ensure category card styling is updated to match selected state
                     if (this.filter.categoryManager) {
                         this.filter.categoryManager._updateCategoryCardStyling();
                     }
                 }
             });
-            
+
             if (this.filter && typeof this.filter.preloadCategories === 'function') {
                 this.filter.preloadCategories();
-                
+
                 // Important: Ensure the category cards are styled correctly initially
                 if (this.filter.categoryManager) {
                     this.filter.categoryManager._updateCategoryCardStyling();
                 }
             }
-            
+
             console.log("Category filters initialized successfully");
         } catch (error) {
             console.error("Error initializing category filters:", error);
             this.notifications.displayError("Failed to initialize category filters.");
         }
     }
-    
+
     /**
      * Clean up resources
      * Override of BaseManager.destroy()
@@ -262,16 +262,16 @@ export class CategoryManager extends BaseManager {
         $('#category-cards-grid').off('click', '.delete-category');
         $('#category-cards-grid').off('click', '.edit-category');
         $('#category-cards-grid').off('click', '.category-header');
-        
+
         // Clean up filter if it exists
         if (this.filter) {
             this.filter.destroy();
             this.filter = null;
         }
-        
+
         // Call base class destroy
         super.destroy();
-        
+
         console.log("CategoryManager destroyed");
     }
 }

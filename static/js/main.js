@@ -17,31 +17,31 @@ const main = {
         console.log('Main module initialized');
         this.initSweetAlert();
         this.initBootstrapComponents();
-        
+
         // Display initial messages on page load if any exist
         displayMessages(window.messages || []);
     },
 
     initSweetAlert: function() {
         console.log('Initializing SweetAlert2');
-        
+
         // Initialize SweetAlert2 with default options
         const swalDefaults = Swal.mixin({
             confirmButtonColor: '#0d6efd',
             cancelButtonColor: '#6c757d'
         });
-        
+
         // Make the mixin available globally
         window.SwalDefault = swalDefaults;
-        
+
         // Test SweetAlert2 is working
         console.log('SweetAlert2 version:', Swal.version);
-        
+
         // Global function to show toast notifications
         window.showToast = function(title, message, type = 'info') {
             console.log('Global showToast called:', title, message, type);
             const iconType = type === 'danger' ? 'error' : type;
-            
+
             // Ensure the toast is visible by setting important z-index and opacity
             const toast = Swal.mixin({
                 toast: true,
@@ -54,16 +54,16 @@ const main = {
                     toast.style.zIndex = '9999';
                     toast.style.opacity = '1';
                     toast.style.visibility = 'visible';
-                    
+
                     // Add event listeners
                     toast.addEventListener('mouseenter', Swal.stopTimer);
                     toast.addEventListener('mouseleave', Swal.resumeTimer);
-                    
+
                     // Log that toast was opened
                     console.log('Toast opened successfully');
                 }
             });
-            
+
             // Fire the toast with a small delay to ensure DOM is ready
             setTimeout(() => {
                 toast.fire({
@@ -77,14 +77,14 @@ const main = {
                 });
             }, 100);
         };
-        
+
         // Dispatch an event to notify other scripts that SweetAlert2 is initialized
         document.dispatchEvent(new Event('swal2-initialized'));
     },
 
     initBootstrapComponents: function() {
         console.log('Initializing Bootstrap components');
-        
+
         // Function to initialize Bootstrap dropdowns
         const initDropdowns = () => {
             try {
@@ -97,21 +97,21 @@ const main = {
                     console.log('Bootstrap dropdowns initialized with native API');
                     return true;
                 }
-                
+
                 // For jQuery-based Bootstrap (fallback)
                 else if (typeof $ !== 'undefined' && typeof $.fn !== 'undefined' && typeof $.fn.dropdown === 'function') {
                     $('.dropdown-toggle').dropdown();
                     console.log('Bootstrap dropdowns initialized with jQuery');
                     return true;
                 }
-                
+
                 return false;
             } catch (error) {
                 console.error('Error initializing Bootstrap dropdowns:', error);
                 return false;
             }
         };
-        
+
         // Attempt to initialize immediately
         if (!initDropdowns()) {
             // If initial attempt fails, try again after window load event

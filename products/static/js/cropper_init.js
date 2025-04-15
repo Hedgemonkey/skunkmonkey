@@ -1,6 +1,6 @@
 /**
  * Product Image Cropper Initializer
- * 
+ *
  * This script initializes the image cropper for product images.
  */
 
@@ -15,7 +15,7 @@ console.log('Products cropper init loading...');
 const ProductsCropper = {
     // Track initialization state
     initialized: false,
-    
+
     // Main initialization function
     init: function() {
         // Only initialize once
@@ -23,13 +23,13 @@ const ProductsCropper = {
             console.log('ProductsCropper already initialized, skipping');
             return;
         }
-        
+
         console.log('ProductsCropper.init() called');
-        
+
         // Check if ImageCropper is available globally
         if (window.ImageCropper && typeof window.ImageCropper.init === 'function') {
             console.log('Found global ImageCropper, initializing with it');
-            
+
             // Initialize with specific product options
             window.ImageCropper.init({
                 fileInputSelector: 'input[type="file"]',
@@ -85,7 +85,7 @@ const ProductsCropper = {
         } else {
             console.error('ImageCropper not available globally or as import');
         }
-        
+
         // Handle showing the preview image name (specific to products app)
         document.addEventListener('change', function(event) {
             if (event.target && event.target.type === 'file') {
@@ -99,19 +99,19 @@ const ProductsCropper = {
                 }
             }
         });
-        
+
         // Mark as initialized
         this.initialized = true;
         console.log('ProductsCropper initialization complete');
     },
-    
+
     // Clean up resources
     cleanUp: function() {
         // If using the global ImageCropper, let it clean up
         if (window.ImageCropper && typeof window.ImageCropper.cleanUp === 'function') {
             window.ImageCropper.cleanUp();
         }
-        
+
         // Reset initialization flag
         this.initialized = false;
     }

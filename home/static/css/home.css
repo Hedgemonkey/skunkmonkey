@@ -375,15 +375,15 @@
         text-align: center;
         padding: 1rem;
     }
-    
+
     .hero-content h1 {
         font-size: 2rem;
     }
-    
+
     .home-carousel {
         height: 300px;
     }
-    
+
     .carousel-button {
         width: 40px;
         height: 40px;
@@ -395,13 +395,13 @@
     .home-carousel {
         height: 250px;
     }
-    
+
     .carousel-button {
         width: 35px;
         height: 35px;
         font-size: 1rem;
     }
-    
+
     .section-heading {
         font-size: 1.5rem;
     }

@@ -1,6 +1,6 @@
 /**
  * ajax_helper.js - Utility functions for AJAX requests
- * 
+ *
  * Provides standardized AJAX request functionality with CSRF protection
  * and consistent error handling.
  */
@@ -38,11 +38,11 @@ export function getCookie(name) {
  * @returns {Object} The jqXHR object if abortable is true, otherwise undefined
  */
 export function makeAjaxRequest(
-    url, 
-    method, 
-    data, 
-    successCallback, 
-    errorCallback, 
+    url,
+    method,
+    data,
+    successCallback,
+    errorCallback,
     abortable = true,
     processData = true,
     contentType = 'application/x-www-form-urlencoded; charset=UTF-8'
@@ -53,7 +53,7 @@ export function makeAjaxRequest(
         processData = false;
         contentType = false;
     }
-    
+
     // Set up AJAX options
     const ajaxOptions = {
         url: url,
@@ -87,15 +87,15 @@ export function makeAjaxRequest(
             }
         }
     };
-    
+
     // Try to auto-detect the response type
     if (url.includes('/api/') || url.endsWith('.json')) {
         ajaxOptions.dataType = 'json';
     }
-    
+
     // Make the request
     const ajaxRequest = $.ajax(ajaxOptions);
-    
+
     // Return the jqXHR object if the request should be abortable
     if (abortable) {
         return ajaxRequest;

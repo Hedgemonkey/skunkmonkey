@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const productGrid = document.querySelector('.product-grid');
     const filterButtons = document.querySelectorAll('.filter-btn');
     const sortSelect = document.getElementById('sort-options');
-    
+
     // Initialize tooltips if Bootstrap is available
     if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
         const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
@@ -21,13 +21,13 @@ document.addEventListener('DOMContentLoaded', function() {
      */
     function setupWishlistButtons() {
         const wishlistButtons = document.querySelectorAll('.wishlist-btn');
-        
+
         wishlistButtons.forEach(button => {
             button.addEventListener('click', function(e) {
                 e.preventDefault();
                 const productId = this.getAttribute('data-product-id');
                 const heartIcon = this.querySelector('i');
-                
+
                 // Toggle heart icon
                 if (heartIcon.classList.contains('fa-heart-o')) {
                     heartIcon.classList.replace('fa-heart-o', 'fa-heart');
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function addToWishlist(productId) {
         // Get CSRF token from cookie
         const csrfToken = getCookie('csrftoken');
-        
+
         fetch('/wishlist/add/', {
             method: 'POST',
             headers: {
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function removeFromWishlist(productId) {
         // Get CSRF token from cookie
         const csrfToken = getCookie('csrftoken');
-        
+
         fetch('/wishlist/remove/', {
             method: 'POST',
             headers: {
@@ -120,16 +120,16 @@ document.addEventListener('DOMContentLoaded', function() {
      */
     function setupFilters() {
         if (!filterButtons.length) return;
-        
+
         filterButtons.forEach(button => {
             button.addEventListener('click', function() {
                 // Update active state
                 filterButtons.forEach(btn => btn.classList.remove('active'));
                 this.classList.add('active');
-                
+
                 const filter = this.getAttribute('data-filter');
                 const productItems = document.querySelectorAll('.product-item');
-                
+
                 // Apply filter to product items
                 productItems.forEach(item => {
                     if (filter === 'all') {
@@ -140,26 +140,26 @@ document.addEventListener('DOMContentLoaded', function() {
                         item.style.display = item.getAttribute('data-is-low-stock') === 'true' ? 'block' : 'none';
                     }
                 });
-                
+
                 // Check if no products are visible and show message
                 checkNoVisibleProducts();
             });
         });
     }
-    
+
     /**
      * Check if there are no visible products after filtering
      */
     function checkNoVisibleProducts() {
         const productItems = document.querySelectorAll('.product-item');
         let visibleCount = 0;
-        
+
         productItems.forEach(item => {
             if (item.style.display !== 'none') {
                 visibleCount++;
             }
         });
-        
+
         // Get or create no-products message element
         let noProductsEl = document.querySelector('.no-products');
         if (visibleCount === 0) {
@@ -180,14 +180,14 @@ document.addEventListener('DOMContentLoaded', function() {
      */
     function setupSorting() {
         if (!sortSelect) return;
-        
+
         sortSelect.addEventListener('change', function() {
             const sortBy = this.value;
             const productItems = Array.from(document.querySelectorAll('.product-item'));
-            
+
             // Skip if no items to sort
             if (productItems.length === 0) return;
-            
+
             // Sort product items based on selected option
             productItems.sort((a, b) => {
                 if (sortBy === 'price-low') {
@@ -199,11 +199,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else if (sortBy === 'name-za') {
                     return b.getAttribute('data-name').localeCompare(a.getAttribute('data-name'));
                 }
-                
+
                 // Default sorting (by position in DOM)
                 return 0;
             });
-            
+
             // Reorder elements in the DOM
             const parent = productItems[0].parentNode;
             productItems.forEach(item => parent.appendChild(item));
@@ -215,28 +215,28 @@ document.addEventListener('DOMContentLoaded', function() {
      */
     function setupAddToCart() {
         const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
-        
+
         addToCartButtons.forEach(button => {
             button.addEventListener('click', function() {
                 if (this.disabled) return;
-                
+
                 const productId = this.getAttribute('data-product-id');
                 const csrfToken = getCookie('csrftoken');
-                
+
                 // Add loading state
                 const originalText = this.innerHTML;
                 this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Adding...';
                 this.disabled = true;
-                
+
                 fetch('/cart/add/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRFToken': csrfToken,
                     },
-                    body: JSON.stringify({ 
+                    body: JSON.stringify({
                         product_id: productId,
-                        quantity: 1 
+                        quantity: 1
                     }),
                 })
                 .then(response => {
@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Reset button state
                     this.innerHTML = originalText;
                     this.disabled = false;
-                    
+
                     if (data.success) {
                         showMessage('Product added to cart', 'success');
                         // Update cart count in the navbar if it exists
@@ -265,7 +265,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Reset button state
                     this.innerHTML = originalText;
                     this.disabled = false;
-                    
+
                     console.error('Error:', error);
                     showMessage('Error adding to cart', 'danger');
                 });
@@ -297,14 +297,14 @@ document.addEventListener('DOMContentLoaded', function() {
     function showMessage(message, type) {
         // Check if a messages container exists, create one if not
         let messagesContainer = document.querySelector('.messages-container');
-        
+
         if (!messagesContainer) {
             messagesContainer = document.createElement('div');
             messagesContainer.className = 'messages-container position-fixed top-0 end-0 p-3';
             messagesContainer.style.zIndex = '1050';
             document.body.appendChild(messagesContainer);
         }
-        
+
         // Create alert element
         const alertElement = document.createElement('div');
         alertElement.className = `alert alert-${type} alert-dismissible fade show`;
@@ -313,10 +313,10 @@ document.addEventListener('DOMContentLoaded', function() {
             ${message}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         `;
-        
+
         // Add to container
         messagesContainer.appendChild(alertElement);
-        
+
         // Auto-remove after 5 seconds
         setTimeout(() => {
             alertElement.classList.remove('show');

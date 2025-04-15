@@ -30,19 +30,19 @@ export class ItemFilter {
         this.onUpdate = options.onUpdate || function() {};
         this.searchDelay = options.searchDelay || 300;
         this.itemType = options.itemType || 'products';
-        this.filterOnCategorySelect = options.filterOnCategorySelect !== undefined ? 
+        this.filterOnCategorySelect = options.filterOnCategorySelect !== undefined ?
             options.filterOnCategorySelect : true;
-        
+
         // State management
         this.container = $(`#${this.containerId}`);
         this.searchTimeout = null;
         this.pendingRequest = null;
         this.lastFilteredValue = '';
-        
+
         // Initialize specialized managers
         this.categoryManager = new CategoryFilterManager(this);
         this.uiManager = new FilterUIManager(this);
-        
+
         // Initialize components
         this._initialize();
     }
@@ -59,12 +59,12 @@ export class ItemFilter {
         this.categoryManager.initialize();
         this.uiManager.initialize();
         this._initializeEventListeners();
-        
+
         // Initial filter to load data with applied filters
         // This ensures any pre-selected categories or search terms are applied
         this.filterItems();
     }
-    
+
     /**
      * Initialize all event listeners
      * @private
@@ -79,19 +79,19 @@ export class ItemFilter {
     // -------------------------------------------------------------------------
     // Event Handling Methods
     // -------------------------------------------------------------------------
-    
+
     /**
      * Set up search-related events
      * @private
      */
     _setupSearchEvents() {
         const searchSelector = '.filter-search';
-        
+
         // Use event delegation for better performance
         this.container.on('input', searchSelector, this._handleSearchInput.bind(this));
         this.container.on('click', '.clear-search', this._handleClearSearch.bind(this));
     }
-    
+
     /**
      * Handle search input events with debounce
      * @private
@@ -100,7 +100,7 @@ export class ItemFilter {
     _handleSearchInput(e) {
         const searchInput = $(e.currentTarget);
         const currentValue = searchInput.val();
-        
+
         // Only trigger search if value has changed
         if (currentValue !== this.lastFilteredValue) {
             clearTimeout(this.searchTimeout);
@@ -110,7 +110,7 @@ export class ItemFilter {
             }, this.searchDelay);
         }
     }
-    
+
     /**
      * Handle clear search button clicks
      * @private
@@ -120,7 +120,7 @@ export class ItemFilter {
         this.lastFilteredValue = '';
         this.filterItems();
     }
-    
+
     /**
      * Set up sort-related events
      * @private
@@ -130,7 +130,7 @@ export class ItemFilter {
             this.filterItems();
         });
     }
-    
+
     /**
      * Set up reset-related events
      * @private
@@ -139,12 +139,12 @@ export class ItemFilter {
         this.container.on('click', '.reset-all-filters', () => {
             const clearSearchBtn = this.container.find('.clear-search');
             const clearCategoriesBtn = this.container.find('.clear-categories-btn');
-            
+
             if (clearSearchBtn.length) clearSearchBtn.click();
             if (clearCategoriesBtn.length) clearCategoriesBtn.click();
         });
     }
-    
+
     /**
      * Set up List Products button for category view
      * @private
@@ -155,12 +155,12 @@ export class ItemFilter {
             if (selectedCategories.length > 0) {
                 // Redirect to products view with selected categories
                 window.location.href = `/products/staff/management/?category=${selectedCategories.join(',')}`;
-                
+
                 // Ensure the Product accordion is open
                 setTimeout(() => {
                     $('#product-list-section').addClass('show');
                     $('#products-header button').attr('aria-expanded', 'true').removeClass('collapsed');
-                    
+
                     // Scroll to the product section
                     $('html, body').animate({
                         scrollTop: $('#products-header').offset().top - 100
@@ -185,18 +185,18 @@ export class ItemFilter {
 
         // Gather filter parameters
         const requestParams = this._buildRequestParams();
-        
+
         // Update UI before sending request
         this.uiManager.updateFilterSummary();
         this._showLoading(true);
-        
+
         // Save search field focus state
         const focusState = this._captureSearchFieldState();
-        
+
         // Make the request using ApiClient
         this._makeFilterRequest(requestParams, focusState);
     }
-    
+
     /**
      * Cancel any pending filter request
      * @private
@@ -210,16 +210,16 @@ export class ItemFilter {
                 if (typeof this.pendingRequest.abort === 'function') {
                     this.pendingRequest.abort();
                 }
-            } 
+            }
             // Fallback to direct abort if needed
             else if (typeof this.pendingRequest.abort === 'function') {
                 this.pendingRequest.abort();
             }
-            
+
             this.pendingRequest = null;
         }
     }
-    
+
     /**
      * Build request parameters for filtering
      * @private
@@ -229,25 +229,25 @@ export class ItemFilter {
         const currentInputValue = this.container.find('.filter-search').val();
         const selectedCategories = this.categoryManager.getSelectedCategories();
         const categoryParam = selectedCategories.join(',');
-        
+
         const requestParams = {
             search: currentInputValue,
             sort: this.container.find('.filter-sort').val(),
             items_only: true
         };
-        
+
         // Only include category parameter for product filtering, not for category filtering
         // This way, when on the categories page, we'll show all categories regardless of which ones are selected
         if (categoryParam && this.itemType !== 'categories') {
             requestParams.category = categoryParam;
         }
-        
+
         // Debug logging to help track what parameters are being sent
         console.log(`Building filter params for ${this.itemType}:`, requestParams);
-        
+
         return requestParams;
     }
-    
+
     /**
      * Capture the current state of the search field for restoring later
      * @private
@@ -256,7 +256,7 @@ export class ItemFilter {
     _captureSearchFieldState() {
         const searchField = this.container.find('.filter-search');
         const wasSearchFocused = document.activeElement === searchField[0];
-        
+
         return {
             field: searchField,
             wasFocused: wasSearchFocused,
@@ -264,7 +264,7 @@ export class ItemFilter {
             selectionEnd: wasSearchFocused ? searchField[0].selectionEnd : null
         };
     }
-    
+
     /**
      * Make the filter request to the server using ApiClient
      * @private
@@ -288,7 +288,7 @@ export class ItemFilter {
             this.pendingRequest = null;
         });
     }
-    
+
     /**
      * Handle successful filter response
      * @private
@@ -304,7 +304,7 @@ export class ItemFilter {
             this._finishFilterRequest(focusState);
         }
     }
-    
+
     /**
      * Handle filter request error
      * @private
@@ -318,7 +318,7 @@ export class ItemFilter {
         }
         this._finishFilterRequest(focusState);
     }
-    
+
     /**
      * Common cleanup after filter request completes
      * @private
@@ -326,19 +326,19 @@ export class ItemFilter {
      */
     _finishFilterRequest(focusState) {
         this._showLoading(false);
-        
+
         // Restore search field focus if it was focused before
         if (focusState.wasFocused) {
             focusState.field.focus();
             if (focusState.selectionStart !== null && focusState.selectionEnd !== null) {
                 focusState.field[0].setSelectionRange(
-                    focusState.selectionStart, 
+                    focusState.selectionStart,
                     focusState.selectionEnd
                 );
             }
         }
     }
-    
+
     /**
      * Process a successful API response
      * @private
@@ -347,16 +347,16 @@ export class ItemFilter {
     _processSuccessfulResponse(response) {
         // Find the proper container to update based on the item type
         let itemContainer;
-        
+
         if (this.itemType === 'categories') {
             // Try to find the category cards grid first
             itemContainer = $('#category-cards-grid');
-            
+
             // If not found, try to locate it within our container
             if (!itemContainer.length) {
                 itemContainer = this.container.find('#category-cards-grid');
             }
-            
+
             // Fallback to the filtered-items container if it exists
             if (!itemContainer.length) {
                 itemContainer = this.container.find('.filtered-items');
@@ -364,24 +364,24 @@ export class ItemFilter {
         } else {
             // Try to find the product cards grid first
             itemContainer = $('#product-cards-grid');
-            
+
             // If not found, try to locate it within our container
             if (!itemContainer.length) {
                 itemContainer = this.container.find('#product-cards-grid');
             }
-            
+
             // Fallback to the filtered-items container if it exists
             if (!itemContainer.length) {
                 itemContainer = this.container.find('.filtered-items');
             }
         }
-        
+
         // If we still don't have a container, fall back to the main container
         if (!itemContainer.length) {
             console.warn(`Could not find specific container for ${this.itemType}, using main container`);
             itemContainer = this.container;
         }
-        
+
         // Update the content with the new HTML
         if (response.html) {
             itemContainer.html(response.html);
@@ -392,21 +392,21 @@ export class ItemFilter {
         } else {
             console.warn(`No HTML content found in response for ${this.itemType}`);
         }
-        
+
         // Get item count using the most reliable method available
         const itemCount = this._extractItemCount(response, itemContainer);
-        
+
         // Update count displays
         this.uiManager.updateItemCountDisplays(itemCount);
-        
+
         // Call the onUpdate callback if provided
         if (typeof this.onUpdate === 'function') {
             this.onUpdate(response);
         }
-        
+
         console.log(`Updated ${this.itemType} container with new content. Count: ${itemCount}`);
     }
-    
+
     /**
      * Extract the item count from the response using multiple fallback strategies
      * @private
@@ -421,11 +421,11 @@ export class ItemFilter {
         } else if (response.total_count !== undefined) {
             return response.total_count;
         }
-        
+
         // Fallback to counting DOM elements
         return this._countItemsInContainer(container);
     }
-    
+
     /**
      * Count items in the container as a fallback
      * @private
@@ -435,15 +435,15 @@ export class ItemFilter {
     _countItemsInContainer(container) {
         // Try to count items based on common selectors
         const itemSelectors = ['.card', '.item', '.product-card', '.category-card'];
-        
+
         for (const selector of itemSelectors) {
             const count = container.find(selector).length;
             if (count > 0) return count;
         }
-        
+
         return 0;
     }
-    
+
     /**
      * Show or hide loading state
      * @private
@@ -454,18 +454,18 @@ export class ItemFilter {
         // Don't disable the search field to prevent focus issues
         this.container.find('.filter-loading').toggleClass('loading', show);
     }
-    
+
     // -------------------------------------------------------------------------
     // Public API Methods
     // -------------------------------------------------------------------------
-    
+
     /**
      * Public method to apply saved categories (used by CategoryManager)
      */
     preloadCategories() {
         this.categoryManager.applySavedCategories();
     }
-    
+
     /**
      * Clean up resources to prevent memory leaks
      */
@@ -474,19 +474,19 @@ export class ItemFilter {
         if (this.searchTimeout) {
             clearTimeout(this.searchTimeout);
         }
-        
+
         // Abort any pending request
         if (this.pendingRequest) {
             this.pendingRequest.abort();
         }
-        
+
         // Remove event handlers
         this.container.off('input', '.filter-search');
         this.container.off('click', '.clear-search');
         this.container.off('change', '.filter-sort');
         this.container.off('click', '.reset-all-filters');
         this.container.off('click', '.list-products-btn');
-        
+
         // Destroy managers
         this.categoryManager.destroy();
         this.uiManager.destroy();

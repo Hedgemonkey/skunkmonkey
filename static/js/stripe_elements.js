@@ -1,8 +1,8 @@
 /*
     Core logic/payment flow for this comes from here:
     https://stripe.com/docs/payments/accept-a-payment
-    
-    CSS from here: 
+
+    CSS from here:
     https://stripe.com/docs/stripe-js
 */
 
@@ -54,16 +54,16 @@ function validateAddress(prefix) {
     const state = document.getElementById(`id_${prefix}_state`).value;
     const zipcode = document.getElementById(`id_${prefix}_zipcode`).value;
     const country = document.getElementById(`id_${prefix}_country`).value;
-    
+
     if (!address1 || !city || !state || !zipcode || !country) {
         return false;
     }
-    
+
     // Basic zip/postal code validation based on country
     if (country === 'US' && !/^\d{5}(-\d{4})?$/.test(zipcode)) {
         return false;
     }
-    
+
     return true;
 }
 
@@ -74,7 +74,7 @@ const billingContainer = document.getElementById('billing-address-container');
 billingCheckbox.addEventListener('change', function() {
     if (this.checked) {
         billingContainer.style.display = 'none';
-        
+
         // Copy shipping address to billing address fields
         const fields = ['address1', 'address2', 'city', 'state', 'zipcode', 'country'];
         fields.forEach(field => {
@@ -96,28 +96,28 @@ const loadingOverlay = document.getElementById('loading-overlay');
 
 form.addEventListener('submit', function(event) {
     event.preventDefault();
-    
+
     // Disable the submit button to prevent repeated clicks
     submitButton.disabled = true;
-    
+
     // Show the loading overlay
     loadingOverlay.style.display = 'block';
-    
+
     // Validate shipping address
     if (!validateAddress('shipping')) {
         showError('Please provide a valid shipping address.');
         return;
     }
-    
+
     // Validate billing address if not same as shipping
     if (!billingCheckbox.checked && !validateAddress('billing')) {
         showError('Please provide a valid billing address.');
         return;
     }
-    
+
     // Stripe payment processing
     const saveInfo = Boolean(document.getElementById('id_save_info')?.checked);
-    
+
     // Create a token for the card
     stripe.createPaymentMethod({
         type: 'card',
@@ -127,23 +127,23 @@ form.addEventListener('submit', function(event) {
             email: document.getElementById('id_email').value,
             phone: document.getElementById('id_phone_number').value,
             address: {
-                line1: billingCheckbox.checked ? 
-                    document.getElementById('id_shipping_address1').value : 
+                line1: billingCheckbox.checked ?
+                    document.getElementById('id_shipping_address1').value :
                     document.getElementById('id_billing_address1').value,
-                line2: billingCheckbox.checked ? 
-                    document.getElementById('id_shipping_address2').value : 
+                line2: billingCheckbox.checked ?
+                    document.getElementById('id_shipping_address2').value :
                     document.getElementById('id_billing_address2').value,
-                city: billingCheckbox.checked ? 
-                    document.getElementById('id_shipping_city').value : 
+                city: billingCheckbox.checked ?
+                    document.getElementById('id_shipping_city').value :
                     document.getElementById('id_billing_city').value,
-                state: billingCheckbox.checked ? 
-                    document.getElementById('id_shipping_state').value : 
+                state: billingCheckbox.checked ?
+                    document.getElementById('id_shipping_state').value :
                     document.getElementById('id_billing_state').value,
-                postal_code: billingCheckbox.checked ? 
-                    document.getElementById('id_shipping_zipcode').value : 
+                postal_code: billingCheckbox.checked ?
+                    document.getElementById('id_shipping_zipcode').value :
                     document.getElementById('id_billing_zipcode').value,
-                country: billingCheckbox.checked ? 
-                    document.getElementById('id_shipping_country').value : 
+                country: billingCheckbox.checked ?
+                    document.getElementById('id_shipping_country').value :
                     document.getElementById('id_billing_country').value,
             }
         }
@@ -152,12 +152,12 @@ form.addEventListener('submit', function(event) {
             showError(error.message);
             return;
         }
-        
+
         // The payment method was created successfully
         // Now we can post the form with the payment method ID
         const form = document.getElementById('payment-form');
         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        
+
         // Send the payment info to our backend
         fetch('/shop/checkout/cache_checkout_data/', {
             method: 'POST',
@@ -181,23 +181,23 @@ form.addEventListener('submit', function(event) {
                             phone: document.getElementById('id_phone_number').value,
                             email: document.getElementById('id_email').value,
                             address: {
-                                line1: billingCheckbox.checked ? 
-                                    document.getElementById('id_shipping_address1').value : 
+                                line1: billingCheckbox.checked ?
+                                    document.getElementById('id_shipping_address1').value :
                                     document.getElementById('id_billing_address1').value,
-                                line2: billingCheckbox.checked ? 
-                                    document.getElementById('id_shipping_address2').value : 
+                                line2: billingCheckbox.checked ?
+                                    document.getElementById('id_shipping_address2').value :
                                     document.getElementById('id_billing_address2').value,
-                                city: billingCheckbox.checked ? 
-                                    document.getElementById('id_shipping_city').value : 
+                                city: billingCheckbox.checked ?
+                                    document.getElementById('id_shipping_city').value :
                                     document.getElementById('id_billing_city').value,
-                                state: billingCheckbox.checked ? 
-                                    document.getElementById('id_shipping_state').value : 
+                                state: billingCheckbox.checked ?
+                                    document.getElementById('id_shipping_state').value :
                                     document.getElementById('id_billing_state').value,
-                                postal_code: billingCheckbox.checked ? 
-                                    document.getElementById('id_shipping_zipcode').value : 
+                                postal_code: billingCheckbox.checked ?
+                                    document.getElementById('id_shipping_zipcode').value :
                                     document.getElementById('id_billing_zipcode').value,
-                                country: billingCheckbox.checked ? 
-                                    document.getElementById('id_shipping_country').value : 
+                                country: billingCheckbox.checked ?
+                                    document.getElementById('id_shipping_country').value :
                                     document.getElementById('id_billing_country').value,
                             }
                         }

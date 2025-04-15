@@ -1,6 +1,6 @@
 /**
  * API Client Examples
- * 
+ *
  * This file contains example usage of the API client.
  */
 
@@ -32,7 +32,7 @@ export const productApiExamples = {
                 return Promise.reject(error);
             });
     },
-    
+
     /**
      * Delete a product with the API client
      * @param {string} productSlug - Product slug to delete
@@ -40,7 +40,7 @@ export const productApiExamples = {
      */
     deleteProduct(productSlug) {
         const deleteUrl = `/products/staff/product/${productSlug}/delete/`;
-        
+
         return apiClient.post(deleteUrl)
             .then(response => {
                 if (response.success) {
@@ -56,7 +56,7 @@ export const productApiExamples = {
                 return Promise.reject(error);
             });
     },
-    
+
     /**
      * Submit a product form with the API client
      * @param {HTMLFormElement} form - The form to submit
@@ -64,7 +64,7 @@ export const productApiExamples = {
      */
     submitProductForm(form) {
         const formData = new FormData(form);
-        
+
         return apiClient.post(form.action, formData, {
             skipGlobalErrorHandler: true // Handle errors locally
         })
@@ -77,7 +77,7 @@ export const productApiExamples = {
                 const errorMessage = Object.entries(response.errors || {})
                     .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
                     .join('\n');
-                
+
                 notifications.displayError(errorMessage || "Form submission failed");
                 return Promise.reject(response);
             }
@@ -93,12 +93,12 @@ export const productApiExamples = {
                         return `${field}: ${messages}`;
                     })
                     .join('\n');
-                
+
                 notifications.displayError(errorMessage);
             } else {
                 notifications.displayError("Error submitting form: " + error.message);
             }
-            
+
             return Promise.reject(error);
         });
     }
@@ -128,7 +128,7 @@ export const categoryApiExamples = {
                 return Promise.reject(error);
             });
     },
-    
+
     /**
      * Add a new category with the API client
      * @param {string} url - URL for adding the category
@@ -151,7 +151,7 @@ export const categoryApiExamples = {
                 return Promise.reject(error);
             });
     },
-    
+
     /**
      * Delete a category with the API client
      * @param {string} categorySlug - Category slug to delete
@@ -159,7 +159,7 @@ export const categoryApiExamples = {
      */
     deleteCategory(categorySlug) {
         const deleteUrl = `/products/staff/category/${categorySlug}/delete/`;
-        
+
         return apiClient.post(deleteUrl)
             .then(response => {
                 if (response.success) {
@@ -175,7 +175,7 @@ export const categoryApiExamples = {
                 return Promise.reject(error);
             });
     },
-    
+
     /**
      * Check products in a category before deletion
      * @param {string} categorySlug - Category slug to check
@@ -183,7 +183,7 @@ export const categoryApiExamples = {
      */
     checkCategoryProducts(categorySlug) {
         const url = `/products/staff/category/${categorySlug}/products/`;
-        
+
         return apiClient.get(url)
             .then(response => {
                 if (response.success) {
@@ -211,7 +211,7 @@ export const generalApiExamples = {
      */
     uploadFile(form) {
         const formData = new FormData(form);
-        
+
         return apiClient.post(form.action, formData)
             .then(response => {
                 if (response.success) {
@@ -223,7 +223,7 @@ export const generalApiExamples = {
                 }
             });
     },
-    
+
     /**
      * Example of handling a paginated API endpoint
      * @param {string} url - Base URL for the paginated endpoint
@@ -246,7 +246,7 @@ export const generalApiExamples = {
                 }
             });
     },
-    
+
     /**
      * Example of making multiple requests in parallel
      * @param {Array<string>} urls - Array of URLs to fetch
@@ -254,7 +254,7 @@ export const generalApiExamples = {
      */
     fetchMultiple(urls) {
         const requests = urls.map(url => apiClient.get(url));
-        
+
         return Promise.all(requests)
             .then(responses => {
                 // Filter out only successful responses
@@ -262,7 +262,7 @@ export const generalApiExamples = {
                     .map(response => response.data);
             });
     },
-    
+
     /**
      * Example of implementing a retry mechanism for transient failures
      * @param {Function} requestFn - Function that returns a promise for the request
@@ -281,7 +281,7 @@ export const generalApiExamples = {
                             reject(error);
                             return;
                         }
-                        
+
                         if (retryCount < maxRetries) {
                             setTimeout(() => attempt(retryCount + 1), delayMs);
                         } else {
@@ -289,7 +289,7 @@ export const generalApiExamples = {
                         }
                     });
             };
-            
+
             attempt(0);
         });
     }
