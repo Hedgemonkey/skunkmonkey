@@ -31,3 +31,9 @@ media/product_images/
 
 # Generated sourcemaps
 *.map
+
+# Virtual environments
+.venv/
+.venv2/
+venv/
+env/

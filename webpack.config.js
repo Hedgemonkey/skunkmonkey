@@ -9,14 +9,14 @@ const jsEntries = {
   // Core entries
   'js/core/main': './static/js/main.js',
   'js/core/messages': './static/js/messages.js',
-  
+
   // Common modules
   'js/common/image-cropper': './static/js/common/image_cropper.js',
   'js/common/api-client': './static/js/api-client.js',
-  
+
   // Home module
   'js/home/home': './home/static/js/home/home.js',
-  
+
   // Product module
   'js/products/products': './products/static/products/js/products.js',
   'js/products/filters': './products/static/js/filters.js',
@@ -29,8 +29,8 @@ const jsEntries = {
   'js/products/utilities/notifications': './products/static/js/utilities/notifications.js',
   'js/products/filters/category-filter-manager': './products/static/js/filters/category-filter-manager.js',
   'js/products/filters/filter-ui-manager': './products/static/js/filters/filter-ui-manager.js',
-  
-  // Shop module 
+
+  // Shop module
   'js/shop/cart-manager': './shop/static/js/shop/cart-manager.js',
   'js/shop/catalog-manager': './shop/static/js/shop/catalog-manager.js',
   'js/shop/wishlist-initializer': './shop/static/js/shop/wishlist-initializer.js',
@@ -44,19 +44,19 @@ const jsEntries = {
   'js/shop/product-filters': './shop/static/js/shop/product-filters.js',
   'js/shop/stripe-integration': './shop/static/js/shop/stripe-integration.js',
   'js/shop/utilities/notifications': './shop/static/js/utilities/notifications.js',
-  
+
   // User module
   'js/users/profile': './users/static/users/js/users/profile.js',
   'js/users/profile-cropper': './users/static/users/js/users/profile_cropper.js',
   'js/users/profile-cropper-init': './users/static/users/js/users/profile_cropper_init.js',
   'js/users/account-actions': './users/static/users/js/users/account_actions.js',
   'js/users/address-management': './users/static/users/js/users/address-management.js',
-  
+
   // Vendor dependencies
   'js/vendors/libs': [
-    'jquery', 
+    'jquery',
     'bootstrap/dist/js/bootstrap.bundle.js',
-    'cropperjs', 
+    'cropperjs',
     'cropperjs/dist/cropper.min.css',
     '@fortawesome/fontawesome-free/js/all.min.js'
   ],
@@ -92,17 +92,17 @@ class RemoveCssJsFilesPlugin {
   apply(compiler) {
     compiler.hooks.afterEmit.tap('RemoveCssJsFilesPlugin', (compilation) => {
       const outputPath = compilation.outputOptions.path;
-      
+
       // Remove CSS-generated JS files and their maps
       Object.keys(cssEntries).forEach(entryName => {
         const jsFile = path.join(outputPath, `${entryName}.js`);
         const mapFile = path.join(outputPath, `${entryName}.js.map`);
-        
+
         if (fs.existsSync(jsFile)) {
           fs.unlinkSync(jsFile);
           console.log(`Removed: ${jsFile}`);
         }
-        
+
         if (fs.existsSync(mapFile)) {
           fs.unlinkSync(mapFile);
           console.log(`Removed: ${mapFile}`);
@@ -186,12 +186,12 @@ module.exports = {
             if (!module.context) {
               return 'js/vendors/misc';
             }
-            
+
             const match = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/);
             if (!match || !match[1]) {
               return 'js/vendors/misc';
             }
-            
+
             const packageName = match[1];
             return `js/vendors/${packageName.replace('@', '')}`;
           },
@@ -203,7 +203,7 @@ module.exports = {
             const moduleFile = module.resource || '';
             const appMatch = moduleFile.match(/[\\/](products|shop|users|home|static)[\\/]/);
             if (!appMatch) return 'js/chunks/misc';
-            
+
             const app = appMatch[1];
             const filename = moduleFile.split('/').pop().replace(/\.\w+$/, '');
             return `js/${app}/chunks/${filename}`;
