@@ -12,8 +12,8 @@
 {% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'bundles/css/shop.css' %}">
-    <link rel="stylesheet" href="{% static 'bundles/css/shop/wishlist.css' %}">
+    <link rel="stylesheet" href="{% static 'bundles/css/products/product-grid.css' %}?v=7">
+    <link rel="stylesheet" href="{% static 'bundles/css/shop/product-list.css' %}?v=6">
 {% endblock %}
 
 {% block header %}
@@ -150,7 +150,7 @@
 
 {% block postloadjs %}
     {{ block.super }}
-    <script src="{% static 'bundles/js/shop/product-list.js' %}"></script>
+    <script src="{% static 'bundles/js/shop/product-list-manager.js' %}"></script>
     <script src="{% static 'bundles/js/shop/comparison-manager.js' %}"></script>
     <script src="{% static 'bundles/js/shop/product-grid.js' %}"></script>
 {% endblock %}
