@@ -5,7 +5,7 @@
 {% block title %}{{ product.name }} - SkunkMonkey Shop{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'bundles/css/shop.css' %}">
+    <link rel="stylesheet" href="{% static 'bundles/css/shop/product-detail.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -180,10 +180,9 @@
 </div>
 {% endblock %}
 
-{% block postloadjs %}
-    {{ block.super }}
-    <script src="{% static 'bundles/js/shop/cart.js' %}"></script>
+{% block extra_js %}
+    <script src="{% static 'bundles/js/shop/cart-manager.js' %}"></script>
     <script src="{% static 'bundles/js/shop/wishlist-manager.js' %}"></script>
     <script src="{% static 'bundles/js/shop/comparison-manager.js' %}"></script>
-    <script src="{% static 'bundles/js/shop/product-detail.js' %}"></script>
+    <script src="{% static 'bundles/js/shop/product-detail-manager.js' %}"></script>
 {% endblock %}

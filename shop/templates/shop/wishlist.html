@@ -4,8 +4,6 @@
 {% block title %}Your Wishlist - SkunkMonkey{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'bundles/css/shop.css' %}">
-    <!-- Add the specific wishlist CSS -->
     <link rel="stylesheet" href="{% static 'bundles/css/shop/wishlist.css' %}">
 {% endblock %}
 
@@ -93,4 +91,8 @@
     {{ block.super }}
     <!-- Include the wishlist JS file -->
     <script src="{% static 'bundles/js/shop/wishlist.js' %}"></script>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'bundles/js/shop/wishlist-manager.js' %}"></script>
 {% endblock %}

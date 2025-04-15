@@ -91,6 +91,8 @@
     const getCategoryCardsUrl = "{% url 'products:get_category_cards' %}"; 
     const getProductCardsUrl = "{% url 'products:get_product_cards' %}";
 </script>
+<!-- Load the common image cropper module first -->
+<script src="{% static 'bundles/js/common/image-cropper.js' %}"></script>
 <script src="{% static 'bundles/js/products/products.js' %}"></script>
-<script src="{% static 'bundles/js/products/cropper_init.js' %}"></script>
+<script src="{% static 'bundles/js/products/cropper-init.js' %}"></script>
 {% endblock %}

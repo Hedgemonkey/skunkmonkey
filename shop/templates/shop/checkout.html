@@ -5,7 +5,7 @@
 {% block title %}Checkout - SkunkMonkey Shop{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/shop/checkout.css' %}">
+    <link rel="stylesheet" href="{% static 'bundles/css/shop/checkout.css' %}">
 {% endblock %}
 
 {% block header %}
@@ -152,4 +152,10 @@
     {{ block.super }}
     <script src="https://js.stripe.com/v3/"></script>
     <script src="{% static 'bundles/js/shop/checkout.js' %}"></script>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'bundles/js/shop/checkout.js' %}"></script>
+    <script src="{% static 'bundles/js/shop/checkout-manager.js' %}"></script>
+    <script src="{% static 'bundles/js/shop/stripe-integration.js' %}"></script>
 {% endblock %}

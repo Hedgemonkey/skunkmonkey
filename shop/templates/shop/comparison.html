@@ -5,42 +5,7 @@
 {% block title %}Product Comparison - SkunkMonkey Shop{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'bundles/css/shop.css' %}">
-    <style>
-        .comparison-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .comparison-table th {
-            background-color: #f8f9fa;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        .comparison-table th, .comparison-table td {
-            padding: 12px;
-            border: 1px solid #dee2e6;
-            text-align: center;
-        }
-        .comparison-table .feature-name {
-            text-align: left;
-            font-weight: bold;
-            background-color: #f8f9fa;
-        }
-        .product-image {
-            max-width: 150px;
-            max-height: 150px;
-            margin: 0 auto;
-        }
-        .remove-product {
-            color: #dc3545;
-            cursor: pointer;
-        }
-        .empty-comparison {
-            text-align: center;
-            padding: 50px 0;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'bundles/css/shop/product-list.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -168,4 +133,8 @@
             // Nothing to do here, just a placeholder for any future JS
         });
     </script>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'bundles/js/shop/comparison-manager.js' %}"></script>
 {% endblock %}

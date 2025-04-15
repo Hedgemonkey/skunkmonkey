@@ -4,7 +4,7 @@
 {% block title %}Your Cart - SkunkMonkey Shop{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'bundles/css/shop.css' %}">
+    <link rel="stylesheet" href="{% static 'bundles/css/shop/cart.css' %}">
 {% endblock %}
 
 {% block header %}
@@ -143,4 +143,8 @@
 {% block postloadjs %}
     {{ block.super }}
     <script src="{% static 'bundles/js/shop/cart.js' %}"></script>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'bundles/js/shop/cart-manager.js' %}"></script>
 {% endblock %}
