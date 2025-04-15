@@ -1,6 +1,7 @@
+import os
+
 from django.forms.widgets import ClearableFileInput
 from django.utils.translation import gettext_lazy as _
-import os
 
 
 class ProfileImageCropperWidget(ClearableFileInput):

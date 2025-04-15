@@ -1,11 +1,11 @@
-from django.db import models
 from django.contrib.auth import get_user_model
-from django.conf import settings
+from django.db import models
 from django.urls import reverse
-from django.utils.text import slugify
 from django.utils import timezone
+from django.utils.text import slugify
 
 User = get_user_model()
+
 
 class Category(models.Model):
 
@@ -32,18 +32,18 @@ class Category(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
-        
+
         # Calculate level based on parent
         if self.parent:
             self.level = self.parent.level + 1
         else:
             self.level = 0
-            
+
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse("products:category_detail", kwargs={"slug": self.slug})
-    
+
     @property
     def get_ancestors(self):
         """Return list of ancestors from root to parent"""
@@ -53,7 +53,7 @@ class Category(models.Model):
             ancestors.insert(0, current)
             current = current.parent
         return ancestors
-    
+
     @property
     def get_descendants(self):
         """Return all descendants of this category"""
@@ -62,6 +62,7 @@ class Category(models.Model):
             descendants.append(child)
             descendants.extend(child.get_descendants)
         return descendants
+
 
 class Product(models.Model):
 
@@ -90,28 +91,28 @@ class Product(models.Model):
 
     def get_absolute_url(self):
         return reverse("shop:product_detail", kwargs={"slug": self.slug})
-    
+
     @property
     def is_new(self):
         """Return True if product was created in the last 30 days"""
         return self.created_at >= (
             timezone.now() - timezone.timedelta(days=30))
-    
+
     @property
     def is_sale(self):
         """Return True if product has a sale price"""
         return self.compare_at_price and self.compare_at_price > self.price
-    
+
     @property
     def is_low_stock(self):
         """Return True if the product has low stock (5 or fewer items)"""
         return 0 < self.stock_quantity <= 5
-    
+
     @property
     def is_out_of_stock(self):
         """Return True if the product is out of stock"""
         return self.stock_quantity == 0
-    
+
     @property
     def discount_percentage(self):
         """Return the discount percentage if the product is on sale"""
@@ -122,6 +123,7 @@ class Product(models.Model):
             ) * 100
             return int(discount)
         return 0
+
 
 class Review(models.Model):
 
@@ -136,6 +138,7 @@ class Review(models.Model):
     def __str__(self):
         return f"Review by {self.user.username} on {self.product.name}"
 
+
 class InventoryLog(models.Model):
 
     product = models.ForeignKey(
@@ -147,6 +150,7 @@ class InventoryLog(models.Model):
     def __str__(self):
         return f"Inventory change for {self.product.name}: {self.change}"
 
+
 class ProductAttributeType(models.Model):
     """Define types of attributes (e.g., Color, Size, Material)"""
 
@@ -155,6 +159,7 @@ class ProductAttributeType(models.Model):
 
     def __str__(self):
         return self.display_name
+
 
 class ProductAttributeValue(models.Model):
     """Define possible values for each attribute type"""
@@ -168,9 +173,10 @@ class ProductAttributeValue(models.Model):
 
     class Meta:
         unique_together = ('attribute_type', 'value')
-    
+
     def __str__(self):
         return f"{self.attribute_type.display_name}: {self.value}"
+
 
 class ProductAttribute(models.Model):
     """Associate products with attribute values"""
@@ -187,6 +193,6 @@ class ProductAttribute(models.Model):
 
     class Meta:
         unique_together = ('product', 'attribute_value')
-    
+
     def __str__(self):
         return f"{self.product.name} - {self.attribute_value}"

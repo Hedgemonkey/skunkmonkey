@@ -1,19 +1,27 @@
 from django import forms
+from django.conf import settings
+
+import stripe
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import HTML, Column, Div, Field, Layout, Row
 from django_countries.fields import CountryField
 from django_countries.widgets import CountrySelectWidget
+
 from .models import Order
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Row, Column, Div, HTML, Field
-import stripe
-from django.conf import settings
 
 
 class CartAddProductForm(forms.Form):
-    quantity = forms.IntegerField(min_value=1, initial=1, widget=forms.NumberInput(attrs={
-        'class': 'form-control',
-        'style': 'width: 80px;'
-    }))
-    update = forms.BooleanField(required=False, initial=False, widget=forms.HiddenInput)
+    quantity = forms.IntegerField(
+        min_value=1,
+        initial=1,
+        widget=forms.NumberInput(
+            attrs={
+                'class': 'form-control',
+                'style': 'width: 80px;'}))
+    update = forms.BooleanField(
+        required=False,
+        initial=False,
+        widget=forms.HiddenInput)
 
 
 class CartUpdateQuantityForm(forms.Form):
@@ -31,7 +39,8 @@ class CheckoutForm(forms.ModelForm):
     """
     Checkout form that lets Stripe Payment Element handle billing information
     """
-    # We need to split the full_name field into first_name and last_name for the form
+    # We need to split the full_name field into first_name and last_name for
+    # the form
     first_name = forms.CharField(
         max_length=50,
         required=True,
@@ -40,7 +49,7 @@ class CheckoutForm(forms.ModelForm):
             'class': 'form-control',
         }),
     )
-    
+
     last_name = forms.CharField(
         max_length=50,
         required=True,
@@ -49,7 +58,7 @@ class CheckoutForm(forms.ModelForm):
             'class': 'form-control',
         }),
     )
-    
+
     # Shipping name fields (not in model)
     shipping_first_name = forms.CharField(
         max_length=50,
@@ -59,7 +68,7 @@ class CheckoutForm(forms.ModelForm):
             'class': 'form-control',
         }),
     )
-    
+
     shipping_last_name = forms.CharField(
         max_length=50,
         required=True,
@@ -68,7 +77,7 @@ class CheckoutForm(forms.ModelForm):
             'class': 'form-control',
         }),
     )
-    
+
     shipping_country = CountryField(blank_label='Select country').formfield(
         widget=CountrySelectWidget(attrs={
             'class': 'form-control custom-select',
@@ -85,26 +94,26 @@ class CheckoutForm(forms.ModelForm):
         }),
         label="Save my payment information for future purchases"
     )
-    
+
     # Hidden field to store the payment intent ID
     payment_intent_id = forms.CharField(
         required=False,
         widget=forms.HiddenInput(attrs={'id': 'payment_intent_id'})
     )
-    
+
     # Hidden field to store payment method type
     payment_method_type = forms.CharField(
         required=False,
         widget=forms.HiddenInput(attrs={'id': 'payment_method_type'})
     )
-    
+
     class Meta:
         model = Order
         fields = [
             # Contact information
             'email',
             'phone_number',
-            
+
             # Shipping information
             'shipping_address1',
             'shipping_address2',
@@ -112,7 +121,7 @@ class CheckoutForm(forms.ModelForm):
             'shipping_state',
             'shipping_zipcode',
             'shipping_country',
-            
+
             # Hidden fields
             'payment_intent_id',
             'payment_method_type',
@@ -172,11 +181,11 @@ class CheckoutForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         # Get the client_secret from kwargs if it exists
         client_secret = kwargs.pop('client_secret', None)
-        
+
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False  # Don't render the form tag here
-        
+
         # Store client_secret for use in the form
         self.client_secret = client_secret
         self.helper.form_class = 'checkout-form'
@@ -191,59 +200,74 @@ class CheckoutForm(forms.ModelForm):
                 ),
                 Row(
                     Column('email', css_class='form-group col-md-6 mb-3'),
-                    Column('phone_number', css_class='form-group col-md-6 mb-3'),
+                    Column(
+                        'phone_number',
+                        css_class='form-group col-md-6 mb-3'),
                     css_class='form-row'
                 ),
                 css_class='mb-4'
             ),
-            
+
             # Shipping Address Section
             Div(
                 HTML('<h3 class="mb-3">Shipping Address</h3>'),
                 Row(
-                    Column('shipping_first_name', css_class='form-group col-md-6 mb-3'),
-                    Column('shipping_last_name', css_class='form-group col-md-6 mb-3'),
+                    Column(
+                        'shipping_first_name',
+                        css_class='form-group col-md-6 mb-3'),
+                    Column(
+                        'shipping_last_name',
+                        css_class='form-group col-md-6 mb-3'),
                     css_class='form-row'
                 ),
                 Field('shipping_address1', css_class='mb-3'),
                 Field('shipping_address2', css_class='mb-3'),
                 Row(
-                    Column('shipping_city', css_class='form-group col-md-5 mb-3'),
-                    Column('shipping_state', css_class='form-group col-md-4 mb-3'),
-                    Column('shipping_zipcode', css_class='form-group col-md-3 mb-3'),
+                    Column('shipping_city',
+                           css_class='form-group col-md-5 mb-3'),
+                    Column(
+                        'shipping_state',
+                        css_class='form-group col-md-4 mb-3'),
+                    Column(
+                        'shipping_zipcode',
+                        css_class='form-group col-md-3 mb-3'),
                     css_class='form-row'
                 ),
                 Field('shipping_country', css_class='mb-3'),
                 css_class='mb-4'
             ),
-            
+
             # Payment Information Section
             Div(
                 HTML('<h3 class="mb-3 above-payment-element">Payment Information</h3>'),
                 HTML('<p class="text-muted mb-3 above-payment-element">The billing information will be collected securely by Stripe.</p>'),
-                
-                # Stripe Payment Element Container with proper containment classes
+
+                # Stripe Payment Element Container with proper containment
+                # classes
                 Div(
-                    # Create a wrapper div with position:relative to contain the payment element
+                    # Create a wrapper div with position:relative to contain
+                    # the payment element
                     HTML('<div class="stripe-element-wrapper">'),
                     HTML('<div id="payment-element" class="mb-3"></div>'),
                     HTML('</div>'),
-                    HTML('<div id="payment-errors" class="alert alert-danger d-none"></div>'),
+                    HTML(
+                        '<div id="payment-errors" class="alert alert-danger d-none"></div>'),
                     css_class='payment-element-container'
                 ),
-                
+
                 # Save Payment Info Option
                 Field('save_payment_info', css_class='mb-3'),
-                
+
                 # Hidden Fields
                 Field('payment_intent_id'),
                 Field('payment_method_type'),
-                
+
                 css_class='payment-form-section mb-4'
             ),
-            
+
             # Hidden fields for Stripe
-            HTML('<div id="stripe-data" data-publishable-key="{{ stripe_public_key }}" data-client-secret="{{ client_secret }}" data-cache-url="{% url \'shop:cache_checkout_data\' %}"></div>'),
+            HTML(
+                '<div id="stripe-data" data-publishable-key="{{ stripe_public_key }}" data-client-secret="{{ client_secret }}" data-cache-url="{% url \'shop:cache_checkout_data\' %}"></div>'),
         )
 
         # Set autofocus on first field
@@ -261,35 +285,39 @@ class CheckoutForm(forms.ModelForm):
         Custom validation and auto-population
         """
         cleaned_data = super().clean()
-        
+
         # Automatically propagate contact info to shipping if shipping is empty
-        if not cleaned_data.get('shipping_first_name') and cleaned_data.get('first_name'):
-            cleaned_data['shipping_first_name'] = cleaned_data.get('first_name')
-            
-        if not cleaned_data.get('shipping_last_name') and cleaned_data.get('last_name'):
+        if not cleaned_data.get(
+                'shipping_first_name') and cleaned_data.get('first_name'):
+            cleaned_data['shipping_first_name'] = cleaned_data.get(
+                'first_name')
+
+        if not cleaned_data.get(
+                'shipping_last_name') and cleaned_data.get('last_name'):
             cleaned_data['shipping_last_name'] = cleaned_data.get('last_name')
-        
+
         return cleaned_data
-    
+
     def save(self, commit=True):
         """
         Custom save method to handle combining first_name and last_name into full_name
         """
         instance = super().save(commit=False)
-        
+
         # Set the full_name from first_name and last_name
         first_name = self.cleaned_data.get('first_name', '')
         last_name = self.cleaned_data.get('last_name', '')
         instance.full_name = f"{first_name} {last_name}"
-        
-        # Set the billing_name from shipping names if separate billing info isn't provided
+
+        # Set the billing_name from shipping names if separate billing info
+        # isn't provided
         shipping_first = self.cleaned_data.get('shipping_first_name', '')
         shipping_last = self.cleaned_data.get('shipping_last_name', '')
         instance.billing_name = f"{shipping_first} {shipping_last}"
-        
+
         if commit:
             instance.save()
-        
+
         return instance
 
     def create_payment_intent(self, amount, currency='usd', metadata=None):

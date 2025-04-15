@@ -1,10 +1,12 @@
 # users/signals.py
-from django.dispatch import receiver
-from django.db.models.signals import post_save
-from django.contrib.auth import get_user_model
-from allauth.account.signals import email_confirmed, email_added
-from allauth.account.models import EmailAddress
 from django.contrib import messages
+from django.contrib.auth import get_user_model
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+from allauth.account.models import EmailAddress
+from allauth.account.signals import email_added, email_confirmed
+
 from .models import UserProfile
 
 

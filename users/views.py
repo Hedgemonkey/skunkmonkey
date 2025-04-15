@@ -1,21 +1,25 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import JsonResponse, Http404
-from django.urls import reverse, reverse_lazy
-from django.contrib.auth import logout, get_user_model, login as auth_login
-from django.views.decorators.http import require_POST
-from allauth.account.models import EmailAddress
-from allauth.account.utils import send_email_confirmation
-from .forms import (
-    CustomAddEmailForm, CustomChangePasswordForm, UserForm, AddressForm,
-    ContactForm, CustomLoginForm, ProfileForm
+from django.contrib.auth import (
+    REDIRECT_FIELD_NAME, get_user_model, login as auth_login, logout,
 )
-from .models import UserProfile, Address
-from shop.models import Order
-from django.contrib.auth import REDIRECT_FIELD_NAME
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import FieldError
+from django.http import Http404, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse, reverse_lazy
+from django.views.decorators.http import require_POST
+
+from allauth.account.models import EmailAddress
+from allauth.account.utils import send_email_confirmation
+
+from shop.models import Order
+
+from .forms import (
+    AddressForm, ContactForm, CustomAddEmailForm, CustomChangePasswordForm,
+    CustomLoginForm, ProfileForm, UserForm,
+)
+from .models import Address, UserProfile
 
 User = get_user_model()
 
@@ -80,8 +84,8 @@ class CustomLoginView(LoginView):
                     REDIRECT_FIELD_NAME, self.get_success_url()
                 )
                 return redirect(
-                    reverse('account_inactive') +
-                    f'?{REDIRECT_FIELD_NAME}=' + next_url
+                    reverse('account_inactive')
+                    + f'?{REDIRECT_FIELD_NAME}=' + next_url
                 )
 
             elif not user.emailaddress_set.filter(
@@ -346,6 +350,7 @@ def manage_profile(request):
                 # Import necessary modules
                 import base64
                 import uuid
+
                 from django.core.files.base import ContentFile
 
                 # Parse the base64 image data

@@ -1,10 +1,12 @@
 # users/forms.py
+from django import forms
+from django.contrib.auth import get_user_model
+
 from allauth.account.forms import AddEmailForm, ChangePasswordForm, LoginForm
 from allauth.account.models import EmailAddress
-from django import forms
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Field, Submit, HTML
-from django.contrib.auth import get_user_model
+from crispy_forms.layout import HTML, Field, Layout, Submit
+
 from .models import Address, UserProfile
 from .widgets import ProfileImageCropperWidget
 

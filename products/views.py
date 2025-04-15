@@ -1,19 +1,21 @@
 # products/views.py
-from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse_lazy, reverse
-from django.views.generic import CreateView, UpdateView, DeleteView
-from django.utils.decorators import method_decorator
-from django.db.utils import IntegrityError
-from django.db.models import Q, Count
-from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib import messages
-from django.http import JsonResponse, HttpResponseBadRequest
-from django.template.loader import render_to_string
-from django.core.files.base import ContentFile
 import base64
-from .models import Product, Category
-from .forms import ProductForm, CategoryForm
 import logging
+
+from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
+from django.core.files.base import ContentFile
+from django.db.models import Count, Q
+from django.db.utils import IntegrityError
+from django.http import HttpResponseBadRequest, JsonResponse
+from django.shortcuts import get_object_or_404, render
+from django.template.loader import render_to_string
+from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.views.generic import CreateView, UpdateView
+
+from .forms import CategoryForm, ProductForm
+from .models import Category, Product
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +74,7 @@ def product_add(request):
     try:
         product = form.save(commit=False)
         cropped_image_data = request.POST.get('cropped_image_data')
-        
+
         if cropped_image_data:
             try:
                 format, imgstr = cropped_image_data.split(';base64,')
@@ -107,7 +109,7 @@ def product_add(request):
 def product_update(request, slug):
     """Handle product updates via AJAX."""
     product = get_object_or_404(Product, slug=slug)
-    
+
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
@@ -143,14 +145,14 @@ def product_update(request, slug):
         request=request
     )
     return JsonResponse({'html': html})
-    
+
 
 @staff_member_required
 def product_delete(request, slug):
     """Handle product deletion via AJAX."""
     if not request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return HttpResponseBadRequest("Invalid request.")
-        
+
     if request.method != 'POST':
         return JsonResponse({'error': 'Invalid request method.'}, status=405)
 
@@ -164,17 +166,19 @@ def product_delete(request, slug):
 @staff_member_required
 def product_management(request):
     """Main view for product management dashboard."""
-    # Now this function only renders the template 
-    # All data loading is handled by AJAX requests to get_product_cards and get_category_cards
-    
+    # Now this function only renders the template
+    # All data loading is handled by AJAX requests to get_product_cards and
+    # get_category_cards
+
     # Create the context dictionary
     context = {}
-    
+
     # Add the cart to the context if the user is authenticated
     if request.user.is_authenticated:
         try:
             # Import Cart here to avoid circular imports
             from shop.models import Cart
+
             # Get the user's cart
             cart = Cart.objects.get(user=request.user)
             context['cart'] = cart
@@ -184,7 +188,7 @@ def product_management(request):
         except ImportError:
             # Handle the case where the Cart model might not be available
             pass
-    
+
     return render(request, 'products/manage/product_manage.html', context)
 
 
@@ -218,8 +222,10 @@ def get_product_cards(request):
     search = request.GET.get('search', '').lower()
     category = request.GET.get('category')
     sort = request.GET.get('sort', 'name-asc')
-    items_only = request.GET.get('items_only') == 'true'  # Check if we only want items
-    count_only = request.GET.get('count_only') == 'true'  # Check if we only want the count
+    # Check if we only want items
+    items_only = request.GET.get('items_only') == 'true'
+    # Check if we only want the count
+    count_only = request.GET.get('count_only') == 'true'
 
     products = Product.objects.all()
 
@@ -236,9 +242,9 @@ def get_product_cards(request):
             products = products.filter(category_id=category)
     if search:
         products = products.filter(
-            Q(name__icontains=search) |
-            Q(description__icontains=search) |
-            Q(category__name__icontains=search)
+            Q(name__icontains=search)
+            | Q(description__icontains=search)
+            | Q(category__name__icontains=search)
         )
 
     # Apply sorting
@@ -254,7 +260,7 @@ def get_product_cards(request):
 
     # Get the total count before any pagination
     product_count = products.count()
-    
+
     # If we only want the count, return it immediately without rendering HTML
     if count_only:
         return JsonResponse({
@@ -268,9 +274,10 @@ def get_product_cards(request):
             'search': search,  # Preserve search value
             'current_sort': sort,  # Preserve sort value
         }
-        
+
         if items_only:
-            # Return only the product cards html without the filter controls and without the row wrapper
+            # Return only the product cards html without the filter controls
+            # and without the row wrapper
             html = render_to_string(
                 'products/manage/product_cards_only.html',
                 context,
@@ -292,13 +299,13 @@ def get_product_cards(request):
                 'item_type': 'products',
                 'selected_categories': category.split(',') if category and ',' in category else [category] if category else []
             })
-            
+
             html = render_to_string(
                 'products/manage/product_cards_partial.html',
                 context,
                 request=request
             )
-            
+
         # Return both the HTML and the product count in the JSON response
         return JsonResponse({
             'html': html,
@@ -317,7 +324,8 @@ def get_category_cards(request):
         category = request.GET.get('category')
         sort = request.GET.get('sort', 'name-asc')
         items_only = request.GET.get('items_only') == 'true'
-        count_only = request.GET.get('count_only') == 'true'  # Check if we only want the count
+        # Check if we only want the count
+        count_only = request.GET.get('count_only') == 'true'
 
         categories = Category.objects.all()
 
@@ -339,8 +347,8 @@ def get_category_cards(request):
         # Apply search filter
         if search:
             categories = categories.filter(
-                Q(name__icontains=search) |
-                Q(products__name__icontains=search)
+                Q(name__icontains=search)
+                | Q(products__name__icontains=search)
             ).distinct()
 
         # Apply sorting
@@ -354,15 +362,17 @@ def get_category_cards(request):
         }
 
         # Add annotation for product count if needed
-        if sort and (sort.endswith('products-asc') or sort.endswith('products-desc')):
+        if sort and (sort.endswith('products-asc')
+                     or sort.endswith('products-desc')):
             categories = categories.annotate(Count('products'))
 
         categories = categories.order_by(sort_mapping.get(sort, 'name'))
-        
+
         # Get the total count before any pagination
         category_count = categories.count()
-        
-        # If we only want the count, return it immediately without rendering HTML
+
+        # If we only want the count, return it immediately without rendering
+        # HTML
         if count_only:
             return JsonResponse({
                 'count': category_count,
@@ -377,7 +387,7 @@ def get_category_cards(request):
                     selected_categories = [c for c in category.split(',') if c]
                 else:
                     selected_categories = [category]
-            
+
             context = {
                 'categories': categories,
                 'sort_options': [
@@ -394,27 +404,29 @@ def get_category_cards(request):
                 'item_type': 'categories',
                 'search': search,
                 'current_sort': sort,
-                'selected_categories': selected_categories  # Pass selected categories to template
+                # Pass selected categories to template
+                'selected_categories': selected_categories
             }
-            
-            # Choose the appropriate template based on whether we want just the items
+
+            # Choose the appropriate template based on whether we want just the
+            # items
             template = 'products/manage/category_cards_only.html' if items_only else 'products/manage/category_cards_partial.html'
-            
+
             html = render_to_string(
                 template,
                 context,
                 request=request
             )
-            
+
             # Return the HTML and the count in the JSON response
             return JsonResponse({
                 'html': html,
                 'count': category_count,  # Add the count to the response
                 'total_count': category_count  # For consistency
             })
-        
+
         return HttpResponseBadRequest("Invalid request.")
-    
+
     except Exception as e:
         logger.error(f"Error in get_category_cards: {str(e)}")
         return JsonResponse({
@@ -427,7 +439,7 @@ def get_category_cards(request):
 @staff_member_required
 def get_category_products(request, category_slug):
     category = get_object_or_404(Category, slug=category_slug)
-    product_names = list(category.products.values_list('name', flat=True)) 
+    product_names = list(category.products.values_list('name', flat=True))
     return JsonResponse({'products': product_names})
 
 
@@ -437,30 +449,34 @@ def get_product_count(request):
     try:
         # Get category IDs from request parameters
         category_param = request.GET.get('category', '')
-        
+
         if not category_param:
             return JsonResponse({'product_count': 0})
-        
+
         # Parse category IDs
         if ',' in category_param:
-            category_ids = [int(c) for c in category_param.split(',') if c and c.isdigit()]
+            category_ids = [
+                int(c) for c in category_param.split(',') if c and c.isdigit()]
         else:
-            category_ids = [int(category_param)] if category_param.isdigit() else []
-        
+            category_ids = [
+                int(category_param)] if category_param.isdigit() else []
+
         if not category_ids:
             return JsonResponse({'product_count': 0})
-        
+
         # Query for unique products in the selected categories
-        product_count = Product.objects.filter(category_id__in=category_ids).distinct().count()
-        
+        product_count = Product.objects.filter(
+            category_id__in=category_ids).distinct().count()
+
         return JsonResponse({
             'product_count': product_count,
             'category_count': len(category_ids)
         })
-        
+
     except Exception as e:
         logger.error(f"Error in get_product_count: {str(e)}")
-        return JsonResponse({'error': f"Error getting product count: {str(e)}"}, status=500)
+        return JsonResponse(
+            {'error': f"Error getting product count: {str(e)}"}, status=500)
 
 
 @staff_member_required
@@ -480,16 +496,16 @@ def category_update(request, slug):
                 try:
                     form.save()
                     return JsonResponse({
-                        'success': True, 
+                        'success': True,
                         'message': 'Category updated successfully!'
                     })
                 except IntegrityError:
                     return JsonResponse({
-                        'success': False, 
+                        'success': False,
                         'error': 'A category with this name already exists.'
                     }, status=400)
             return JsonResponse({
-                'success': False, 
+                'success': False,
                 'errors': form.errors
             }, status=400)
     return HttpResponseBadRequest("Invalid request.")
@@ -533,14 +549,14 @@ def category_search(request):
     page_size = 10
 
     categories = Category.objects.filter(name__icontains=search)
-    
+
     # Handle pagination
     start = (page - 1) * page_size
     end = start + page_size
     total = categories.count()
-    
+
     categories_page = categories[start:end]
-    
+
     return JsonResponse({
         'categories': [
             {'id': cat.id, 'name': cat.name}

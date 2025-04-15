@@ -1,9 +1,11 @@
-from django.test import TestCase, Client
-from django.urls import reverse
 from django.contrib.auth import get_user_model
-from .models import Address, UserProfile
+from django.test import Client, TestCase
+from django.urls import reverse
+
 from allauth.account.models import EmailAddress
+
 from .forms import ContactForm, CustomAddEmailForm
+from .models import Address, UserProfile
 from .signals import update_user_email
 
 User = get_user_model()

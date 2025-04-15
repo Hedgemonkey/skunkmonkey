@@ -1,9 +1,10 @@
-from django.db import models
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from djstripe.models import Subscription, Customer
+from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+
+from djstripe.models import Customer, Subscription
 
 User = get_user_model()
 
@@ -18,14 +19,14 @@ class Address(models.Model):
         related_name='addresses',
     )
     address_line_1 = models.CharField(max_length=80)
-    address_line_2 = models.CharField(max_length=80, null=True, blank=True)
+    address_line_2 = models.CharField(max_length=80, blank=True, default="")
     town_or_city = models.CharField(max_length=40)
-    county = models.CharField(max_length=80, null=True, blank=True)
-    postcode = models.CharField(max_length=20, null=True, blank=True)
+    county = models.CharField(max_length=80, blank=True, default="")
+    postcode = models.CharField(max_length=20, blank=True, default="")
     country = models.CharField(
         max_length=40, default='United Kingdom'
     )
-    phone_number = models.CharField(max_length=20, null=True, blank=True)
+    phone_number = models.CharField(max_length=20, blank=True, default="")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -79,8 +80,8 @@ class UserProfile(models.Model):
         related_name='+',
     )
     # New fields
-    phone_number = models.CharField(max_length=20, null=True, blank=True)
-    bio = models.TextField(max_length=500, null=True, blank=True)
+    phone_number = models.CharField(max_length=20, blank=True, default="")
+    bio = models.TextField(max_length=500, blank=True, default="")
     birth_date = models.DateField(null=True, blank=True)
     profile_image = models.ImageField(
         upload_to='profile_images/',

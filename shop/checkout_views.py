@@ -1,19 +1,20 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import View
-from django.contrib import messages
-from django.conf import settings
-from django.http import JsonResponse
 import json
-import stripe
-import time
 import logging
+import time
+
+from django.conf import settings
+from django.contrib import messages
+from django.http import JsonResponse
+from django.shortcuts import redirect, render
 from django.utils import timezone
+from django.views.generic import View
 
-from djstripe.models import PaymentIntent, APIKey
+import stripe
+from djstripe.models import APIKey
 
-from .models import Order, OrderItem
 from .forms import CheckoutForm
 from .mixins import CartAccessMixin
+from .models import Order, OrderItem
 
 
 class CheckoutView(CartAccessMixin, View):
@@ -28,7 +29,9 @@ class CheckoutView(CartAccessMixin, View):
         self.logger.info("CheckoutView GET request started")
         cart = request.cart
         self.logger.debug(
-            f"Cart contains {cart.items.count()} items with total price {cart.total_price}")
+            f"Cart contains {
+                cart.items.count()} items with total price {
+                cart.total_price}")
 
         # Always clear client_secret to ensure a fresh payment intent
         if 'client_secret' in request.session:
@@ -53,13 +56,15 @@ class CheckoutView(CartAccessMixin, View):
                 'email': request.user.email
             }
 
-            # Get the most recent order for this user to pre-fill address fields
+            # Get the most recent order for this user to pre-fill address
+            # fields
             try:
                 last_order = Order.objects.filter(
                     user=request.user).latest('created_at')
                 if last_order:
                     self.logger.debug(
-                        f"Found previous order {last_order.order_number} - using for address pre-fill")
+                        f"Found previous order {
+                            last_order.order_number} - using for address pre-fill")
                     # Pre-fill shipping address
                     initial_data.update({
                         'shipping_address1': last_order.shipping_address1,
@@ -80,7 +85,6 @@ class CheckoutView(CartAccessMixin, View):
             except Order.DoesNotExist:
                 self.logger.debug("No previous orders found for user")
                 # No previous order, just use the basic user info
-                pass
         else:
             self.logger.debug("User is not authenticated - no form pre-fill")
 
@@ -133,7 +137,8 @@ class CheckoutView(CartAccessMixin, View):
                         request, "No payment information was received. Please try again.")
                     return redirect('shop:checkout')
 
-                self.logger.debug(f"Found client_secret: {client_secret[:10]}...")
+                self.logger.debug(f"Found client_secret: {
+                                  client_secret[:10]}...")
 
                 # Extract the payment intent ID from client secret
                 pid = client_secret.split('_secret')[0]
@@ -157,12 +162,15 @@ class CheckoutView(CartAccessMixin, View):
                 # If user is authenticated, associate order with user
                 if request.user.is_authenticated:
                     self.logger.debug(
-                        f"Associating order with user: {request.user.username}")
+                        f"Associating order with user: {
+                            request.user.username}")
                     order.user = request.user
 
                 # Save the order to generate order number
                 order.save()
-                self.logger.info(f"Order created with number: {order.order_number}")
+                self.logger.info(
+                    f"Order created with number: {
+                        order.order_number}")
 
                 # Populate order with items from cart
                 self.logger.debug("Adding cart items to order")
@@ -176,7 +184,8 @@ class CheckoutView(CartAccessMixin, View):
                         )
                     except Exception as item_creation_exception:
                         self.logger.error(
-                            f"Error creating order item for product {item.product.name}: {item_creation_exception}")
+                            f"Error creating order item for product {
+                                item.product.name}: {item_creation_exception}")
                         order.delete()  # Remove incomplete order
                         messages.error(
                             request, "There was an error processing your order. Please try again.")
@@ -189,7 +198,8 @@ class CheckoutView(CartAccessMixin, View):
                 # Store order ID in session for payment success page
                 request.session['order_id'] = order.id
                 self.logger.info(
-                    f"Order processing completed successfully for order {order.order_number}")
+                    f"Order processing completed successfully for order {
+                        order.order_number}")
 
                 return redirect('shop:payment_success')
 
@@ -217,6 +227,7 @@ class CreatePaymentIntentView(View):
     """
     Create a Stripe payment intent and return the client secret
     """
+
     def post(self, request, *args, **kwargs):
         cart = request.cart
 
@@ -234,7 +245,11 @@ class CreatePaymentIntentView(View):
         # If not found, try by name
         if not api_key:
             # Try different possible names
-            for possible_name in ["test_secret", "Test Secret", "secret", "Secret"]:
+            for possible_name in [
+                "test_secret",
+                "Test Secret",
+                "secret",
+                    "Secret"]:
                 api_key = APIKey.objects.filter(
                     name__iexact=possible_name).first()
                 if api_key:
@@ -249,7 +264,9 @@ class CreatePaymentIntentView(View):
 
         # If we still don't have a key, fall back to settings
         if not api_key:
-            if hasattr(settings, 'STRIPE_SECRET_KEY') and settings.STRIPE_SECRET_KEY:
+            if hasattr(
+                    settings,
+                    'STRIPE_SECRET_KEY') and settings.STRIPE_SECRET_KEY:
                 # Create a mock api_key object
                 class MockAPIKey:
                     def __init__(self, secret):
@@ -257,11 +274,12 @@ class CreatePaymentIntentView(View):
 
                 api_key = MockAPIKey(settings.STRIPE_SECRET_KEY)
             else:
-                return JsonResponse({'error': 'Stripe API key is not configured correctly'}, status=500)
+                return JsonResponse(
+                    {'error': 'Stripe API key is not configured correctly'}, status=500)
 
         # Print debug info about the API key
-        print(
-            f"Using API key in CreatePaymentIntentView: {api_key.secret[:8]}... (Type: {getattr(api_key, 'type', 'N/A')}, Name: {getattr(api_key, 'name', 'N/A')})")
+        print(f"Using API key in CreatePaymentIntentView: {api_key.secret[:8]}... (Type: {
+            getattr(api_key, 'type', 'N/A')}, Name: {getattr(api_key, 'name', 'N/A')})")
 
         # Set the API key for this request
         stripe.api_key = api_key.secret
@@ -280,8 +298,10 @@ class CreatePaymentIntentView(View):
             metadata={
                 'username': request.user.username if request.user.is_authenticated else 'AnonymousUser',
                 'cart_items': json.dumps(cart.to_dict()),
-                'timestamp': str(timestamp),  # Add timestamp to ensure freshness
-                'created_at': timezone.now().isoformat(),  # Add ISO timestamp for better tracking
+                # Add timestamp to ensure freshness
+                'timestamp': str(timestamp),
+                # Add ISO timestamp for better tracking
+                'created_at': timezone.now().isoformat(),
             },
             automatic_payment_methods={
                 'enabled': True,
@@ -321,7 +341,8 @@ def recover_payment_intent(request, order_id=None):
         except Order.DoesNotExist:
             pass
 
-    # Redirect to checkout with refresh parameter to ensure a new payment intent
+    # Redirect to checkout with refresh parameter to ensure a new payment
+    # intent
     return redirect('shop:checkout') + '?refresh=' + str(int(time.time()))
 
 
@@ -330,5 +351,6 @@ def payment_cancel(request):
     Handle cancelled payment
     """
     messages.warning(
-        request, "Your payment was cancelled. Please try again when you're ready.")
+        request,
+        "Your payment was cancelled. Please try again when you're ready.")
     return redirect('shop:cart')

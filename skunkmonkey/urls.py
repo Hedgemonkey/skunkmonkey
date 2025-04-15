@@ -14,17 +14,19 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path
-from django.urls.conf import include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib import admin
+from django.contrib.sitemaps.views import sitemap
+from django.urls import path
+from django.urls.conf import include
 from django.views.generic import TemplateView
 from django.views.static import serve
-from django.contrib.sitemaps.views import sitemap
-from users import views as user_views
+
 from shop.webhooks import webhook  # Import the webhook function
-from .sitemaps import StaticViewSitemap, ProductSitemap, CategorySitemap
+from users import views as user_views
+
+from .sitemaps import CategorySitemap, ProductSitemap, StaticViewSitemap
 
 # Define the sitemaps dictionary
 sitemaps = {
@@ -52,12 +54,17 @@ urlpatterns = [
     path('', include('home.urls')),
     path('stripe/webhook/', webhook, name='stripe_webhook'),  # Add webhook URL
     path('stripe/', include('djstripe.urls', namespace='djstripe')),
-    
+
     # Sitemap
-    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
-    
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps},
+         name='django.contrib.sitemaps.views.sitemap'),
+
     # Robots.txt - serve as a static file
-    path('robots.txt', TemplateView.as_view(template_name="robots.txt", content_type="text/plain")),
+    path(
+        'robots.txt',
+        TemplateView.as_view(
+            template_name="robots.txt",
+            content_type="text/plain")),
     path(
         'favicon.ico',
         serve,

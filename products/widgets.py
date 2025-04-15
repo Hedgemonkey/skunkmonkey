@@ -1,7 +1,8 @@
-from django.forms.widgets import ClearableFileInput
-from django.utils.safestring import mark_safe
 import os
 import pprint  # Import pprint for pretty-printing
+
+from django.forms.widgets import ClearableFileInput
+
 
 class CustomCropperFileInput(ClearableFileInput):
     template_name = 'widgets/custom_cropper_file_input.html'
@@ -21,10 +22,10 @@ class CustomCropperFileInput(ClearableFileInput):
                 'image_name': os.path.basename(value.name),
                 'image_url': value.url,
             })
-        
+
         # Print the context for debugging
         pprint.pprint(context)
-        
+
         return context
 
     def render(self, name, value, attrs=None, renderer=None):

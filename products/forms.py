@@ -1,19 +1,37 @@
 # products/forms.py
-from django import forms
-from .models import Product, Category
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Row, Column, Field, HTML
-from .widgets import CustomCropperFileInput
 import os
+
+from django import forms
+
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Column, Layout, Row, Submit
+
+from .models import Category, Product
+from .widgets import CustomCropperFileInput
+
 
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'category', 'description', 'price', 'stock_quantity', 'image', 'is_active']
+        fields = [
+            'name',
+            'category',
+            'description',
+            'price',
+            'stock_quantity',
+            'image',
+            'is_active']
         widgets = {
-            'description': forms.Textarea(attrs={'rows': 4}),
-            'category': forms.Select(attrs={'class': 'form-select'}),
-            'image': CustomCropperFileInput(attrs={'class': 'form-control', 'id': 'image'}),
+            'description': forms.Textarea(
+                attrs={
+                    'rows': 4}),
+            'category': forms.Select(
+                attrs={
+                    'class': 'form-select'}),
+            'image': CustomCropperFileInput(
+                attrs={
+                    'class': 'form-control',
+                    'id': 'image'}),
         }
 
     def __init__(self, *args, **kwargs):

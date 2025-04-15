@@ -10,14 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
-from pathlib import Path
 import os
-import inspect
-import environ
-import dj_database_url
+from pathlib import Path
+
 from django.urls import reverse
-import djstripe.settings as djstripe_settings
-import logging
+
+import dj_database_url
+import environ
 
 # Initialize environment variables
 env = environ.Env()
@@ -33,19 +32,21 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('DJANGO_SECRET_KEY', default='django-insecure-default-key-for-dev')
+SECRET_KEY = env(
+    'DJANGO_SECRET_KEY',
+    default='django-insecure-default-key-for-dev')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('DEVELOPMENT', default=False)
 
 
 ALLOWED_HOSTS = [
-                    'skunk.devel.hedge-monkey.co.uk',
-                    'localhost',
-                    '127.0.0.1',
-                    'hedgemonkey.ddns.net:8000',
-                    'hedgemonkey.ddns.net'
-                    ]
+    'skunk.devel.hedge-monkey.co.uk',
+    'localhost',
+    '127.0.0.1',
+    'hedgemonkey.ddns.net:8000',
+    'hedgemonkey.ddns.net'
+]
 
 
 # Application definition
@@ -157,7 +158,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 
-# Allauth Configuration 
+# Allauth Configuration
 SITE_ID = 1
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
@@ -173,8 +174,14 @@ ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
 ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE = True
-ACCOUNT_ACTIVATION_URL = lambda: reverse('account_confirm_email') + '?code='
-ACCOUNT_ADAPTER = 'users.adapters.CustomAccountAdapter' # Custom adapter to handle if email not verified
+
+
+def ACCOUNT_ACTIVATION_URL():
+    return reverse('account_confirm_email') + '?code='
+
+
+# Custom adapter to handle if email not verified
+ACCOUNT_ADAPTER = 'users.adapters.CustomAccountAdapter'
 ACCOUNT_LOGIN_ON_PASSWORD_RESET = True
 ACCOUNT_REAUTHENTICATION_REQUIRED = True
 ACCOUNT_FORMS = {
@@ -253,7 +260,8 @@ DJSTRIPE_USE_NATIVE_JSONFIELD = True
 DJSTRIPE_FOREIGN_KEY_TO_FIELD = "id"
 
 # This is critical - tells dj-stripe to only use the secret key when syncing
-# The empty string for TEST_API_KEY forces dj-stripe to use only keys from the admin
+# The empty string for TEST_API_KEY forces dj-stripe to use only keys from
+# the admin
 DJSTRIPE_TEST_API_KEY = ""
 DJSTRIPE_LIVE_API_KEY = ""
 
