@@ -1,7 +1,7 @@
 /**
  * Comparison Manager
  * Handles product comparison functionality
- * 
+ *
  * This module provides functionality for managing product comparisons,
  * including adding and removing products from the comparison list,
  * updating the UI, and displaying notifications.
@@ -76,21 +76,21 @@ class ComparisonManager {
                     // Show appropriate success message based on action
                     if (isCurrentlyCompared) {
                         // If removing from comparison
-                        this.showToast('Removed from Comparison', 
-                            data.message || `${productName} removed from comparison list.`, 
+                        this.showToast('Removed from Comparison',
+                            data.message || `${productName} removed from comparison list.`,
                             'info');
                     } else {
                         // If adding to comparison
-                        this.showToast('Added to Comparison', 
-                            data.message || `${productName} added to comparison list.`, 
+                        this.showToast('Added to Comparison',
+                            data.message || `${productName} added to comparison list.`,
                             'success');
                     }
-                    
+
                     this.updateComparisonCount(data.comparison_count);
                 } else {
                     // Revert button state on failure
                     this.updateButtonState(button, isCurrentlyCompared);
-                    
+
                     // Show error message
                     this.showToast('Notice', data.message || 'Failed to update comparison list', 'warning');
                 }
@@ -98,7 +98,7 @@ class ComparisonManager {
             .catch(error => {
                 // Revert button state on error
                 this.updateButtonState(button, isCurrentlyCompared);
-                
+
                 // Show error message
                 console.error('Error updating comparison:', error);
                 this.showToast('Error', 'Failed to update comparison list', 'error');
@@ -117,7 +117,7 @@ class ComparisonManager {
             button.classList.add('btn-success');
             button.innerHTML = '<i class="fas fa-check me-1"></i> Compared';
             button.setAttribute('title', 'Remove from comparison');
-            
+
             // Update href to remove action
             const newUrl = button.getAttribute('href').replace('add_to_comparison', 'remove_from_comparison');
             button.setAttribute('href', newUrl);
@@ -127,7 +127,7 @@ class ComparisonManager {
             button.classList.add('btn-outline-secondary');
             button.innerHTML = '<i class="fas fa-balance-scale me-1"></i> Compare';
             button.setAttribute('title', 'Add to comparison');
-            
+
             // Update href to add action
             const newUrl = button.getAttribute('href').replace('remove_from_comparison', 'add_to_comparison');
             button.setAttribute('href', newUrl);
@@ -152,8 +152,8 @@ class ComparisonManager {
                     } else {
                         // Just update the count
                         this.updateComparisonCount(data.comparison_count);
-                        this.showToast('Removed from Comparison', 
-                            data.message || `${productName} removed from comparison list.`, 
+                        this.showToast('Removed from Comparison',
+                            data.message || `${productName} removed from comparison list.`,
                             'info');
                     }
                 } else {
@@ -190,7 +190,7 @@ class ComparisonManager {
     showToast(title, message, type = 'info') {
         // Convert type to SweetAlert2 icon type
         const iconType = type === 'danger' ? 'error' : type;
-        
+
         // Use the globally available Swal object from the npm package
         if (typeof window.Swal !== 'undefined') {
             console.log('Showing toast with SweetAlert2:', title, message, iconType);
@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         console.log('SweetAlert2 is available for ComparisonManager.');
     }
-    
+
     window.comparisonManager = new ComparisonManager();
 });
 
