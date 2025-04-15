@@ -7,29 +7,29 @@ assignees: ''
 
 ---
 
-## 🐞 Bug Description  
-**Describe the issue clearly.** What is happening? What should happen instead?  
+## 🐞 Bug Description
+**Describe the issue clearly.** What is happening? What should happen instead?
 
-## ✅ Steps to Reproduce  
-1. Go to `...`  
-2. Click on `...`  
-3. Scroll down to `...`  
-4. See error `...`  
+## ✅ Steps to Reproduce
+1. Go to `...`
+2. Click on `...`
+3. Scroll down to `...`
+4. See error `...`
 
-## 📷 Screenshots / Logs  
-_(Attach screenshots or logs, if applicable)_  
+## 📷 Screenshots / Logs
+_(Attach screenshots or logs, if applicable)_
 
-## 🌍 Environment  
-- **Browser:** Chrome / Firefox / Edge / Safari  
-- **Operating System:** Windows / macOS / Linux  
-- **Device:** Desktop / Mobile  
+## 🌍 Environment
+- **Browser:** Chrome / Firefox / Edge / Safari
+- **Operating System:** Windows / macOS / Linux
+- **Device:** Desktop / Mobile
 
-## 🚀 Suggested Fix  
-_(Optional: Suggest a potential solution if known)_  
+## 🚀 Suggested Fix
+_(Optional: Suggest a potential solution if known)_
 
-## 🏷️ Labels  
-- **Severity:** `Critical` / `Major` / `Minor`  
-- **Status:** `Backlog` / `In Progress` / `In Review`  
+## 🏷️ Labels
+- **Severity:** `Critical` / `Major` / `Minor`
+- **Status:** `Backlog` / `In Progress` / `In Review`
 
 ---
 **🔄 Move this issue to "To-Do" once validated.**

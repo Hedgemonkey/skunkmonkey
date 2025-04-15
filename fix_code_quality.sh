@@ -80,6 +80,14 @@ echo "Note: You need to manually fix undefined names (F821) issues"
 echo "Affected files:"
 grep -r "F821" flake8_report.txt | cut -d':' -f1 | sort | uniq
 
+# Fix trailing whitespace in all Python files
+echo "✅ Fixing trailing whitespace..."
+find . -name "*.py" -not -path "*/\.*" -not -path "*/.venv*" -not -path "*/migrations/*" -not -path "*/__pycache__/*" -exec sed -i 's/[ \t]*$//' {} \;
+
+# Fix blank lines containing whitespace
+echo "✅ Fixing blank lines with whitespace..."
+find . -name "*.py" -not -path "*/\.*" -not -path "*/.venv*" -not -path "*/migrations/*" -not -path "*/__pycache__/*" -exec sed -i 's/^[ \t]*$//' {} \;
+
 echo "=== Code quality improvement process completed ==="
 echo "Please check flake8_report.txt for any remaining issues that need manual attention."
 

@@ -7,23 +7,23 @@ assignees: ''
 
 ---
 
-## 📝 Task Description  
-**What needs to be done?**  
+## 📝 Task Description
+**What needs to be done?**
 
-## 🔗 Parent User Story  
-- # (Link related User Story)  
+## 🔗 Parent User Story
+- # (Link related User Story)
 
-## ✅ Acceptance Criteria  
-- [ ] Requirement 1  
-- [ ] Requirement 2  
-- [ ] Requirement 3  
+## ✅ Acceptance Criteria
+- [ ] Requirement 1
+- [ ] Requirement 2
+- [ ] Requirement 3
 
-## 📌 Estimated Effort  
-- ⏳ **Story Points:** `1` / `2` / `3` / `5` / `8`  
+## 📌 Estimated Effort
+- ⏳ **Story Points:** `1` / `2` / `3` / `5` / `8`
 
-## 🏷️ Labels  
-- **Priority:** `High` / `Medium` / `Low`  
-- **Status:** `Backlog` / `To-Do` / `In Progress` / `Done`  
+## 🏷️ Labels
+- **Priority:** `High` / `Medium` / `Low`
+- **Status:** `Backlog` / `To-Do` / `In Progress` / `Done`
 
 ---
 **🔄 Move this issue to "In Progress" once development starts.**
