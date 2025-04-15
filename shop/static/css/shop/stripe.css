@@ -1,6 +1,6 @@
 /**
  * Stripe Elements CSS
- * 
+ *
  * Styling for Stripe payment form elements for the SkunkMonkey shop
  */
 
@@ -210,7 +210,7 @@
     .payment-option {
         flex: 1 0 100%;
     }
-    
+
     .payment-form-container {
         padding: 10px;
     }

@@ -11,13 +11,13 @@ class StripePaymentManager {
         this.cardElement = document.getElementById('card-element');
         this.cardErrors = document.getElementById('card-errors');
         this.submitButton = document.getElementById('submit-button');
-        
+
         // Initialize if elements exist (we're on the checkout page)
         if (this.form && this.cardElement) {
             this.init();
         }
     }
-    
+
     /**
      * Initialize Stripe elements
      */
@@ -25,9 +25,9 @@ class StripePaymentManager {
         // This will be the Stripe publishable key
         // const stripe = Stripe('pk_test_your_key_here');
         // const elements = stripe.elements();
-        
+
         console.log('Stripe integration placeholder - implementation pending');
-        
+
         // Placeholder for styling card element
         const style = {
             base: {
@@ -44,25 +44,25 @@ class StripePaymentManager {
                 iconColor: '#dc3545'
             }
         };
-        
+
         // Placeholder for mounting card element
         // this.card = elements.create('card', {style: style});
         // this.card.mount(this.cardElement);
-        
+
         // Handle form submission placeholder
         this.form.addEventListener('submit', this.handleSubmit.bind(this));
     }
-    
+
     /**
      * Handle form submission
      * @param {Event} event - The submit event
      */
     handleSubmit(event) {
         event.preventDefault();
-        
+
         // Disable the submit button to prevent multiple submissions
         this.setLoading(true);
-        
+
         // Collect form data
         const formData = new FormData(this.form);
         const billingDetails = {
@@ -72,10 +72,10 @@ class StripePaymentManager {
                 line1: formData.get('shipping_address')
             }
         };
-        
+
         // For now, just submit the form - this would be replaced with actual Stripe processing
         console.log('Form would be submitted with billing details:', billingDetails);
-        
+
         // Placeholder for Stripe payment processing
         /*
         stripe.confirmCardPayment(clientSecret, {
@@ -95,13 +95,13 @@ class StripePaymentManager {
             }
         });
         */
-        
+
         // For now, just submit the form
         setTimeout(() => {
             this.form.submit();
         }, 1000);
     }
-    
+
     /**
      * Display error message
      * @param {string} message - The error message
@@ -114,7 +114,7 @@ class StripePaymentManager {
             this.showNotification('Payment Error', message, 'error');
         }
     }
-    
+
     /**
      * Set loading state
      * @param {boolean} isLoading - Whether loading is in progress
@@ -132,7 +132,7 @@ class StripePaymentManager {
             this.submitButton.innerHTML = 'Pay Now';
         }
     }
-    
+
     /**
      * Show a notification using SweetAlert if available, or alert if not
      * @param {string} title - The notification title
