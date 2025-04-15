@@ -31,7 +31,7 @@
     {% endblock %}
         <title>{% block title %}SkunkMonkey{% endblock %}</title>
     {% block css %}
-        <link rel="stylesheet" href="{% static 'bundles/css/styles.css' %}?v=2">
+        <link rel="stylesheet" href="{% static 'bundles/css/core/main.css' %}?v=6">
     {% endblock %}
     
     {% block extra_css %}
@@ -40,7 +40,8 @@
 
     {% block messages-js %}
     <script>
-        const messages = []; // Initialize an empty array
+        // This minimal inline script is acceptable as it simply transfers server-side data to JS
+        const messages = []; 
         {% for message in messages %}
             messages.push({
                 message: "{{ message|escapejs }}",
@@ -58,7 +59,7 @@
     <!-- Messages -->
     {% block messages %}
     {% endblock %}
-    <!-- Header - set the background image for the header in the line below-->
+    <!-- Header -->
     {% block header %}
         <header class="py-5 bg-image-full" style="background-image: url('https://source.unsplash.com/wfh8dDlNFOk/1600x900')">
             <div class="text-center my-5">
@@ -88,12 +89,12 @@
     
     <!-- Main JavaScript bundle - at end of body for better performance -->
     {% block js %}
-        <!-- Load vendors.js first (contains Bootstrap dependencies) -->
-        <script src="{% static 'bundles/vendors.js' %}?v=2"></script>
-        <!-- Load shared dependencies -->
-        <script src="{% static 'bundles/shared.js' %}?v=2"></script>
+        <!-- Load vendors libraries (includes Bootstrap) -->
+        <script src="{% static 'bundles/js/vendors/libs.js' %}?v=5"></script>
         <!-- Load main application JS -->
-        <script src="{% static 'bundles/js/main.js' %}?v=2"></script>
+        <script src="{% static 'bundles/js/core/main.js' %}?v=5"></script>
+        <!-- Load message handling -->
+        <script src="{% static 'bundles/js/core/messages.js' %}?v=5"></script>
     {% endblock %}
     
     {% block postloadjs %}

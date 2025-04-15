@@ -224,17 +224,38 @@
 {% endblock %}
 
 {% block extra_css %}
-    {{ block.super }}
-    <!-- No external CSS references needed -->
+    <!-- CSS files with updated path structure -->
+    <link href="{% static 'bundles/css/users/profile.css' %}?v=6" rel="stylesheet">
 {% endblock %}
 
 {% block extra_js %}
-    {{ block.super }}
+    <!-- Load scripts with proper directory structure -->
+    <script src="{% static 'bundles/js/vendors/libs.js' %}?v=6"></script>
+    <script src="{% static 'bundles/js/common/image-cropper.js' %}?v=6"></script>
+    <script src="{% static 'bundles/js/users/profile-cropper.js' %}?v=6"></script>
+    <script src="{% static 'bundles/js/users/account-actions.js' %}?v=6"></script>
     
-    <!-- Load scripts in the correct order -->
-    <script src="{% static 'bundles/vendors.js' %}"></script>
-    <script src="{% static 'bundles/shared.js' %}"></script>
-    <script src="{% static 'bundles/js/common/image_cropper.js' %}"></script>
-    <script src="{% static 'bundles/js/users/profile_cropper.js' %}"></script>
-    <script src="{% static 'bundles/js/users/account_actions.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded - checking for profile cropper');
+            
+            // The ImageCropper module should be exposed to global scope
+            if (window.ImageCropper && typeof window.ImageCropper.init === 'function') {
+                console.log('Initializing image cropper with proper field ID');
+                window.ImageCropper.init({
+                    fileInputSelector: '#id_profile_image',
+                    modalSelector: '#cropperModal',
+                    cropperImageSelector: '#cropper-image',
+                    cropButtonSelector: '#crop-image-button',
+                    previewSelector: '#preview-image',
+                    previewContainerSelector: '#preview-container',
+                    croppedDataInputSelector: '#cropped-image-data'
+                });
+            } else {
+                console.error('Image cropper module not properly loaded');
+                console.debug('Available global variables:', Object.keys(window).filter(key => 
+                    key.includes('cropper') || key.includes('Cropper') || key.includes('image')));
+            }
+        });
+    </script>
 {% endblock %}
