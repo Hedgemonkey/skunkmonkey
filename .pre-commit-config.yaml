@@ -33,10 +33,4 @@ repos:
             --remove-unused-variables,
             --ignore-init-module-imports,
         ]
-
--   repo: https://github.com/hhatto/autopep8
-    rev: v2.1.0
-    hooks:
-    -   id: autopep8
-        args: ["--max-line-length", "79", "--aggressive"]
         exclude: ^(.venv|.venv2|migrations|__pycache__|node_modules|typing_extensions.py)/
