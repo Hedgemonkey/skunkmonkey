@@ -39,7 +39,7 @@ export class CatalogManager extends BaseManager {
                 }
             }
         });
-        
+
         // Additional options specific to CatalogManager
         this.options = {
             productGridSelector: '#product-grid',
@@ -49,11 +49,11 @@ export class CatalogManager extends BaseManager {
             paginationSelector: '.pagination',
             ...options
         };
-        
+
         this.initSortingControls();
         this.initProductCardAnimations();
     }
-    
+
     /**
      * Fetch catalog items - placeholder implementation
      * Required by BaseManager but handled through page navigation for catalog
@@ -62,7 +62,7 @@ export class CatalogManager extends BaseManager {
         // Not needed as we use page navigation instead of AJAX loading for catalog
         console.log('Catalog navigation handled through URL changes');
     }
-    
+
     /**
      * Initialize sorting controls for the catalog view
      * Sets up sort dropdown and retrieves current sort parameter from URL
@@ -74,7 +74,7 @@ export class CatalogManager extends BaseManager {
             sortSelect.addEventListener('change', (e) => {
                 this.sortProducts(e.target.value);
             });
-            
+
             // Set the selected option based on the current URL
             const urlParams = new URLSearchParams(window.location.search);
             const sortParam = urlParams.get('sort');
@@ -83,7 +83,7 @@ export class CatalogManager extends BaseManager {
             }
         }
     }
-    
+
     /**
      * Initialize filters - placeholder implementation
      * Required by BaseManager but handled differently for catalog
@@ -91,7 +91,7 @@ export class CatalogManager extends BaseManager {
     initializeFilters() {
         // Not needed for catalog as we use URL parameters instead of AJAX filtering
     }
-    
+
     /**
      * Sort products by changing URL parameters
      * @param {string} sortOption - Sort option value
@@ -101,7 +101,7 @@ export class CatalogManager extends BaseManager {
         url.searchParams.set('sort', sortOption);
         window.location.href = url.toString();
     }
-    
+
     /**
      * Initialize animations for product cards
      * Uses IntersectionObserver for scroll-based animations with fallback
@@ -109,16 +109,16 @@ export class CatalogManager extends BaseManager {
     initProductCardAnimations() {
         const productGrid = document.querySelector(this.options.productGridSelector);
         if (!productGrid) return;
-        
+
         const productCards = productGrid.querySelectorAll('.product-card');
-        
+
         // If IntersectionObserver is available, use it for scroll animations
         if ('IntersectionObserver' in window) {
             const appearOptions = {
                 threshold: 0.1,
                 rootMargin: "0px 0px -100px 0px"
             };
-            
+
             const appearOnScroll = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
                     if (!entry.isIntersecting) return;
@@ -126,7 +126,7 @@ export class CatalogManager extends BaseManager {
                     observer.unobserve(entry.target);
                 });
             }, appearOptions);
-            
+
             productCards.forEach(card => {
                 card.classList.add('fade-in');
                 appearOnScroll.observe(card);
@@ -138,7 +138,7 @@ export class CatalogManager extends BaseManager {
             });
         }
     }
-    
+
     /**
      * Add a product to the wishlist
      * @param {number} productId - The product ID
@@ -146,7 +146,7 @@ export class CatalogManager extends BaseManager {
      */
     addToWishlist(productId, button) {
         const url = `/shop/wishlist/add/${productId}/`;
-        
+
         apiClient.get(url)
             .then(response => {
                 if (response.success) {
