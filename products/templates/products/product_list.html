@@ -8,7 +8,7 @@
 {% block content %}
 <div class="container">
     <h1 class="my-4">Products</h1>
-    
+
     <!-- Filter and Sort Options -->
     <div class="row mb-4">
         <div class="col-md-6">
@@ -28,11 +28,11 @@
             </select>
         </div>
     </div>
-    
+
     <!-- Product Grid -->
     <div class="row product-grid">
         {% for product in products %}
-        <div class="col-lg-3 col-md-4 col-sm-6 mb-4 product-item" 
+        <div class="col-lg-3 col-md-4 col-sm-6 mb-4 product-item"
              data-product-id="{{ product.id }}"
              data-category="{{ product.category.name|lower }}"
              data-price="{{ product.price }}"
@@ -47,36 +47,36 @@
                     {% else %}
                     <img src="{% static 'images/no_image.png' %}" class="card-img-top product-image" alt="{{ product.name }}">
                     {% endif %}
-                    
+
                     <!-- Wishlist Button -->
-                    <button class="btn wishlist-btn {% if product.id in user_wishlist %}active{% endif %}" 
+                    <button class="btn wishlist-btn {% if product.id in user_wishlist %}active{% endif %}"
                             data-product-id="{{ product.id }}"
                             title="Add to Wishlist">
                         <i class="fa {% if product.id in user_wishlist %}fa-heart{% else %}fa-heart-o{% endif %}"></i>
                     </button>
                 </div>
-                
+
                 <div class="card-body">
                     <!-- Product Tags -->
                     <div class="product-tags">
                         {% if product.is_new %}
                         <span class="badge bg-success tag-new">New</span>
                         {% endif %}
-                        
+
                         {% if product.stock_level <= 5 and product.stock_level > 0 %}
                         <span class="badge bg-warning tag-low-stock">Low Stock</span>
                         {% endif %}
-                        
+
                         {% if product.stock_level == 0 %}
                         <span class="badge bg-danger tag-out-of-stock">Out of Stock</span>
                         {% endif %}
                     </div>
-                    
+
                     <!-- Product Name -->
                     <h5 class="card-title product-name">
                         <a href="{% url 'products:detail' product.id %}">{{ product.name }}</a>
                     </h5>
-                    
+
                     <!-- Product Price -->
                     <div class="product-price">
                         {% if product.compare_at_price and product.compare_at_price > product.price %}
@@ -88,16 +88,16 @@
                         <span>${{ product.price }}</span>
                         {% endif %}
                     </div>
-                    
+
                     <!-- Product Description (Short) -->
                     <p class="card-text product-description">
                         {{ product.description|truncatechars:60 }}
                     </p>
                 </div>
-                
+
                 <div class="card-footer">
                     <div class="d-grid">
-                        <button class="btn btn-primary add-to-cart-btn" 
+                        <button class="btn btn-primary add-to-cart-btn"
                                 data-product-id="{{ product.id }}"
                                 {% if product.stock_level == 0 %}disabled{% endif %}>
                             {% if product.stock_level == 0 %}Out of Stock{% else %}Add to Cart{% endif %}
@@ -112,7 +112,7 @@
         </div>
         {% endfor %}
     </div>
-    
+
     <!-- Pagination -->
     {% if is_paginated %}
     <nav aria-label="Page navigation" class="my-4">
@@ -129,7 +129,7 @@
                 </a>
             </li>
             {% endif %}
-            
+
             {% for num in page_obj.paginator.page_range %}
                 {% if page_obj.number == num %}
                 <li class="page-item active"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
@@ -137,7 +137,7 @@
                 <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
                 {% endif %}
             {% endfor %}
-            
+
             {% if page_obj.has_next %}
             <li class="page-item">
                 <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">

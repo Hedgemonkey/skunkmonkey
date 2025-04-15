@@ -33,7 +33,7 @@
                                 <p class="mt-2">Loading your payment methods...</p>
                             </div>
                         </div>
-                        
+
                         <div class="mt-4">
                             <a href="#" class="btn btn-primary" data-toggle="collapse" data-target="#add-payment-method-section">
                                 <i class="fas fa-plus-circle"></i> Add New Payment Method
@@ -41,7 +41,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Add Payment Method Form -->
                 <div class="collapse" id="add-payment-method-section">
                     <div class="card">
@@ -55,20 +55,20 @@
                                     <label for="cardholder_name">Cardholder Name</label>
                                     <input type="text" class="form-control" id="cardholder_name" name="cardholder_name" required>
                                 </div>
-                                
+
                                 <div class="form-group">
                                     <label for="add-payment-method-card">Card Information</label>
                                     <div id="add-payment-method-card" class="stripe-element-container form-control"></div>
                                     <div id="payment-method-errors" class="text-danger mt-2" role="alert"></div>
                                 </div>
-                                
+
                                 <div class="form-check mb-3">
                                     <input class="form-check-input" type="checkbox" id="set_as_default" name="set_as_default">
                                     <label class="form-check-label" for="set_as_default">
                                         Set as default payment method
                                     </label>
                                 </div>
-                                
+
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-credit-card"></i> Add Payment Method
                                 </button>
@@ -76,7 +76,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Security Information -->
                 <div class="card mt-4">
                     <div class="card-header">
@@ -97,7 +97,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Hidden input for customer ID -->
     <input type="hidden" id="customer-id" value="{{ customer.id }}">
     <input type="hidden" id="id_stripe_public_key" value="{{ stripe_publishable_key }}">
@@ -114,7 +114,7 @@
             if (stripePublicKey) {
                 const stripe = Stripe(stripePublicKey);
                 const elements = stripe.elements();
-                
+
                 // Initialize card element for adding payment methods
                 const cardElement = elements.create('card', {
                     style: {
@@ -133,9 +133,9 @@
                         }
                     }
                 });
-                
+
                 cardElement.mount('#add-payment-method-card');
-                
+
                 // Load saved payment methods
                 const customerId = document.getElementById('customer-id').value;
                 if (customerId) {

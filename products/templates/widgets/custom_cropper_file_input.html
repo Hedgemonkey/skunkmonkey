@@ -1,20 +1,20 @@
 <div class="custom-file-input">
     <div class="custom-cropper-widget">
         <div class="input-container">
-            <input type="{{ widget.type }}" 
-                   name="{{ widget.name }}" 
+            <input type="{{ widget.type }}"
+                   name="{{ widget.name }}"
                    id="{{ widget.attrs.id }}"
-                   class="{{ widget.attrs.class }}" 
+                   class="{{ widget.attrs.class }}"
                    {% if widget.attrs.accept %}
                    accept="{{ widget.attrs.accept }}"
                    {% endif %}>
-            
+
             <div class="clear-checkbox-container">
                 {% if not widget.required %}
-                    <input type="checkbox" 
-                           name="{{ widget.checkbox_name }}" 
+                    <input type="checkbox"
+                           name="{{ widget.checkbox_name }}"
                            id="{{ widget.checkbox_id }}"
-                           class="clearable-file-input" 
+                           class="clearable-file-input"
                            {% if widget.attrs.checked %}checked{% endif %}>
                     <label for="{{ widget.checkbox_id }}">
                         {{ widget.clear_checkbox_label }}
@@ -25,15 +25,15 @@
 
         <div class="image-preview-container">
             {% if widget.image_url %}
-                <img src="{{ widget.image_url }}" 
-                     id="preview-image" 
+                <img src="{{ widget.image_url }}"
+                     id="preview-image"
                      alt="{{ widget.image_name }}"
                      class="preview-image">
                 <p id="image-name" class="image-name">{{ widget.image_name }}</p>
             {% else %}
-                <img src="" 
-                     id="preview-image" 
-                     alt="Preview" 
+                <img src=""
+                     id="preview-image"
+                     alt="Preview"
                      class="preview-image hidden">
                 <p id="image-name" class="image-name hidden">{{ widget.image_name }}</p>
             {% endif %}

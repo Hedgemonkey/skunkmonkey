@@ -9,23 +9,23 @@
         <meta name="author" content="Hedgemonkey">
         <meta name="description" content="SkunkMonkey for all your CBD needs! Premium products with secure checkout and fast delivery">
         <meta name="keywords" content="CBD, hemp, SkunkMonkey, online shopping, e-commerce, secure checkout, quality products, fast delivery">
-        
+
         <!-- Open Graph tags for social media sharing -->
         <meta property="og:title" content="{% block og_title %}SkunkMonkey{% endblock %}">
         <meta property="og:description" content="{% block og_description %}Premium CBD products with secure checkout and fast delivery{% endblock %}">
         <meta property="og:type" content="website">
         <meta property="og:url" content="{{ request.build_absolute_uri }}">
         <meta property="og:image" content="{% static 'media/skunkmonkey_logo.jpg' %}">
-        
+
         <!-- Twitter Card data -->
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:title" content="{% block twitter_title %}SkunkMonkey{% endblock %}">
         <meta name="twitter:description" content="{% block twitter_description %}Premium CBD products with secure checkout and fast delivery{% endblock %}">
         <meta name="twitter:image" content="{% static 'media/skunkmonkey_logo.jpg' %}">
-        
+
         <!-- Canonical link -->
         <link rel="canonical" href="{{ request.build_absolute_uri }}">
-        
+
         <!-- This meta tag helps control iframe content -->
         <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'self' https://js.stripe.com">
     {% endblock %}
@@ -33,7 +33,7 @@
     {% block css %}
         <link rel="stylesheet" href="{% static 'bundles/css/core/main.css' %}?v=6">
     {% endblock %}
-    
+
     {% block extra_css %}
         {# Template-specific CSS files can be included here #}
     {% endblock %}
@@ -41,7 +41,7 @@
     {% block messages-js %}
     <script>
         // This minimal inline script is acceptable as it simply transfers server-side data to JS
-        const messages = []; 
+        const messages = [];
         {% for message in messages %}
             messages.push({
                 message: "{{ message|escapejs }}",
@@ -72,12 +72,12 @@
     <!-- Content section-->
     {% block content %}
     {% endblock %}
-    
+
     <!-- Toast container for notifications -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1050;">
         <!-- Toasts will be dynamically added here -->
     </div>
-    
+
     <!-- Footer-->
     {% block footer %}
         <footer class="footer">
@@ -86,7 +86,7 @@
             </div>
         </footer>
     {% endblock %}
-    
+
     <!-- Main JavaScript bundle - at end of body for better performance -->
     {% block js %}
         <!-- Load vendors libraries (includes Bootstrap) -->
@@ -96,10 +96,10 @@
         <!-- Load message handling -->
         <script src="{% static 'bundles/js/core/messages.js' %}?v=5"></script>
     {% endblock %}
-    
+
     {% block postloadjs %}
     {% endblock %}
-    
+
     {% block extra_js %}
     {% endblock %}
 </body>

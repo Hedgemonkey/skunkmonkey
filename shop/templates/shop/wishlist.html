@@ -19,7 +19,7 @@
 <!-- Add wishlist-page class to enable specific styling -->
 <div class="container my-4 wishlist-page">
     <h1 class="mb-4">Your Wishlist</h1>
-    
+
     {% if wishlist_items %}
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             {% for item in wishlist_items %}
@@ -32,14 +32,14 @@
                             {% else %}
                                 <img src="{% static 'img/no-image.png' %}" class="card-img-top product-image" alt="No image available">
                             {% endif %}
-                            
+
                             <!-- Product details -->
                             <div class="card-body">
                                 <h5 class="card-title">
                                     <a href="{% url 'shop:product_detail' item.product.slug %}" class="text-decoration-none text-dark">{{ item.product.name }}</a>
                                 </h5>
                                 <p class="card-text text-muted small">{{ item.product.category.name }}</p>
-                                
+
                                 <!-- Price display with possible sale price -->
                                 <div class="price-display">
                                     {% if item.product.is_sale %}
@@ -50,7 +50,7 @@
                                     {% endif %}
                                 </div>
                             </div>
-                            
+
                             <!-- Action buttons -->
                             <div class="card-footer bg-transparent">
                                 <div class="d-flex justify-content-between align-items-center">
@@ -59,10 +59,10 @@
                                         <input type="hidden" name="quantity" value="1">
                                         <button type="submit" class="btn btn-sm btn-primary">Add to Cart</button>
                                     </form>
-                                    
+
                                     <!-- Updated to use toggle_wishlist instead of remove_from_wishlist -->
-                                    <a href="{% url 'shop:toggle_wishlist' item.product.id %}" 
-                                       class="remove-wishlist-btn wishlist-btn btn btn-sm btn-danger" 
+                                    <a href="{% url 'shop:toggle_wishlist' item.product.id %}"
+                                       class="remove-wishlist-btn wishlist-btn btn btn-sm btn-danger"
                                        data-product-id="{{ item.product.id }}"
                                        data-product-name="{{ item.product.name }}"
                                        aria-label="Remove {{ item.product.name }} from wishlist"

@@ -15,14 +15,14 @@
         <h2>{% trans "Verify Your Email Address" %}</h2>
         <p>{% trans "Your email address " %}({{ email }}) {% trans " needs to be verified before you can log in." %}</p>
         <p>{% blocktrans %}If you did not create an account using this email address, please contact customer support.{% endblocktrans %}</p>
-    
+
         <form method="post" action="{% url 'account_email_verification_required' %}">
             {% csrf_token %}
             <input type="hidden" name="resend" value="true">
             <input type="hidden" name="email" value="{{ email }}">
             <button type="submit" name="send" class="btn btn-primary">{% trans "Resend Verification Email" %}</button>
         </form>
-    
+
         <p><a href="{% url 'users:users_contact' %}">{% trans "Contact Support" %}</a></p>
       </div>
     </div>

@@ -2,7 +2,7 @@
 {% for category in categories %}
     <div class="col">
         <div class="card h-100">
-            <div class="card-header py-2 category-header {% if category.id|stringformat:'i' in selected_categories %}bg-primary text-white selected{% else %}bg-light{% endif %}" 
+            <div class="card-header py-2 category-header {% if category.id|stringformat:'i' in selected_categories %}bg-primary text-white selected{% else %}bg-light{% endif %}"
                  data-category-id="{{ category.id }}">
                 <h4 class="card-title text-center mb-0 category-title">{{ category.name }}</h4>
             </div>
@@ -17,7 +17,7 @@
             </div>
             <div class="btn-group w-100 m-0 p-0" role="group">
                 <a href="{% url 'products:category_update' category.slug %}"
-                    class="btn btn-sm btn-secondary edit-category w-50 rounded-top-0" 
+                    class="btn btn-sm btn-secondary edit-category w-50 rounded-top-0"
                     data-category-slug="{{ category.slug }}">
                     Edit
                 </a>

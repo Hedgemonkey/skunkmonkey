@@ -74,14 +74,14 @@
             <h1>Thank You for Your Order!</h1>
             <p>Order #{{ order.order_number }}</p>
         </div>
-        
+
         <div class="content">
             <p>Dear {{ order.full_name }},</p>
-            
+
             <p>Thank you for your order. We're pleased to confirm that your payment has been processed successfully.</p>
-            
+
             <h2>Order Summary</h2>
-            
+
             <table class="order-details">
                 <thead>
                     <tr>
@@ -104,7 +104,7 @@
                     </tr>
                 </tbody>
             </table>
-            
+
             <div class="address-block">
                 <h3>Shipping Address</h3>
                 <p>
@@ -117,22 +117,22 @@
                     {{ order.shipping_country }}
                 </p>
             </div>
-            
+
             <p>
                 You can view your order details and track your shipping by clicking the button below.
             </p>
-            
+
             <a href="{{ site_url }}{% url 'shop:order_complete' order_id=order.id %}" class="button">View Order</a>
-            
+
             <p>
                 If you have any questions or need assistance, please contact our customer service team at {{ contact_email }}.
             </p>
-            
+
             <p>Thank you for shopping with us!</p>
-            
+
             <p>Best regards,<br>The SkunkMonkey Shop Team</p>
         </div>
-        
+
         <div class="footer">
             <p>&copy; {{ year }} SkunkMonkey Shop. All rights reserved.</p>
             <p>This email was sent to {{ order.email }}. Please do not reply to this email.</p>

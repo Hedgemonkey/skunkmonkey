@@ -19,7 +19,7 @@
                     <form method="post" action="{% url 'account_login' %}" class="login"> {# Add class for styling if needed #}
                         {% csrf_token %}
                         {% crispy form %} {# Use crispy forms #}
-                        {{ redirect_field }}  
+                        {{ redirect_field }}
                         <!-- <button class="btn btn-primary" type="submit">{% trans "Sign In" %}</button> -->
                     </form>
                 {% endif %}

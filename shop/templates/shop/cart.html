@@ -62,10 +62,10 @@
                                                     <button type="button" class="quantity-btn quantity-decrease rounded-start" data-action="decrease" aria-label="Decrease quantity">
                                                         <i class="fas fa-minus small"></i>
                                                     </button>
-                                                    <input type="number" name="quantity" value="{{ item.quantity }}" 
-                                                           min="1" max="{{ item.product.stock_quantity }}" 
-                                                           class="form-control quantity-input" 
-                                                           data-max-stock="{{ item.product.stock_quantity }}" 
+                                                    <input type="number" name="quantity" value="{{ item.quantity }}"
+                                                           min="1" max="{{ item.product.stock_quantity }}"
+                                                           class="form-control quantity-input"
+                                                           data-max-stock="{{ item.product.stock_quantity }}"
                                                            aria-label="Quantity">
                                                     <button type="button" class="quantity-btn quantity-increase rounded-end" data-action="increase" aria-label="Increase quantity">
                                                         <i class="fas fa-plus small"></i>
@@ -75,7 +75,7 @@
                                         </td>
                                         <td class="item-subtotal text-end fw-bold">${{ item.subtotal|floatformat:2 }}</td>
                                         <td class="text-end">
-                                            <a href="{% url 'shop:cart_remove' item.product.id %}" 
+                                            <a href="{% url 'shop:cart_remove' item.product.id %}"
                                                class="remove-cart-item btn btn-sm btn-outline-danger"
                                                data-product-name="{{ item.product.name }}"
                                                aria-label="Remove item">
@@ -90,29 +90,29 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Cart Summary -->
             <div class="col-lg-4">
                 <div class="cart-summary">
                     <h5 class="mb-4">Order Summary</h5>
-                    
+
                     <div class="d-flex justify-content-between mb-2">
                         <span>Items ({{ cart.item_count }}):</span>
                         <span>${{ cart.total_price|floatformat:2 }}</span>
                     </div>
-                    
+
                     <div class="d-flex justify-content-between mb-2">
                         <span>Shipping:</span>
                         <span>Free</span>
                     </div>
-                    
+
                     <hr>
-                    
+
                     <div class="d-flex justify-content-between mb-4">
                         <span class="fw-bold">Total:</span>
                         <span class="cart-total fw-bold fs-5" id="cart-total">${{ cart.total_price|floatformat:2 }}</span>
                     </div>
-                    
+
                     <div class="cart-actions">
                         <form method="post" action="{% url 'shop:checkout' %}">
                             {% csrf_token %}

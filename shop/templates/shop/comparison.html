@@ -11,7 +11,7 @@
 {% block content %}
 <div class="container my-5">
     <h1 class="mb-4">Product Comparison</h1>
-    
+
     {% if products %}
         <div class="table-responsive">
             <table class="comparison-table">
@@ -70,7 +70,7 @@
                             <td>{{ product.description|truncatewords:30 }}</td>
                         {% endfor %}
                     </tr>
-                    
+
                     <!-- Product Attributes -->
                     {% for attr_type in attribute_types %}
                         <tr>
@@ -86,7 +86,7 @@
                             {% endfor %}
                         </tr>
                     {% endfor %}
-                    
+
                     <!-- Special Features -->
                     <tr>
                         <td class="feature-name">On Sale</td>

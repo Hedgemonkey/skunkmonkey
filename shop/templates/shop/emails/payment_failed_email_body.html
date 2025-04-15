@@ -61,14 +61,14 @@
             <h1>Payment Failed</h1>
             <p>Order #{{ order.order_number }}</p>
         </div>
-        
+
         <div class="content">
             <p>Dear {{ order.full_name }},</p>
-            
+
             <p>We're sorry, but we were unable to process your payment for order #{{ order.order_number }}.</p>
-            
+
             <p class="warning">Your order has not been confirmed and no payment has been taken from your account.</p>
-            
+
             <div class="steps">
                 <h3>Common reasons for payment failure:</h3>
                 <ul>
@@ -77,7 +77,7 @@
                     <li>Card expired or blocked by your bank</li>
                     <li>Transaction declined by your bank for security reasons</li>
                 </ul>
-                
+
                 <h3>What to do next:</h3>
                 <ol>
                     <li>Check your payment details to ensure they're correct</li>
@@ -85,28 +85,28 @@
                     <li>Try again with a different payment method</li>
                 </ol>
             </div>
-            
+
             <p>
                 You can retry your payment by clicking the button below:
             </p>
-            
+
             <a href="{{ site_url }}{% url 'shop:checkout' %}" class="button">Retry Payment</a>
-            
+
             <p>
                 Alternatively, you can view your cart and start the checkout process again.
             </p>
-            
+
             <a href="{{ site_url }}{% url 'shop:cart' %}" class="button">View Cart</a>
-            
+
             <p>
                 If you continue to experience issues or need assistance, please contact our customer service team at {{ contact_email }}.
             </p>
-            
+
             <p>Thank you for your patience.</p>
-            
+
             <p>Best regards,<br>The SkunkMonkey Shop Team</p>
         </div>
-        
+
         <div class="footer">
             <p>&copy; {{ year }} SkunkMonkey Shop. All rights reserved.</p>
             <p>This email was sent to {{ order.email }}. Please do not reply to this email.</p>

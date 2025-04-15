@@ -38,9 +38,9 @@
                             <p class="lead">Your order number is <strong>{{ order.order_number }}</strong></p>
                             <p>A confirmation email will be sent to <strong>{{ order.email }}</strong></p>
                         </div>
-                        
+
                         <p>Thank you for shopping with SkunkMonkey. We hope you enjoy your purchase!</p>
-                        
+
                         <div class="mt-4 text-center">
                             <a href="{% url 'shop:product_list' %}" class="btn btn-primary">
                                 <i class="fas fa-shopping-bag"></i> Continue Shopping
@@ -53,7 +53,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Order Details -->
                 <div class="card">
                     <div class="card-header">
@@ -111,7 +111,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="col-12 col-lg-5 mt-4 mt-lg-0">
                 <!-- Shipping Details -->
                 <div class="card mb-4">
@@ -125,7 +125,7 @@
                         <p class="mb-0">{{ order.shipping_address2 }}</p>
                         {% endif %}
                         <p class="mb-0">
-                            {{ order.shipping_city }}, 
+                            {{ order.shipping_city }},
                             {% if order.shipping_state %}{{ order.shipping_state }}, {% endif %}
                             {{ order.shipping_zipcode }}
                         </p>
@@ -135,7 +135,7 @@
                         {% endif %}
                     </div>
                 </div>
-                
+
                 <!-- Billing Details -->
                 <div class="card mb-4">
                     <div class="card-header">
@@ -148,14 +148,14 @@
                         <p class="mb-0">{{ order.billing_address2 }}</p>
                         {% endif %}
                         <p class="mb-0">
-                            {{ order.billing_city }}, 
+                            {{ order.billing_city }},
                             {% if order.billing_state %}{{ order.billing_state }}, {% endif %}
                             {{ order.billing_zipcode }}
                         </p>
                         <p class="mb-0">{{ order.billing_country }}</p>
                     </div>
                 </div>
-                
+
                 <!-- Order Status -->
                 <div class="card">
                     <div class="card-header">
@@ -163,12 +163,12 @@
                     </div>
                     <div class="card-body">
                         <p><strong>Order Date:</strong> {{ order.created_at|date:"F j, Y, g:i a" }}</p>
-                        <p><strong>Order Status:</strong> 
+                        <p><strong>Order Status:</strong>
                             <span class="badge {% if order.status == 'paid' %}bg-success{% elif order.status == 'processing' or order.status == 'created' %}bg-info{% elif order.status == 'shipped' %}bg-primary{% else %}bg-secondary{% endif %}">
                                 {{ order.get_status_display }}
                             </span>
                         </p>
-                        <p><strong>Payment Status:</strong> 
+                        <p><strong>Payment Status:</strong>
                             <span class="badge {% if order.payment_status == 'completed' %}bg-success{% elif order.payment_status == 'processing' or order.payment_status == 'pending' %}bg-warning{% elif order.payment_status == 'failed' %}bg-danger{% else %}bg-secondary{% endif %}">
                                 {{ order.get_payment_status_display }}
                             </span>
@@ -192,12 +192,12 @@
             if (window.sessionStorage.getItem('save_info')) {
                 window.sessionStorage.removeItem('save_info');
             }
-            
+
             // Clear any client_secret from session
             if (window.sessionStorage.getItem('client_secret')) {
                 window.sessionStorage.removeItem('client_secret');
             }
-            
+
             // If payment is not confirmed, refresh the page every 5 seconds
             {% if not payment_confirmed and not order.is_paid %}
             setTimeout(function() {

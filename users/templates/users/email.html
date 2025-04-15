@@ -6,7 +6,7 @@
 
 {% block profile_content %}
     {% include "users/includes/_messages.html" %}
-    
+
     <h2>{{ title|default:"Manage Email Addresses" }}</h2>
     <div class="card mb-4">
         <div class="card-header bg-light">
@@ -53,7 +53,7 @@
                                     </button>
                                 </form>
                             {% endif %}
-                            
+
                             {% if not email.primary %}
                                 <form method="post" action="{% url 'users:manage_email' %}" class="d-inline ms-2">
                                     {% csrf_token %}
@@ -62,7 +62,7 @@
                                         <i class="fas fa-star me-1"></i>Make Primary
                                     </button>
                                 </form>
-                                
+
                                 <form method="post" action="{% url 'users:manage_email' %}" class="d-inline ms-2">
                                     {% csrf_token %}
                                     <input type="hidden" name="email" value="{{ email.email }}">
@@ -82,4 +82,3 @@
         </div>
     {% endif %}
 {% endblock %}
-

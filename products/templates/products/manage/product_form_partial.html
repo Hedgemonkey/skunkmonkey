@@ -1,10 +1,10 @@
 {# products/staff/product_form_partial.html #}
 {% load crispy_forms_tags %}
 {% load static %}
-<form 
-    method="post" 
-    id="product-form" 
-    enctype="multipart/form-data" 
+<form
+    method="post"
+    id="product-form"
+    enctype="multipart/form-data"
     data-product-add-url="{% url 'products:product_add' %}"
     action="{% url 'products:product_add' %}">
     {% csrf_token %}
