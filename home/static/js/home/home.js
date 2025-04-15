@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         });
-        
+
         testimonialImages.forEach(img => {
             imageObserver.observe(img);
         });
@@ -56,13 +56,13 @@ document.addEventListener('DOMContentLoaded', function() {
     categoryButtons.forEach(button => {
         button.addEventListener('click', function() {
             const category = this.getAttribute('data-category');
-            
+
             // Remove active class from all buttons
             categoryButtons.forEach(btn => btn.classList.remove('active'));
-            
+
             // Add active class to clicked button
             this.classList.add('active');
-            
+
             // Show all products if 'all' category is selected
             if (category === 'all') {
                 document.querySelectorAll('.product-item').forEach(item => {
@@ -70,31 +70,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 return;
             }
-            
+
             // Hide all products
             document.querySelectorAll('.product-item').forEach(item => {
                 item.style.display = 'none';
             });
-            
+
             // Show products with matching category
             document.querySelectorAll(`.product-item[data-category="${category}"]`).forEach(item => {
                 item.style.display = 'block';
             });
         });
     });
-    
+
     // Add to cart functionality for home page product cards
     const addToCartButtons = document.querySelectorAll('.btn-add-to-cart');
     addToCartButtons.forEach(button => {
         button.addEventListener('click', function(e) {
             e.preventDefault();
             const productId = this.getAttribute('data-product-id');
-            
+
             // Disable button during AJAX request to prevent double-clicks
             this.disabled = true;
             const originalText = this.innerHTML;
             this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            
+
             // Send AJAX request to add product to cart
             fetch(`/cart/add/${productId}/`, {
                 method: 'POST',
@@ -110,11 +110,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Re-enable button
                 this.disabled = false;
                 this.innerHTML = originalText;
-                
+
                 if (data.success) {
                     // Show success message
                     showToast('success', data.message);
-                    
+
                     // Update cart count in navbar if it exists
                     const cartCount = document.querySelector('.cart-count');
                     if (cartCount) {
@@ -129,24 +129,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Re-enable button
                 this.disabled = false;
                 this.innerHTML = originalText;
-                
+
                 // Show error message
                 showToast('error', 'Error adding to cart');
                 console.error('Error:', error);
             });
         });
     });
-    
+
     // Add wishlist functionality for home page product cards
     const wishlistButtons = document.querySelectorAll('.btn-wishlist');
     wishlistButtons.forEach(button => {
         button.addEventListener('click', function(e) {
             e.preventDefault();
             const productId = this.getAttribute('data-product-id');
-            
+
             // Disable button during AJAX request
             this.disabled = true;
-            
+
             // Send AJAX request to toggle wishlist status
             fetch(`/wishlist/toggle/${productId}/`, {
                 method: 'POST',
@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 // Re-enable button
                 this.disabled = false;
-                
+
                 if (data.success) {
                     // Update wishlist icon
                     const icon = this.querySelector('i');
@@ -199,19 +199,19 @@ function initializeCarousel(carouselElement) {
     // Get all slides
     const slides = carouselElement.querySelectorAll('.carousel-slide');
     if (slides.length === 0) return;
-    
+
     let currentSlide = 0;
     const totalSlides = slides.length;
-    
+
     // Show first slide, hide others
     slides.forEach((slide, index) => {
         slide.style.display = index === 0 ? 'block' : 'none';
     });
-    
+
     // Create navigation dots
     const dotsContainer = document.createElement('div');
     dotsContainer.className = 'carousel-dots';
-    
+
     for (let i = 0; i < totalSlides; i++) {
         const dot = document.createElement('span');
         dot.className = 'carousel-dot';
@@ -221,9 +221,9 @@ function initializeCarousel(carouselElement) {
         });
         dotsContainer.appendChild(dot);
     }
-    
+
     carouselElement.appendChild(dotsContainer);
-    
+
     // Create prev/next buttons
     const prevButton = document.createElement('button');
     prevButton.className = 'carousel-button carousel-prev';
@@ -231,44 +231,44 @@ function initializeCarousel(carouselElement) {
     prevButton.addEventListener('click', () => {
         goToSlide((currentSlide - 1 + totalSlides) % totalSlides);
     });
-    
+
     const nextButton = document.createElement('button');
     nextButton.className = 'carousel-button carousel-next';
     nextButton.innerHTML = '&gt;';
     nextButton.addEventListener('click', () => {
         goToSlide((currentSlide + 1) % totalSlides);
     });
-    
+
     carouselElement.appendChild(prevButton);
     carouselElement.appendChild(nextButton);
-    
+
     // Auto-rotate slides
     const intervalTime = 5000; // 5 seconds
     let slideInterval = setInterval(() => {
         goToSlide((currentSlide + 1) % totalSlides);
     }, intervalTime);
-    
+
     // Pause on hover
     carouselElement.addEventListener('mouseenter', () => {
         clearInterval(slideInterval);
     });
-    
+
     carouselElement.addEventListener('mouseleave', () => {
         slideInterval = setInterval(() => {
             goToSlide((currentSlide + 1) % totalSlides);
         }, intervalTime);
     });
-    
+
     // Function to change slides
     function goToSlide(slideIndex) {
         // Hide current slide
         slides[currentSlide].style.display = 'none';
-        
+
         // Update dots
         dotsContainer.querySelectorAll('.carousel-dot').forEach((dot, index) => {
             dot.classList.toggle('active', index === slideIndex);
         });
-        
+
         // Show new slide
         slides[slideIndex].style.display = 'block';
         currentSlide = slideIndex;
@@ -303,7 +303,7 @@ function showToast(type, message) {
         toastContainer.className = 'toast-container';
         document.body.appendChild(toastContainer);
     }
-    
+
     // Create toast element
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
@@ -315,15 +315,15 @@ function showToast(type, message) {
         </div>
         <div class="toast-body">${message}</div>
     `;
-    
+
     // Add to container
     toastContainer.appendChild(toast);
-    
+
     // Show toast with animation
     setTimeout(() => {
         toast.classList.add('show');
     }, 10);
-    
+
     // Add close button functionality
     toast.querySelector('.toast-close').addEventListener('click', () => {
         toast.classList.remove('show');
@@ -331,7 +331,7 @@ function showToast(type, message) {
             toast.remove();
         }, 300);
     });
-    
+
     // Auto-remove after 5 seconds
     setTimeout(() => {
         if (toast.parentNode) {
