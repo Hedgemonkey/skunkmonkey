@@ -83,6 +83,62 @@
     font-size: 0.9em;
 }
 
+/* Cropper Modal Styles */
+#cropperModal .modal-content {
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#cropperModal .modal-body {
+    padding: 0;
+    background-color: #000;
+    position: relative;
+    min-height: 400px;
+}
+
+#cropperModal .img-container {
+    height: 400px;
+    width: 100%;
+    overflow: hidden;
+}
+
+#cropperModal .cropper-modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    padding: 0.75rem 1rem;
+}
+
+#cropperModal .cropper-modal-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    padding: 1rem;
+}
+
+.action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.action-buttons .btn-group {
+    margin-right: 10px;
+}
+
+#cropperModal .btn-outline-secondary {
+    background-color: #fff;
+    border-color: #ced4da;
+}
+
+#cropperModal .btn-outline-secondary:hover {
+    background-color: #f8f9fa;
+}
+
+#crop-image-button {
+    margin-top: 10px;
+}
+
 /* Responsive adjustments if needed */
 @media (max-width: 767.98px) {
     .profile-header {
@@ -98,6 +154,33 @@
         display: block; /* Make buttons take full width if desired */
         width: fit-content; /* Or adjust width as needed */
     }
+
+    .action-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .action-buttons .btn-group {
+        margin-right: 0;
+        margin-bottom: 10px;
+        width: 100%;
+    }
+    
+    #cropperModal .cropper-modal-footer {
+        padding: 0.75rem;
+    }
+}
+
+/* Ensure proper cropper view */
+.cropper-container {
+    direction: ltr;
+    font-size: 0;
+    line-height: 0;
+    position: relative;
+    touch-action: none;
+    user-select: none;
+    max-width: 100%;
+    margin: 0 auto;
 }
 
 /* Add more specific styles as required */
