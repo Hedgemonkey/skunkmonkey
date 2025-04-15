@@ -3,7 +3,7 @@
  * Handles AJAX interactions for address deletion and setting default address
  */
 document.addEventListener('DOMContentLoaded', function() {
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
                        document.querySelector('[name=csrfmiddlewaretoken]')?.value;
 
     // Handle address deletion

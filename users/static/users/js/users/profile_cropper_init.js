@@ -1,6 +1,6 @@
 /**
  * Profile Image Cropper Initialization
- * 
+ *
  * This file reuses the existing cropper implementation but with profile-specific configurations.
  * It's specifically for handling profile image uploads and cropping.
  */
@@ -75,7 +75,7 @@ $(function () {
                 canvas.toBlob(function(blob) {
                     const url = URL.createObjectURL(blob);
                     $('#cropped-image-display').attr('src', url);
-        
+
                     const reader = new FileReader();
                     reader.onloadend = function() {
                         $('#cropped-image-data').val(reader.result);
@@ -89,7 +89,7 @@ $(function () {
                     };
                     reader.readAsDataURL(blob);
                 });
-        
+
                 $('#cropperModal').modal('hide');
             }
         });

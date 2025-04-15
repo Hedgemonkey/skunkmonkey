@@ -1,6 +1,6 @@
 /**
  * Profile Image Cropper
- * 
+ *
  * This script uses the shared image cropper module for profile image processing.
  */
 
@@ -16,7 +16,7 @@ console.log('DOM readyState at load time:', document.readyState);
 const ProfileCropper = {
     // Track initialization state
     initialized: false,
-    
+
     // Main initialization function
     init: function() {
         // Only initialize once
@@ -24,7 +24,7 @@ const ProfileCropper = {
             console.log('ProfileCropper already initialized, skipping');
             return;
         }
-        
+
         console.log('ProfileCropper.init() called');
         console.log('Looking for file input with ID: #id_profile_image');
         const fileInput = document.querySelector('#id_profile_image');
@@ -35,11 +35,11 @@ const ProfileCropper = {
         } else {
             console.log('Available file inputs:', Array.from(document.querySelectorAll('input[type="file"]')).map(el => el.id || 'no-id'));
         }
-        
+
         // Check if ImageCropper is available globally
         if (window.ImageCropper && typeof window.ImageCropper.init === 'function') {
             console.log('Found global ImageCropper, initializing with it');
-            
+
             // Initialize with specific profile options
             window.ImageCropper.init({
                 fileInputSelector: '#id_profile_image', // Updated to use the actual form field ID
@@ -93,19 +93,19 @@ const ProfileCropper = {
             console.log('Window ImageCropper:', window.ImageCropper);
             console.log('Imported ImageCropper:', ImageCropper);
         }
-        
+
         // Mark as initialized
         this.initialized = true;
         console.log('ProfileCropper initialization complete');
     },
-    
+
     // Clean up resources
     cleanUp: function() {
         // If using the global ImageCropper, let it clean up
         if (window.ImageCropper && typeof window.ImageCropper.cleanUp === 'function') {
             window.ImageCropper.cleanUp();
         }
-        
+
         // Reset initialization flag
         this.initialized = false;
     }
