@@ -298,7 +298,7 @@ python manage.py migrate socialaccount zero
 ---
 
 ### **Version: v1.0.0**
-📅 **Date**: 2024-07-25 
+📅 **Date**: 2024-07-25
 📝 **Description**: Initial database setup. Applied migrations for Django's built-in apps.
 📂 **Migration File**:
 - `admin`: `0001_initial`, `0002_logentry_remove_auto_add`, `0003_logentry_add_action_flag_choices`
@@ -324,26 +324,26 @@ _Last updated: 2025-04-07_
 
 ## 🔍 Guidelines for Future Changes
 
-✔ **Always document changes here before running `migrate` in production.**  
-✔ **Ensure backups are taken before applying schema updates.**  
-✔ **Use feature flags for risky migrations affecting live data.**  
-✔ **Test migrations in a staging environment before deploying.**  
+✔ **Always document changes here before running `migrate` in production.**
+✔ **Ensure backups are taken before applying schema updates.**
+✔ **Use feature flags for risky migrations affecting live data.**
+✔ **Test migrations in a staging environment before deploying.**
 
 ---
 
-## 📌 Migration Tracking Commands  
+## 📌 Migration Tracking Commands
 
-Check migration status:  
+Check migration status:
 ```sh
 python manage.py showmigrations
-```  
+```
 
-Apply migrations:  
+Apply migrations:
 ```sh
 python manage.py migrate
-```  
+```
 
-Rollback to a previous migration:  
+Rollback to a previous migration:
 ```sh
 python manage.py migrate app_name 0002
 ```

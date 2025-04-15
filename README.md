@@ -2,7 +2,7 @@
 
 SkunkMonkey is a **Django-based e-commerce platform** designed for seamless browsing, product discovery, secure transactions, and efficient order management. Built using **Agile methodologies**, the project follows a structured **KanBan** approach to ensure a smooth and organized development workflow.
 
-Live Site: **[Coming Soon]**  
+Live Site: **[Coming Soon]**
 Test Credentials: **[To be added]**
 
 ---
@@ -93,7 +93,7 @@ Here are a few **example user stories**:
 ### **📐 Wireframes**
 To plan the layout and user interface of the SkunkMonkey site, wireframes were designed using **Figma**. These wireframes outline the **mobile and desktop layouts**, ensuring a user-friendly experience across different devices.
 
-📌 **View the full wireframe design on Figma:**  
+📌 **View the full wireframe design on Figma:**
 🔗 [**SkunkMonkey Wireframes - Figma**](https://www.figma.com/design/NtLORpnMv7M6mVMJa75GGX/SkunkMonkey?node-id=1-589&t=N44x2kvD9axQSaAY-1)
 
 #### **📱 Mobile Wireframe**
@@ -106,7 +106,7 @@ To plan the layout and user interface of the SkunkMonkey site, wireframes were d
 
 ---
 
-### 📄 Overview  
+### 📄 Overview
 
 The SkunkMonkey site will be structured around the following pages:
 
@@ -124,7 +124,7 @@ The SkunkMonkey site will be structured around the following pages:
 
 ## 🗄️ Database Schema & Migration Strategy
 
-### 🔹 Database Schema Overview  
+### 🔹 Database Schema Overview
 The database is designed using **PostgreSQL** and follows Django's **ORM** structure. Below is an overview of how data is structured. Note that this diagram does not represent all tables in the database. Additional tables manage user authentication, sessions, and social accounts.
 
 ```plaintext
@@ -284,9 +284,9 @@ The database is designed using **PostgreSQL** and follows Django's **ORM** struc
 ### Key Relationships:
 
 **Products Module:**
-- `Category` ↔️ `Product`: One-to-Many (a category can have many products)  
-- `Product` ↔️ `Review`: One-to-Many (a product can have many reviews)  
-- `Product` ↔️ `InventoryLog`: One-to-Many (tracks stock changes over time)  
+- `Category` ↔️ `Product`: One-to-Many (a category can have many products)
+- `Product` ↔️ `Review`: One-to-Many (a product can have many reviews)
+- `Product` ↔️ `InventoryLog`: One-to-Many (tracks stock changes over time)
 - `Review` ↔️ `User`: Many-to-One (a user can leave many reviews)
 
 **Users Module:**
@@ -329,7 +329,7 @@ The database consists of relational tables that store information about users, p
 
 ---
 
-### 🔹 Strategy for Schema Changes in Production  
+### 🔹 Strategy for Schema Changes in Production
 Managing **schema changes** in a production environment requires careful planning to **minimize downtime** and **prevent data loss**. Below is the strategy we follow:
 
 #### **1️⃣ Plan & Assess the Change**
@@ -347,11 +347,11 @@ python manage.py migrate
 - Test migrations in a **staging environment** before running them in production.
 
 #### **3️⃣ Ensure Safe Deployment**
-**For small changes** (adding new columns):  
+**For small changes** (adding new columns):
 - **Deploy application changes first** before running the migration.
 - Set **default values** for new columns to avoid breaking queries.
 
-**For large changes** (removing columns, renaming tables):  
+**For large changes** (removing columns, renaming tables):
 - Use a **rolling migration**:
   - Create a **new table** with the updated structure.
   - Gradually **migrate data**.
@@ -515,11 +515,11 @@ python manage.py showmigrations myapp
 ---
 
 ## ✅ Best Practices for Database Changes
-✔ Always **plan and test** schema changes in a **staging environment**.  
-✔ Use **Django migrations** instead of manual SQL changes.  
-✔ Follow **zero-downtime or rolling migrations** for production databases.  
-✔ Maintain a **backup before applying any changes**.  
-✔ Keep detailed **logs & rollback strategies** for each migration.  
+✔ Always **plan and test** schema changes in a **staging environment**.
+✔ Use **Django migrations** instead of manual SQL changes.
+✔ Follow **zero-downtime or rolling migrations** for production databases.
+✔ Maintain a **backup before applying any changes**.
+✔ Keep detailed **logs & rollback strategies** for each migration.
 
 [Back to top](#contents)
 
