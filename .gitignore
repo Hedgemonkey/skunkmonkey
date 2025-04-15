@@ -24,6 +24,7 @@ extensions.txt
 # Generated webpack bundles
 static/bundles/
 staticfiles/bundles/
+dist/
 
 # Media files (user uploads)
 media/profile_images/
@@ -37,3 +38,14 @@ media/product_images/
 .venv2/
 venv/
 env/
+
+# Backup files
+*.bak
+*.bak.*
+backup*.sql
+
+# Code quality reports
+flake8_*.txt
+.coverage
+htmlcov/
+coverage.xml
