@@ -106,11 +106,11 @@
     .table-responsive {
         border: 0;
     }
-    
+
     .table th, .table td {
         font-size: 0.875rem;
     }
-    
+
     /* Stack the detail columns on mobile */
     .order-details-row .col-md-6 {
         margin-bottom: 1rem;
