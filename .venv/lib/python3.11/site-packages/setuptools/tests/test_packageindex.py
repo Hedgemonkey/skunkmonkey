@@ -1,3 +1,4 @@
+import distutils.errors
 import http.client
 import re
 import urllib.error
@@ -5,10 +6,7 @@ import urllib.request
 from inspect import cleandoc
 
 import pytest
-
 import setuptools.package_index
-
-import distutils.errors
 
 
 class TestPackageIndex:

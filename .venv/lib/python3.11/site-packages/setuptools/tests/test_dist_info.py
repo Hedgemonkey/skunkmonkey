@@ -7,9 +7,8 @@ import subprocess
 import sys
 from functools import partial
 
-import pytest
-
 import pkg_resources
+import pytest
 from setuptools.archive_util import unpack_archive
 
 from .textwrap import DALS

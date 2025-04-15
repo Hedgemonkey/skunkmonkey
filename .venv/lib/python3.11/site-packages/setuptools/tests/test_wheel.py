@@ -12,21 +12,19 @@ import stat
 import subprocess
 import sys
 import zipfile
+from distutils.sysconfig import get_config_var
+from distutils.util import get_platform
 from typing import Any
 
 import pytest
 from jaraco import path
 from packaging.tags import parse_tag
 from packaging.utils import canonicalize_name
-
 from pkg_resources import PY_MAJOR, Distribution, PathMetadata
 from setuptools.wheel import Wheel
 
 from .contexts import tempdir
 from .textwrap import DALS
-
-from distutils.sysconfig import get_config_var
-from distutils.util import get_platform
 
 WHEEL_INFO_TESTS = (
     ('invalid.whl', ValueError),

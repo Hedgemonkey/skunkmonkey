@@ -12,7 +12,6 @@ from django.shortcuts import render
 from allauth import app_settings
 from allauth.utils import import_callable
 
-
 Rate = namedtuple("Rate", "amount duration per")
 
 

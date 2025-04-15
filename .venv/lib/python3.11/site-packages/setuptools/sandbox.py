@@ -11,13 +11,12 @@ import re
 import sys
 import tempfile
 import textwrap
+from distutils.errors import DistutilsError
 from types import TracebackType
 from typing import TYPE_CHECKING, Any, ClassVar
 
 import pkg_resources
 from pkg_resources import working_set
-
-from distutils.errors import DistutilsError
 
 if TYPE_CHECKING:
     import os as _os

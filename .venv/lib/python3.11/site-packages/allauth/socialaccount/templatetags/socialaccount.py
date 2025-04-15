@@ -5,7 +5,6 @@ from django.utils.safestring import mark_safe
 from allauth.socialaccount.adapter import get_adapter
 from allauth.utils import get_request_param
 
-
 register = template.Library()
 
 

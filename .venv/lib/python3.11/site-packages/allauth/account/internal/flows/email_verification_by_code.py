@@ -11,7 +11,6 @@ from allauth.account.internal.stagekit import clear_login
 from allauth.account.models import EmailAddress, EmailConfirmationMixin
 from allauth.core import context
 
-
 EMAIL_VERIFICATION_CODE_SESSION_KEY = "account_email_verification_code"
 
 

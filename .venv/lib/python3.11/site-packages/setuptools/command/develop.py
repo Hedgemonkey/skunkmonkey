@@ -1,15 +1,14 @@
 import glob
 import os
+from distutils import log
+from distutils.errors import DistutilsOptionError
+from distutils.util import convert_path
 
 import setuptools
 from setuptools import _normalization, _path, namespaces
 from setuptools.command.easy_install import easy_install
 
 from ..unicode_utils import _read_utf8_with_fallback
-
-from distutils import log
-from distutils.errors import DistutilsOptionError
-from distutils.util import convert_path
 
 
 class develop(namespaces.DevelopInstaller, easy_install):

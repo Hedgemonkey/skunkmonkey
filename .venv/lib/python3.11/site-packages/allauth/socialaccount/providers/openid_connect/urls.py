@@ -4,7 +4,6 @@ from allauth.socialaccount import app_settings
 
 from . import views
 
-
 urlpatterns = [
     re_path(
         r"^(?P<provider_id>[^/]+)/",

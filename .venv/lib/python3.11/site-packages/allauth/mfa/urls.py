@@ -4,7 +4,6 @@ from django.urls import URLPattern, URLResolver, include, path
 
 from allauth.mfa import app_settings
 
-
 urlpatterns: List[Union[URLPattern, URLResolver]] = [
     path("", include("allauth.mfa.base.urls"))
 ]

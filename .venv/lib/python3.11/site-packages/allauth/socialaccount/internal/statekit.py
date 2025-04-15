@@ -3,7 +3,6 @@ from typing import Any, Dict, Optional, Tuple
 
 from allauth.socialaccount.adapter import get_adapter
 
-
 STATE_ID_LENGTH = 16
 MAX_STATES = 10
 STATES_SESSION_KEY = "socialaccount_states"

@@ -8,7 +8,6 @@ from allauth.account import app_settings
 from allauth.account.models import Login
 from allauth.account.stages import LoginStage, LoginStageController
 
-
 LOGIN_SESSION_KEY = "account_login"
 
 

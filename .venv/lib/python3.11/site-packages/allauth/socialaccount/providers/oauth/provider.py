@@ -10,7 +10,6 @@ from allauth.socialaccount.providers.base import Provider
 from allauth.socialaccount.providers.base.constants import AuthAction
 from allauth.socialaccount.providers.oauth.client import OAuthError
 
-
 logger = logging.getLogger(__name__)
 
 

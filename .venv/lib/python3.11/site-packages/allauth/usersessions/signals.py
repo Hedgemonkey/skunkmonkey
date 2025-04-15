@@ -4,7 +4,6 @@ from allauth.account import app_settings
 
 from .models import UserSession
 
-
 # Provides the arguments "request", "from_session", "to_session"
 session_client_changed = Signal()
 

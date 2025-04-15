@@ -3,9 +3,8 @@
 import os
 import types
 
-import pytest
-
 import pkg_resources
+import pytest
 import setuptools.sandbox
 
 
