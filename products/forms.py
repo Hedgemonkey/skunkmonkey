@@ -53,7 +53,8 @@ class ProductForm(forms.ModelForm):
                 css_class='form-row'
             ),
             # Row(
-            #     Field('image', css_class='form-group col-md-12 mb-0'),  # Explicitly use Field to ensure custom widget
+            #     Field('image', css_class='form-group col-md-12 mb-0'),
+            # Explicitly use Field to ensure custom widget
             #     css_class='form-row'
             # ),
             'is_active',

@@ -21,7 +21,7 @@ class Cart(models.Model):
         related_name='cart')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    session_id = models.CharField(max_length=255, blank=True, default="")
+    session_id = models.CharField(max_length=255, blank=True, default='')
 
     class Meta:
         ordering = ('-created_at',)
@@ -216,12 +216,11 @@ class Order(models.Model):
         help_text="Total price including shipping")
 
     # Payment details
-    stripe_pid = models.CharField(max_length=255, blank=True, default="")
-    stripe_client_secret = models.CharField(
-        max_length=255, blank=True, default="")
+    stripe_pid = models.CharField(max_length=255, blank=True, default='')
+    stripe_client_secret = models.CharField(max_length=255, blank=True, default='')
     # card, sepa_debit, etc.
     payment_method_type = models.CharField(max_length=50, blank=True)
-    original_cart = models.TextField(blank=True, default="")
+    original_cart = models.TextField(blank=True, default='')
     is_paid = models.BooleanField(default=False)
     paid_at = models.DateTimeField(null=True, blank=True)
 
@@ -335,10 +334,7 @@ class OrderItem(models.Model):
         verbose_name_plural = 'Order Items'
 
     def __str__(self):
-        return f"{
-            self.quantity} x {
-            self.product.name} in order {
-            self.order.order_number}"
+        return f"{self.quantity} x {self.product.name} in order {self.order.order_number}"
 
     @property
     def total_price(self):
@@ -422,7 +418,7 @@ class ComparisonList(models.Model):
         related_name='comparison_lists',
         null=True,
         blank=True)
-    session_id = models.CharField(max_length=255, blank=True, default="")
+    session_id = models.CharField(max_length=255, blank=True, default='')
     products = models.ManyToManyField(Product, related_name='in_comparisons')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -436,5 +432,4 @@ class ComparisonList(models.Model):
     def __str__(self):
         if self.user:
             return f"{self.name} for {self.user.username}"
-        return f"{self.name} (session: {
-            self.session_id[:8] if self.session_id else 'None'})"
+        return f"{self.name} (session: {self.session_id[:8] if self.session_id else 'None'})"

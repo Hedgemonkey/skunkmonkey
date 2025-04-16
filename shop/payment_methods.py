@@ -51,7 +51,8 @@ def payment_methods_list(request):
                     'exp_year': pm.card.exp_year,
                     'last4': pm.card.last4,
                 },
-                'isDefault': customer.default_payment_method and customer.default_payment_method.id == pm.id
+                'isDefault': customer.default_payment_method and (
+                    customer.default_payment_method.id == pm.id)
             } for pm in stripe_payment_methods.data]
 
         return JsonResponse({
@@ -155,7 +156,8 @@ def delete_payment_method(request, payment_method_id):
             }, status=403)
 
         # If this is the default payment method, unset it first
-        if customer.default_payment_method and customer.default_payment_method.id == payment_method_id:
+        if (customer.default_payment_method
+                and customer.default_payment_method.id == payment_method_id):
             stripe.Customer.modify(
                 customer.id,
                 invoice_settings={'default_payment_method': None}

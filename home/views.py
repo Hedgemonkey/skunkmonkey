@@ -65,7 +65,8 @@ class HomeView(TemplateView):
                 logger.debug("Using fallback hero banners")
                 context['hero_banners'] = [{
                     'title': 'Welcome to SkunkMonkey',
-                    'subtitle': 'Discover our premium products with secure checkout and fast delivery',
+                    'subtitle': 'Discover our premium products with secure \
+                        checkout and fast delivery',
                     'image': None,
                     'button_text': 'Shop Now',
                     'button_url': '/products/'
@@ -81,7 +82,8 @@ class HomeView(TemplateView):
             context['sale_products'] = []
             context['hero_banners'] = [{
                 'title': 'Welcome to SkunkMonkey',
-                'subtitle': 'Discover our premium products with secure checkout and fast delivery',
+                'subtitle': 'Discover our premium products with secure \
+                    checkout and fast delivery',
                 'image': None,
                 'button_text': 'Shop Now',
                 'button_url': '/products/'
@@ -95,11 +97,13 @@ class HomeView(TemplateView):
         # Handle the case of multiple ComparisonList objects
         try:
             if hasattr(context['request'], 'comparison_list'):
-                # If request.comparison_list is a property that performs a get(),
-                # we need to handle the case where multiple objects exist
+                # If request.comparison_list is a property that
+                # performs a get(), we need to handle the case where
+                # multiple objects exist
                 try:
                     # Try to get the comparison list from the request
-                    context['comparison_list'] = context['request'].comparison_list.product_ids
+                    context['comparison_list'] = (
+                        context['request'].comparison_list.product_ids)
                 except Exception as e:
                     logger.warning(
                         f"Error accessing comparison_list: {
@@ -113,7 +117,8 @@ class HomeView(TemplateView):
                     ).order_by('-created_at').first()
 
                     if latest_comparison:
-                        context['comparison_list'] = latest_comparison.product_ids
+                        context['comparison_list'] = (
+                            latest_comparison.product_ids)
                     else:
                         context['comparison_list'] = []
             else:

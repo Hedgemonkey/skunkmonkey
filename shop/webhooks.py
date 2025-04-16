@@ -75,7 +75,8 @@ def webhook(request):
     event_map = {
         # Payment Intent events
         'payment_intent.succeeded': handler.handle_payment_intent_succeeded,
-        'payment_intent.payment_failed': handler.handle_payment_intent_payment_failed,
+        'payment_intent.payment_failed': (
+            handler.handle_payment_intent_payment_failed),
         'payment_intent.created': handler.handle_event,
         'payment_intent.canceled': handler.handle_event,
 
@@ -114,7 +115,8 @@ def webhook(request):
     try:
         response = event_handler(event)
         logger.info(
-            f"Webhook {event_type} handled successfully - Response: {response.status_code}")
+            f"Webhook {event_type} handled successfully - Response: \
+                {response.status_code}")
         return response
     except Exception as e:
         logger.error(

@@ -239,8 +239,11 @@ class CheckoutForm(forms.ModelForm):
 
             # Payment Information Section
             Div(
-                HTML('<h3 class="mb-3 above-payment-element">Payment Information</h3>'),
-                HTML('<p class="text-muted mb-3 above-payment-element">The billing information will be collected securely by Stripe.</p>'),
+                HTML('<h3 class="mb-3 above-payment-element">\
+                     Payment Information</h3>'),
+                HTML('<p class="text-muted mb-3 above-payment-element">\
+                     The billing information will be collected securely by \
+                     Stripe.</p>'),
 
                 # Stripe Payment Element Container with proper containment
                 # classes
@@ -251,7 +254,8 @@ class CheckoutForm(forms.ModelForm):
                     HTML('<div id="payment-element" class="mb-3"></div>'),
                     HTML('</div>'),
                     HTML(
-                        '<div id="payment-errors" class="alert alert-danger d-none"></div>'),
+                        '<div id="payment-errors" class="alert alert-danger '
+                        'd-none"></div>'),
                     css_class='payment-element-container'
                 ),
 
@@ -267,7 +271,11 @@ class CheckoutForm(forms.ModelForm):
 
             # Hidden fields for Stripe
             HTML(
-                '<div id="stripe-data" data-publishable-key="{{ stripe_public_key }}" data-client-secret="{{ client_secret }}" data-cache-url="{% url \'shop:cache_checkout_data\' %}"></div>'),
+                '<div id="stripe-data" '
+                'data-publishable-key="{{ stripe_public_key }}" '
+                'data-client-secret="{{ client_secret }}" '
+                'data-cache-url="{% url \'shop:cache_checkout_data\' %}">\
+                    </div>'),
         )
 
         # Set autofocus on first field
@@ -300,7 +308,8 @@ class CheckoutForm(forms.ModelForm):
 
     def save(self, commit=True):
         """
-        Custom save method to handle combining first_name and last_name into full_name
+        Custom save method to handle combining first_name and last_name into
+        full_name
         """
         instance = super().save(commit=False)
 

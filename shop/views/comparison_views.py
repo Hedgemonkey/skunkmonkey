@@ -97,7 +97,8 @@ class AddToComparisonView(View):
             if len(comparison) >= 4:
                 messages.warning(
                     request,
-                    "You can compare up to 4 products at a time. Remove a product to add another.")
+                    "You can compare up to 4 products at a time. Remove a \
+                        product to add another.")
                 return redirect('shop:comparison')
 
             comparison.append(product_id)
@@ -118,7 +119,8 @@ class AddToComparisonView(View):
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse({
                 'status': 'success',
-                'message': f"{product.name} has been added to your comparison list.",
+                'message': f"{product.name} has been added to your comparison \
+                    list.",
                 'count': len(comparison)
             })
 
@@ -167,7 +169,8 @@ class RemoveFromComparisonView(View):
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse({
                 'status': 'success',
-                'message': f"{product.name} has been removed from your comparison list.",
+                'message': f"{product.name} has been removed from your \
+                    comparison list.",
                 'count': len(comparison)
             })
 

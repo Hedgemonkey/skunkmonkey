@@ -41,7 +41,8 @@ class CheckoutView(CartAccessMixin, View):
         # Redirect to shop if cart is empty
         if cart.items.count() == 0:
             self.logger.warning(
-                "Attempted checkout with empty cart - redirecting to product list")
+                "Attempted checkout with empty cart - \
+                    redirecting to product list")
             messages.warning(
                 request, "Your cart is empty. Please add some products first.")
             return redirect('shop:product_list')
@@ -50,7 +51,8 @@ class CheckoutView(CartAccessMixin, View):
         initial_data = {}
         if request.user.is_authenticated:
             self.logger.debug(
-                f"Pre-filling form for authenticated user: {request.user.username}")
+                f"Pre-filling form for authenticated user: \
+                    {request.user.username}")
             initial_data = {
                 'full_name': request.user.get_full_name(),
                 'email': request.user.email
@@ -64,7 +66,8 @@ class CheckoutView(CartAccessMixin, View):
                 if last_order:
                     self.logger.debug(
                         f"Found previous order {
-                            last_order.order_number} - using for address pre-fill")
+                            last_order.order_number} - using for \
+                                address pre-fill")
                     # Pre-fill shipping address
                     initial_data.update({
                         'shipping_address1': last_order.shipping_address1,
@@ -99,7 +102,7 @@ class CheckoutView(CartAccessMixin, View):
             'stripe_public_key': stripe_public_key,
             'client_secret': request.session.get('client_secret', ''),
             'order_id': '',  # Add empty order_id to avoid template error
-            'djstripe_webhook_url': '/stripe/webhook/'  # Use dj-stripe's webhook URL
+            'djstripe_webhook_url': '/stripe/webhook/'
         }
 
         self.logger.info("Checkout page prepared successfully")
@@ -134,7 +137,8 @@ class CheckoutView(CartAccessMixin, View):
                     self.logger.error(
                         "No client_secret found in POST or session")
                     messages.error(
-                        request, "No payment information was received. Please try again.")
+                        request, "No payment information was received. \
+                            Please try again.")
                     return redirect('shop:checkout')
 
                 self.logger.debug(f"Found client_secret: {
@@ -154,7 +158,7 @@ class CheckoutView(CartAccessMixin, View):
                 order.original_cart = json.dumps(
                     cart.to_dict() if hasattr(cart, 'to_dict') else {})
                 order.total_price = cart.total_price
-                order.grand_total = cart.total_price  # Add shipping cost if needed
+                order.grand_total = cart.total_price
                 order.is_paid = True
                 order.payment_status = 'completed'
                 order.status = 'paid'
@@ -188,7 +192,9 @@ class CheckoutView(CartAccessMixin, View):
                                 item.product.name}: {item_creation_exception}")
                         order.delete()  # Remove incomplete order
                         messages.error(
-                            request, "There was an error processing your order. Please try again.")
+                            request,
+                            "There was an error processing your order.\
+                                Please try again.")
                         return redirect('shop:checkout')
 
                 # Clear the cart
@@ -206,7 +212,8 @@ class CheckoutView(CartAccessMixin, View):
             except Exception as e:
                 self.logger.error(f"Payment processing error: {e}")
                 messages.error(
-                    request, "There was an error processing your payment. Please try again.")
+                    request, "There was an error processing your payment. \
+                        Please try again.")
                 return redirect('shop:checkout')
         else:
             self.logger.warning(
@@ -275,11 +282,14 @@ class CreatePaymentIntentView(View):
                 api_key = MockAPIKey(settings.STRIPE_SECRET_KEY)
             else:
                 return JsonResponse(
-                    {'error': 'Stripe API key is not configured correctly'}, status=500)
+                    {'error': 'Stripe API key is not configured correctly'},
+                    status=500)
 
         # Print debug info about the API key
-        print(f"Using API key in CreatePaymentIntentView: {api_key.secret[:8]}... (Type: {
-            getattr(api_key, 'type', 'N/A')}, Name: {getattr(api_key, 'name', 'N/A')})")
+        print(f"Using API key in CreatePaymentIntentView: \
+              {api_key.secret[:8]}... (Type: {
+            getattr(api_key, 'type', 'N/A')}, \
+                Name: {getattr(api_key, 'name', 'N/A')})")
 
         # Set the API key for this request
         stripe.api_key = api_key.secret
@@ -296,7 +306,8 @@ class CreatePaymentIntentView(View):
             amount=stripe_total,
             currency=settings.STRIPE_CURRENCY,
             metadata={
-                'username': request.user.username if request.user.is_authenticated else 'AnonymousUser',
+                'username': request.user.username if (
+                    request.user.is_authenticated) else 'AnonymousUser',
                 'cart_items': json.dumps(cart.to_dict()),
                 # Add timestamp to ensure freshness
                 'timestamp': str(timestamp),
@@ -337,7 +348,8 @@ def recover_payment_intent(request, order_id=None):
             if not order.is_paid:
                 order.delete()
                 messages.info(
-                    request, "Your previous incomplete order has been removed.")
+                    request,
+                    "Your previous incomplete order has been removed.")
         except Order.DoesNotExist:
             pass
 

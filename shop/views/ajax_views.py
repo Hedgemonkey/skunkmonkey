@@ -48,6 +48,7 @@ class AjaxProductListView(View):
             category = request.GET.get('category')
             search = request.GET.get('search', '').lower()
             sort = request.GET.get('sort', 'name-asc')
+            # Note: items_only parameter is intentionally not used
             count_only = request.GET.get('count_only') == 'true'
 
             # Start with active products
@@ -131,9 +132,8 @@ class AjaxQuickViewView(View):
 
         except Product.DoesNotExist:
             logger.warning(
-                f"Quick view requested for non-existent product ID: "
-                f"{product_id}"
-            )
+                f"Quick view requested for non-existent product ID: \
+                    {product_id}")
             return JsonResponse({
                 'success': False,
                 'error': 'Product not found'

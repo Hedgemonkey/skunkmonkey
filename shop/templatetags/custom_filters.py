@@ -20,7 +20,8 @@ def multiply(value, arg):
 def get_item(dictionary, key):
     """
     Get an item from a dictionary using the key.
-    This is useful since Django templates don't allow direct dictionary access with variables.
+    This is useful since Django templates don't allow direct dictionary access
+    with variables.
 
     Usage: {{ my_dict|get_item:key_var }}
     """

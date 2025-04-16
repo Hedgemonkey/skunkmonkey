@@ -103,8 +103,8 @@ class OwnershipRequiredMixin(UserPassesTestMixin):
 
 class SecureCheckoutMixin(LoginRequiredMixin):
     """
-    Mixin to ensure user is authenticated before accessing checkout-related views
-    and that they have an active cart with items.
+    Mixin to ensure user is authenticated before accessing
+    checkout-related views and that they have an active cart with items.
     """
 
     def dispatch(self, request, *args, **kwargs):

@@ -6,7 +6,6 @@ A little script that does a big migration
 import json
 import os
 import shutil
-import subprocess
 import sys
 from os.path import exists
 
@@ -18,7 +17,10 @@ COLOURS = {"red": "\033[31m",
            "reset": "\033[0m",
            "bold": "\033[1m"}
 
-BASE_URL = "https://raw.githubusercontent.com/Code-Institute-Org/gitpod-full-template/main/"
+BASE_URL = (
+    "https://raw.githubusercontent.com/Code-Institute-Org/"
+    "gitpod-full-template/main/"
+)
 CURRENT_VERSION = 1.0
 THIS_VERSION = 1.0
 
@@ -109,7 +111,8 @@ def build_post_upgrade():
         with open(".vscode/post_upgrade.sh", "w") as f:
             f.writelines(content)
 
-    print("Built post_upgrade.sh. Restart your workspace for it to take effect.")
+    print("Built post_upgrade.sh. Restart your workspace for it to take "
+          "effect.")
 
 
 def process(file, suffix):
@@ -168,8 +171,9 @@ def start_migration():
     print("the changes to take effect.\n")
 
     if push_and_recreate:
-        print(f"{COLOURS['red']}{COLOURS['bold']
-                                 }*** IMPORTANT INFORMATION ***{COLOURS['reset']}")
+        print(f"{COLOURS['red']}{COLOURS['bold']}"
+              f"*** IMPORTANT INFORMATION ***"
+              f"{COLOURS['reset']}")
         print("The files used to create this workspace have been updated")
         print("Please download any files that are in .gitignore and")
         print("recreate this workspace by clicking on the Gitpod button")

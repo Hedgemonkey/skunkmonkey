@@ -18,8 +18,11 @@ class Command(BaseCommand):
         ).filter(count__gt=1).exclude(user=None)
 
         self.stdout.write(
-            f"Found {
-                users_with_duplicates.count()} users with multiple comparison lists")
+            (
+                f"Found {users_with_duplicates.count()} users with multiple "
+                "comparison lists"
+            )
+        )
 
         # Process duplicates for each user
         for user_data in users_with_duplicates:

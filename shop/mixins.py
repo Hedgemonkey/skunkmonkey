@@ -40,8 +40,8 @@ class StaffRequiredMixin(UserPassesTestMixin):
 
 class SecureCheckoutMixin(LoginRequiredMixin):
     """
-    Mixin to ensure user is authenticated before accessing checkout-related views
-    and that they have an active cart.
+    Mixin to ensure user is authenticated before accessing checkout-related
+    views and that they have an active cart.
     """
 
     def dispatch(self, request, *args, **kwargs):

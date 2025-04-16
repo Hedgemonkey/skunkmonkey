@@ -19,14 +19,14 @@ class Address(models.Model):
         related_name='addresses',
     )
     address_line_1 = models.CharField(max_length=80)
-    address_line_2 = models.CharField(max_length=80, blank=True, default="")
+    address_line_2 = models.CharField(max_length=80, blank=True, default='')
     town_or_city = models.CharField(max_length=40)
-    county = models.CharField(max_length=80, blank=True, default="")
-    postcode = models.CharField(max_length=20, blank=True, default="")
+    county = models.CharField(max_length=80, blank=True, default='')
+    postcode = models.CharField(max_length=20, blank=True, default='')
     country = models.CharField(
         max_length=40, default='United Kingdom'
     )
-    phone_number = models.CharField(max_length=20, blank=True, default="")
+    phone_number = models.CharField(max_length=20, blank=True, default='')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -80,8 +80,8 @@ class UserProfile(models.Model):
         related_name='+',
     )
     # New fields
-    phone_number = models.CharField(max_length=20, blank=True, default="")
-    bio = models.TextField(max_length=500, blank=True, default="")
+    phone_number = models.CharField(max_length=20, blank=True, default='')
+    bio = models.TextField(blank=True, default='')
     birth_date = models.DateField(null=True, blank=True)
     profile_image = models.ImageField(
         upload_to='profile_images/',

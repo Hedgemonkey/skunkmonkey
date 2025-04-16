@@ -28,6 +28,7 @@ def product_list_ajax(request):
         category = request.GET.get('category')
         search = request.GET.get('search', '').lower()
         sort = request.GET.get('sort', 'name-asc')
+        # Removed unused items_only variable
         count_only = request.GET.get('count_only') == 'true'
 
         products = Product.objects.filter(is_active=True)

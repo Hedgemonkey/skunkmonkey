@@ -48,16 +48,29 @@ class OrderAdmin(admin.ModelAdmin):
             'fields': ('user', 'full_name', 'email', 'phone_number')
         }),
         ('Shipping Address', {
-            'fields': ('shipping_address1', 'shipping_address2', 'shipping_city',
-                       'shipping_state', 'shipping_zipcode', 'shipping_country')
+            'fields': ('shipping_address1',
+                       'shipping_address2',
+                       'shipping_city',
+                       'shipping_state',
+                       'shipping_zipcode',
+                       'shipping_country')
         }),
         ('Billing Address', {
-            'fields': ('billing_address1', 'billing_address2', 'billing_city',
-                       'billing_state', 'billing_zipcode', 'billing_country')
+            'fields': ('billing_address1',
+                       'billing_address2',
+                       'billing_city',
+                       'billing_state',
+                       'billing_zipcode',
+                       'billing_country')
         }),
         ('Order Details', {
-            'fields': ('order_number', 'status', 'payment_status', 'shipping_cost',
-                       'total_price', 'grand_total', 'notes')
+            'fields': ('order_number',
+                       'status',
+                       'payment_status',
+                       'shipping_cost',
+                       'total_price',
+                       'grand_total',
+                       'notes')
         }),
         ('Payment Information', {
             'fields': ('stripe_pid', 'is_paid', 'paid_at')

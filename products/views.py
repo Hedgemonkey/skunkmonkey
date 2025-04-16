@@ -297,7 +297,9 @@ def get_product_cards(request):
                 ],
                 'show_category_filter': True,
                 'item_type': 'products',
-                'selected_categories': category.split(',') if category and ',' in category else [category] if category else []
+                'selected_categories': (
+                    category.split(',') if category and ',' in category
+                    else [category] if category else [])
             })
 
             html = render_to_string(
@@ -410,7 +412,8 @@ def get_category_cards(request):
 
             # Choose the appropriate template based on whether we want just the
             # items
-            template = 'products/manage/category_cards_only.html' if items_only else 'products/manage/category_cards_partial.html'
+            template = 'products/manage/category_cards_only.html' if (
+                items_only) else 'products/manage/category_cards_partial.html'
 
             html = render_to_string(
                 template,
@@ -431,7 +434,8 @@ def get_category_cards(request):
         logger.error(f"Error in get_category_cards: {str(e)}")
         return JsonResponse({
             'error': f"Error fetching categories: {str(e)}",
-            'html': '<div class="alert alert-danger">Error loading categories. Please try again.</div>',
+            'html': '<div class="alert alert-danger">Error loading categories.\
+                 Please try again.</div>',
             'count': 0  # Return 0 count on error
         }, status=500)
 
@@ -445,7 +449,9 @@ def get_category_products(request, category_slug):
 
 @staff_member_required
 def get_product_count(request):
-    """API endpoint to get the count of unique products in selected categories."""
+    """
+    API endpoint to get the count of unique products in selected categories.
+    """
     try:
         # Get category IDs from request parameters
         category_param = request.GET.get('category', '')

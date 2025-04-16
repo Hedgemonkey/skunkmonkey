@@ -91,7 +91,13 @@ def apply_product_sorting(queryset, sort='name-asc'):
 
     Args:
         queryset: The Product queryset to sort
-        sort: Sort parameter (name-asc, name-desc, price-asc, price-desc, newest)
+        sort: Sort parameter (
+            name-asc,
+            name-desc,
+            price-asc,
+            price-desc,
+            newest
+        )
 
     Returns:
         Sorted queryset
