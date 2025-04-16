@@ -15,8 +15,7 @@ from .cart_views import (
     CartUpdateQuantityView as cart_update_quantity,
 )
 from .checkout_views import (
-    CheckoutSuccessView, CheckoutView, payment_cancel,
-    recover_payment_intent,
+    CheckoutSuccessView, CheckoutView, payment_cancel, recover_payment_intent,
 )
 # Import comparison views
 from .comparison_views import (
@@ -25,7 +24,7 @@ from .comparison_views import (
 # Import order history views
 from .order_views import (
     OrderCompleteView, OrderDetailView as OrderDetailViewFromOrders,
-    OrderHistoryView
+    OrderHistoryView,
 )
 from .payment_views import (
     CreatePaymentIntentView, cache_checkout_data, reset_payment_intent,
