@@ -15,15 +15,18 @@ from .cart_views import (
     CartUpdateQuantityView as cart_update_quantity,
 )
 from .checkout_views import (
-    CheckoutSuccessView, CheckoutView, payment_cancel, recover_payment_intent,
+    CheckoutSuccessView, CheckoutView, payment_cancel,
+    recover_payment_intent,
 )
 # Import comparison views
 from .comparison_views import (
     AddToComparisonView, ComparisonView, RemoveFromComparisonView,
 )
-# Import OrderDetailView from only one module to avoid redefinition
 # Import order history views
-from .order_views import OrderCompleteView, OrderDetailView, OrderHistoryView
+from .order_views import (
+    OrderCompleteView, OrderDetailView as OrderDetailViewFromOrders,
+    OrderHistoryView
+)
 from .payment_views import (
     CreatePaymentIntentView, cache_checkout_data, reset_payment_intent,
 )
@@ -32,14 +35,19 @@ from .product_views import (
 )
 from .wishlist_views import ToggleWishlistView, WishlistView, toggle_wishlist
 
+# Use OrderDetailView from order_views to avoid redefinition
+OrderDetailView = OrderDetailViewFromOrders
+
 # Expose all views at package level
 __all__ = [
     # Cart views
-    'CartDetailView', 'CartAddView', 'CartRemoveView', 'CartUpdateQuantityView',
-    'cart_detail', 'cart_add', 'cart_remove', 'cart_update_quantity',
+    'CartDetailView', 'CartAddView', 'CartRemoveView',
+    'CartUpdateQuantityView', 'cart_detail', 'cart_add',
+    'cart_remove', 'cart_update_quantity',
 
     # Product views
-    'ProductListView', 'ProductDetailView', 'ProductSearchView', 'product_list_ajax',
+    'ProductListView', 'ProductDetailView',
+    'ProductSearchView', 'product_list_ajax',
 
     # Payment views
     'CreatePaymentIntentView', 'cache_checkout_data', 'reset_payment_intent',
