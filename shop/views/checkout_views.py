@@ -43,9 +43,8 @@ class CheckoutView(CartAccessMixin, View):
             return redirect('shop:cart')
 
         logger.debug(
-            f"Cart contains {
-                cart.items.count()} items with total price {
-                cart.total_price}")
+            f"Cart contains {cart.items.count()} \
+                items with total price {cart.total_price}")
 
         # Get Stripe publishable key from utils
         stripe_public_key = get_stripe_key('publishable')
@@ -66,10 +65,8 @@ class CheckoutView(CartAccessMixin, View):
 
             if error:
                 logger.error(f"Error creating payment intent: {error}")
-                messages.error(
-                    request,
-                    f"Payment error: {error}. Please try again."
-                )
+                messages.error(request, f"Payment error: {
+                               error}. Please try again.")
             else:
                 # Store the new client secret and cart signature
                 store_stripe_session_data(request, cart, client_secret)
@@ -149,8 +146,8 @@ class CheckoutView(CartAccessMixin, View):
         # Get client_secret from POST or session
         client_secret = request.POST.get('client_secret')
         if client_secret:
-            logger.debug(f"Received client_secret from POST: {
-                         client_secret[:10]}...")
+            logger.debug(
+                f"Received client_secret from POST: {client_secret[:10]}...")
         else:
             logger.debug("No client_secret in POST data, checking session")
             client_secret = request.session.get('client_secret')
@@ -169,14 +166,14 @@ class CheckoutView(CartAccessMixin, View):
                 logger.error(f"Error creating new payment intent: {error}")
                 messages.error(
                     request,
-                    f"Payment error: {error}. Please try again."
-                )
+                    f"Payment error: {error}. Please try again.")
                 return redirect('shop:checkout')
 
             # Store the new client secret and cart signature
             store_stripe_session_data(request, cart, client_secret)
-            logger.info(f"Created new payment intent, client_secret: {
-                        client_secret[:10]}...")
+            logger.info(
+                f"Created new payment intent, client_secret: \
+                    {client_secret[:10]}...")
 
         # At this point, we should have a client_secret
         if not client_secret:
@@ -215,17 +212,20 @@ class CheckoutView(CartAccessMixin, View):
                             'succeeded']
                         if payment_intent.status not in valid_states:
                             logger.warning(
-                                f"Payment intent {pid} is in an invalid state: {
-                                    payment_intent.status}")
+                                f"Payment intent {pid} is in an invalid state:\
+                                 {payment_intent.status}")
                             # Create a new payment intent
                             client_secret, error = create_payment_intent(
                                 request)
 
                             if error:
                                 logger.error(
-                                    f"Error creating new payment intent: {error}")
+                                    f"Error creating new payment intent: \
+                                        {error}")
                                 messages.error(
-                                    request, f"Payment error: {error}. Please try again.")
+                                    request,
+                                    f"Payment error: {error}. \
+                                        Please try again.")
                                 return redirect('shop:checkout')
 
                             # Update the pid with the new payment intent ID
@@ -234,7 +234,8 @@ class CheckoutView(CartAccessMixin, View):
                                 f"Created new payment intent, new pid: {pid}")
                     else:
                         logger.warning(
-                            "Could not verify payment intent - Stripe API key not available")
+                            "Could not verify payment intent - \
+                                Stripe API key not available")
                 except Exception as e:
                     logger.warning(
                         f"Error verifying payment intent {pid}: {e}")
@@ -243,15 +244,18 @@ class CheckoutView(CartAccessMixin, View):
 
                     if error:
                         logger.error(
-                            f"Error creating new payment intent after verification failure: {error}")
+                            f"Error creating new payment intent after \
+                                verification failure: {error}")
                         messages.error(
-                            request, f"Payment error: {error}. Please try again.")
+                            request,
+                            f"Payment error: {error}. Please try again.")
                         return redirect('shop:checkout')
 
                     # Update the pid with the new payment intent ID
                     pid = client_secret.split('_secret')[0]
                     logger.info(
-                        f"Created new payment intent after verification failure, new pid: {pid}")
+                        f"Created new payment intent after verification \
+                            failure, new pid: {pid}")
 
                 # Create the order
                 logger.info("Creating order record in database")
@@ -263,7 +267,7 @@ class CheckoutView(CartAccessMixin, View):
                 order.original_cart = json.dumps(
                     cart.to_dict() if hasattr(cart, 'to_dict') else {})
                 order.total_price = cart.total_price
-                order.grand_total = cart.total_price  # Add shipping cost if needed
+                order.grand_total = cart.total_price
 
                 # Store whether billing address is same as shipping
                 order.billing_same_as_shipping = billing_same_as_shipping
@@ -303,7 +307,9 @@ class CheckoutView(CartAccessMixin, View):
                                 item.product.name}: {item_creation_exception}")
                         order.delete()  # Remove incomplete order
                         messages.error(
-                            request, "There was an error processing your order. Please try again.")
+                            request,
+                            "There was an error processing your order. \
+                                Please try again.")
                         return redirect('shop:checkout')
 
                 # Clear the cart
@@ -321,7 +327,9 @@ class CheckoutView(CartAccessMixin, View):
             except Exception as e:
                 logger.error(f"Payment processing error: {e}")
                 messages.error(
-                    request, "There was an error processing your payment. Please try again.")
+                    request,
+                    "There was an error processing your payment. \
+                        Please try again.")
                 return redirect('shop:checkout')
         else:
             logger.warning(
@@ -332,7 +340,7 @@ class CheckoutView(CartAccessMixin, View):
                 'cart': cart,
                 'form': form,
                 'stripe_public_key': stripe_public_key,
-                'client_secret': client_secret,  # Use the client_secret we just verified/created
+                'client_secret': client_secret,
                 'djstripe_webhook_url': '/stripe/webhook/'
             }
             return render(request, self.template_name, context)
@@ -344,7 +352,7 @@ class CheckoutSuccessView(TemplateView):
     Takes order_id as URL parameter
     Shows different information depending on payment status
     """
-    template_name = 'shop/checkout_success.html'  # Use the checkout_success.html template
+    template_name = 'shop/checkout_success.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -366,7 +374,8 @@ class CheckoutSuccessView(TemplateView):
                         order.order_number}")
             except Order.DoesNotExist:
                 logger.warning(
-                    f"Order with ID {order_id} not found for checkout success page")
+                    f"Order with ID {order_id} \
+                        not found for checkout success page")
                 messages.error(self.request,
                                "The requested order could not be found.")
         else:
@@ -414,7 +423,8 @@ def recover_payment_intent(request, order_id=None):
                 logger.info(f"Deleting incomplete order {order.order_number}")
                 order.delete()
                 messages.info(
-                    request, "Your previous incomplete order has been removed.")
+                    request,
+                    "Your previous incomplete order has been removed.")
         except Order.DoesNotExist:
             logger.warning(f"Order with ID {order_id} not found for recovery")
 
@@ -425,7 +435,8 @@ def recover_payment_intent(request, order_id=None):
 
 def reset_payment_intent(request):
     """
-    Reset the payment intent by removing it from session and creating a fresh one
+    Reset the payment intent by removing it from session and
+    creating a fresh one
     This is useful when the payment process needs to be restarted
     """
     logger.info("Reset payment intent requested")
@@ -436,7 +447,8 @@ def reset_payment_intent(request):
     # Redirect to checkout to create a new payment intent
     messages.info(
         request,
-        "Your payment session has been refreshed. You can now proceed with checkout.")
+        "Your payment session has been refreshed. You can now proceed with \
+            checkout.")
     return redirect('shop:checkout')
 
 

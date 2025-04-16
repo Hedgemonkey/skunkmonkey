@@ -44,14 +44,16 @@ class CreatePaymentIntentView(View):
             if not stripe_api_key:
                 logger.error("No Stripe API key found")
                 return JsonResponse(
-                    {'error': 'Stripe API key is not configured correctly'}, status=500)
+                    {'error': 'Stripe API key is not configured correctly'},
+                    status=500)
 
             # Set the API key for this request
             stripe.api_key = stripe_api_key
         except Exception as e:
             logger.error(f"Error getting Stripe API key: {e}")
             return JsonResponse(
-                {'error': 'Payment system configuration error'}, status=500)
+                {'error': 'Payment system configuration error'},
+                status=500)
 
         try:
             # Create a payment intent with the order amount and currency
@@ -64,7 +66,10 @@ class CreatePaymentIntentView(View):
 
             # Create metadata about the cart for the payment intent
             metadata = {
-                'username': request.user.username if request.user.is_authenticated else 'AnonymousUser',
+                'username': (
+                    request.user.username if
+                    request.user.is_authenticated else 'AnonymousUser'
+                ),
                 'cart_items': json.dumps(self.get_cart_data(cart)),
                 # Add timestamp to ensure freshness
                 'timestamp': str(timestamp),
@@ -86,7 +91,8 @@ class CreatePaymentIntentView(View):
             logger.info(
                 f"Created payment intent {
                     intent.id} for {
-                    request.user.username if request.user.is_authenticated else 'AnonymousUser'}")
+                    (request.user.username if request.user.is_authenticated
+                     else 'AnonymousUser')}")
 
             return JsonResponse({
                 'clientSecret': intent.client_secret,
@@ -139,11 +145,8 @@ class CreatePaymentIntentView(View):
 
             if api_key and api_key.secret:
                 logger.debug(
-                    f"Using API key from database: {
-                        getattr(
-                            api_key,
-                            'name',
-                            'unknown')}")
+                    f"Using API key from database: "
+                    f"{getattr(api_key, 'name', 'unknown')}")
                 return api_key.secret
         except Exception as e:
             logger.error(f"Error retrieving API key from database: {e}")
@@ -217,7 +220,8 @@ def cache_checkout_data(request):
         if not stripe.api_key:
             logger.error("No Stripe API key available")
             return JsonResponse(
-                {'error': 'Stripe API key is not configured correctly'}, status=500)
+                {'error': 'Stripe API key is not configured correctly'},
+                status=500)
 
         # Extract cart data
         cart_data = {}
@@ -240,7 +244,9 @@ def cache_checkout_data(request):
                 stripe.PaymentIntent.modify(pid, metadata={
                     'cart': json.dumps(cart_data),
                     'save_info': save_info,
-                    'username': request.user.username if request.user.is_authenticated else 'AnonymousUser',
+                    'username': (request.user.username if
+                                 request.user.is_authenticated else
+                                 'AnonymousUser'),
                     'timestamp_modified': str(int(time.time())),
                 })
 
@@ -252,7 +258,8 @@ def cache_checkout_data(request):
                     logger.warning(f"Payment intent in unexpected state: {e}")
                     return JsonResponse({
                         'error': 'payment_intent_unexpected_state',
-                        'message': 'The payment session has expired. Please refresh the page to continue.'
+                        'message': 'The payment session has expired. Please \
+                            refresh the page to continue.'
                     }, status=409)
                 else:
                     raise e
@@ -270,8 +277,8 @@ def cache_checkout_data(request):
 
 def reset_payment_intent(request):
     """
-    Reset the payment intent by removing it from session and creating a fresh one
-    This is useful when the payment process needs to be restarted
+    Reset the payment intent by removing it from session and creating a
+    fresh one This is useful when the payment process needs to be restarted
     """
     logger.info("Reset payment intent requested")
 
@@ -321,7 +328,8 @@ def reset_payment_intent(request):
 
         # Create metadata about the cart for the payment intent
         metadata = {
-            'username': request.user.username if request.user.is_authenticated else 'AnonymousUser',
+            'username': (request.user.username if
+                         request.user.is_authenticated else 'AnonymousUser'),
             'cart_items': json.dumps(create_payment_view.get_cart_data(cart)),
             'timestamp': str(timestamp),  # Add timestamp to ensure freshness
             # Add ISO timestamp for better tracking
@@ -344,11 +352,13 @@ def reset_payment_intent(request):
         logger.info(
             f"Created new payment intent {
                 intent.id} after reset for {
-                request.user.username if request.user.is_authenticated else 'AnonymousUser'}")
+                (request.user.username if request.user.is_authenticated
+                 else 'AnonymousUser')}")
 
         messages.success(
             request,
-            "Your payment session has been refreshed. You can now proceed with checkout.")
+            "Your payment session has been refreshed. You can now proceed with\
+                 checkout.")
         return redirect('shop:checkout')
 
     except stripe.error.StripeError as e:
@@ -405,7 +415,9 @@ def create_new_payment_intent(request):
 
         # Create metadata about the cart for the payment intent
         metadata = {
-            'username': request.user.username if request.user.is_authenticated else 'AnonymousUser',
+            'username': (request.user.username
+                         if request.user.is_authenticated
+                         else 'AnonymousUser'),
             'cart_items': json.dumps(
                 create_payment_view.get_cart_data(cart)),
             'timestamp': str(timestamp),
@@ -425,9 +437,9 @@ def create_new_payment_intent(request):
         # Store the new client secret in the session
         request.session['client_secret'] = intent.client_secret
         logger.info(
-            f"Created new payment intent {
-                intent.id} for {
-                request.user.username if request.user.is_authenticated else 'AnonymousUser'}")
+            f"Created new payment intent {intent.id} for "
+            f"{(request.user.username if request.user.is_authenticated
+                else 'AnonymousUser')}")
 
         return intent.client_secret, None
 

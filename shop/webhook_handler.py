@@ -55,26 +55,25 @@ class StripeWH_Handler:
         payment_method = event.data.object
         logger.info(f"Payment method attached: {payment_method.id}")
         logger.debug(
-            f"Payment method details: type={
-                payment_method.type}, customer={
-                getattr(
-                    payment_method,
-                    'customer',
-                    'None')}")
+            f"Payment method details: type={payment_method.type}, "
+            f"customer={getattr(payment_method, 'customer', 'None')}")
 
         # Check if this payment method is attached to a customer
         customer_id = getattr(payment_method, 'customer', None)
         if customer_id:
-            # In a real implementation, you'd store this payment method in your database
-            # associated with the user who matches the Stripe customer ID
+            # In a real implementation, you'd store this payment method in
+            # your database associated with the user who matches the
+            # Stripe customer ID
             logger.info(
-                f"Payment method {
-                    payment_method.id} attached to customer {customer_id}")
+                f"Payment method {payment_method.id} attached to "
+                f"customer {customer_id}")
 
-            # You could also tag this payment method as the default for the customer
-            # if user requested to save their payment information
+            # You could also tag this payment method as the
+            # default for the customer if user requested to save
+            # their payment information
             try:
-                # Example: Update customer to set this payment method as default
+                # Example: Update customer to set
+                # this payment method as default
                 # stripe.Customer.modify(
                 #    customer_id,
                 #    invoice_settings={
@@ -82,40 +81,37 @@ class StripeWH_Handler:
                 #    }
                 # )
                 logger.debug(
-                    f"Could set payment method {
-                        payment_method.id} as default for customer {customer_id}")
+                    f"Could set payment method {payment_method.id} as default "
+                    f"for customer {customer_id}")
             except Exception as e:
                 logger.error(f"Error setting default payment method: {e}")
 
         return HttpResponse(
-            content=f'Webhook received: {
-                event.type} | SUCCESS: Payment method attached',
+            content=f'Webhook received: {event.type} | '
+                    f'SUCCESS: Payment method attached',
             status=200)
 
     @transaction.atomic
     def handle_payment_intent_succeeded(self, event):
         """
         Handle the payment_intent.succeeded webhook from Stripe
-        Enhanced to support Payment Element and comprehensive billing information
+        Enhanced to support Payment Element and comprehensive
+        billing information
         """
         intent = event.data.object
         pid = intent.id
         logger.info(f"Payment intent succeeded webhook received for {pid}")
         logger.debug(
-            f"Intent amount: {
-                intent.amount}, currency: {
-                intent.currency}, status: {
-                intent.status}")
+            f"Intent amount: {intent.amount}, currency: {intent.currency}, "
+            f"status: {intent.status}")
 
         # Extract metadata
         metadata = intent.metadata
         logger.debug(
-            f"Intent metadata: {
-                json.dumps(
-                    metadata,
-                    indent=2) if isinstance(
-                    metadata,
-                    dict) else str(metadata)}")
+            f"Intent metadata: "
+            f"{json.dumps(metadata, indent=2) if isinstance(metadata, dict)
+               else str(metadata)}"
+        )
 
         # Get username from metadata
         username = metadata.get('username', 'AnonymousUser')
@@ -131,8 +127,8 @@ class StripeWH_Handler:
         logger.debug(f"Billing same as shipping: {billing_same_as_shipping}")
 
         try:
-            # Try to get the order from the database - use filter().first() instead of get()
-            # to avoid MultipleObjectsReturned error
+            # Try to get the order from the database - use filter().first()
+            # instead of get() to avoid MultipleObjectsReturned error
             order = Order.objects.filter(stripe_pid=pid).first()
 
             if order:
@@ -220,7 +216,8 @@ class StripeWH_Handler:
 
                 if not stripe_api_key:
                     logger.error(
-                        "Cannot retrieve payment details - no Stripe API key available")
+                        "Cannot retrieve payment details - no Stripe API key \
+                            available")
                     return HttpResponse(
                         content=f"Webhook received: {
                             event.type} | ERROR: No Stripe API key available",
@@ -270,7 +267,8 @@ class StripeWH_Handler:
                         payment_method, 'billing_details'):
                     billing_details = payment_method.billing_details
                     logger.debug("Got billing details from payment method")
-                elif hasattr(payment_intent, 'charges') and payment_intent.charges.data:
+                elif hasattr(payment_intent, 'charges') and (
+                        payment_intent.charges.data):
                     # If charges are available, use them
                     charge = payment_intent.charges.data[0]
                     if hasattr(charge, 'billing_details'):
@@ -278,7 +276,8 @@ class StripeWH_Handler:
                         logger.debug(
                             f"Got billing details from charge: {
                                 charge.id}")
-                elif hasattr(payment_intent, 'customer') and payment_intent.customer:
+                elif hasattr(payment_intent, 'customer') and (
+                        payment_intent.customer):
                     # Try to get from customer
                     try:
                         customer = stripe.Customer.retrieve(
@@ -306,9 +305,11 @@ class StripeWH_Handler:
                 def get_address_component(details, component, default=''):
                     if isinstance(
                             details,
-                            dict) and 'address' in details and component in details['address']:
+                            dict) and 'address' in details and component in (
+                                details['address']):
                         return details['address'][component]
-                    elif hasattr(details, 'address') and hasattr(details.address, component):
+                    elif hasattr(details, 'address') and (
+                            hasattr(details.address, component)):
                         return getattr(details.address, component)
                     return default
 
@@ -329,16 +330,19 @@ class StripeWH_Handler:
                         payment_method_type = self.get_payment_method_type(
                             payment_intent)
                         if payment_method_type:
-                            existing_order.payment_method_type = payment_method_type
+                            existing_order.payment_method_type = (
+                                payment_method_type)
 
                         # Update billing information
                         self.update_billing_information(
-                            existing_order, payment_intent, billing_same_as_shipping)
+                            existing_order,
+                            payment_intent,
+                            billing_same_as_shipping)
 
                         existing_order.save()
                         logger.debug(
-                            f"Existing order {
-                                existing_order.order_number} updated to paid status")
+                            f"Existing order {existing_order.order_number} \
+                                    updated to paid status")
 
                     # Send confirmation email
                     self._send_confirmation_email(existing_order)
@@ -357,7 +361,8 @@ class StripeWH_Handler:
                     full_name = shipping_details['name']
                 elif hasattr(shipping_details, 'name'):
                     full_name = shipping_details.name
-                elif isinstance(billing_details, dict) and 'name' in billing_details:
+                elif isinstance(billing_details, dict) and (
+                        'name' in billing_details):
                     full_name = billing_details['name']
                 elif hasattr(billing_details, 'name'):
                     full_name = billing_details.name
@@ -379,7 +384,8 @@ class StripeWH_Handler:
                     phone = shipping_details['phone']
                 elif hasattr(shipping_details, 'phone'):
                     phone = shipping_details.phone
-                elif isinstance(billing_details, dict) and 'phone' in billing_details:
+                elif isinstance(billing_details, dict) and (
+                        'phone' in billing_details):
                     phone = billing_details['phone']
                 elif hasattr(billing_details, 'phone'):
                     phone = billing_details.phone
@@ -484,7 +490,8 @@ class StripeWH_Handler:
                                 logger.error(
                                     f"Product with ID {item_id} not found")
                                 items_failed += 1
-                    elif 'items' in cart_data and isinstance(cart_data['items'], list):
+                    elif 'items' in cart_data and (
+                            isinstance(cart_data['items'], list)):
                         # Format: {'items': [{product_id: x, quantity: y}]}
                         for item_data in cart_data['items']:
                             try:
@@ -512,7 +519,8 @@ class StripeWH_Handler:
                                     # Decrease product stock
                                     if hasattr(product, 'stock_quantity'):
                                         product.stock_quantity = max(
-                                            0, product.stock_quantity - quantity)
+                                            0,
+                                            product.stock_quantity - quantity)
                                         product.save()
                                         logger.debug(
                                             f"Updated stock for {
@@ -536,11 +544,6 @@ class StripeWH_Handler:
                             f"Would save payment method {
                                 payment_method.id} for user {
                                 user.username}")
-
-                        # Example implementation:
-                        # user_profile = UserProfile.objects.get(user=user)
-                        # user_profile.stripe_customer_id = payment_intent.customer
-                        # user_profile.save()
                     except Exception as e:
                         logger.error(f"Error saving payment info: {e}")
 
@@ -594,19 +597,13 @@ class StripeWH_Handler:
 
         if error:
             logger.debug(
-                f"Payment error details: type={
-                    getattr(
-                        error,
-                        'type',
-                        'unknown')}, " f"code={
-                    getattr(
-                        error,
-                        'code',
-                        'unknown')}")
+                f"Payment error details: type="
+                f"{getattr(error, 'type', 'unknown')}, "
+                f"code={getattr(error, 'code', 'unknown')}")
 
         return HttpResponse(
-            content=f'Webhook received: {
-                event.type} | Payment Failed: {error_message}',
+            content=(f'Webhook received: {event.type} | '
+                     f'Payment Failed: {error_message}'),
             status=200)
 
     def get_payment_method_type(self, payment_intent):
@@ -622,7 +619,8 @@ class StripeWH_Handler:
         # Check if payment method is directly available on the intent
         if hasattr(
                 payment_intent,
-                'payment_method_types') and payment_intent.payment_method_types:
+                'payment_method_types') and (
+                    payment_intent.payment_method_types):
             return payment_intent.payment_method_types[0]
 
         # Try to get from the payment method
@@ -685,7 +683,8 @@ class StripeWH_Handler:
         Args:
             order: The Order instance to update
             payment_intent: The Stripe payment intent object
-            billing_same_as_shipping: Whether billing address is same as shipping
+            billing_same_as_shipping: Whether billing address is
+            same as shipping
         """
         # If billing is same as shipping, use shipping address
         if billing_same_as_shipping:

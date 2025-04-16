@@ -81,7 +81,9 @@ def get_stripe_key(key_type='secret'):
 
     # Final fallback for development
     if settings.DEBUG:
-        fallback_key = 'sk_test_your_development_key' if key_type == 'secret' else 'pk_test_your_development_key'
+        fallback_key = ('sk_test_your_development_key'
+                        if key_type == 'secret'
+                        else 'pk_test_your_development_key')
         logger.warning(f"Using development fallback for Stripe {key_type} key")
         return fallback_key
 
@@ -140,7 +142,9 @@ def create_payment_intent(request):
 
         # Create metadata about the cart for the payment intent
         metadata = {
-            'username': request.user.username if request.user.is_authenticated else 'AnonymousUser',
+            'username': (
+                request.user.username if request.user.is_authenticated
+                else 'AnonymousUser'),
             'cart_items': json.dumps(
                 cart_to_dict(cart)),
             'timestamp': str(timestamp),
@@ -162,7 +166,8 @@ def create_payment_intent(request):
         logger.info(
             f"Created new payment intent {
                 intent.id} for {
-                request.user.username if request.user.is_authenticated else 'AnonymousUser'}")
+                (request.user.username if request.user.is_authenticated
+                 else 'AnonymousUser')}")
 
         return intent.client_secret, None
 

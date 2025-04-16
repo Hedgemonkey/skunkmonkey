@@ -33,8 +33,13 @@ class OrderHistoryView(LoginRequiredMixin, ListView):
             order_items = OrderItem.objects.select_related('product')
 
             # Prefetch related items with the optimized queryset
-            return Order.objects.filter(user=self.request.user).prefetch_related(
-                Prefetch('items', queryset=order_items)).order_by('-created_at')
+            return (
+                Order.objects.filter(user=self.request.user)
+                .prefetch_related(
+                    Prefetch('items', queryset=order_items)
+                )
+                .order_by('-created_at')
+            )
         except Exception as e:
             ErrorHandler.handle_exception(
                 self.request, e, "retrieving order history")
@@ -156,7 +161,8 @@ class OrderCompleteView(DetailView):
                     return order
 
             # Anonymous users can only view orders in their session
-            elif 'order_id' in self.request.session and str(self.request.session['order_id']) == str(order.id):
+            elif 'order_id' in self.request.session and (
+                    str(self.request.session['order_id']) == str(order.id)):
                 return order
 
             # No permission, raise 404
@@ -186,7 +192,8 @@ class OrderCompleteView(DetailView):
             context['items'] = order.items.all()
 
             # If viewing from session, clear the order from session
-            if not self.request.user.is_authenticated and 'order_id' in self.request.session:
+            if not self.request.user.is_authenticated and (
+                    'order_id' in self.request.session):
                 if str(self.request.session['order_id']) == str(order.id):
                     del self.request.session['order_id']
 

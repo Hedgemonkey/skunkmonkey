@@ -69,14 +69,14 @@ class CheckoutDebugMiddleware(MiddlewareMixin):
             from django.conf import settings
             logger.error(
                 f"Stripe public key present: {
-                    'Yes' if hasattr(
-                        settings,
-                        'STRIPE_PUBLISHABLE_KEY') and settings.STRIPE_PUBLISHABLE_KEY else 'No'}")
+                    'Yes' if (
+                        hasattr(settings, 'STRIPE_PUBLISHABLE_KEY')
+                        and settings.STRIPE_PUBLISHABLE_KEY) else 'No'}")
             logger.error(
                 f"Stripe secret key present: {
-                    'Yes' if hasattr(
-                        settings,
-                        'STRIPE_SECRET_KEY') and settings.STRIPE_SECRET_KEY else 'No'}")
+                    'Yes' if (
+                        hasattr(settings, 'STRIPE_SECRET_KEY')
+                        and settings.STRIPE_SECRET_KEY) else 'No'}")
 
             # Log session information
             logger.error(f"Session ID: {request.session.session_key}")
@@ -136,8 +136,9 @@ class ComparisonMiddleware:
 
                     # If there are duplicates, log it
                     if comparison_lists.count() > 1:
-                        logger.warning(f"Multiple comparison lists found for session {
-                                       session_id}. Using most recent.")
+                        logger.warning(
+                            f"Multiple comparison lists found for session "
+                            f"{session_id}. Using most recent.")
                 else:
                     # Create a new list if none exists for this session
                     comparison_list = ComparisonList.objects.create(
