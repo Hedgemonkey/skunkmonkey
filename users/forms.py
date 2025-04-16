@@ -79,6 +79,23 @@ class UserForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
+        self.helper.form_show_labels = True
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-lg-3'
+        self.helper.field_class = 'col-lg-9'
+        self.helper.wrapper_class = 'row mb-2'
+
+        # Set defaults for all fields
+        for fieldname in self.fields:
+            self.fields[fieldname].widget.attrs.update({
+                'class': 'form-control',
+            })
+
+        # Properly implement the layout
+        self.helper.layout = Layout(
+            Field('first_name', wrapper_class='row mb-2'),
+            Field('last_name', wrapper_class='row mb-2'),
+        )
 
 
 class CustomLoginForm(LoginForm):
@@ -160,6 +177,29 @@ class ProfileForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
+        self.helper.form_show_labels = True
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-lg-3'
+        self.helper.field_class = 'col-lg-9'
+        self.helper.wrapper_class = 'row mb-2'
+
+        # Set defaults for all fields
+        for fieldname in self.fields:
+            self.fields[fieldname].widget.attrs.update({
+                'class': 'form-control',
+            })
+
+        # Use proper Layout with Field objects
+        self.helper.layout = Layout(
+            Field('phone_number', wrapper_class='row mb-2'),
+            Field('bio', wrapper_class='row mb-2'),
+            Field('birth_date', wrapper_class='row mb-2'),
+            Field('profile_image', wrapper_class='row mb-2'),
+            Field('notification_preference', wrapper_class='row mb-2'),
+            Field('receive_marketing_emails', wrapper_class='row mb-2'),
+            Field('theme_preference', wrapper_class='row mb-2'),
+        )
+
         self.fields['bio'].help_text = (
             "Tell us a little about yourself (max 500 characters)"
         )

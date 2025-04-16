@@ -27,9 +27,7 @@
                         <h5 class="mb-0">Contact Information</h5>
                     </div>
                     <div class="card-body">
-                        <div class="mb-3">
-                            {{ profile_form.phone_number|as_crispy_field }}
-                        </div>
+                        {{ profile_form.phone_number|as_crispy_field }}
                     </div>
                 </div>
 
@@ -39,21 +37,16 @@
                         <h5 class="mb-0">Profile Details</h5>
                     </div>
                     <div class="card-body">
-                        <div class="mb-3">
-                            {{ profile_form.bio|as_crispy_field }}
-                        </div>
-                        <div class="mb-3">
-                            {{ profile_form.birth_date|as_crispy_field }}
-                        </div>
+                        {{ profile_form.bio|as_crispy_field }}
+                        {{ profile_form.birth_date|as_crispy_field }}
 
                         <!-- Profile Image -->
-                        <div class="mb-3">
-                            <div class="row">
-                                <div class="col-md-8">
-                                    {{ profile_form.profile_image|as_crispy_field }}
-                                    <!-- Hidden input to store cropped image data -->
-                                    <input type="hidden" id="cropped-image-data" name="cropped_image_data">
-                                </div>
+                        <div class="row">
+                            <div class="col-md-8">
+                                {{ profile_form.profile_image|as_crispy_field }}
+                                <!-- Hidden input to store cropped image data -->
+                                <input type="hidden" id="cropped-image-data" name="cropped_image_data">
+                            </div>
                                 <div class="col-md-4">
                                     {% if profile.profile_image %}
                                         <div class="current-profile-image text-center">
@@ -78,15 +71,9 @@
                         <h5 class="mb-0">Your Preferences</h5>
                     </div>
                     <div class="card-body">
-                        <div class="mb-3">
-                            {{ profile_form.notification_preference|as_crispy_field }}
-                        </div>
-                        <div class="mb-3">
-                            {{ profile_form.receive_marketing_emails|as_crispy_field }}
-                        </div>
-                        <div class="mb-3">
-                            {{ profile_form.theme_preference|as_crispy_field }}
-                        </div>
+                        {{ profile_form.notification_preference|as_crispy_field }}
+                        {{ profile_form.receive_marketing_emails|as_crispy_field }}
+                        {{ profile_form.theme_preference|as_crispy_field }}
                     </div>
                 </div>
 

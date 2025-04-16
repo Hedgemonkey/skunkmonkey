@@ -150,7 +150,7 @@ module.exports = {
         test: /\.(woff|woff2|eot|ttf|otf|svg)$/i,
         type: 'asset/resource',
         generator: {
-           filename: 'assets/fonts/[name][ext]'
+           filename: 'assets/fonts/[name][ext][query]'
         }
       },
       {
@@ -173,6 +173,9 @@ module.exports = {
       'window.$': 'jquery',
       bootstrap: ['bootstrap/dist/js/bootstrap.bundle.js', 'default'],
       Cropper: 'cropperjs',
+      'window.Cropper': 'cropperjs',
+      ImageCropper: [path.resolve(__dirname, 'static/js/common/image_cropper.js'), 'default'],
+      'window.ImageCropper': [path.resolve(__dirname, 'static/js/common/image_cropper.js'), 'default']
     }),
     new RemoveCssJsFilesPlugin()
   ],
@@ -221,7 +224,11 @@ module.exports = {
       '@products': path.resolve(__dirname, 'products/static/js'),
       '@shop': path.resolve(__dirname, 'shop/static/js'),
       '@users': path.resolve(__dirname, 'users/static/users/js'),
-      '@home': path.resolve(__dirname, 'home/static/js')
+      '@home': path.resolve(__dirname, 'home/static/js'),
+      // Explicitly define the image_cropper path for direct imports
+      '@image_cropper': path.resolve(__dirname, 'static/js/common/image_cropper.js'),
+      // Add additional aliases to help resolve path issues
+      'static/js/common/image_cropper.js': path.resolve(__dirname, 'static/js/common/image_cropper.js')
     },
     extensions: ['.js', '.jsx']
   },

@@ -6,8 +6,8 @@
 
 import $ from 'jquery';
 import 'bootstrap';
-// Import ImageCropper from the common module
-import ImageCropper from '@core/common/image_cropper';
+// Import ImageCropper from the common module using alias
+import ImageCropper from '@image_cropper';
 
 console.log('Products cropper init loading...');
 

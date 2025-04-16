@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block page_header %}
     <div class="container header-container">
@@ -24,20 +25,87 @@
         <div class="col-12 col-lg-9">
             <h3 class="mb-4">Profile Dashboard</h3>
             <p>Welcome back, {{ user.get_full_name|default:user.username }}!</p>
-            <p>From your profile dashboard, you can manage your personal details, addresses, view your order history, and update your password.</p>
+            <p>
+                From your profile dashboard, you can manage your personal details, addresses,
+                view your order history, and update your password.
+            </p>
 
+            <!-- Personal Details Update Forms -->
             <div class="row mt-4">
-                <div class="col-md-6 mb-3">
-                    <div class="card">
+                <div class="col-12">
+                    <div class="card mb-4">
                         <div class="card-body">
-                            <h5 class="card-title"><i class="fas fa-user-edit me-2"></i>Personal Details</h5>
-                            <p class="card-text">Update your name and contact information.</p>
-                            <a href="{% url 'users:manage_details' %}" class="btn btn-outline-primary">Manage Details</a>
+                            <h5 class="card-title">
+                                <i class="fas fa-user-edit me-2"></i>Update Personal Details
+                            </h5>
+                            <form method="post" enctype="multipart/form-data"
+                                id="user-profile-form"
+                                class="needs-validation"
+                                role="form"
+                                novalidate
+                                >
+                                {% csrf_token %}
+                                {{ user_form.media }}
+                                {{ profile_form.media }}
+                                {% if user_form.non_field_errors %}
+                                    <div class="alert alert-danger" role="alert">
+                                        {{ user_form.non_field_errors }}
+                                    </div>
+                                {% endif %}
+                                {% if profile_form.non_field_errors %}
+                                    <div class="alert alert-danger" role="alert">
+                                        {{ profile_form.non_field_errors }}
+                                    </div>
+                                {% endif %}
+
+                                <!-- Render User Form -->
+                                <fieldset>
+                                    <legend class="h6 mb-3">Basic Information</legend>
+                                    <div class="mb-3">
+                                        {{ user_form.first_name|as_crispy_field }}
+                                    </div>
+                                    <div class="mb-3">
+                                        {{ user_form.last_name|as_crispy_field }}
+                                    </div>
+                                </fieldset>
+
+                                <!-- Render Profile Form -->
+                                <fieldset>
+                                    <legend class="h6 mt-4 mb-3">Profile Details</legend>
+                                    <div class="mb-3">
+                                        {{ profile_form.phone_number|as_crispy_field }}
+                                    </div>
+                                    <div class="mb-3">
+                                        {{ profile_form.bio|as_crispy_field }}
+                                    </div>
+                                    <div class="mb-3">
+                                        {{ profile_form.birth_date|as_crispy_field }}
+                                    </div>
+                                    <div class="mb-3">
+                                        {{ profile_form.profile_image|as_crispy_field }}
+                                    </div>
+                                    <div class="mb-3">
+                                        {{ profile_form.notification_preference|as_crispy_field }}
+                                    </div>
+                                    <div class="mb-3">
+                                        {{ profile_form.receive_marketing_emails|as_crispy_field }}
+                                    </div>
+                                    <div class="mb-3">
+                                        {{ profile_form.theme_preference|as_crispy_field }}
+                                    </div>
+                                </fieldset>
+
+                                <button type="submit" class="btn btn-primary mt-3" id="submit-profile-update" title="Save profile details">
+                                    Save Changes
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
-                 <div class="col-md-6 mb-3">
-                    <div class="card">
+
+                <!-- Other dashboard features -->
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100">
                         <div class="card-body">
                             <h5 class="card-title"><i class="fas fa-map-marker-alt me-2"></i>Delivery Addresses</h5>
                             <p class="card-text">Manage your saved delivery addresses.</p>
@@ -46,7 +114,7 @@
                     </div>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <div class="card">
+                    <div class="card h-100">
                         <div class="card-body">
                             <h5 class="card-title"><i class="fas fa-history me-2"></i>Order History</h5>
                             <p class="card-text">View your past orders and their status.</p>
@@ -54,13 +122,13 @@
                         </div>
                     </div>
                 </div>
-                 <div class="col-md-6 mb-3">
-                    <div class="card">
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100">
                         <div class="card-body">
                             <h5 class="card-title"><i class="fas fa-key me-2"></i>Security</h5>
                             <p class="card-text">Change your password or manage email addresses.</p>
-                             <a href="{% url 'users:manage_password' %}" class="btn btn-outline-secondary btn-sm me-2">Change Password</a>
-                             <a href="{% url 'users:manage_email' %}" class="btn btn-outline-secondary btn-sm">Manage Email</a>
+                            <a href="{% url 'users:manage_password' %}" class="btn btn-outline-secondary btn-sm me-2">Change Password</a>
+                            <a href="{% url 'users:manage_email' %}" class="btn btn-outline-secondary btn-sm">Manage Email</a>
                         </div>
                     </div>
                 </div>

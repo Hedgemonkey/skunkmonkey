@@ -84,7 +84,24 @@ MIDDLEWARE = [
     'allauth.account.middleware.AccountMiddleware',
     'shop.middleware.ComparisonMiddleware',
     'shop.middleware.CartMiddleware',  # Add the shop cart middleware
+    'csp.middleware.CSPMiddleware',    # Add Content Security Policy middleware
 ]
+
+# Content Security Policy settings
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+SECURE_BROWSER_XSS_FILTER = True
+# Configure CSP settings
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'", "https://js.stripe.com")
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", "https://fonts.googleapis.com")
+CSP_IMG_SRC = ("'self'", "data:", "https://*.stripe.com")
+CSP_FONT_SRC = ("'self'", "data:", "https://fonts.gstatic.com", "https://use.fontawesome.com")
+CSP_CONNECT_SRC = ("'self'", "https://*.stripe.com")
+CSP_FRAME_SRC = ("'self'", "https://*.stripe.com")
+
+# Crispy Forms settings
+CSP_FRAME_ANCESTORS = ("'self'",)
 
 ROOT_URLCONF = 'skunkmonkey.urls'
 
@@ -112,6 +129,7 @@ TEMPLATES = [
 # Configure crispy_forms template pack
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
+# Crispy Forms
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 WSGI_APPLICATION = 'skunkmonkey.wsgi.application'
