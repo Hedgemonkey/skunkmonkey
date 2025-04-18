@@ -71,7 +71,20 @@ INSTALLED_APPS = [
     'shop',
     'djstripe',
     'django_countries',
+    'django_vite',
 ]
+
+DJANGO_VITE_ASSETS_PATH = BASE_DIR / 'static'
+DJANGO_VITE_DEV_MODE = True
+DJANGO_VITE_DEV_SERVER_URL = "http://hedgemonkey.ddns.net:5173/"
+DJANGO_VITE = {
+    "default": {
+        "dev_mode": True,
+        "dev_server_port": "5173",
+        "dev_server_host": "hedgemonkey.ddns.net",
+        "static_url_prefix": "",
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -93,11 +106,11 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 SECURE_BROWSER_XSS_FILTER = True
 # Configure CSP settings
 CSP_DEFAULT_SRC = ("'self'",)
-CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'", "https://js.stripe.com")
 CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", "https://fonts.googleapis.com")
-CSP_IMG_SRC = ("'self'", "data:", "https://*.stripe.com")
-CSP_FONT_SRC = ("'self'", "data:", "https://fonts.gstatic.com", "https://use.fontawesome.com")
-CSP_CONNECT_SRC = ("'self'", "https://*.stripe.com")
+CSP_IMG_SRC = ("'self'", "data:", "https://*.stripe.com", "https://source.unsplash.com")
+CSP_FONT_SRC = ("'self'", "data:", "https://fonts.gstatic.com", "https://use.fontawesome.com", "blob:")
+CSP_CONNECT_SRC = ("'self'", "https://*.stripe.com", "http://hedgemonkey.ddns.net:5173")
+CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'", "https://js.stripe.com", "http://hedgemonkey.ddns.net:5173")
 CSP_FRAME_SRC = ("'self'", "https://*.stripe.com")
 
 # Crispy Forms settings
