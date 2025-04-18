@@ -1,5 +1,9 @@
 {% extends "users/profile_base.html" %}
-{% load static %}
+{% load vite %}
+
+{% block postloadjs %}
+    {% vite_asset 'profile.js' %}
+{% endblock %}
 
 {% block profile_content %}
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -65,9 +69,4 @@
         window.deleteAddressUrlTemplate = "{% url 'users:delete_address' 0 %}".replace('0', '{address_id}');
         window.setDefaultAddressUrlTemplate = "{% url 'users:set_default_address' 0 %}".replace('0', '{address_id}');
     </script>
-{% endblock %}
-
-{% block postloadjs %}
-{{ block.super }}
-<script src="{% static 'users/js/profile.js' %}"></script> {# Ensure this path is correct #}
 {% endblock %}

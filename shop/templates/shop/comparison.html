@@ -5,7 +5,7 @@
 {% block title %}Product Comparison - SkunkMonkey Shop{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'bundles/css/shop/product-list.css' %}">
+    {% vite_asset 'shop/product-list.css' %}
 {% endblock %}
 
 {% block content %}
@@ -136,5 +136,5 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'bundles/js/shop/comparison-manager.js' %}"></script>
+    {% vite_asset 'shop/comparison-manager.js' %}
 {% endblock %}

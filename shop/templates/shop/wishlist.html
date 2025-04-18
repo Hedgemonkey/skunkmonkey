@@ -4,7 +4,7 @@
 {% block title %}Your Wishlist - SkunkMonkey{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'bundles/css/shop/wishlist.css' %}">
+    {% vite_asset 'shop/wishlist.css' %}
 {% endblock %}
 
 {% block header %}
@@ -89,10 +89,10 @@
 
 {% block postloadjs %}
     {{ block.super }}
-    <!-- Include the wishlist JS file -->
-    <script src="{% static 'bundles/js/shop/wishlist.js' %}"></script>
+    {% vite_asset 'shop/wishlist.js' %}
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'bundles/js/shop/wishlist-manager.js' %}"></script>
+    {% vite_asset 'shop/wishlist.js' %}
+    {% vite_asset 'shop/wishlist-manager.js' %}
 {% endblock %}

@@ -1,8 +1,6 @@
 {% extends "base.html" %}
-{% load static %}
-
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/checkout.css' %}">
+    {% vite_asset 'shop/checkout.css' %}
 {% endblock %}
 
 {% block title %}Order #{{ order.order_number }}{% endblock %}

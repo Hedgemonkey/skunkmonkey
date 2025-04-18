@@ -1,6 +1,6 @@
 {% extends "allauth/layouts/manage.html" %}
 {% load i18n %}
-{% load static %}
+{% load vite %}
 
 {% block title %}{% trans "SkunkMonkey - Account Management" %}{% endblock %}
 
@@ -46,10 +46,7 @@
 </div>
 {% endblock %}
 
-
-
-
 {% block postloadjs %}
     {{ block.super }}
-    <script src="{% static 'bundles/js/user/user_manage.js' %}"></script>
+    {% vite_asset 'profile.js' %}
 {% endblock postloadjs %}

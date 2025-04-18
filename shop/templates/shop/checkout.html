@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load vite %}
 {% load crispy_forms_tags %}
 
 {% block title %}Checkout - SkunkMonkey Shop{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'bundles/css/shop/checkout.css' %}">
+    {% vite_asset 'shop/checkout.css' %}
 {% endblock %}
 
 {% block header %}
@@ -151,11 +151,11 @@
 {% block postloadjs %}
     {{ block.super }}
     <script src="https://js.stripe.com/v3/"></script>
-    <script src="{% static 'bundles/js/shop/checkout.js' %}"></script>
+    {% vite_asset 'shop/checkout.js' %}
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'bundles/js/shop/checkout.js' %}"></script>
-    <script src="{% static 'bundles/js/shop/checkout-manager.js' %}"></script>
-    <script src="{% static 'bundles/js/shop/stripe-integration.js' %}"></script>
+    {% vite_asset 'shop/checkout.js' %}
+    {% vite_asset 'shop/checkout-manager.js' %}
+    {% vite_asset 'shop/stripe-integration.js' %}
 {% endblock %}

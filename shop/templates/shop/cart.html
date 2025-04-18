@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load vite %}
 
 {% block title %}Your Cart - SkunkMonkey Shop{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'bundles/css/shop/cart.css' %}">
+    {% vite_asset 'shop/cart.css' %}
 {% endblock %}
 
 {% block header %}
@@ -142,9 +142,9 @@
 
 {% block postloadjs %}
     {{ block.super }}
-    <script src="{% static 'bundles/js/shop/cart.js' %}"></script>
+    {% vite_asset 'shop/cart.js' %}
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'bundles/js/shop/cart-manager.js' %}"></script>
+    {% vite_asset 'shop/cart-manager.js' %}
 {% endblock %}

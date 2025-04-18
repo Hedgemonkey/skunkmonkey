@@ -1,4 +1,4 @@
-{% load static %}
+{% load django_vite %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,13 +15,13 @@
         <meta property="og:description" content="{% block og_description %}Premium CBD products with secure checkout and fast delivery{% endblock %}">
         <meta property="og:type" content="website">
         <meta property="og:url" content="{{ request.build_absolute_uri }}">
-        <meta property="og:image" content="{% static 'media/skunkmonkey_logo.jpg' %}">
+        <meta property="og:image" content="{{ MEDIA_URL }}skunkmonkey_logo.jpg">
 
         <!-- Twitter Card data -->
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:title" content="{% block twitter_title %}SkunkMonkey{% endblock %}">
         <meta name="twitter:description" content="{% block twitter_description %}Premium CBD products with secure checkout and fast delivery{% endblock %}">
-        <meta name="twitter:image" content="{% static 'media/skunkmonkey_logo.jpg' %}">
+        <meta name="twitter:image" content="{{ MEDIA_URL }}skunkmonkey_logo.jpg">
 
         <!-- Canonical link -->
         <link rel="canonical" href="{{ request.build_absolute_uri }}">
@@ -29,15 +29,15 @@
         <!-- This meta tag helps control iframe content -->
         <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'self' https://js.stripe.com">
     {% endblock %}
-        <title>{% block title %}SkunkMonkey{% endblock %}</title>
+    <title>{% block title %}SkunkMonkey{% endblock %}</title>
     {% block css %}
-        <link rel="stylesheet" href="{% static 'bundles/css/core/main.css' %}?v=6">
+        {% vite_hmr_client %}
+        {% vite_asset 'main' %}
+        <script>
+            console.log("Vite HMR Client URL:", document.querySelector('script[src*="vite/client"]')?.src);
+        </script>
     {% endblock %}
-
-    {% block extra_css %}
-        {# Template-specific CSS files can be included here #}
-    {% endblock %}
-
+    {% block extra_css %}{% endblock %}
     {% block messages-js %}
     <script>
         // This minimal inline script is acceptable as it simply transfers server-side data to JS
@@ -50,16 +50,10 @@
         {% endfor %}
     </script>
     {% endblock %}
-
 </head>
 <body>
-    {% block navbar %}
-        {% include 'includes/navbar.html' %}
-    {% endblock %}
-    <!-- Messages -->
-    {% block messages %}
-    {% endblock %}
-    <!-- Header -->
+    {% block navbar %}{% include 'includes/navbar.html' %}{% endblock %}
+    {% block messages %}{% endblock %}
     {% block header %}
         <header class="py-5 bg-image-full" style="background-image: url('https://source.unsplash.com/wfh8dDlNFOk/1600x900')">
             <div class="text-center my-5">
@@ -69,16 +63,8 @@
             </div>
         </header>
     {% endblock %}
-    <!-- Content section-->
-    {% block content %}
-    {% endblock %}
-
-    <!-- Toast container for notifications -->
-    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1050;">
-        <!-- Toasts will be dynamically added here -->
-    </div>
-
-    <!-- Footer-->
+    {% block content %}{% endblock %}
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1050;"></div>
     {% block footer %}
         <footer class="footer">
             <div class="container">
@@ -86,21 +72,8 @@
             </div>
         </footer>
     {% endblock %}
-
-    <!-- Main JavaScript bundle - at end of body for better performance -->
-    {% block js %}
-        <!-- Load vendors libraries (includes Bootstrap) -->
-        <script src="{% static 'bundles/js/vendors/libs.js' %}?v=5"></script>
-        <!-- Load main application JS -->
-        <script src="{% static 'bundles/js/core/main.js' %}?v=5"></script>
-        <!-- Load message handling -->
-        <script src="{% static 'bundles/js/core/messages.js' %}?v=5"></script>
-    {% endblock %}
-
-    {% block postloadjs %}
-    {% endblock %}
-
-    {% block extra_js %}
-    {% endblock %}
+    {% block js %}{% endblock %}
+    {% block postloadjs %}{% endblock %}
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% load static %}
+{% load vite %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'bundles/css/products/product-grid.css' %}?v=7">
+    {% vite_asset 'products/product-grid.css' %}
 {% endblock %}
 
 {% block content %}
@@ -157,5 +157,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'bundles/js/shop/product-grid.js' %}?v=6"></script>
+    {% vite_asset 'shop/product-grid.js' %}
 {% endblock %}

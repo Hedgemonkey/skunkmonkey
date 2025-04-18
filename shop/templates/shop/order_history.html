@@ -5,7 +5,7 @@
 {% block title %}Order History - SkunkMonkey Shop{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/shop/order-history.css' %}">
+    {% vite_asset 'shop/order-history.css' %}
 {% endblock %}
 
 {% block header %}

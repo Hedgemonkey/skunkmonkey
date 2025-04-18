@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load vite %}
 
 {% block title %}
     {% if current_category %}
@@ -12,8 +12,8 @@
 {% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'bundles/css/products/product-grid.css' %}?v=7">
-    <link rel="stylesheet" href="{% static 'bundles/css/shop/product-list.css' %}?v=6">
+    {% vite_asset 'products/product-grid.css' %}
+    {% vite_asset 'shop/product-list.css' %}
 {% endblock %}
 
 {% block header %}
