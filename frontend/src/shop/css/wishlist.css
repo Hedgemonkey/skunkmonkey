@@ -1,0 +1,243 @@
+/**
+ * Wishlist button styles
+ */
+
+/* Base wishlist button styles - INTENDED FOR ROUND OVERLAY BUTTONS */
+.add-to-wishlist-btn,
+.remove-wishlist-btn, /* Base class applies to both initially */
+.wishlist-btn,
+.btn-wishlist {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* Default to round properties */
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    padding: 0; /* Crucial for icon-only round button */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: none;
+    cursor: pointer;
+    z-index: 10;
+} /* Closing brace for base rule */
+
+/* Prevent rectangular buttons on wishlist page from getting round styles forcefully */
+/* Using corrected selector */
+.wishlist-page .card-footer .btn.remove-wishlist-btn {
+    /* This block just overrides specific base properties for the rectangular button */
+    width: auto !important;
+    height: auto !important;
+    border-radius: 0.25rem !important;
+    padding: 0.25rem 0.5rem !important; /* Match btn-sm if used */
+    /* Ensure other round-specific styles are overridden if necessary */
+    box-shadow: none !important;
+    border: 1px solid #dc3545 !important; /* Ensure border is set for rectangular */
+} /* Closing brace for exclusion override */
+
+
+/* Styling for non-wishlist items (add state - ROUND) */
+/* More specific selector using context */
+.product-top-right .add-to-wishlist-btn,
+.product-top-right .wishlist-btn:not(.active):not(.remove-wishlist-btn) {
+    background-color: rgba(255, 255, 255, 0.8);
+} /* Closing brace for round add state */
+
+/* Styling for wishlist items (remove state - ROUND) */
+/* HIGHLY SPECIFIC RULE for the ROUND button in the grid when active/remove */
+.product-top-right .remove-wishlist-btn,
+.product-top-right .wishlist-btn.active {
+    width: 35px !important; /* Enforce round dimensions */
+    height: 35px !important; /* Enforce round dimensions */
+    border-radius: 50% !important; /* Enforce round shape */
+    padding: 0 !important; /* Enforce NO padding */
+    background-color: #dc3545 !important; /* Red background */
+    border: none !important; /* Ensure no border overrides */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important; /* Keep original shadow */
+    transform: none !important; /* Reset any accidental transforms */
+    transition: all 0.3s ease !important; /* Keep transition */
+} /* <<< ENSURED THIS CLOSING BRACE IS PRESENT */
+
+
+/* Interactive hover effects (ROUND) */
+.product-top-right .wishlist-btn:hover,
+.product-top-right .add-to-wishlist-btn:hover,
+.product-top-right .remove-wishlist-btn:hover {
+    transform: scale(1.1) !important; /* Keep scale effect */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15) !important;
+} /* Closing brace for general round hover */
+
+/* Hover for ROUND add button */
+.product-top-right .add-to-wishlist-btn:hover,
+.product-top-right .wishlist-btn:not(.active):not(.remove-wishlist-btn):hover {
+     background-color: rgba(255, 255, 255, 1) !important; /* Whiter */
+} /* Closing brace for round add hover */
+
+/* Hover for ROUND remove button */
+.product-top-right .remove-wishlist-btn:hover,
+.product-top-right .wishlist-btn.active:hover {
+    background-color: #c82333 !important; /* Darker red */
+} /* Closing brace for round remove hover */
+
+/* Active state for click feedback (ROUND) */
+.product-top-right .wishlist-btn:active,
+.product-top-right .add-to-wishlist-btn:active,
+.product-top-right .remove-wishlist-btn:active {
+    transform: scale(0.9) !important; /* Keep shrink effect */
+} /* Closing brace for round active state */
+
+/* Icon base styles */
+.add-to-wishlist-btn i, .remove-wishlist-btn i, .wishlist-btn i, .btn-wishlist i {
+    transition: color 0.3s ease; /* Only transition color */
+    font-size: 18px; /* Base size */
+} /* Closing brace for icon base */
+
+/* Icon color for ADD state (ROUND) */
+.product-top-right .add-to-wishlist-btn i,
+.product-top-right .wishlist-btn:not(.active):not(.remove-wishlist-btn) i {
+    color: #6c757d;
+} /* Closing brace for round add icon color */
+
+/* Icon color for ADD state HOVER (ROUND) */
+.product-top-right .add-to-wishlist-btn:hover i,
+.product-top-right .wishlist-btn:not(.active):not(.remove-wishlist-btn):hover i {
+    color: #dc3545;
+} /* Closing brace for round add icon hover color */
+
+
+/* Ripple effect (ROUND) */
+.product-top-right .wishlist-btn::after,
+.product-top-right .add-to-wishlist-btn::after,
+.product-top-right .remove-wishlist-btn::after {
+    content: ''; position: absolute; width: 100%; height: 100%; border-radius: 50%; transform: scale(0); top: 0; left: 0; opacity: 0; transition: all 0.3s ease-out;
+} /* Closing brace for round ripple base */
+
+.product-top-right .add-to-wishlist-btn::after,
+.product-top-right .wishlist-btn:not(.active):not(.remove-wishlist-btn)::after { background: rgba(0, 0, 0, 0.1); } /* Closing brace for round add ripple color */
+
+.product-top-right .remove-wishlist-btn::after,
+.product-top-right .wishlist-btn.active::after { background: rgba(255, 255, 255, 0.3); } /* Closing brace for round remove ripple color */
+
+.product-top-right .wishlist-btn:active::after,
+.product-top-right .add-to-wishlist-btn:active::after,
+.product-top-right .remove-wishlist-btn:active::after { transform: scale(2); opacity: 0; transition: 0s; } /* Closing brace for round ripple active */
+
+
+/* Product top-right positioning (Container for ROUND buttons) */
+.product-top-right { position: absolute; top: 10px; right: 10px; z-index: 10; display: flex; flex-direction: column; gap: 8px; } /* Closing brace for positioning */
+
+/* Toast notification styles */
+.swal2-container { z-index: 9999 !important; }
+.swal2-toast { padding: 0.75rem 1.5rem !important; margin-top: 1rem !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important; font-family: inherit !important; opacity: 1 !important; visibility: visible !important; }
+.swal2-toast.swal2-icon-success { background-color: #d4edda !important; color: #155724 !important; }
+.swal2-toast.swal2-icon-error { background-color: #f8d7da !important; color: #721c24 !important; }
+.swal2-toast.swal2-icon-info { background-color: #d1ecf1 !important; color: #0c5460 !important; }
+.swal2-toast.swal2-icon-warning { background-color: #fff3cd !important; color: #856404 !important; }
+
+/* Focus state for accessibility */
+.wishlist-btn:focus, .add-to-wishlist-btn:focus, .remove-wishlist-btn:focus, .btn-wishlist:focus { outline: none; box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25); } /* Closing brace for focus */
+
+/* Loading state styling */
+.wishlist-btn.disabled, .add-to-wishlist-btn.disabled, .remove-wishlist-btn.disabled, .btn-wishlist.disabled { opacity: 0.65; pointer-events: none; } /* Closing brace for disabled */
+
+.wishlist-btn .spinner-border, .add-to-wishlist-btn .spinner-border, .remove-wishlist-btn .spinner-border, .btn-wishlist .spinner-border { width: 1rem; height: 1rem; border-width: 0.15em; } /* Closing brace for spinner base */
+
+.remove-wishlist-btn .spinner-border, .wishlist-btn.active .spinner-border, .btn-wishlist.active .spinner-border { color: white; } /* Closing brace for remove spinner color */
+
+.add-to-wishlist-btn .spinner-border, .wishlist-btn:not(.active):not(.remove-wishlist-btn) .spinner-border, .btn-wishlist:not(.active):not(.remove-wishlist-btn) .spinner-border { color: #dc3545; } /* Closing brace for add spinner color */
+
+
+/* ============================================ */
+/* RECTANGULAR WISHLIST BUTTONS (Wishlist Page) */
+/* ============================================ */
+.wishlist-page .card-footer .btn.remove-wishlist-btn {
+    width: auto; height: auto; border-radius: 0.25rem; padding: 0.375rem 0.75rem; background-color: #dc3545; color: #fff; box-shadow: none; text-transform: none; font-weight: 400; border: 1px solid #dc3545; display: inline-flex; align-items: center; transform: none; transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.wishlist-page .card-footer .btn.remove-wishlist-btn.btn-sm { padding: 0.25rem 0.5rem; font-size: .875rem; border-radius: 0.2rem; }
+.wishlist-page .card-footer .btn.remove-wishlist-btn:hover { background-color: #c82333; border-color: #bd2130; transform: none; box-shadow: none; color: #fff; }
+.wishlist-page .card-footer .btn.remove-wishlist-btn i { margin-right: 0.35rem; font-size: inherit; transition: none; vertical-align: middle; /* Color set below */ }
+.wishlist-page .card-footer .btn.remove-wishlist-btn:active { background-color: #bd2130; border-color: #b21f2d; transform: none; box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125); }
+.wishlist-page .card-footer .btn.remove-wishlist-btn::after { display: none; }
+
+
+/* Other Styles (Product card, Empty Wishlist, Count badge, Page Structure, Responsive) */
+.wishlist-page .product-card { transition: transform 0.3s ease, box-shadow 0.3s ease; height: 100%; display: flex; flex-direction: column; }
+.wishlist-page .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+.empty-wishlist-message, .empty-wishlist { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 3rem; margin: 2rem auto; background-color: #f8f9fa; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); max-width: 600px; }
+.empty-wishlist i.fa-heart-broken { color: #6c757d; margin-bottom: 1rem; font-size: 3rem; }
+.empty-wishlist h3 { margin-bottom: 1rem; color: #343a40; }
+.empty-wishlist p { color: #6c757d; margin-bottom: 1.5rem; text-align: center; }
+.wishlist-count-container .wishlist-count { position: absolute; top: -8px; right: -8px; display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 5px; font-size: 10px; font-weight: 700; line-height: 1; text-align: center; white-space: nowrap; vertical-align: baseline; border-radius: 50%; color: #fff; background-color: #dc3545; z-index: 1; }
+.wishlist-count-container { position: relative; display: inline-block; }
+.wishlist-container { margin-top: 2rem; }
+.wishlist-header { margin-bottom: 2rem; border-bottom: 1px solid #e0e0e0; padding-bottom: 1rem; }
+.fade-out { opacity: 0; transform: scale(0.95); pointer-events: none; transition: opacity 0.5s ease, transform 0.5s ease; }
+
+@media (max-width: 767.98px) {
+    /* Round buttons smaller */
+    .product-top-right .wishlist-btn,
+    .product-top-right .add-to-wishlist-btn,
+    .product-top-right .remove-wishlist-btn { width: 32px !important; height: 32px !important; }
+    .product-top-right .wishlist-btn i,
+    .product-top-right .add-to-wishlist-btn i,
+    .product-top-right .remove-wishlist-btn i { font-size: 16px !important; } /* Reduce icon size */
+    .empty-wishlist, .empty-wishlist-message { padding: 2rem; }
+    /* Rectangular button adjustments */
+    .wishlist-page .card-footer .d-flex { flex-direction: column; gap: 0.5rem; align-items: stretch !important; } /* Stack buttons */
+    .wishlist-page .card-footer .btn.remove-wishlist-btn { width: 100%; margin-right: 0; }
+    .wishlist-page .card-footer form { width: 100%; }
+    .wishlist-page .card-footer form button { width: 100%; }
+}
+
+
+/* --- ICON COLOR RULE (Keep at end for high specificity) --- */
+/* Sets icon to white for remove state (BOTH round and rectangular) */
+.remove-wishlist-btn i,
+.wishlist-btn.active i,
+.btn-wishlist.active i {
+  color: white !important;
+}
+/* Reset icon color for add state (Primarily for ROUND button) */
+.add-to-wishlist-btn i,
+.wishlist-btn:not(.active):not(.remove-wishlist-btn) i,
+.btn-wishlist:not(.active):not(.remove-wishlist-btn) i {
+   color: #6c757d !important; /* Ensure gray for add */
+}
+.add-to-wishlist-btn:hover i,
+.wishlist-btn:not(.active):not(.remove-wishlist-btn):hover i,
+.btn-wishlist:not(.active):not(.remove-wishlist-btn):hover i {
+   color: #dc3545 !important; /* Ensure red for add hover */
+}
+
+
+/* ============================================== */
+/* Wishlist Icon Hover Effect (Solid -> Broken) */
+/* ============================================== */
+
+/* Target the icon's pseudo-element on hover for active/remove buttons */
+/* Applies to both round and rectangular buttons */
+.remove-wishlist-btn:hover i::before,
+.wishlist-btn.active:hover i::before,
+.btn-wishlist.active:hover i::before {
+    /* Font Awesome 5+ Solid Unicode for fa-heart-broken */
+    content: "\f7a9";
+    /* Ensure Font Awesome Solid font properties are used */
+    font-family: "Font Awesome 5 Free"; /* Adjust if using Pro or different version */
+    font-weight: 900; /* Solid style weight */
+}
+
+/* Optional: Smooth transition for the icon change (subtle fade) */
+/* Apply transition to the base icon state */
+.remove-wishlist-btn i,
+.wishlist-btn.active i,
+.btn-wishlist.active i {
+    transition: color 0.2s ease-in-out; /* Keep existing color transition */
+}
+/* Apply transition to the pseudo-element */
+.remove-wishlist-btn i::before,
+.wishlist-btn.active i::before,
+.btn-wishlist.active i::before {
+    transition: content 0.1s step-end; /* Change content instantly */
+}

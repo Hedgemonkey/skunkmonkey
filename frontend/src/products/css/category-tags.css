@@ -1,0 +1,171 @@
+/* Category Tags Styling */
+.selected-categories-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    min-height: 30px;
+}
+
+.category-tag {
+    display: inline-flex;
+    align-items: center;
+    background-color: #0d6efd;
+    color: white;
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.category-tag .tag-close {
+    margin-left: 0.5rem;
+    font-size: 0.75rem;
+    opacity: 0.7;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: white;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.category-tag .tag-close:hover {
+    opacity: 1;
+}
+
+/* Make sure long category names don't overflow */
+.category-tag-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: calc(100% - 20px);
+}
+
+/* Styles for filter summary category tags */
+.filter-summary-category-tags {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 0.25rem;
+    padding-bottom: 0.5rem;
+    position: relative;
+}
+
+/* Style summary tags like the main tags but smaller */
+.summary-category-tag {
+    display: inline-flex;
+    align-items: center;
+    background-color: #0d6efd; /* Match the blue from the main category tags */
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    margin-right: 0.25rem;
+    margin-bottom: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+    cursor: pointer; /* Indicate it's clickable */
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.summary-category-tag:hover {
+    background-color: #0b5ed7; /* Slightly darker blue on hover */
+    transform: scale(1.05); /* Slight grow effect on hover */
+}
+
+.summary-tag-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Instruction text below the tags */
+.filter-tag-instruction {
+    font-size: 0.75rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+    width: 100%;
+    text-align: left;
+}
+
+@media (max-width: 768px) {
+    .selected-categories-tags {
+        margin-bottom: 0.75rem;
+    }
+
+    .summary-category-tag {
+        max-width: 120px;
+    }
+}
+
+/* Hide Select2's default selection pills */
+.select2-selection__choice {
+    display: none !important;
+}
+
+/* Keep the input field visible and properly sized */
+.select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered {
+    display: inline-flex !important;
+    padding-left: 0.5rem !important;
+}
+
+.select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered .select2-search {
+    width: 100%;
+}
+
+/* Ensure the container is properly sized */
+.select2-container--bootstrap-5 .select2-selection--multiple {
+    min-height: 38px !important;
+    height: 38px !important;
+    overflow: hidden;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* Adjust search input field */
+.select2-container--bootstrap-5 .select2-selection--multiple .select2-search {
+    margin: 0 !important;
+    height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.select2-container--bootstrap-5 .select2-selection--multiple .select2-search .select2-search__field {
+    margin-top: 0 !important;
+    height: 26px !important;
+}
+
+/* Show placeholder text when nothing is selected */
+.select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__placeholder {
+    color: #6c757d;
+    display: inline !important;
+    line-height: 36px !important;
+}
+
+/* Remove extra padding when no pills are shown */
+.select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered:not(:empty) {
+    padding-bottom: 0 !important;
+}
+
+/* Properly style the selection clear button (X) */
+.select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__clear {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Ensure dropdown button is properly positioned */
+.select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__arrow {
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+}
+
+/* Ensure dropdown is properly sized */
+.select2-container--open .select2-dropdown {
+    min-width: fit-content;
+}

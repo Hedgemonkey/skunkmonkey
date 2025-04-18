@@ -1,0 +1,103 @@
+/*
+ * Select2 Custom Styling Fixes
+ * Fixes issues with select2-search--inline element alignment
+ */
+
+/* Fix for the search input box alignment within the select2 container */
+.select2-container--bootstrap-5 .select2-selection--multiple .select2-search {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.375rem;
+    padding-top: 3px;
+}
+
+/* Fix the search field height and vertical alignment */
+.select2-container--bootstrap-5 .select2-selection--multiple .select2-search .select2-search__field {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    height: 28px !important;
+    line-height: 1.5;
+}
+
+/* Fix for the selection padding to accommodate search field */
+.select2-container--bootstrap-5 .select2-selection--multiple {
+    min-height: 38px !important;
+    padding-bottom: 0.25rem !important;
+}
+
+/* Ensure the selected items wrap properly with the search field */
+.select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered {
+    display: flex !important;
+    flex-wrap: wrap;
+    align-items: center;
+    padding-bottom: 0.125rem !important;
+}
+
+/* Add vertical space for multiple rows of selected items */
+.select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered:not(:empty) {
+    min-height: 36px;
+}
+
+/* Ensure checkboxes in dropdown are properly aligned */
+.select2-container--bootstrap-5 .select2-dropdown .select2-results__option .select2-result-category {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+}
+
+/* Add hover state for result categories */
+.select2-result-category:hover {
+    background-color: #f8f9fa;
+}
+
+/* Make sure checkboxes are vertically centered in dropdown options */
+.select2-result-category input[type="checkbox"] {
+    margin-right: 0.5rem;
+    margin-top: 0;
+    vertical-align: middle;
+}
+
+/* Add some spacing to the dropdown options for better readability */
+.select2-container--bootstrap-5 .select2-dropdown .select2-results__option {
+    padding: 0.5rem 0.75rem;
+}
+
+/* Improve styling of selected items in the dropdown */
+.select2-container--bootstrap-5 .select2-dropdown .select2-results__option.select2-results__option--selected,
+.select2-container--bootstrap-5 .select2-dropdown .select2-results__option[aria-selected=true]:not(.select2-results__option--highlighted) {
+    background-color: #0d6efd;
+    color: white;
+}
+
+/* Fix for dropdown option hover state */
+.select2-container--bootstrap-5 .select2-dropdown .select2-results__option.select2-results__option--highlighted {
+    background-color: #e9ecef;
+    color: #000;
+}
+
+/* Fix for selected results with specific background color */
+.select2-container--bootstrap-5 .select2-results__option--selected {
+    background-color: #e9ecef !important;
+}
+
+/* Make sure the dropdown checkboxes remain visible when option is selected */
+.select2-container--bootstrap-5 .select2-dropdown .select2-results__option.select2-results__option--selected .select2-result-category input[type="checkbox"],
+.select2-container--bootstrap-5 .select2-dropdown .select2-results__option[aria-selected=true] .select2-result-category input[type="checkbox"] {
+    border-color: #fff;
+}
+
+/* Category header styles */
+.category-header.selected {
+    background-color: var(--bs-primary) !important;
+    color: white !important;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.category-header {
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.category-header:hover:not(.selected) {
+    background-color: #e9ecef !important;
+}

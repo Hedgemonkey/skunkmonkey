@@ -1,0 +1,52 @@
+/*
+ * Specific styling for buttons in product cards
+ * This prevents style conflicts with filter buttons
+ */
+
+/* Target card footer buttons specifically */
+#product-cards-container .card-footer .btn,
+#product-cards-container .product-card .btn {
+    flex: 1;
+    border-radius: 0;
+}
+
+#product-cards-container .card-footer .btn:first-child,
+#product-cards-container .product-card .btn:first-child {
+    border-bottom-left-radius: 0.375rem;
+}
+
+#product-cards-container .card-footer .btn:last-child,
+#product-cards-container .product-card .btn:last-child {
+    border-bottom-right-radius: 0.375rem;
+}
+
+/* To ensure filter buttons are not affected */
+#filterOptions .btn,
+.filter-controls .btn {
+    flex: none !important;
+    border-radius: 0.25rem !important;
+}
+
+/* Ensure the specific button styles from filter-buttons.css are applied */
+.filter-controls .btn-sm {
+    padding: 0.25rem 0.5rem;
+    line-height: 1.2;
+    vertical-align: middle;
+    white-space: nowrap;
+    font-size: 0.875rem;
+    border-radius: 0.25rem !important;
+}
+
+/* Style the filter toggle button when active (Hide Filters) */
+.filter-controls .filter-toggle.active {
+    background-color: #0d6efd !important;
+    color: white !important;
+    border-color: #0d6efd !important;
+}
+
+/* Style the filter toggle button when inactive (Show Filters) */
+.filter-controls .filter-toggle:not(.active) {
+    background-color: transparent !important;
+    color: #0d6efd !important;
+    border-color: #0d6efd !important;
+}

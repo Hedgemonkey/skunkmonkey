@@ -1,0 +1,118 @@
+/* Order history page styles */
+.card {
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.order-details-row {
+    background-color: #f8f9fa;
+}
+
+.table th {
+    font-weight: 500;
+    color: #495057;
+}
+
+/* Badge styling for order status */
+.badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+}
+
+.badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: #212529;
+}
+
+.badge.bg-success {
+    background-color: #198754 !important;
+}
+
+.badge.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+.badge.bg-info {
+    background-color: #0dcaf0 !important;
+    color: #212529;
+}
+
+/* Details toggle button */
+.btn-outline-primary {
+    transition: all 0.2s ease;
+}
+
+.btn-outline-primary:hover {
+    background-color: rgba(13, 110, 253, 0.1);
+    color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+/* Order details collapsible section */
+.order-details-row .collapse {
+    transition: all 0.3s ease;
+}
+
+.order-details-row h6 {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.75rem;
+}
+
+/* Empty state styling */
+.text-center.py-5 {
+    padding: 3rem 0;
+}
+
+.text-center.py-5 i {
+    color: #dee2e6;
+}
+
+.text-center.py-5 .btn {
+    margin-top: 1rem;
+    transition: all 0.3s ease;
+}
+
+.text-center.py-5 .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Pagination styling */
+.pagination {
+    margin-top: 1.5rem;
+}
+
+.pagination .page-link {
+    color: #0d6efd;
+    background-color: #fff;
+    border-color: #dee2e6;
+    transition: all 0.2s ease;
+}
+
+.pagination .page-link:hover {
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+    .table-responsive {
+        border: 0;
+    }
+
+    .table th, .table td {
+        font-size: 0.875rem;
+    }
+
+    /* Stack the detail columns on mobile */
+    .order-details-row .col-md-6 {
+        margin-bottom: 1rem;
+    }
+}
