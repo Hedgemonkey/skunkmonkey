@@ -2,6 +2,7 @@
  * ProductDetailManager - handles product detail page functionality
  * Manages quantity selectors and integrates with cart and wishlist
  */
+import '../css/product-detail.css';
 class ProductDetailManager {
     constructor() {
         this.initQuantityControls();

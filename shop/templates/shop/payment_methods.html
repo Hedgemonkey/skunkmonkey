@@ -3,7 +3,9 @@
 {% load crispy_forms_tags %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/stripe.css' %}">
+    {{ block.super }}
+    {% load django_vite %}
+    {% vite_asset 'stripeIntegration' %}
 {% endblock %}
 
 {% block page_header %}
@@ -106,7 +108,8 @@
 {% block postloadjs %}
     {{ block.super }}
     <script src="https://js.stripe.com/v3/"></script>
-    <script src="{% static 'js/stripe_elements.js' %}"></script>
+    {% load django_vite %}
+    {% vite_asset 'stripeIntegration' %}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize Stripe

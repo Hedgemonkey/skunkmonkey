@@ -11,22 +11,6 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'src/core/js/main.js'),
         messages: resolve(__dirname, 'src/core/js/messages.js'),
-        // CSS entries
-        mainStyle: resolve(__dirname, 'src/core/css/main.css'),
-        categoryTagsStyle: resolve(__dirname, 'src/products/css/category-tags.css'),
-        filterButtonsStyle: resolve(__dirname, 'src/products/css/filter-buttons.css'),
-        productGridStyle: resolve(__dirname, 'src/products/css/product_grid.css'),
-        productCardButtonsStyle: resolve(__dirname, 'src/products/css/product-card-buttons.css'),
-        select2CustomStyle: resolve(__dirname, 'src/products/css/select2-custom.css'),
-        cartStyle: resolve(__dirname, 'src/shop/css/cart.css'),
-        checkoutStyle: resolve(__dirname, 'src/shop/css/checkout.css'),
-        orderCompleteStyle: resolve(__dirname, 'src/shop/css/order-complete.css'),
-        orderHistoryStyle: resolve(__dirname, 'src/shop/css/order-history.css'),
-        productDetailStyle: resolve(__dirname, 'src/shop/css/product-detail.css'),
-        productListStyle: resolve(__dirname, 'src/shop/css/product-list.css'),
-        stripeStyle: resolve(__dirname, 'src/shop/css/stripe.css'),
-        wishlistStyle: resolve(__dirname, 'src/shop/css/wishlist.css'),
-        profileStyle: resolve(__dirname, 'src/users/css/profile.css'),
         // Common modules
         imageCropper: resolve(__dirname, 'src/common/js/image_cropper.js'),
         apiClient: resolve(__dirname, 'src/common/js/api-client.js'),
@@ -68,14 +52,13 @@ export default defineConfig({
       output: {
         assetFileNames: (assetInfo) => {
           // Output CSS and JS to app-specific folders, fonts/images to assets
-          if (assetInfo.name && assetInfo.name.endsWith('Style')) {
-            // Remove 'Style' suffix from the filename
-            const cleanName = assetInfo.name.replace(/Style$/, '');
-            if (assetInfo.name.includes('products')) return `css/products/${cleanName}[extname]`;
-            if (assetInfo.name.includes('shop')) return `css/shop/${cleanName}[extname]`;
-            if (assetInfo.name.includes('users')) return `css/users/${cleanName}[extname]`;
-            if (assetInfo.name.includes('home')) return `css/home/${cleanName}[extname]`;
-            return `css/core/${cleanName}[extname]`;
+          if (assetInfo.name && assetInfo.type === 'asset' && assetInfo.name.endsWith('.css')) {
+            // Handle CSS files imported from JS
+            if (assetInfo.name.includes('products')) return `css/products/[name][extname]`;
+            if (assetInfo.name.includes('shop')) return `css/shop/[name][extname]`;
+            if (assetInfo.name.includes('users')) return `css/users/[name][extname]`;
+            if (assetInfo.name.includes('home')) return `css/home/[name][extname]`;
+            return `css/core/[name][extname]`;
           }
           if (assetInfo.name && assetInfo.name.match(/\.(woff2?|ttf|eot|otf)$/)) {
             // FontAwesome fonts go to webfonts directory, other fonts to fonts directory

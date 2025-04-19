@@ -1,4 +1,6 @@
+// filepath: /home/hedgemonkey/Documents/Work/code_institute/API_boilerplate/skunkmonkey/frontend/src/users/js/profile.js
 // /users/static/users/js/profile.js
+import '../css/profile.css';
 
 document.addEventListener('DOMContentLoaded', function () {
     // --- Address Deletion ---

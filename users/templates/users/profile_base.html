@@ -3,8 +3,9 @@
 
 {% block extra_css %}
     {{ block.super }}
-    <!-- Load webpack bundled profile CSS -->
-    <link rel="stylesheet" href="{% static 'bundles/css/profile.css' %}">
+    <!-- Load profile JS with Vite (CSS will be included automatically) -->
+    {% load django_vite %}
+    {% vite_asset 'profile' %}
 {% endblock %}
 
 {% block header %}
@@ -106,6 +107,5 @@
 
 {% block extra_js %}
     {{ block.super }}
-    <!-- Load webpack bundled profile JS -->
-    <script src="{% static 'bundles/js/profile.js' %}"></script>
+    <!-- Profile JS is now loaded via vite_asset in the extra_css block -->
 {% endblock %}

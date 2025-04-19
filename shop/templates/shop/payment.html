@@ -56,11 +56,13 @@
 {% endblock %}
 
 {% block extra_js %}
+{{ block.super }}
 <script src="https://js.stripe.com/v3/"></script>
 <script>
     const stripePublishableKey = '{{ stripe_publishable_key }}';
     const clientSecret = '{{ client_secret }}';
     const orderCompleteUrl = "{% url 'shop:order_complete' order_id=order.id %}";
 </script>
-<script src="{% static 'js/checkout.js' %}"></script>
+{% load django_vite %}
+{% vite_asset 'checkout' %}
 {% endblock %}

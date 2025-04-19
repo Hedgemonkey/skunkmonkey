@@ -3,6 +3,11 @@
  *
  * Orchestrates product management functionality using modular components.
  */
+import '../css/category-tags.css';
+import '../css/filter-buttons.css';
+import '../css/product_grid.css';
+import '../css/product-card-buttons.css';
+import '../css/select2-custom.css';
 import $ from 'jquery';
 import 'bootstrap';
 import { ProductManager } from '../../../static/js/product-manager.js';

@@ -2,6 +2,7 @@
  * CartManager - handles all cart functionality
  * Manages adding, removing, and updating items in the shopping cart
  */
+import '../css/cart.css';
 import { ApiClient } from '@core/api-client.js';
 
 class CartManager {

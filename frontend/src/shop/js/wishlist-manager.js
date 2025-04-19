@@ -2,7 +2,7 @@
  * Wishlist Manager
  * Handles wishlist functionality for the shop
  */
-
+import '../css/wishlist.css';
 import apiClient from '@core/api-client.js';
 
 /**

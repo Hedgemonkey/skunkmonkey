@@ -5,10 +5,9 @@
 {% block title %}SkunkMonkey - Product Management{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/products/category-tags.css' %}">
-    <link rel="stylesheet" href="{% static 'css/products/filter-buttons.css' %}">
-    <link rel="stylesheet" href="{% static 'css/products/product-card-buttons.css' %}">
-    <link rel="stylesheet" href="{% static 'css/products/select2-custom.css' %}">
+    {{ block.super }}
+    {% load django_vite %}
+    {% vite_asset 'products' %}
 {% endblock %}
 
 {% block header %}
@@ -91,8 +90,8 @@
     const getCategoryCardsUrl = "{% url 'products:get_category_cards' %}";
     const getProductCardsUrl = "{% url 'products:get_product_cards' %}";
 </script>
-<!-- Load the common image cropper module first -->
-<script src="{% static 'bundles/js/common/image-cropper.js' %}"></script>
-<script src="{% static 'bundles/js/products/products.js' %}"></script>
-<script src="{% static 'bundles/js/products/cropper-init.js' %}"></script>
+{% load django_vite %}
+{% vite_asset 'imageCropper' %}
+{% vite_asset 'cropperInit' %}
+<!-- products.js is already loaded via vite_asset in the extra_css block -->
 {% endblock %}

@@ -5,7 +5,9 @@
 {% block title %}{{ product.name }} - SkunkMonkey Shop{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'bundles/css/shop/product-detail.css' %}">
+    {{ block.super }}
+    {% load django_vite %}
+    {% vite_asset 'productDetailManager' %}
 {% endblock %}
 
 {% block content %}
@@ -181,8 +183,6 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'bundles/js/shop/cart-manager.js' %}"></script>
-    <script src="{% static 'bundles/js/shop/wishlist-manager.js' %}"></script>
-    <script src="{% static 'bundles/js/shop/comparison-manager.js' %}"></script>
-    <script src="{% static 'bundles/js/shop/product-detail-manager.js' %}"></script>
+    {{ block.super }}
+    <!-- JS is now loaded via vite_asset in the extra_css block -->
 {% endblock %}

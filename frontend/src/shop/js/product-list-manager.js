@@ -4,6 +4,7 @@
  * Manages product filtering, sorting and AJAX loading for the shop product list
  * Also handles product grid interactions like wishlist toggling
  */
+import '../css/product-list.css';
 class ProductListManager {
     constructor() {
         // Initialize with error handling

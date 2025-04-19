@@ -6,6 +6,8 @@
  * - Auto-population of shipping fields
  * - Robust error handling
  */
+import '../css/checkout.css';
+import '../css/stripe.css';
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM fully loaded - initializing checkout script with Payment Element');
