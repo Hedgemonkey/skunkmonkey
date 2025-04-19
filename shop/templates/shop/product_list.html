@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load vite %}
+{% load django_vite %}
 
 {% block title %}
     {% if current_category %}
@@ -13,7 +13,6 @@
 
 {% block extra_css %}
     {{ block.super }}
-    {% load django_vite %}
     {% vite_asset 'productListManager' %}
     {% vite_asset 'productGrid' %}
 {% endblock %}
@@ -152,7 +151,6 @@
 
 {% block postloadjs %}
     {{ block.super }}
-    {% load django_vite %}
     {% vite_asset 'comparisonManager' %}
     <!-- Other JS is now loaded via vite_asset in the extra_css block -->
 {% endblock %}

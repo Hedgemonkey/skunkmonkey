@@ -4,7 +4,7 @@
  * Provides common functionality for different item type managers
  * (products, categories, etc.) to reduce code duplication.
  */
-import { makeAjaxRequest } from '../../../../static/js/ajax_helper.js';
+import { makeAjaxRequest } from '@common/js/ajax_helper.js';
 import Swal from 'sweetalert2';
 
 /**
@@ -87,6 +87,14 @@ export class BaseManager {
                 }).catch(error => {
                     console.error('Form submission failed:', error);
                     Swal.hideLoading();
+                    // Re-enable buttons and restore their original state
+                    const modal = Swal.getPopup();
+                    if (modal) {
+                        const confirmButton = modal.querySelector('.swal2-confirm');
+                        const cancelButton = modal.querySelector('.swal2-cancel');
+                        if (confirmButton) confirmButton.disabled = false;
+                        if (cancelButton) cancelButton.disabled = false;
+                    }
                 });
             },
             (error) => {

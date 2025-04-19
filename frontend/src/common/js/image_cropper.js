@@ -232,13 +232,17 @@ const ImageCropper = {
         const blobURL = URL.createObjectURL(file);
         this.elements.cropperImage.src = blobURL;
 
-        // Show modal using Bootstrap's API if available, otherwise fallback to jQuery
+        // Show modal using proper Bootstrap 5 API
         if (this.bsModal) {
+            console.log('Using Bootstrap 5 Modal API');
             this.bsModal.show();
-        } else if (typeof $ !== 'undefined') {
-            $(this.elements.cropperModal).modal('show');
+        } else if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            console.log('Creating new Bootstrap 5 Modal instance');
+            this.bsModal = new bootstrap.Modal(this.elements.cropperModal);
+            this.bsModal.show();
         } else {
-            // Manual show if neither Bootstrap nor jQuery is available
+            console.log('Fallback: Manual modal display');
+            // Manual show if Bootstrap is not available
             this.elements.cropperModal.style.display = 'block';
             this.elements.cropperModal.classList.add('show');
             document.body.classList.add('modal-open');
@@ -347,10 +351,15 @@ const ImageCropper = {
      */
     hideModal: function() {
         if (this.bsModal) {
+            console.log('Using existing Bootstrap 5 Modal instance to hide');
             this.bsModal.hide();
-        } else if (typeof $ !== 'undefined') {
-            $(this.elements.cropperModal).modal('hide');
+        } else if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            console.log('Creating temporary Bootstrap 5 Modal instance to hide');
+            const modalInstance = bootstrap.Modal.getInstance(this.elements.cropperModal) ||
+                                  new bootstrap.Modal(this.elements.cropperModal);
+            modalInstance.hide();
         } else {
+            console.log('Fallback: Manual modal hide');
             // Manual hide
             this.elements.cropperModal.style.display = 'none';
             this.elements.cropperModal.classList.remove('show');

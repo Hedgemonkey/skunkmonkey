@@ -5,6 +5,7 @@
  * It's specifically for handling profile image uploads and cropping.
  */
 import Cropper from 'cropperjs';
+import $ from 'jquery';
 
 $(function () {
     let cropper;

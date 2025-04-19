@@ -4,6 +4,7 @@
  * Provides standardized AJAX request functionality with CSRF protection
  * and consistent error handling.
  */
+import $ from 'jquery';
 
 /**
  * Get the CSRF token from cookies

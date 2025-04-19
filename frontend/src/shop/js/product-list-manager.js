@@ -5,6 +5,7 @@
  * Also handles product grid interactions like wishlist toggling
  */
 import '../css/product-list.css';
+import $ from 'jquery';
 class ProductListManager {
     constructor() {
         // Initialize with error handling

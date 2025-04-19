@@ -3,10 +3,11 @@
  *
  * Handles product CRUD operations, filtering, and event handling
  */
-import { makeAjaxRequest } from '../../../static/js/ajax_helper.js';
+import { makeAjaxRequest } from '@common/js/ajax_helper.js';
 import { ItemFilter } from './filters.js';
-import { BaseManager } from './utilities/base-manager.js';
+import { BaseManager } from '@products/utilities/js/base-manager.js';
 import Swal from 'sweetalert2';
+import $ from 'jquery';
 
 /**
  * ProductManager class for handling product operations

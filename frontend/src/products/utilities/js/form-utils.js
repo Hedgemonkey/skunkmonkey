@@ -1,6 +1,16 @@
 /**
  * form-utils.js - Common form-related utilities
  */
+import $ from 'jquery';
+// Import select2 in a way that ensures it's properly attached to jQuery
+import * as select2 from 'select2';
+import 'select2/dist/css/select2.min.css';
+
+// Explicitly initialize select2 with jQuery
+// This ensures select2 is properly registered as a jQuery plugin
+if ($) {
+    select2.default($);
+}
 
 /**
  * Set up a Select2 dropdown
@@ -8,7 +18,13 @@
  * @param {Object} options - Configuration options
  */
 export function setupSelect2(element, options) {
-    if (!element.length) return;
+    if (!element || !element.length) return;
+
+    // Check if select2 is available on the element
+    if (typeof element.select2 !== 'function') {
+        console.error('Select2 is not available as a jQuery plugin');
+        return;
+    }
 
     const config = {
         theme: 'bootstrap-5',

@@ -10,10 +10,10 @@ import '../css/product-card-buttons.css';
 import '../css/select2-custom.css';
 import $ from 'jquery';
 import 'bootstrap';
-import { ProductManager } from '../../../static/js/product-manager.js';
-import { CategoryManager } from '../../../static/js/category-manager.js';
-import notifications from '../../../static/js/utilities/notifications.js';
-import apiClient from '../../../../static/js/api-client.js';
+import { ProductManager } from './product-manager.js';
+import { CategoryManager } from './category-manager.js';
+import notifications from '../utilities/js/notifications.js';
+import apiClient from '@common/js/api-client.js';
 
 $(function () {
     // Application initialization

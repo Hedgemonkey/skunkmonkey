@@ -3,7 +3,7 @@
  * Leverages existing api-client.js for API interactions
  */
 import apiClient from '@core/api-client.js';
-import { BaseManager } from '@products/utilities/base-manager.js';
+import { BaseManager } from '@products/utilities/js/base-manager.js';
 import Swal from 'sweetalert2';
 
 /**

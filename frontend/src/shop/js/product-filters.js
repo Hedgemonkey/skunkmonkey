@@ -2,6 +2,8 @@
  * Shop product filtering and sorting functionality
  * Based on the dynamic filtering in the products app
  */
+import $ from 'jquery';
+
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize filters if container exists
     const filterContainer = document.getElementById('dynamic-filter-container');

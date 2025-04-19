@@ -1,8 +1,9 @@
 /**
  * category-filter-manager.js - Handles category selection and management for filters
  */
-import { setupSelect2 } from '../utilities/form-utils.js';
-import { removeFromArray } from '../utilities/array-utils.js';
+import { setupSelect2 } from '@products/utilities/js/form-utils.js';
+import { removeFromArray } from '@products/utilities/js/array-utils.js';
+import $ from 'jquery';
 
 /**
  * CategoryFilterManager - Handles category selection and management

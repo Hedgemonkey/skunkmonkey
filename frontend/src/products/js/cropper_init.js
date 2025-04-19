@@ -121,10 +121,42 @@ const ProductsCropper = {
 window.ProductsCropper = ProductsCropper;
 console.log('ProductsCropper explicitly exposed globally');
 
-// Initialize when DOM is fully loaded
+// Set up a custom event-based initialization for dynamically created cropper elements
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded in products cropper_init.js - initializing');
-    ProductsCropper.init();
+    console.log('DOM loaded in products cropper_init.js - setting up MutationObserver');
+
+    // Create an observer instance that will watch for when cropper elements are added to the DOM
+    const observer = new MutationObserver(function(mutations) {
+        // For each mutation (DOM change)...
+        mutations.forEach(function(mutation) {
+            // Check if cropperModal was added to the DOM
+            if (mutation.addedNodes && mutation.addedNodes.length) {
+                for (let i = 0; i < mutation.addedNodes.length; i++) {
+                    const node = mutation.addedNodes[i];
+                    if (node.id === 'cropperModal' || (node.querySelector && node.querySelector('#cropperModal'))) {
+                        console.log('Cropper modal detected in DOM, initializing cropper...');
+                        // Wait a moment for all other elements to be fully rendered
+                        setTimeout(() => {
+                            ProductsCropper.init();
+                        }, 100);
+
+                        // Stop observing once we've found and initialized the cropper
+                        observer.disconnect();
+                        return;
+                    }
+                }
+            }
+        });
+    });
+
+    // Start observing the document with the configured parameters
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // Also create a custom event for manual triggering
+    document.addEventListener('cropperElementsReady', function() {
+        console.log('cropperElementsReady event received');
+        ProductsCropper.init();
+    });
 });
 
 // For module systems

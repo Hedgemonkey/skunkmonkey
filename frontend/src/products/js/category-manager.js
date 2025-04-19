@@ -3,9 +3,9 @@
  *
  * Handles category CRUD operations, filtering, and event handling
  */
-import apiClient from '../../../static/js/api-client.js';
+import apiClient from '@common/js/api-client.js';
 import { ItemFilter } from './filters.js';
-import { BaseManager } from './utilities/base-manager.js';
+import { BaseManager } from '@products/utilities/js/base-manager.js';
 import Swal from 'sweetalert2';
 
 /**

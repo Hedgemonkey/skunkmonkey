@@ -1,8 +1,8 @@
 /**
  * filter-ui-manager.js - Handles filter UI interactions and updates
  */
-import { toggleElement } from '../utilities/form-utils.js';
-import apiClient from '../../../../static/js/api-client.js';
+import { toggleElement } from '@products/utilities/js/form-utils.js';
+import apiClient from '@common/js/api-client.js';
 
 /**
  * FilterUIManager - Handles filter UI interactions and updates

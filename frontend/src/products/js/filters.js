@@ -3,11 +3,12 @@
  * Refactored to use a modular approach with utility modules and ApiClient
  */
 import 'select2';
-import apiClient from '../../../static/js/api-client.js';
-import notifications from './utilities/notifications.js';
-import { setDisabledState } from './utilities/form-utils.js';
-import { CategoryFilterManager } from './filters/category-filter-manager.js';
-import { FilterUIManager } from './filters/filter-ui-manager.js';
+import $ from 'jquery';
+import apiClient from '@common/js/api-client.js';
+import notifications from '@products/utilities/js/notifications.js';
+import { setDisabledState } from '@products/utilities/js/form-utils.js';
+import { CategoryFilterManager } from '@products/filters/js/category-filter-manager.js';
+import { FilterUIManager } from '@products/filters/js/filter-ui-manager.js';
 
 /**
  * ItemFilter - Handles item filtering and category selection

@@ -8,7 +8,7 @@
  */
 
 // Use path alias instead of absolute path
-import apiClient from '@core/api-client.js';
+import apiClient from '@common/js/api-client.js';
 
 /**
  * ComparisonManager class for handling product comparison functionality
