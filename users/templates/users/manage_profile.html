@@ -1,16 +1,19 @@
 {% extends "users/profile_base.html" %}
 {% load django_vite %}
+{% load static %}
 {% load crispy_forms_tags %}
 
 {% block extra_css %}
-    {% vite_asset 'profile.css' %}
+    {{ block.super }}
+    {% vite_asset 'profile' %}
 {% endblock %}
 
 {% block extra_js %}
-    {% vite_asset 'profileCropper.js' %}
-    {% vite_asset 'profileCropperInit.js' %}
-    {% vite_asset 'accountActions.js' %}
-    {% vite_asset 'imageCropper.js' %}
+    {{ block.super }}
+    {% vite_asset 'profileCropper' %}
+    {% vite_asset 'profileCropperInit' %}
+    {% vite_asset 'imageCropper' %}
+    {% vite_asset 'profileImageManager' %}
 {% endblock %}
 
 {% block profile_content %}
@@ -51,28 +54,8 @@
                         {{ profile_form.bio|as_crispy_field }}
                         {{ profile_form.birth_date|as_crispy_field }}
 
-                        <!-- Profile Image -->
-                        <div class="row">
-                            <div class="col-md-8">
-                                {{ profile_form.profile_image|as_crispy_field }}
-                                <!-- Hidden input to store cropped image data -->
-                                <input type="hidden" id="cropped-image-data" name="cropped_image_data">
-                            </div>
-                                <div class="col-md-4">
-                                    {% if profile.profile_image %}
-                                        <div class="current-profile-image text-center">
-                                            <p class="text-muted mb-2">Current Profile Image</p>
-                                            <img src="{{ profile.profile_image.url }}" alt="Profile Image" class="img-thumbnail" style="max-height: 150px;">
-                                        </div>
-                                    {% else %}
-                                        <div id="preview-container" class="text-center d-none">
-                                            <p class="text-muted mb-2">Image Preview</p>
-                                            <img id="preview-image" src="#" alt="Profile Image Preview" class="img-thumbnail" style="max-height: 150px;">
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
+                        <!-- Profile Image Management Component -->
+                        {% include "users/includes/_profile_image_manager.html" %}
                     </div>
                 </div>
 
@@ -128,60 +111,41 @@
     <div class="modal fade" id="cropperModal" tabindex="-1" aria-labelledby="cropperModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header cropper-modal-header">
-                    <h5 class="modal-title" id="cropperModalLabel">Edit Profile Picture</h5>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cropperModalLabel">Crop Profile Picture</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="img-container">
-                        <img id="cropper-image" src="#" alt="Image to crop">
-                    </div>
+                    <img id="cropper-image" src="#" alt="Image to crop">
                 </div>
-                <div class="modal-footer cropper-modal-footer">
-                    <div class="row w-100">
-                        <div class="col-md-8">
-                            <div class="d-flex justify-content-between action-buttons">
-                                <div class="btn-group">
-                                    <button type="button" id="zoom-in" class="btn btn-outline-secondary">
-                                        <i class="fas fa-search-plus"></i>
-                                    </button>
-                                    <button type="button" id="zoom-out" class="btn btn-outline-secondary">
-                                        <i class="fas fa-search-minus"></i>
-                                    </button>
+                <div class="modal-footer">
+                    <div class="cropper-controls">
+                        <div class="control-row">
+                            <div class="d-pad">
+                                <button type="button" class="btn btn-secondary" id="move-up"><i class="fas fa-arrow-up"></i></button>
+                                <button type="button" class="btn btn-secondary" id="move-left"><i class="fas fa-arrow-left"></i></button>
+                                <button type="button" class="btn btn-secondary" id="move-right"><i class="fas fa-arrow-right"></i></button>
+                                <button type="button" class="btn btn-secondary" id="move-down"><i class="fas fa-arrow-down"></i></button>
+                            </div>
+                            <div class="rotate-slider-container">
+                                <label for="rotate-slider" class="form-label mt-2">Free Rotate</label>
+                                <input type="range" class="form-range" id="rotate-slider" min="-180" max="180" value="0">
+                            </div>
+                            <div class="zoom-rotate-controls">
+                                <div class="zoom-controls">
+                                    <button type="button" class="btn btn-secondary" id="zoom-in"><i class="fas fa-search-plus"></i></button>
+                                    <button type="button" class="btn btn-secondary" id="zoom-out"><i class="fas fa-search-minus"></i></button>
                                 </div>
-                                <div class="btn-group">
-                                    <button type="button" id="move-left" class="btn btn-outline-secondary">
-                                        <i class="fas fa-arrow-left"></i>
-                                    </button>
-                                    <button type="button" id="move-right" class="btn btn-outline-secondary">
-                                        <i class="fas fa-arrow-right"></i>
-                                    </button>
-                                    <button type="button" id="move-up" class="btn btn-outline-secondary">
-                                        <i class="fas fa-arrow-up"></i>
-                                    </button>
-                                    <button type="button" id="move-down" class="btn btn-outline-secondary">
-                                        <i class="fas fa-arrow-down"></i>
-                                    </button>
-                                </div>
-                                <div class="btn-group">
-                                    <button type="button" id="rotate-left" class="btn btn-outline-secondary">
-                                        <i class="fas fa-undo"></i>
-                                    </button>
-                                    <button type="button" id="rotate-right" class="btn btn-outline-secondary">
-                                        <i class="fas fa-redo"></i>
-                                    </button>
+                                <div class="rotate-controls">
+                                    <button type="button" class="btn btn-secondary" id="rotate-left"><i class="fas fa-undo"></i></button>
+                                    <button type="button" class="btn btn-secondary" id="rotate-right"><i class="fas fa-redo"></i></button>
                                 </div>
                             </div>
-                            <div class="mt-3">
-                                <label for="rotate-slider" class="form-label">Rotate:</label>
-                                <input type="range" class="form-range" min="-180" max="180" value="0" id="rotate-slider">
-                            </div>
                         </div>
-                        <div class="col-md-4">
-                            <button type="button" id="crop-image-button" class="btn btn-primary w-100">
-                                <i class="fas fa-crop me-2"></i>Apply Crop
-                            </button>
-                        </div>
+                    </div>
+                    <div class="action-buttons mt-3">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="crop-image-button">Save</button>
                     </div>
                     <img id="cropped-image-display" style="display: none;">
                 </div>
