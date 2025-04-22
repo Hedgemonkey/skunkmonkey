@@ -58,7 +58,7 @@ const ProfileCropper = {
 
                 // Initialize with specific profile options
                 window.ImageCropper.init({
-                    fileInputSelector: '#id_profile_image', // Updated to use the actual form field ID
+                    fileInputSelector: '#profile-image-file', // Updated to match the actual input ID in the template
                     modalSelector: '#cropperModal',
                     cropperImageSelector: '#cropper-image',
                     cropButtonSelector: '#crop-image-button',
