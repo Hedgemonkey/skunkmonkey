@@ -26,6 +26,16 @@ static/bundles/
 staticfiles/bundles/
 dist/
 
+# Vite generated files
+static/js/
+static/css/
+static/assets/
+static/vite.svg
+static/webfonts/
+static/fonts/
+static/images/
+.vite/
+
 # Media files (user uploads)
 media/profile_images/
 media/product_images/
