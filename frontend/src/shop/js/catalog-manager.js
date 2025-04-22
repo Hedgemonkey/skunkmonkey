@@ -2,7 +2,7 @@
  * Catalog Manager - handles product catalog browsing
  * Leverages existing api-client.js for API interactions
  */
-import apiClient from '@core/api-client.js';
+import { ApiClient } from '@common/js/api-client.js';
 import { BaseManager } from '@products/utilities/js/base-manager.js';
 import Swal from 'sweetalert2';
 
@@ -147,7 +147,7 @@ export class CatalogManager extends BaseManager {
     addToWishlist(productId, button) {
         const url = `/shop/wishlist/add/${productId}/`;
 
-        apiClient.get(url)
+        new ApiClient().get(url)
             .then(response => {
                 if (response.success) {
                     button.classList.add('added');
