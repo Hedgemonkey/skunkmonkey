@@ -1,0 +1,22 @@
+/* address_management.css - Styles specific to address management pages */
+
+/* Styling for address cards */
+.address-list .list-group-item {
+    margin-bottom: 1rem; /* Add spacing between address cards */
+    border: 1px solid #dee2e6; /* Ensure border visibility */
+    border-radius: .25rem; /* Match Bootstrap's card rounding */
+    padding: 1.25rem;
+}
+
+.address-actions .btn {
+    margin-right: 0.5rem; /* Space out action buttons */
+}
+
+/* Responsive adjustments for address management */
+@media (max-width: 767.98px) {
+    .address-actions .btn {
+        margin-bottom: 0.5rem; /* Stack buttons nicely on small screens */
+        display: block; /* Make buttons take full width if desired */
+        width: fit-content; /* Or adjust width as needed */
+    }
+}

@@ -1,0 +1,35 @@
+/* order_history.css - Styles specific to order history pages */
+
+/* Styling for order history table */
+.order-history-table th {
+    font-weight: bold;
+}
+
+.order-history-table .badge {
+    font-size: 0.9em;
+}
+
+/* Order details styling */
+.order-details-container {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.order-summary {
+    border-top: 1px solid #dee2e6;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+}
+
+/* Responsive adjustments for order pages */
+@media (max-width: 767.98px) {
+    .order-history-table {
+        font-size: 0.9rem;
+    }
+
+    .order-details-container {
+        padding: 1rem;
+    }
+}
