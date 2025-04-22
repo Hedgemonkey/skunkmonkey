@@ -1,4 +1,4 @@
-/* /users/static/css/profile.css */
+/* Base profile.css - Contains shared styles for all profile pages */
 
 /* Profile Header Styles */
 .profile-header {
@@ -58,88 +58,34 @@
 
 /* Styling for the profile sidebar */
 .profile-sidebar .list-group-item.active {
-    /* Add specific active styles if needed, Bootstrap handles basic styling */
     font-weight: bold;
 }
 
-/* Styling for address cards */
-.address-list .list-group-item {
-    margin-bottom: 1rem; /* Add spacing between address cards */
-    border: 1px solid #dee2e6; /* Ensure border visibility */
-    border-radius: .25rem; /* Match Bootstrap's card rounding */
-    padding: 1.25rem;
+/* Fix for stretched checkboxes in profile form */
+.form-check-input {
+    width: 1em;
+    height: 1em;
+    margin-top: 0.25em;
+    margin-right: 0.5em;
+    flex-shrink: 0;
 }
 
-.address-actions .btn {
-    margin-right: 0.5rem; /* Space out action buttons */
-}
-
-/* Styling for order history table */
-.order-history-table th {
-    font-weight: bold;
-}
-
-.order-history-table .badge {
-    font-size: 0.9em;
-}
-
-/* Cropper Modal Styles */
-#cropperModal .modal-content {
-    background-color: #fff;
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-#cropperModal .modal-body {
-    padding: 0;
-    background-color: #000;
-    position: relative;
-    min-height: 400px;
-}
-
-#cropperModal .img-container {
-    height: 400px;
-    width: 100%;
-    overflow: hidden;
-}
-
-#cropperModal .cropper-modal-header {
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #dee2e6;
-    padding: 0.75rem 1rem;
-}
-
-#cropperModal .cropper-modal-footer {
-    background-color: #f8f9fa;
-    border-top: 1px solid #dee2e6;
-    padding: 1rem;
-}
-
-.action-buttons {
+.form-check {
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 10px;
+    align-items: flex-start;
 }
 
-.action-buttons .btn-group {
-    margin-right: 10px;
+.form-check-label {
+    margin-bottom: 0;
 }
 
-#cropperModal .btn-outline-secondary {
-    background-color: #fff;
-    border-color: #ced4da;
+/* Ensure the Toggle Selection button is perfectly centered */
+#image-action-buttons .d-inline-flex {
+    width: 100%;
+    justify-content: center;
 }
 
-#cropperModal .btn-outline-secondary:hover {
-    background-color: #f8f9fa;
-}
-
-#crop-image-button {
-    margin-top: 10px;
-}
-
-/* Responsive adjustments if needed */
+/* Common responsive adjustments */
 @media (max-width: 767.98px) {
     .profile-header {
         padding: 1.5rem;
@@ -148,39 +94,21 @@
     .profile-sidebar {
         margin-bottom: 2rem;
     }
-
-    .address-actions .btn {
-        margin-bottom: 0.5rem; /* Stack buttons nicely on small screens */
-        display: block; /* Make buttons take full width if desired */
-        width: fit-content; /* Or adjust width as needed */
-    }
-
-    .action-buttons {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .action-buttons .btn-group {
-        margin-right: 0;
-        margin-bottom: 10px;
-        width: 100%;
-    }
-
-    #cropperModal .cropper-modal-footer {
-        padding: 0.75rem;
-    }
 }
 
-/* Ensure proper cropper view */
-.cropper-container {
-    direction: ltr;
-    font-size: 0;
-    line-height: 0;
-    position: relative;
-    touch-action: none;
-    user-select: none;
-    max-width: 100%;
-    margin: 0 auto;
+/* Prevent green highlight on image toggle button */
+#toggle-image-selection:active,
+#toggle-image-selection:focus {
+    background-color: inherit !important;
+    color: inherit !important;
+    border-color: inherit !important;
+    box-shadow: none !important;
 }
 
-/* Add more specific styles as required */
+/* Make the selected badge smaller and more compact */
+#current-image-indicator,
+#preview-image-indicator {
+    padding: 0.2em 0.4em;
+    font-size: 1em;
+    vertical-align: middle;
+}
