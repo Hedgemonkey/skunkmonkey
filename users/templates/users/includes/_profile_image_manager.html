@@ -1,0 +1,100 @@
+<!-- Simple Profile Image Manager Component -->
+<div class="card border mb-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">Profile Image</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <!-- Left side: Current image and preview -->
+            <div class="col-md-4">
+                <div class="image-container-wrapper d-flex justify-content-center">
+                    <!-- Current profile image -->
+                    <div class="me-4">
+                        {% if profile.profile_image %}
+                            <div class="text-center image-option" data-image-type="current">
+                                <div class="image-container mb-1">
+                                    <img src="{{ profile.profile_image.url }}" alt="Current Profile Image" class="img-thumbnail clickable-image profile-image-size">
+                                </div>
+                                <div class="d-flex flex-column">
+                                    <span class="text-muted small">Current</span>
+                                    <span id="current-image-indicator" class="badge bg-success selection-indicator mt-1">Selected</span>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="text-center">
+                                <div class="no-image-placeholder">
+                                    <i class="fas fa-user fa-2x text-muted"></i>
+                                </div>
+                                <p class="text-muted small mt-2">No Image</p>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Preview container -->
+                    <div id="preview-container" class="d-none">
+                        <div class="text-center image-option" data-image-type="new">
+                            <div class="image-container mb-1">
+                                <img id="preview-image" src="#" alt="Image Preview" class="img-thumbnail clickable-image profile-image-size">
+                            </div>
+                            <div class="d-flex flex-column">
+                                <span class="text-muted small">New</span>
+                                <span id="preview-image-indicator" class="badge bg-success selection-indicator mt-1 d-none">Selected</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action buttons container -->
+                <div id="image-action-buttons" class="mt-3 text-center d-none">
+                    <div class="d-inline-flex justify-content-center">
+                        <button id="toggle-selection-button" type="button" class="btn btn-sm btn-outline-primary rounded">
+                            <i class="fas fa-exchange-alt me-1"></i> Toggle Selection
+                        </button>
+                    </div>
+                    <p id="image-action-hint" class="text-muted small mt-2">Your changes won't be saved until you submit the form</p>
+                </div>
+            </div>
+
+            <!-- Right side: Controls -->
+            <div class="col-md-7">
+                <p class="mb-3 small">Upload a square image for best results. You can crop and adjust your image after selecting it.</p>
+
+                <!-- File input with custom styling -->
+                <div class="mb-3">
+                    <div class="d-flex flex-wrap align-items-center">
+                        <label for="profile-image-file" class="btn btn-outline-primary rounded me-2">
+                            <i class="fas fa-upload me-1"></i> Select Image
+                        </label>
+                        <span id="file-name-display" class="small text-muted">No file selected</span>
+                    </div>
+
+                    <!-- Hidden file inputs -->
+                    <div class="d-none">
+                        <input type="file" id="profile-image-file" name="profile-image-file" class="form-control" accept="image/*">
+                        {{ profile_form.profile_image }}
+                        <input type="hidden" id="image-selected-flag" name="image_selected" value="0">
+                    </div>
+                </div>
+
+                <!-- Remove current image option -->
+                {% if profile.profile_image %}
+                    <div class="form-check mt-3 pt-2 border-top remove-image-option">
+                        <!-- Create a visible checkbox to control Django's hidden one -->
+                        <input class="form-check-input" type="checkbox" id="remove-image-checkbox">
+                        <label class="form-check-label" for="remove-image-checkbox">
+                            Remove profile image
+                        </label>
+
+                        <!-- Hidden Django checkbox (will be synced via JS) -->
+                        <div class="d-none">
+                            {{ profile_form.profile_image.clear }}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Hidden cropped image data field -->
+                <input type="hidden" id="cropped-image-data" name="cropped_image_data">
+            </div>
+        </div>
+    </div>
+</div>

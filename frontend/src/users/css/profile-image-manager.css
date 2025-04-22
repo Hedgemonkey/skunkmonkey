@@ -1,0 +1,236 @@
+/* Professional Profile Image Management Styling */
+
+/* Profile image container */
+.profile-image-manager {
+  padding: 1.25rem;
+  background: var(--bs-light);
+  border-radius: 0.5rem;
+  border: 1px solid var(--bs-gray-200);
+  margin-bottom: 1.5rem;
+}
+
+/* Image display and controls layout */
+.image-management-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  gap: 1.5rem;
+}
+
+/* Image comparison section */
+.image-comparison {
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  gap: 1.5rem;
+  position: relative;
+}
+
+/* Current and new image containers */
+.current-image-container,
+.new-image-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 180px;
+  transition: all 0.3s ease;
+}
+
+.new-image-container {
+  opacity: 0;
+  transform: translateY(10px);
+  height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.new-image-container.active {
+  opacity: 1;
+  transform: translateY(0);
+  height: auto;
+  overflow: visible;
+}
+
+/* Image thumbnails */
+.profile-image-thumbnail {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.profile-image-thumbnail:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Ensure consistent profile image sizes */
+.profile-image-size {
+    width: 100px !important;
+    height: 100px !important;
+    object-fit: cover;
+}
+
+/* Comparison arrow */
+.comparison-arrow {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.5rem;
+  color: var(--bs-gray-500);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.comparison-active .comparison-arrow {
+  opacity: 1;
+}
+
+/* Controls section */
+.image-controls {
+  flex: 2;
+  min-width: 280px;
+}
+
+/* Stacked button group */
+.control-actions {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* File input styling */
+.custom-file-input {
+  display: inline-block;
+  position: relative;
+}
+
+.file-input-hidden {
+  width: 0.1px !important;
+  height: 0.1px !important;
+  opacity: 0 !important;
+  overflow: hidden !important;
+  position: absolute !important;
+  z-index: -1 !important;
+}
+
+/* Undo button styling */
+#undo-image-selection {
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+#undo-image-selection.active {
+  opacity: 1;
+  height: auto;
+  overflow: visible;
+  margin-top: 0.5rem;
+}
+
+/* Remove current image option */
+.remove-image-option {
+  margin-top: 0.75rem;
+  padding: 0.5rem;
+  border-top: 1px solid var(--bs-gray-200);
+}
+
+/* Helper text */
+.image-helper-text {
+  font-size: 0.875rem;
+  color: var(--bs-gray-600);
+  margin-bottom: 1rem;
+}
+
+/* Status indicators */
+.image-status {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+}
+
+.status-current {
+  color: var(--bs-gray-600);
+}
+
+.status-new {
+  color: var(--bs-primary);
+}
+
+/* Image toggling and removal classes */
+.image-container {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    border-radius: 0.25rem;
+    overflow: hidden;
+}
+
+.image-container:hover {
+    transform: scale(1.05);
+}
+
+.clickable-image {
+    transition: filter 0.2s ease;
+}
+
+.clickable-image:hover {
+    filter: brightness(1.1);
+}
+
+.selection-indicator {
+    transition: all 0.2s ease;
+    font-size: 0.7rem;
+    font-weight: 500;
+    width: fit-content;
+    margin: 0 auto;
+}
+
+.image-option:not(.selected) .selection-indicator {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.image-option.selected .selection-indicator {
+    opacity: 1;
+    visibility: visible;
+}
+
+.btn.rounded {
+    border-radius: 0.375rem;
+}
+
+.no-image-placeholder {
+    width: 100px;
+    height: 100px;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #dee2e6;
+    color: #dc3545;
+}
+
+.image-removal {
+    position: relative;
+    opacity: 0.7;
+}
+
+.image-removal::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(220, 53, 69, 0.2);
+    border: 2px solid rgba(220, 53, 69, 0.5);
+}
+
+/* Container for images and controls */
+.image-container-wrapper {
+    min-height: 150px;
+}
