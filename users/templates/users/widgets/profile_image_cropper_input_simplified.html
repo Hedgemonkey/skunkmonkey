@@ -1,0 +1,12 @@
+{% load static %}
+
+<!-- Simplified widget that only includes the file input without duplicate preview -->
+<div class="custom-file-input-minimal">
+  <!-- Just the input element without any wrapper divs or preview images -->
+  <input type="{{ widget.type }}" name="{{ widget.name }}"{% if widget.value != None %} value="{{ widget.value|stringformat:'s' }}"{% endif %}{% include "django/forms/widgets/attrs.html" %}>
+
+  <!-- Only include the clear checkbox without any preview images -->
+  {% if widget.is_initial and not widget.required %}
+    <input class="form-check-input visually-hidden" type="checkbox" name="{{ widget.checkbox_name }}" id="{{ widget.checkbox_id }}" {% if widget.attrs.disabled %} disabled{% endif %}>
+  {% endif %}
+</div>
