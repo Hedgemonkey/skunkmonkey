@@ -52,5 +52,6 @@ function initWishlistPage() {
 // Initialize when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', initWishlist);
 
-// Also export the init function to allow manual initialization
+// Export both as named export and default export for compatibility
 export { initWishlist };
+export default { initWishlist, wishlistManager };
