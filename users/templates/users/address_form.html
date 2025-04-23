@@ -10,7 +10,9 @@
         {{ form|crispy }}
         <div class="text-end mt-3"> <!-- Use text-end for Bootstrap 5 -->
             <a href="{% url 'users:manage_addresses' %}" class="btn btn-outline-secondary me-2">Cancel</a>
-             <button type="submit" class="btn btn-primary">{{ form_title|replace:" Address"|add:" Address" }}</button> <!-- Simple way to get Save/Add -->
+            <button type="submit" class="btn btn-primary">
+                {% if 'Edit' in form_title %}Save Address{% else %}Add Address{% endif %}
+            </button>
         </div>
     </form>
 {% endblock %}

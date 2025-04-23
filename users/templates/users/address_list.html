@@ -1,5 +1,6 @@
 {% extends "users/profile_base.html" %}
 {% load static %}
+{% load django_vite %}
 
 {% block profile_content %}
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -10,64 +11,66 @@
     </div>
 
     {% if addresses %}
-        <div class="list-group address-list-container">
+        <div class="row address-list-container">
             {% for address in addresses %}
-                <div class="list-group-item list-group-item-action flex-column align-items-start mb-3 border rounded p-3">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1">
-                            {{ address.address_line_1 }}
-                             {% if address.id == default_address_id %}
-                                <span class="badge bg-success ms-2">Default</span>
-                             {% endif %}
-                        </h5>
-                        <small class="text-muted">Added: {{ address.created_at|date:"d M Y" }}</small>
-                    </div>
-                    <address class="mb-2">
-                        {{ address.get_full_address|linebreaksbr }}
-                        {% if address.phone_number %}
-                            <br>Tel: {{ address.phone_number }}
-                        {% endif %}
-                    </address>
-                    <div class="address-actions">
-                         <a href="{% url 'users:edit_address' address.id %}" class="btn btn-sm btn-outline-secondary me-2">
-                             <i class="fas fa-edit me-1"></i>Edit
-                         </a>
-                         <button type="button" class="btn btn-sm btn-outline-danger me-2 btn-delete-address"
-                                 data-address-id="{{ address.id }}"
-                                 data-delete-url="{% url 'users:delete_address' address.id %}"
-                                 data-address-info="{{ address.get_short_address }}">
-                             <i class="fas fa-trash-alt me-1"></i>Delete
-                         </button>
-                         {% if address.id != default_address_id %}
-                         <button type="button" class="btn btn-sm btn-outline-success btn-set-default"
-                                 data-address-id="{{ address.id }}"
-                                 data-setdefault-url="{% url 'users:set_default_address' address.id %}"
-                                 data-address-info="{{ address.get_short_address }}">
-                             <i class="fas fa-check-circle me-1"></i>Set as Default
-                         </button>
-                         {% endif %}
+                <div class="col-12 col-md-6 mb-4">
+                    <div class="card h-100 {% if address.id == default_address_id %}border-success{% endif %}">
+                        <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                {{ address.address_line_1 }}
+                                {% if address.id == default_address_id %}
+                                    <span class="badge bg-success ms-2">Default</span>
+                                {% endif %}
+                            </h5>
+                            <small class="text-muted">Added: {{ address.created_at|date:"d M Y" }}</small>
+                        </div>
+                        <div class="card-body">
+                            <address class="mb-3">
+                                {{ address.get_full_address|linebreaksbr }}
+                                {% if address.phone_number %}
+                                    <br><i class="fas fa-phone me-1"></i> {{ address.phone_number }}
+                                {% endif %}
+                            </address>
+                            <div class="d-flex flex-wrap justify-content-between mt-auto">
+                                <div>
+                                    <a href="{% url 'users:edit_address' address.id %}" class="btn btn-sm btn-outline-secondary me-2 mb-2" aria-label="Edit address">
+                                        <i class="fas fa-edit me-1"></i>Edit
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-outline-danger me-2 mb-2 btn-delete-address"
+                                            data-address-id="{{ address.id }}"
+                                            data-delete-url="{% url 'users:delete_address' address.id %}"
+                                            data-address-info="{{ address.get_short_address }}">
+                                        <i class="fas fa-trash-alt me-1"></i>Delete
+                                    </button>
+                                </div>
+                                {% if address.id != default_address_id %}
+                                <button type="button" class="btn btn-sm btn-outline-success mb-2 btn-set-default"
+                                        data-address-id="{{ address.id }}"
+                                        data-setdefault-url="{% url 'users:set_default_address' address.id %}"
+                                        data-address-info="{{ address.get_short_address }}">
+                                    <i class="fas fa-check-circle me-1"></i>Set as Default
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
     {% else %}
-        <p>You haven't added any addresses yet.</p>
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            <span>You haven't added any addresses yet. Click the "Add New Address" button to get started.</span>
+        </div>
     {% endif %}
 
-    <!-- Hidden form for CSRF token for AJAX POST/DELETE requests -->
+    <!-- Hidden form for CSRF token for AJAX requests -->
     <form id="address-action-form" method="post" style="display: none;">
         {% csrf_token %}
     </form>
-
-    <!-- Add CSRF token and URL templates for JS -->
-    <script>
-        window.csrfToken = "{{ csrf_token }}";
-        window.deleteAddressUrlTemplate = "{% url 'users:delete_address' 0 %}".replace('0', '{address_id}');
-        window.setDefaultAddressUrlTemplate = "{% url 'users:set_default_address' 0 %}".replace('0', '{address_id}');
-    </script>
 {% endblock %}
 
 {% block extra_js %}
     {{ block.super }}
-    <!-- The webpack bundled profile.js will be included via base template -->
+    {% vite_asset 'addressManagement' %}
 {% endblock %}
