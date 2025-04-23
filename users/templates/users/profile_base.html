@@ -29,15 +29,19 @@
             <div class="col-12 col-md-8">
                 <div class="d-flex align-items-center">
                     <div class="profile-avatar me-4">
-                        {% with social_accounts=user.socialaccount_set.all %}
-                            {% if social_accounts and social_accounts.0.get_avatar_url %}
-                                <img src="{{ social_accounts.0.get_avatar_url }}" alt="{{ user.username }}" class="rounded-circle">
-                            {% else %}
-                                <div class="profile-avatar-placeholder">
-                                    {{ user.username|first|upper }}
-                                </div>
-                            {% endif %}
-                        {% endwith %}
+                        {% if user.userprofile.profile_image %}
+                            <img src="{{ user.userprofile.profile_image.url }}" alt="{{ user.username }}" class="rounded-circle">
+                        {% else %}
+                            {% with social_accounts=user.socialaccount_set.all %}
+                                {% if social_accounts and social_accounts.0.get_avatar_url %}
+                                    <img src="{{ social_accounts.0.get_avatar_url }}" alt="{{ user.username }}" class="rounded-circle">
+                                {% else %}
+                                    <div class="profile-avatar-placeholder">
+                                        {{ user.username|first|upper }}
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                        {% endif %}
                     </div>
                     <div>
                         <h1 class="profile-title mb-0">{{ user.get_full_name|default:user.username }}</h1>
