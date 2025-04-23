@@ -204,8 +204,8 @@ class CheckoutView(CartAccessMixin, View):
                 # Store order ID in session for payment success page
                 request.session['order_id'] = order.id
                 self.logger.info(
-                    f"Order processing completed successfully for order {
-                        order.order_number}")
+                    f"Order processing completed successfully for order\
+                     {order.order_number}")
 
                 return redirect('shop:payment_success')
 
