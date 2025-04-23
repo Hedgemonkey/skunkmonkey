@@ -173,7 +173,6 @@ class ProfileForm(forms.ModelForm):
             'profile_image': ProfileImageCropperWidget(),
             'receive_marketing_emails': forms.CheckboxInput(attrs={
                 'class': 'form-check-input',
-                'style': 'width: 1em; height: 1em; margin-top: 0.25em;'
             }),
         }
 
@@ -198,9 +197,6 @@ class ProfileForm(forms.ModelForm):
                 self.fields[fieldname].widget.attrs[
                     'class'
                 ] = 'form-check-input'
-                self.fields[fieldname].widget.attrs.update({
-                    'style': 'width: 1em; height: 1em; margin-top: 0.25em;'
-                })
 
         # Use proper Layout with Field objects
         self.helper.layout = Layout(
