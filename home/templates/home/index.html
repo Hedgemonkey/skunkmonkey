@@ -1,9 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
-
-{% block extra_css %}
-    <link rel="stylesheet" href="{% static 'bundles/css/home/main.css' %}?v=6">
-{% endblock %}
+{% load django_vite %}
 
 {% block page_header %}
 <div class="container header-container">
@@ -31,7 +28,7 @@
                 </div>
             </div>
             <div class="col-12 col-md-6 my-auto d-none d-md-block">
-                <img src="{% static 'images/homepage-hero.jpg' %}" alt="Skunk Monkey Products" class="img-fluid rounded">
+                <img src="{{ MEDIA_URL }}homepage-hero.jpg" alt="Skunk Monkey Products" class="img-fluid rounded">
             </div>
         </div>
     </section>
@@ -47,7 +44,7 @@
                         {% if category.image %}
                             <div class="card-category-img" style="background-image: url('{{ category.image.url }}')"></div>
                         {% else %}
-                            <div class="card-category-img" style="background-image: url('{% static "images/noimage.png" %}')"></div>
+                            <div class="card-category-img" style="background-image: url('{{ MEDIA_URL }}noimage.png')"></div>
                         {% endif %}
                     </a>
                     <div class="category-card-body">
@@ -202,18 +199,5 @@
 
 {% block postloadjs %}
 {{ block.super }}
-<script>
-    // Simple category filter functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        const productCards = document.querySelectorAll('.product-card');
-        productCards.forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.classList.add('shadow');
-            });
-        card.addEventListener('mouseleave', function() {
-            this.classList.remove('shadow');
-        });
-        });
-    });
-</script>
+{% vite_asset 'home' %}
 {% endblock %}

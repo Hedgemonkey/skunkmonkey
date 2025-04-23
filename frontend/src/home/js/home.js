@@ -1,6 +1,7 @@
 /**
  * Home page JavaScript functionality
  */
+import '../css/home.css'; // Import home-specific CSS
 
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize featured products carousel if present
