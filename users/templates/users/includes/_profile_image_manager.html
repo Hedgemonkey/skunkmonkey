@@ -87,7 +87,8 @@
 
                         <!-- Hidden Django checkbox (will be synced via JS) -->
                         <div class="d-none">
-                            {{ profile_form.profile_image.clear }}
+                            {{ profile_form.profile_image.field.widget.clear_checkbox_name }}
+                            <input type="checkbox" name="{{ profile_form.profile_image.field.widget.clear_checkbox_name }}" id="{{ profile_form.profile_image.auto_id }}_clear">
                         </div>
                     </div>
                 {% endif %}

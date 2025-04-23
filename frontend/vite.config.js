@@ -7,6 +7,8 @@ export default defineConfig({
   build: {
     outDir: resolve(__dirname, '../static'),
     emptyOutDir: true,
+    // Disable source maps completely - this will prevent browsers from requesting .map files
+    sourcemap: false,
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'src/core/js/main.js'),

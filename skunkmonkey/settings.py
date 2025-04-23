@@ -98,6 +98,7 @@ MIDDLEWARE = [
     'shop.middleware.ComparisonMiddleware',
     'shop.middleware.CartMiddleware',  # Add the shop cart middleware
     'csp.middleware.CSPMiddleware',    # Add Content Security Policy middleware
+    'skunkmonkey.middleware.SourceMapIgnoreMiddleware',  # Add custom middleware to handle source map requests
 ]
 
 # Content Security Policy settings
