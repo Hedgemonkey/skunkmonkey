@@ -45,7 +45,6 @@ export default defineConfig({
         // Users
         profile: resolve(__dirname, 'src/users/js/profile.js'),
         profileCropper: resolve(__dirname, 'src/users/js/profile_cropper.js'),
-        profileCropperInit: resolve(__dirname, 'src/users/js/profile_cropper_init.js'),
         profileImageManager: resolve(__dirname, 'src/users/js/profile_image_manager.js'),
         accountActions: resolve(__dirname, 'src/users/js/account_actions.js'),
         addressManagement: resolve(__dirname, 'src/users/js/address-management.js'),
@@ -165,7 +164,6 @@ export default defineConfig({
                 'shopNotifications': '/static/src/shop/utilities/js/notifications.js',
                 'profile': '/static/src/users/js/profile.js',
                 'profileCropper': '/static/src/users/js/profile_cropper.js',
-                'profileCropperInit': '/static/src/users/js/profile_cropper_init.js',
                 'profileImageManager': '/static/src/users/js/profile_image_manager.js',
                 'accountActions': '/static/src/users/js/account_actions.js',
                 'addressManagement': '/static/src/users/js/address-management.js',
