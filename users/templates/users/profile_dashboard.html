@@ -3,7 +3,7 @@
 
 {% block profile_content %}
     <h3 class="mb-4">Dashboard</h3>
-    <p>Welcome back, {{ user.get_full_name|default:user.username }}!</p>
+    <p>Welcome back, {{ user.userprofile.get_display_name }}!</p>
 
     <div class="card mb-3">
         <div class="card-header">Account Overview</div>

@@ -44,7 +44,7 @@
                         {% endif %}
                     </div>
                     <div>
-                        <h1 class="profile-title mb-0">{{ user.get_full_name|default:user.username }}</h1>
+                        <h1 class="profile-title mb-0">{{ user.userprofile.get_display_name }}</h1>
                         <p class="profile-subtitle text-muted mb-2">
                             <small>Member since {{ user.date_joined|date:"F Y" }}</small>
                         </p>

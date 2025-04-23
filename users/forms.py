@@ -159,6 +159,7 @@ class ProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
         fields = [
+            'display_name',
             'phone_number',
             'bio',
             'birth_date',
@@ -200,6 +201,7 @@ class ProfileForm(forms.ModelForm):
 
         # Use proper Layout with Field objects
         self.helper.layout = Layout(
+            Field('display_name', wrapper_class='row mb-2'),
             Field('phone_number', wrapper_class='row mb-2'),
             Field('bio', wrapper_class='row mb-2'),
             Field('birth_date', wrapper_class='row mb-2'),
@@ -209,6 +211,10 @@ class ProfileForm(forms.ModelForm):
             Field('theme_preference', wrapper_class='row mb-2'),
         )
 
+        self.fields['display_name'].label = "Display Name"
+        self.fields['display_name'].help_text = (
+            "The name that will be displayed on the site"
+        )
         self.fields['bio'].help_text = (
             "Tell us a little about yourself (max 500 characters)"
         )

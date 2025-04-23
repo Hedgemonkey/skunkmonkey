@@ -1,6 +1,9 @@
 {% include "users/includes/_messages.html" %}
 <div id="user-details"> {# Add ID for JavaScript targeting #}
     <dl>
+        <dt>Display Name:</dt>
+        <dd>{{ user.userprofile.get_display_name }}</dd>
+
         <dt>Username:</dt>
         <dd>{{ user.username }}</dd>
 

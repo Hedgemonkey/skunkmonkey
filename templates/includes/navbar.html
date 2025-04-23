@@ -45,7 +45,7 @@
                 {% if user.is_authenticated %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                             My Account ({{ user.username|default:user.email }}) {# Corrected default filter usage #}
+                             My Account ({{ user.userprofile.get_display_name }})
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown"> {# Used <ul> and <li> for semantic correctness, added dropdown-menu-end #}
                              <li><a class="dropdown-item" href="{% url 'users:profile_dashboard' %}">My Profile</a></li> {# Link to the new profile dashboard #}

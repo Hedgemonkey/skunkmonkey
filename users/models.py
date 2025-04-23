@@ -79,7 +79,13 @@ class UserProfile(models.Model):
         blank=True,
         related_name='+',
     )
-    # New fields
+    # User profile fields
+    display_name = models.CharField(
+        max_length=50,
+        blank=True,
+        default='',
+        help_text="The name you'd like to be called on the site"
+    )
     phone_number = models.CharField(max_length=20, blank=True, default='')
     bio = models.TextField(blank=True, default='')
     birth_date = models.DateField(null=True, blank=True)
@@ -117,6 +123,24 @@ class UserProfile(models.Model):
     )
 
     def __str__(self):
+        return self.user.username
+
+    def get_display_name(self):
+        """
+        Returns the user's display name with appropriate fallbacks.
+
+        Priority order:
+        1. Custom display_name if set
+        2. User's get_full_name() if available
+        3. User's username as last resort
+        """
+        if self.display_name:
+            return self.display_name
+
+        full_name = self.user.get_full_name()
+        if full_name:
+            return full_name
+
         return self.user.username
 
 
