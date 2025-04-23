@@ -1,7 +1,7 @@
 /* manage_profile.css - Styles specific to profile editing/management */
 
-/* Import the basic profile image fixes */
-@import '../profile-image-fixes.css';
+/* Import the consolidated profile image manager styles */
+@import '../profile-image-manager.css';
 
 /* Cropper Modal Styles */
 #cropperModal .modal-content {
