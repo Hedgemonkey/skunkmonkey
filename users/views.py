@@ -314,13 +314,43 @@ def profile_dashboard(request):
         print(f"Created UserProfile for {request.user.username}")
         messages.info(request, "Your profile has been initialized.")
 
+    # Get in progress orders (created, paid or shipped status)
+    in_progress_orders = Order.objects.filter(
+        user=request.user,
+        status__in=['created', 'paid', 'shipped']
+    ).order_by('-created_at')[:5]
+
+    # Get recent orders (all statuses, for quick access)
+    recent_orders = Order.objects.filter(
+        user=request.user
+    ).order_by('-created_at')[:3]
+
+    # Get wishlist items
+    wishlist_items = (
+        request.user.wishlist_items
+        .select_related('product')
+        .all()[:4]
+    )
+
+    # Get recently viewed products
+    recently_viewed = (
+        request.user.recently_viewed
+        .select_related('product')
+        .all()[:4]
+    )
+
     context = {
         'profile': user_profile,
+        'in_progress_orders': in_progress_orders,
+        'recent_orders': recent_orders,
+        'wishlist_items': wishlist_items,
+        'recently_viewed': recently_viewed,
         'active_tab': 'dashboard'  # For highlighting navigation
     }
+
     return render(
         request, 'users/profile_dashboard.html', context
-    )  # Ensure template path is correct
+    )
 
 
 @login_required

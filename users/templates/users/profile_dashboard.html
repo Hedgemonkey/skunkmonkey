@@ -5,42 +5,174 @@
     <h3 class="mb-4">Dashboard</h3>
     <p>Welcome back, {{ user.userprofile.get_display_name }}!</p>
 
-    <div class="card mb-3">
-        <div class="card-header">Account Overview</div>
-        <div class="card-body">
-            <p><strong>Username:</strong> {{ user.username }}</p>
-            <p><strong>Email:</strong> {{ user.email }}</p>
-            {% if user.userprofile.default_delivery_address %}
-                <p><strong>Default Delivery Address:</strong></p>
-                <address>
-                    {{ user.userprofile.default_delivery_address.get_full_address|linebreaksbr }}
-                </address>
-            {% else %}
-                 <p>You haven't set a default delivery address yet. <a href="{% url 'users:add_address' %}">Add one now?</a></p>
-            {% endif %}
+    <div class="row mb-4">
+        <!-- Account Info -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Account Overview</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Username:</strong> {{ user.username }}</p>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    {% if user.userprofile.default_delivery_address %}
+                        <p><strong>Default Delivery Address:</strong></p>
+                        <address class="mb-0">
+                            {{ user.userprofile.default_delivery_address.get_full_address|linebreaksbr }}
+                        </address>
+                    {% else %}
+                         <p>You haven't set a default delivery address yet. <a href="{% url 'users:add_address' %}">Add one now?</a></p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders in Progress -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Orders In Progress</h5>
+                    <a href="{% url 'users:order_history' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if in_progress_orders %}
+                        <div class="list-group list-group-flush">
+                            {% for order in in_progress_orders %}
+                                <div class="list-group-item border-0 px-0">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">Order #{{ order.order_number }}</h6>
+                                            <small class="text-muted">
+                                                <i class="far fa-calendar-alt me-1"></i> {{ order.created_at|date:"M d, Y" }}
+                                                <span class="mx-1">•</span>
+                                                <span class="badge {% if order.status == 'created' %}bg-info{% elif order.status == 'paid' %}bg-warning{% elif order.status == 'shipped' %}bg-primary{% endif %}">
+                                                    {{ order.status|title }}
+                                                </span>
+                                            </small>
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="fw-bold">${{ order.grand_total }}</div>
+                                            <a href="{% url 'users:order_detail' order.order_number %}" class="btn btn-sm btn-outline-secondary mt-1">Details</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-center text-muted my-3">
+                            <i class="fas fa-box-open fa-2x mb-2"></i><br>
+                            You don't have any orders in progress.
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Add links or summaries for recent orders, etc. -->
-    <div class="row">
-        <div class="col-md-6 mb-3">
+    <div class="row mb-4">
+        <!-- Quick Links -->
+        <div class="col-md-4 mb-4">
             <div class="card h-100">
-                 <div class="card-body text-center">
-                     <h5 class="card-title">Manage Addresses</h5>
-                     <p class="card-text">View, add, or edit your delivery addresses.</p>
-                     <a href="{% url 'users:manage_addresses' %}" class="btn btn-outline-primary">Go to Addresses</a>
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'users:manage_profile' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-user-edit me-2"></i>Edit Profile
+                        </a>
+                        <a href="{% url 'users:manage_addresses' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-map-marker-alt me-2"></i>Manage Addresses
+                        </a>
+                        <a href="{% url 'users:order_history' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-history me-2"></i>Order History
+                        </a>
+                        <a href="{% url 'shop:cart' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-shopping-cart me-2"></i>View Cart
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-6 mb-3">
+
+        <!-- Wishlist Preview -->
+        <div class="col-md-8 mb-4">
             <div class="card h-100">
-                 <div class="card-body text-center">
-                     <h5 class="card-title">Order History</h5>
-                     <p class="card-text">Review your past orders and their status.</p>
-                     <a href="{% url 'users:order_history' %}" class="btn btn-outline-primary">View Orders</a>
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Your Wishlist</h5>
+                    <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if wishlist_items %}
+                        <div class="row">
+                            {% for item in wishlist_items %}
+                                <div class="col-6 col-sm-3 mb-3">
+                                    <div class="card h-100 border-0">
+                                        <a href="{% url 'shop:product_detail' item.product.id %}">
+                                            {% if item.product.image %}
+                                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="card-img-top rounded">
+                                            {% else %}
+                                                <div class="placeholder-image bg-light rounded d-flex align-items-center justify-content-center" style="height: 120px;">
+                                                    <i class="fas fa-image text-muted"></i>
+                                                </div>
+                                            {% endif %}
+                                        </a>
+                                        <div class="card-body p-2 text-center">
+                                            <h6 class="card-title small mb-1">
+                                                <a href="{% url 'shop:product_detail' item.product.id %}" class="text-decoration-none text-dark">{{ item.product.name|truncatechars:30 }}</a>
+                                            </h6>
+                                            <p class="card-text fw-bold mb-0">${{ item.product.price }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted my-4">
+                            <i class="far fa-heart fa-2x mb-2"></i>
+                            <p>Your wishlist is empty.</p>
+                            <a href="{% url 'shop:product_list' %}" class="btn btn-sm btn-primary">Browse Products</a>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Recently Viewed Products -->
+    {% if recently_viewed %}
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Recently Viewed</h5>
+                <a href="{% url 'shop:product_list' %}" class="btn btn-sm btn-outline-primary">Browse More</a>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for item in recently_viewed %}
+                        <div class="col-6 col-md-3 mb-3">
+                            <div class="card h-100 border-0">
+                                <a href="{% url 'shop:product_detail' item.product.id %}">
+                                    {% if item.product.image %}
+                                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="card-img-top rounded">
+                                    {% else %}
+                                        <div class="placeholder-image bg-light rounded d-flex align-items-center justify-content-center" style="height: 120px;">
+                                            <i class="fas fa-image text-muted"></i>
+                                        </div>
+                                    {% endif %}
+                                </a>
+                                <div class="card-body p-2">
+                                    <h6 class="card-title small mb-1">
+                                        <a href="{% url 'shop:product_detail' item.product.id %}" class="text-decoration-none text-dark">{{ item.product.name|truncatechars:30 }}</a>
+                                    </h6>
+                                    <p class="card-text mb-0 fw-bold">${{ item.product.price }}</p>
+                                    <small class="text-muted">Viewed {{ item.viewed_at|timesince }} ago</small>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
 
 {% endblock %}
