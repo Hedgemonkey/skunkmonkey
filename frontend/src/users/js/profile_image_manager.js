@@ -25,6 +25,7 @@ class ProfileImageManager {
             imageSelectedFlag: null,
             croppedDataInput: null,
             currentImageContainer: null,
+            noImageContainer: null,
             newImageContainer: null,
             currentImageIndicator: null,
             previewImageIndicator: null
@@ -81,6 +82,7 @@ class ProfileImageManager {
         this.elements.previewContainer = document.getElementById('preview-container');
         this.elements.previewImage = document.getElementById('preview-image');
         this.elements.currentImageContainer = document.querySelector('[data-image-type="current"]');
+        this.elements.noImageContainer = document.querySelector('[data-image-type="none"]');
         this.elements.newImageContainer = document.querySelector('[data-image-type="new"]');
 
         // Selection indicators
@@ -104,7 +106,9 @@ class ProfileImageManager {
             'previewContainer': !!this.elements.previewContainer,
             'removeCheckbox': !!this.elements.removeCheckbox,
             'hiddenCheckbox': !!this.elements.hiddenCheckbox,
-            'toggleSelectionButton': !!this.elements.toggleSelectionButton
+            'toggleSelectionButton': !!this.elements.toggleSelectionButton,
+            'currentImageContainer': !!this.elements.currentImageContainer,
+            'noImageContainer': !!this.elements.noImageContainer
         });
     }
 
@@ -119,7 +123,8 @@ class ProfileImageManager {
      * Initialize component state based on the DOM
      */
     initializeState() {
-        this.state.hasExistingImage = !!this.elements.currentImageContainer;
+        // Check for existing image (either 'current' or 'none')
+        this.state.hasExistingImage = !!this.elements.currentImageContainer || !!this.elements.noImageContainer;
         this.state.hasNewImage = false;
         this.state.newImageSelected = false;
         this.state.removeImage = false;
@@ -130,8 +135,11 @@ class ProfileImageManager {
      * Set up the UI based on initial state
      */
     updateUIForInitialState() {
+        // Add selected class to current or no-image container
         if (this.elements.currentImageContainer) {
             this.elements.currentImageContainer.classList.add('selected');
+        } else if (this.elements.noImageContainer) {
+            this.elements.noImageContainer.classList.add('selected');
         }
     }
 
@@ -160,6 +168,14 @@ class ProfileImageManager {
             }
         }
 
+        // No image container click events
+        if (this.elements.noImageContainer) {
+            const container = this.elements.noImageContainer.querySelector('.no-image-placeholder');
+            if (container) {
+                container.addEventListener('click', () => this.selectImage('none'));
+            }
+        }
+
         if (this.elements.newImageContainer) {
             const container = this.elements.newImageContainer.querySelector('.image-container');
             if (container) {
@@ -178,6 +194,8 @@ class ProfileImageManager {
      */
     setupVisibleCheckbox() {
         if (this.elements.removeCheckbox && this.elements.hiddenCheckbox) {
+            console.log('Setting up checkbox sync between:', this.elements.removeCheckbox, this.elements.hiddenCheckbox);
+
             // Make sure the visible checkbox reflects the state of the hidden one
             this.elements.removeCheckbox.checked = this.elements.hiddenCheckbox.checked;
 
@@ -185,13 +203,16 @@ class ProfileImageManager {
             this.elements.removeCheckbox.addEventListener('change', () => {
                 // Update the hidden Django checkbox
                 this.elements.hiddenCheckbox.checked = this.elements.removeCheckbox.checked;
+                console.log('Checkbox synced. Hidden checkbox is now:', this.elements.hiddenCheckbox.checked);
 
-                // Trigger the change handler to update the UI
-                const event = new Event('change');
-                this.elements.hiddenCheckbox.dispatchEvent(event);
+                // Trigger change handler for any logic that depends on checkbox state
+                this.handleRemoveCheckbox({target: this.elements.removeCheckbox});
             });
-
-            console.log('Checkbox sync setup complete');
+        } else {
+            console.warn('Cannot setup checkbox sync - elements not found:', {
+                removeCheckbox: this.elements.removeCheckbox,
+                hiddenCheckbox: this.elements.hiddenCheckbox
+            });
         }
     }
 
@@ -288,9 +309,11 @@ class ProfileImageManager {
         this.state.hasNewImage = false;
         this.state.newImageSelected = false;
 
-        // Select current image if it exists
-        if (this.state.hasExistingImage) {
+        // Select current image if it exists, otherwise select no image
+        if (this.elements.currentImageContainer) {
             this.selectImage('current');
+        } else if (this.elements.noImageContainer) {
+            this.selectImage('none');
         }
 
         // Reset image selection flag
@@ -306,59 +329,74 @@ class ProfileImageManager {
     }
 
     /**
-     * Toggle selection between current and new image
-     * @param {Event} [e] - Optional click event
+     * Toggle the selection between current and new image
+     * @param {Event} e - Click event
      */
     toggleSelection(e) {
         if (e) e.preventDefault();
+        console.log('Toggle selection called. Current state:', this.state.newImageSelected ? 'new' : 'current');
 
-        // Only toggle if we have both images
-        if (this.state.hasExistingImage && this.state.hasNewImage) {
+        // Only toggle if we have a new image
+        if (this.state.hasNewImage) {
             this.state.newImageSelected = !this.state.newImageSelected;
+            console.log('Toggle selection changed to:', this.state.newImageSelected ? 'new' : 'current');
             this.updateSelectionUI();
             this.updateImageSelectionFlag();
+            console.log('Image selection flag updated to:', this.elements.imageSelectedFlag.value);
+        } else {
+            console.log('Cannot toggle: No new image available');
         }
     }
 
     /**
-     * Select a specific image type
-     * @param {string} type - Either 'current' or 'new'
+     * Select an image type (current, none, new)
+     * @param {String} type - The type of image to select
      */
     selectImage(type) {
-        // Skip if there's no new image and we're trying to select it
-        if (type === 'new' && !this.state.hasNewImage) {
-            return;
+        console.log(`selectImage called with type: ${type}`);
+        switch (type) {
+            case 'current':
+                this.state.newImageSelected = false;
+                console.log('Selected current image, newImageSelected=false');
+                break;
+            case 'none':
+                this.state.newImageSelected = false;
+                console.log('Selected no image, newImageSelected=false');
+                break;
+            case 'new':
+                this.state.newImageSelected = true;
+                console.log('Selected new image, newImageSelected=true');
+                break;
         }
 
-        // Skip if we're trying to select current image but don't have one
-        if (type === 'current' && !this.state.hasExistingImage) {
-            return;
-        }
-
-        this.state.newImageSelected = (type === 'new');
         this.updateSelectionUI();
         this.updateImageSelectionFlag();
+        console.log('After updateImageSelectionFlag, flag value=', this.elements.imageSelectedFlag.value);
     }
 
     /**
      * Update the UI to reflect the current selection
+     * @param {string} selectedType - The type of image being selected
      */
-    updateSelectionUI() {
+    updateSelectionUI(selectedType = null) {
+        const isNewSelected = this.state.newImageSelected;
+
+        // Handle current image container if it exists
         if (this.elements.currentImageContainer) {
-            if (this.state.newImageSelected) {
-                this.elements.currentImageContainer.classList.remove('selected');
-            } else {
-                this.elements.currentImageContainer.classList.add('selected');
-            }
+            this.elements.currentImageContainer.classList.toggle('selected', !isNewSelected);
         }
 
+        // Handle no image container if it exists
+        if (this.elements.noImageContainer) {
+            this.elements.noImageContainer.classList.toggle('selected',
+                !isNewSelected && (!this.elements.currentImageContainer || selectedType === 'none'));
+        }
+
+        // Handle new image container
         if (this.elements.newImageContainer) {
-            if (this.state.newImageSelected) {
-                this.elements.newImageContainer.classList.add('selected');
-                this.elements.previewImageIndicator.classList.remove('d-none');
-            } else {
-                this.elements.newImageContainer.classList.remove('selected');
-                this.elements.previewImageIndicator.classList.add('d-none');
+            this.elements.newImageContainer.classList.toggle('selected', isNewSelected);
+            if (this.elements.previewImageIndicator) {
+                this.elements.previewImageIndicator.classList.toggle('d-none', !isNewSelected);
             }
         }
     }
@@ -368,11 +406,7 @@ class ProfileImageManager {
      */
     updateImageSelectionFlag() {
         if (this.elements.imageSelectedFlag) {
-            if (this.state.newImageSelected) {
-                this.elements.imageSelectedFlag.value = '1';
-            } else {
-                this.elements.imageSelectedFlag.value = '0';
-            }
+            this.elements.imageSelectedFlag.value = this.state.newImageSelected ? '1' : '0';
         }
     }
 
@@ -381,12 +415,18 @@ class ProfileImageManager {
      * @param {Event} e - Change event
      */
     handleRemoveCheckbox(e) {
-        console.log('Remove checkbox changed:', this.elements.removeCheckbox.checked);
+        const isChecked = e.target ? e.target.checked : e;
+        console.log('Remove checkbox changed:', isChecked);
 
         // Update state
-        this.state.removeImage = this.elements.removeCheckbox.checked;
+        this.state.removeImage = isChecked;
 
         if (this.state.removeImage) {
+            // Ensure hidden checkbox is properly checked
+            if (this.elements.hiddenCheckbox) {
+                this.elements.hiddenCheckbox.checked = true;
+            }
+
             // Save cropped data before hiding preview
             if (this.elements.croppedDataInput && this.elements.croppedDataInput.value) {
                 this.state.savedCroppedData = this.elements.croppedDataInput.value;
@@ -419,6 +459,11 @@ class ProfileImageManager {
                 }
             }
         } else {
+            // Uncheck hidden checkbox
+            if (this.elements.hiddenCheckbox) {
+                this.elements.hiddenCheckbox.checked = false;
+            }
+
             // Restore original image if unchecking
             if (this.elements.currentImageContainer) {
                 const imgContainer = this.elements.currentImageContainer.querySelector('.image-container');
@@ -447,44 +492,38 @@ class ProfileImageManager {
     }
 
     /**
-     * Update the manager with a cropped image from an external cropper
-     * @param {string} dataUrl - The cropped image data URL
+     * Update the preview with a cropped image
+     * @param {String} dataUrl - The data URL of the cropped image
+     * @param {File} originalFile - The original file that was cropped
      */
-    updateWithCroppedImage(dataUrl) {
-        if (!dataUrl) return;
-
-        // Save the cropped data
-        this.state.savedCroppedData = dataUrl;
-
-        // Show preview
-        if (this.elements.previewContainer && this.elements.previewImage) {
-            this.elements.previewImage.src = dataUrl;
-            this.elements.previewContainer.classList.remove('d-none');
-        }
-
-        // Update state
+    updateWithCroppedImage(dataUrl, originalFile) {
+        console.log('updateWithCroppedImage called');
         this.state.hasNewImage = true;
+        this.state.newImagePreview = dataUrl;
 
-        // Show action buttons
-        if (this.elements.actionButtonsContainer) {
-            this.elements.actionButtonsContainer.classList.remove('d-none');
-            // Show the hint text
-            const hintText = document.getElementById('image-action-hint');
-            if (hintText) {
-                hintText.classList.remove('d-none');
-            }
+        // Update the cropped image data input with the data URL
+        if (this.elements.croppedImageData) {
+            this.elements.croppedImageData.value = dataUrl;
+            console.log('Updated cropped image data input');
         }
 
         // Select the new image
         this.selectImage('new');
 
-        // Store the cropped data
-        if (this.elements.croppedDataInput) {
-            this.elements.croppedDataInput.value = dataUrl;
+        // Force the image_selected value to be '1' to ensure the new image is selected
+        if (this.elements.imageSelectedFlag) {
+            this.elements.imageSelectedFlag.value = '1';
+            console.log('Forced image_selected flag to 1');
         }
 
-        // Uncheck remove checkbox if checked
-        this.uncheckRemoveCheckbox();
+        this.updatePreviewUI();
+
+        // Log final state for debugging
+        console.log('Final state:', {
+            hasNewImage: this.state.hasNewImage,
+            newImageSelected: this.state.newImageSelected,
+            imageSelectedFlag: this.elements.imageSelectedFlag ? this.elements.imageSelectedFlag.value : 'undefined'
+        });
     }
 }
 

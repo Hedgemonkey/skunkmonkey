@@ -8,7 +8,7 @@
             <!-- Left side: Current image and preview -->
             <div class="col-md-4">
                 <div class="image-container-wrapper d-flex justify-content-center">
-                    <!-- Current profile image -->
+                    <!-- Current profile image or No Image placeholder -->
                     <div class="me-4">
                         {% if profile.profile_image %}
                             <div class="text-center image-option" data-image-type="current">
@@ -21,11 +21,14 @@
                                 </div>
                             </div>
                         {% else %}
-                            <div class="text-center">
-                                <div class="no-image-placeholder">
+                            <div class="text-center image-option" data-image-type="none">
+                                <div class="no-image-placeholder clickable-image profile-image-size">
                                     <i class="fas fa-user fa-2x text-muted"></i>
                                 </div>
-                                <p class="text-muted small mt-2">No Image</p>
+                                <div class="d-flex flex-column">
+                                    <span class="text-muted small">No Image</span>
+                                    <span id="no-image-indicator" class="badge bg-success selection-indicator mt-1">Selected</span>
+                                </div>
                             </div>
                         {% endif %}
                     </div>
@@ -79,17 +82,13 @@
                 <!-- Remove current image option -->
                 {% if profile.profile_image %}
                     <div class="form-check mt-3 pt-2 border-top remove-image-option">
-                        <!-- Create a visible checkbox to control Django's hidden one -->
-                        <input class="form-check-input" type="checkbox" id="remove-image-checkbox">
+                        <!-- Use a simpler approach with a custom named checkbox -->
+                        <input class="form-check-input" type="checkbox"
+                               id="remove-image-checkbox"
+                               name="remove-image-checkbox">
                         <label class="form-check-label" for="remove-image-checkbox">
                             Remove profile image
                         </label>
-
-                        <!-- Hidden Django checkbox (will be synced via JS) -->
-                        <div class="d-none">
-                            {{ profile_form.profile_image.field.widget.clear_checkbox_name }}
-                            <input type="checkbox" name="{{ profile_form.profile_image.field.widget.clear_checkbox_name }}" id="{{ profile_form.profile_image.auto_id }}_clear">
-                        </div>
                     </div>
                 {% endif %}
 
