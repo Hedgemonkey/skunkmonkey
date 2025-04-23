@@ -171,6 +171,10 @@ class ProfileForm(forms.ModelForm):
             'birth_date': forms.DateInput(attrs={'type': 'date'}),
             'bio': forms.Textarea(attrs={'rows': 3}),
             'profile_image': ProfileImageCropperWidget(),
+            'receive_marketing_emails': forms.CheckboxInput(attrs={
+                'class': 'form-check-input',
+                'style': 'width: 1em; height: 1em; margin-top: 0.25em;'
+            }),
         }
 
     def __init__(self, *args, **kwargs):
@@ -183,11 +187,20 @@ class ProfileForm(forms.ModelForm):
         self.helper.field_class = 'col-lg-9'
         self.helper.wrapper_class = 'row mb-2'
 
-        # Set defaults for all fields
+        # First apply form-control to all fields
         for fieldname in self.fields:
             self.fields[fieldname].widget.attrs.update({
                 'class': 'form-control',
             })
+
+        for fieldname in self.fields:
+            if isinstance(self.fields[fieldname].widget, forms.CheckboxInput):
+                self.fields[fieldname].widget.attrs[
+                    'class'
+                ] = 'form-check-input'
+                self.fields[fieldname].widget.attrs.update({
+                    'style': 'width: 1em; height: 1em; margin-top: 0.25em;'
+                })
 
         # Use proper Layout with Field objects
         self.helper.layout = Layout(
@@ -213,3 +226,6 @@ class ProfileForm(forms.ModelForm):
             "Email notification preferences"
         )
         self.fields['theme_preference'].label = "Site theme preference"
+        self.fields['theme_preference'].help_text = (
+            "✨ Coming soon! Theme customization is currently in development."
+        )
