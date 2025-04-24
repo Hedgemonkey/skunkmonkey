@@ -18,6 +18,129 @@ Each entry follows this structure:
 
 ## 🔄 Migration History
 
+### **Version: v1.6.0**
+
+📅 **Date**: 2025-04-24
+
+📝 **Description**: Added ContactMessage model for contact form submission management and staff workflow.
+
+📂 **Migration File**: `users/migrations/0007_contactmessage.py`
+
+🛠 **Impact**:
+
+- Created `users_contactmessage` table to store contact form submissions
+- Added comprehensive fields for tracking message status, priority, and category
+- Implemented staff workflow functionality including read/unread status, staff assignment, notes, and responses
+- Created database indexes for efficient querying of messages by email, status, priority, category, timestamp, and read status
+- Added relationships to User model for tracking both message senders and staff assignments
+
+🔄 **Rollback Plan**:
+
+```bash
+python manage.py migrate users 0006_alter_userprofile_display_name   # Reverts to the previous migration
+```
+
+---
+
+### **Version: v1.5.1**
+
+📅 **Date**: 2025-04-23
+
+📝 **Description**: Refined UserProfile display_name field to improve user experience.
+
+📂 **Migration File**: `users/migrations/0006_alter_userprofile_display_name.py`
+
+🛠 **Impact**:
+
+- Modified the `display_name` field in UserProfile to use blank=True and default='' for improved form handling
+- This allows for cleaner form validation and better defaulting behavior when display name is not provided
+- No data migration required as this was a non-destructive change
+
+🔄 **Rollback Plan**:
+
+```bash
+python manage.py migrate users 0005_userprofile_display_name_alter_userprofile_bio  # Reverts to the previous migration
+```
+
+---
+
+### **Version: v1.5.0**
+
+📅 **Date**: 2025-04-22
+
+📝 **Description**: Added display_name field to UserProfile and enhanced bio field.
+
+📂 **Migration File**: `users/migrations/0005_userprofile_display_name_alter_userprofile_bio.py`
+
+🛠 **Impact**:
+
+- Added `display_name` field (CharField, max_length=50) to UserProfile for personalized user identification
+- Modified the `bio` field to provide a better default (empty string instead of NULL)
+- These changes improve the user profile system by allowing users to set display names separate from their actual names
+- No data migration required as all fields have defaults
+
+🔄 **Rollback Plan**:
+
+```bash
+python manage.py migrate users 0004_alter_address_address_line_2_alter_address_county_and_more  # Reverts to the previous migration
+```
+
+---
+
+### **Version: v1.5.0**
+
+📅 **Date**: 2025-04-18
+
+📝 **Description**: Migrated from webpack to Vite for frontend asset management.
+
+📂 **Migration File**: N/A - This was a frontend tooling change with no database schema impacts.
+
+🛠 **Impact**:
+
+- No database schema changes required
+- Static assets are now processed and served through Vite instead of webpack
+- Frontend build process optimized for improved performance
+
+🔄 **Rollback Plan**:
+
+```bash
+# No database rollback needed
+# To revert to webpack for frontend:
+git checkout v1.4.1 -- webpack.config.js package.json
+npm install
+```
+
+---
+
+### **Version: v1.4.2**
+
+📅 **Date**: 2025-04-15
+
+📝 **Description**: Updated Address and UserProfile fields with empty string defaults.
+
+📂 **Migration File**: `users/migrations/0004_alter_address_address_line_2_alter_address_county_and_more.py`
+
+🛠 **Impact**:
+
+- Changed several fields in the `Address` model to use empty string defaults instead of NULL:
+  - `address_line_2`
+  - `county`
+  - `phone_number`
+  - `postcode`
+- Changed fields in the `UserProfile` model to use empty string defaults:
+  - `bio`
+  - `phone_number`
+- This change improves data consistency by using empty strings instead of NULL for optional text fields.
+- No data migration was required as these were non-destructive changes.
+
+🔄 **Rollback Plan**:
+
+```bash
+python manage.py migrate users 0003_userprofile_bio_userprofile_birth_date_and_more   # Reverts to the previous migration
+```
+
+---
+
 ### **Version: v1.4.1**
 
 📅 **Date**: 2025-04-07
@@ -85,7 +208,7 @@ python manage.py migrate users zero   # Reverts all migrations
 
 ---
 
-### **Version: v1.3.10**
+### **Version: v1.3.8**
 
 📅 **Date**: 2025-03-27
 
@@ -107,7 +230,29 @@ python manage.py migrate shop 0005_order_billing_name_order_payment_method_type_
 
 ---
 
-### **Version: v1.3.8**
+### **Version: v1.3.7**
+
+📅 **Date**: 2025-03-27
+
+📝 **Description**: Enhanced Category model with friendly name and image support.
+
+📂 **Migration File**: `products/migrations/0004_category_friendly_name_category_image.py`
+
+🛠 **Impact**:
+
+- Added `friendly_name` field (CharField, max_length=255, blank=True) to the Category model for display purposes
+- Added `image` field (ImageField, nullable) to the Category model to support visual category representation
+- This enhancement allows for more user-friendly category displays and improved UI with category images
+
+🔄 **Rollback Plan**:
+
+```bash
+python manage.py migrate products 0003_productattributetype_alter_category_options_and_more  # Reverts to the previous migration
+```
+
+---
+
+### **Version: v1.3.6**
 
 📅 **Date**: 2025-03-27
 
@@ -129,7 +274,7 @@ python manage.py migrate shop 0004_remove_payment_order_remove_wishlist_products
 
 ---
 
-### **Version: v1.3.7**
+### **Version: v1.3.5**
 
 📅 **Date**: 2025-03-26
 
@@ -157,7 +302,7 @@ python manage.py migrate shop 0003_remove_order_shipping_address_order_billing_a
 
 ---
 
-### **Version: v1.3.6**
+### **Version: v1.3.4**
 
 📅 **Date**: 2025-03-24
 
@@ -184,51 +329,9 @@ python manage.py migrate shop 0002_comparisonlist_recentlyvieweditem   # Reverts
 
 ---
 
-### **Version: v1.3.5**
-
-📅 **Date**: 2025-03-24
-
-📝 **Description**: Added `ComparisonList` and `RecentlyViewedItem` models to the `shop` app.
-
-📂 **Migration File**: `shop/migrations/0002_comparisonlist_recentlyvieweditem.py`
-
-🛠 **Impact**:
-
-- Created `shop_comparisonlist` table to store products being compared by users.
-- Created `shop_recentlyvieweditem` table to track recently viewed products.
-
-🔄 **Rollback Plan**:
-
-```bash
-python manage.py migrate shop 0001_initial   # Reverts to the previous migration
-```
-
----
-
-### **Version: v1.3.4**
-
-📅 **Date**: 2025-03-24
-📝 **Description**: Added `ProductAttribute`, `ProductAttributeType`, and `ProductAttributeValue` models to the `products` app.
-
-📂 **Migration File**: `products/migrations/0003_productattributetype_alter_category_options_and_more.py`
-
-🛠 **Impact**:
-
-- Created `products_productattribute` table to store product attributes.
-- Created `products_productattributetype` table to store product attribute types.
-- Created `products_productattributevalue` table to store product attribute values.
-
-🔄 **Rollback Plan**:
-
-```bash
-python manage.py migrate products 0002_product_compare_at_price   # Reverts to the previous migration
-```
-
----
-
 ### **Version: v1.3.3**
 
-📅 **Date**: 2025-03-23
+📅 **Date**: 2025-03-24
 
 📝 **Description**: Added `ComparisonList` and `RecentlyViewedItem` models to the `shop` app.
 
@@ -251,20 +354,27 @@ python manage.py migrate shop 0001_initial   # Reverts to the previous migration
 
 📅 **Date**: 2025-03-23
 
-📝 **Description**: Added `compare_at_price` field to the `Product` model to support sale pricing and discount calculations.
+📝 **Description**: Added product attribute functionality and enhanced Category model hierarchy.
 
-📂 **Migration File**: `products/migrations/0002_product_compare_at_price.py`
+📂 **Migration File**: `products/migrations/0003_productattributetype_alter_category_options_and_more.py`
 
 🛠 **Impact**:
 
-- Altered `products_product` table to add the `compare_at_price` column
-- This allows products to display original prices alongside discounted prices
-- No data migration required as the field is nullable
+- Created `ProductAttributeType` model to define types of product attributes (e.g., color, size, material)
+- Created `ProductAttributeValue` model to store possible values for each attribute type
+- Created `ProductAttribute` model to associate products with specific attribute values
+- Enhanced Category model with hierarchical capabilities:
+  - Added `parent` field as ForeignKey to self (for category hierarchy)
+  - Added `level` field to track hierarchy depth
+  - Added `order` field for manual sorting
+  - Added `is_active` flag for category visibility control
+  - Modified Category ordering to respect the order field
+- This provides a robust framework for product filtering and categorization
 
 🔄 **Rollback Plan**:
 
 ```bash
-python manage.py migrate products 0001_initial   # Reverts to the previous migration
+python manage.py migrate products 0002_product_compare_at_price  # Reverts to the previous migration
 ```
 
 ---
@@ -352,7 +462,7 @@ python manage.py migrate products zero   # Reverts the initial migration
 
 🔄 **Rollback Plan**:
 
-```sh
+```bash
 python manage.py migrate account zero
 python manage.py migrate socialaccount zero
 ```
@@ -378,7 +488,7 @@ python manage.py migrate socialaccount zero
 
 🔄 **Rollback Plan**:
 
-```sh
+```bash
 python manage.py migrate admin zero
 python manage.py migrate auth zero
 python manage.py migrate contenttypes zero
@@ -388,7 +498,7 @@ python manage.py migrate sessions zero
 ---
 
 **Maintainer**: `@Hedgemonkey`
-_Last updated: 2025-04-07_
+_Last updated: 2025-04-24_
 
 ---
 
@@ -405,18 +515,18 @@ _Last updated: 2025-04-07_
 
 Check migration status:
 
-```sh
+```bash
 python manage.py showmigrations
 ```
 
 Apply migrations:
 
-```sh
+```bash
 python manage.py migrate
 ```
 
 Rollback to a previous migration:
 
-```sh
+```bash
 python manage.py migrate app_name 0002
 ```

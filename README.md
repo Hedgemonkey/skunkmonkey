@@ -214,29 +214,29 @@ Additional models and relationships:
 +--------------------+
 ```
 
-User and address models:
+User, address, and contact models:
 
 ```text
-+--------------------+         +--------------------+
-|     UserProfile    |         |       User         |
-+--------------------+         +--------------------+
-| id (PK)            |<--------| id (PK)            |
-| user_id (FK)       |         | username           |
-| bio                |         | email              |
-| birth_date         |         | password           |
-| profile_image      |         | ...                |
-| phone_number       |         +--------------------+
-| theme_preference   |                 |
-| notification_pref  |                 | 1:M
-| marketing_emails   |                 v
-| default_del_addr(FK)|        +--------------------+
-+--------------------+         |      Address       |
-                               +--------------------+
-                               | id (PK)            |
-                               | user_id (FK)       |
-                               | name               |
-                               | address_line1      |
-                               | address_line2      |
++--------------------+         +--------------------+         +--------------------+
+|     UserProfile    |         |       User         |         |   ContactMessage   |
++--------------------+         +--------------------+         +--------------------+
+| id (PK)            |<--------| id (PK)            |         | id (PK)            |
+| user_id (FK)       |         | username           |-------->| user_id (FK, opt)  |
+| bio                |         | email              |         | email              |
+| birth_date         |         | password           |         | subject            |
+| profile_image      |         | ...                |-------->| message            |
+| phone_number       |         +--------------------+         | phone_number       |
+| theme_preference   |                 |                      | timestamp          |
+| notification_pref  |                 | 1:M                  | is_read            |
+| marketing_emails   |                 v                      | status             |
+| default_del_addr(FK)|        +--------------------+         | priority           |
++--------------------+         |      Address       |         | category           |
+                               +--------------------+         | assigned_to (FK)   |
+                               | id (PK)            |         | staff_notes        |
+                               | user_id (FK)       |         | response           |
+                               | name               |         | response_date      |
+                               | address_line1      |         | resolved_date      |
+                               | address_line2      |         +--------------------+
                                | city               |
                                | state              |
                                | postal_code        |
@@ -268,14 +268,14 @@ Shopping related models:
 | session_id (opt)   |         | session_id (opt)   |
 | name               |         | created_at         |
 | created_at         |         | updated_at         |
-| updated_at         |         +--------------------+
-+--------------------+                 |
-        |                               | 1:M
-        | M:M                           v
-        v                      +--------------------+
-+--------------------+         |     CartItem       |
-|      Product       |         +--------------------+
-+--------------------+         | id (PK)            |
++--------------------+         +--------------------+
+        |                               |
+        | M:M                           | 1:M
+        v                               v
++--------------------+         +--------------------+
+|      Product       |         |     CartItem       |
++--------------------+         +--------------------+
+                               | id (PK)            |
                                | cart_id (FK)       |
                                | product_id (FK)    |
                                | quantity           |
@@ -345,6 +345,8 @@ Order models:
 - `UserProfile` ↔️ `Address` (default): One-to-One (a user profile has one
   default delivery address)
 - `User` ↔️ `Address`: One-to-Many (a user can have multiple addresses)
+- `User` ↔️ `ContactMessage`: One-to-Many (a user can submit multiple contact messages)
+- `User` (staff) ↔️ `ContactMessage`: One-to-Many (a staff user can be assigned to multiple messages)
 
 #### Shop Module
 
@@ -384,6 +386,8 @@ Order models:
   discount display (original price vs. current price)
 - Comparison lists allow users to compare up to 4 products side-by-side
 - Recently viewed items are tracked to provide personalized recommendations
+- Contact messages store user inquiries with metadata for efficient management
+- Staff workflow for contact messages includes status tracking, assignment, and response handling
 
 The database consists of relational tables that store information about users,
 products, and orders. **Django's ORM** is used to interact with the database
