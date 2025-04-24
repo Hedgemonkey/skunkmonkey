@@ -304,35 +304,36 @@ def staff_message_reply(request, pk):
     message = get_object_or_404(ContactMessage, pk=pk)
 
     if request.method == 'POST':
-        # response = request.POST.get('response')
-        send_email = request.POST.get('send_email', False)
+        response = request.POST.get('response')
+        # send_email = request.POST.get('send_email') == 'true'
+        status_after = request.POST.get('status_after', 'in_progress')
 
-        # Save response to database
-        message.status = 'in_progress'  # Update status to in progress
-        message.save()
+        # Determine if we should change status to resolved
+        # based on user selection
+        change_status_to_resolved = status_after == 'resolved'
 
-        # Send email if requested
-        if send_email and message.email and '@' in message.email:
-            try:
-                # Use send_response_email function with correct parameters
-                send_response_email(
-                    contact_message=message,
-                    response_text=request.POST.get('response', ''),
-                    sender=request.user
-                )
-                messages.success(
-                    request, _("Response sent by email and saved.")
-                )
-            except Exception as e:
-                messages.error(
-                    request, _(
-                        f"Failed to send email: {str(e)}. Response was saved."
-                    )
-                )
-        else:
-            messages.success(request, _("Response saved."))
+        if response:
+            # Update the message with the response,
+            # passing the status preference
+            message.add_response(
+                response_text=response,
+                user=request.user,
+                change_status=change_status_to_resolved
+            )
 
-        return redirect('users:staff_message_detail', pk=pk)
+            # If status is manually set to resolved and wasn't handled by
+            # add_response
+            if change_status_to_resolved and message.status != 'resolved':
+                message.status = 'resolved'
+                message.resolved_date = timezone.now()
+                message.save(update_fields=['status', 'resolved_date'])
+
+            # Email is now sent by add_response automatically
+            messages.success(
+                request, _("Response saved and email sent to user.")
+            )
+
+            return redirect('users:staff_message_detail', pk=pk)
 
     return render(
         request, 'users/staff/message_reply.html', {'message': message}
@@ -376,38 +377,53 @@ def staff_message_response(request, pk):
     if request.method == 'POST':
         content = request.POST.get('content')
         response_type = request.POST.get('response_type', 'note')
-        send_email = request.POST.get('send_email') == 'true'
+        send_email_requested = request.POST.get('send_email') == 'true'
 
         # Save response in database
-        # In a real implementation, you might have a Response model
-        # Here we'll just update the staff_notes field
         timestamp = timezone.now().strftime('%Y-%m-%d %H:%M')
         staff_name = request.user.get_full_name() or request.user.username
 
-        # Format note based on response type
-        if response_type == 'email':
-            note_prefix = f"[{timestamp}] {staff_name} sent email: "
-        elif response_type == 'call':
-            note_prefix = f"[{timestamp}] {staff_name} made call: "
+        # Format note based on response type for staff_notes (private)
+        if response_type == 'message':
+            note_prefix = f"[{timestamp}] {staff_name} sent message: "
+        elif response_type == 'phone_call_user':
+            note_prefix = (
+                f"[{timestamp}] {staff_name} made phone call "
+                f"(visible to user): "
+            )
+        elif response_type == 'phone_call_internal':
+            note_prefix = (
+                f"[{timestamp}] {staff_name} made phone call "
+                f"(internal only): "
+            )
         else:
             note_prefix = f"[{timestamp}] {staff_name} noted: "
 
         formatted_note = f"{note_prefix}{content}\n\n"
 
-        # Append to existing notes
+        # Append to existing staff_notes (private to staff)
         if message.staff_notes:
             message.staff_notes = formatted_note + message.staff_notes
         else:
             message.staff_notes = formatted_note
 
-        # Update status to in_progress if it was new
-        if message.status == 'new':
-            message.status = 'in_progress'
-
-        message.save()
+        # For message or phone_call_user type responses, we also update the
+        # response field so it's visible to the user in their conversation view
+        if response_type in ['message', 'phone_call_user']:
+            # Use the add_response method to properly format and store the
+            # response for user visibility
+            message.add_response(content, request.user)
+        else:
+            # For internal responses, we only update staff_notes
+            # and update status if needed
+            if message.status == 'new':
+                message.status = 'in_progress'
+                message.save(update_fields=['staff_notes', 'status'])
+            else:
+                message.save(update_fields=['staff_notes'])
 
         # Send email if requested
-        if send_email and message.email and '@' in message.email:
+        if send_email_requested and message.email and '@' in message.email:
             try:
                 # Use send_response_email with correct parameters
                 send_response_email(
@@ -419,11 +435,8 @@ def staff_message_response(request, pk):
                     request, _("Response sent by email and saved.")
                 )
             except Exception as e:
-                messages.error(
-                    request, _(
-                        f"Failed to send email: {str(e)}. Response was saved."
-                    )
-                )
+                msg = f"Failed to send email: {str(e)}. Response was saved."
+                messages.error(request, _(msg))
         else:
             messages.success(request, _("Response saved."))
 

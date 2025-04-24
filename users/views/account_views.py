@@ -141,7 +141,9 @@ def manage_details(request):
 def manage_email(request):
     """Manage user email addresses."""
     email_addresses = EmailAddress.objects.filter(user=request.user)
-    form = CustomAddEmailForm(request, request.POST or None)
+
+    # Pass the request object as a named parameter instead of positional
+    form = CustomAddEmailForm(request=request, data=request.POST or None)
 
     if request.method == 'POST' and form.is_valid():
         email_address = form.save(request)

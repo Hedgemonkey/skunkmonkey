@@ -85,7 +85,7 @@ def process_contact_form(request, is_user_view=False):
 
         # Send email using our utility function
         email_sent = send_contact_email(
-            request_email=email,
+            request_or_email=email,
             message=message,
             subject=subject,
             phone_number=phone_number,

@@ -82,19 +82,33 @@ def message_reply(request, pk):
             # Get the reply content
             reply_content = form.cleaned_data['message']
 
-            # Add the reply to the staff notes with a user prefix
+            # Format the user reply
             timestamp = timezone.now().strftime('%Y-%m-%d %H:%M')
             user_name = request.user.get_full_name() or request.user.username
 
-            formatted_reply = (
+            # Create a formatted user reply that will be visible to both staff
+            # and user
+            formatted_reply = f"[{timestamp}] USER REPLY: {reply_content}"
+
+            # Store a copy in staff_notes for historical purposes
+            # with more detail
+            staff_note = (
                 f"[{timestamp}] USER REPLY - {user_name}: {reply_content}\n\n"
             )
-
-            # Update the message
             if message.staff_notes:
-                message.staff_notes = formatted_reply + message.staff_notes
+                message.staff_notes = staff_note + message.staff_notes
             else:
-                message.staff_notes = formatted_reply
+                message.staff_notes = staff_note
+
+            # Append the user reply to the response or create new response
+            # This ensures the full conversation is visible to the user
+            if message.response:
+                message.response = f"{message.response}\n\n{formatted_reply}"
+            else:
+                message.response = formatted_reply
+
+            # Update response date to now
+            message.response_date = timezone.now()
 
             # If the message was resolved or closed, reopen it
             if message.status in ['resolved', 'closed']:
@@ -106,7 +120,6 @@ def message_reply(request, pk):
             try:
                 # Customize the subject to indicate it's a reply
                 subject = f"User Reply: {message.subject}"
-                # Split into multiple lines to fix line length
                 notification_message = (
                     f"User reply to message #{message.id}:\n\n"
                     f"{reply_content}"
@@ -127,7 +140,6 @@ def message_reply(request, pk):
                         f"{message.id}"
                     )
                 else:
-                    # Split into multiple lines to fix line length
                     logger.error(
                         f"Failed to send user reply notification for message "
                         f"{message.id}"
