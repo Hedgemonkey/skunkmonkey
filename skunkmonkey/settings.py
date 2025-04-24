@@ -145,6 +145,26 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 # Crispy Forms
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+CRISPY_FAIL_SILENTLY = not DEBUG
+
+# Additional crispy form settings to fix template variable issues
+CRISPY_CLASS_CONVERTERS = {
+    'textinput': "form-control",
+    'urlinput': "form-control",
+    'numberinput': "form-control",
+    'emailinput': "form-control",
+    'dateinput': "form-control",
+    'textarea': "form-control",
+    'passwordinput': "form-control",
+    'fileinput': "form-control",
+}
+
+# Default context variables for crispy forms
+CRISPY_CONTEXT_PROCESSORS = [
+    'crispy_forms.context_processors.form_helper',
+    'crispy_forms.context_processors.wrapper_class',
+    'crispy_forms.context_processors.include_media',
+]
 
 WSGI_APPLICATION = 'skunkmonkey.wsgi.application'
 
