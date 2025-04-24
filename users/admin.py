@@ -215,9 +215,14 @@ class ContactMessageAdmin(admin.ModelAdmin):
         """
         Custom save method to track changes and assign staff member.
         """
-        # If response is provided but no response date, set it now
-        if obj.response and not obj.response_date:
-            obj.add_response(obj.response, request.user)
+        # Check if the response field has been changed or added
+        if 'response' in form.changed_data:
+            # Get the raw response text from the form
+            response_text = form.cleaned_data['response']
+
+            # Use the add_response method to properly format the response
+            # and add it to the conversation history
+            obj.add_response(response_text, request.user)
 
         # Assign to staff member if saving without explicitly assigning
         if not obj.assigned_to and request.user.is_staff:
