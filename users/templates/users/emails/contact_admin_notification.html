@@ -1,0 +1,110 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% trans "New Contact Form Submission" %}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .header {
+            background-color: #2196F3;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .content {
+            padding: 20px;
+        }
+        .footer {
+            background-color: #f1f1f1;
+            padding: 10px;
+            text-align: center;
+            font-size: 0.8em;
+            color: #666;
+        }
+        .message-box {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .priority-high {
+            background-color: #ffe0e0;
+            border-left: 5px solid #ff5252;
+        }
+        .priority-medium {
+            background-color: #fff8e0;
+            border-left: 5px solid #ffca28;
+        }
+        .action-button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px 0;
+            background-color: #2196F3;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .user-info {
+            background-color: #e3f2fd;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>{% trans "New Contact Form Submission" %}</h1>
+    </div>
+
+    <div class="content">
+        <p>{% trans "A new contact form submission has been received:" %}</p>
+
+        <div class="message-box {% if priority == 'high' or priority == 'urgent' %}priority-high{% elif priority == 'medium' %}priority-medium{% endif %}">
+            <p><strong>{% trans "Subject:" %}</strong> {{ subject }}</p>
+            <p><strong>{% trans "From:" %}</strong> {{ email }}</p>
+
+            {% if phone_number %}
+            <p><strong>{% trans "Phone:" %}</strong> {{ phone_number }}</p>
+            {% endif %}
+
+            <p><strong>{% trans "Priority:" %}</strong> {{ priority|title }}</p>
+            <p><strong>{% trans "Category:" %}</strong> {{ category|title }}</p>
+            <p><strong>{% trans "Date:" %}</strong> {{ timestamp }}</p>
+
+            {% if user %}
+            <div class="user-info">
+                <p><strong>{% trans "User Account:" %}</strong></p>
+                <p>{% trans "Username:" %} {{ user.username }}</p>
+                <p>{% trans "Name:" %} {{ user.get_full_name }}</p>
+                <p>{% trans "Email:" %} {{ user.email }}</p>
+                <p>{% trans "Member since:" %} {{ user.date_joined|date:"F j, Y" }}</p>
+            </div>
+            {% else %}
+            <p><strong>{% trans "User Account:" %}</strong> {% trans "Not registered/Not logged in" %}</p>
+            {% endif %}
+
+            <p><strong>{% trans "Message:" %}</strong></p>
+            <p>{{ message }}</p>
+        </div>
+
+        <a href="{{ admin_url }}" class="action-button">{% trans "View in Admin" %}</a>
+
+        <p>{% trans "You can respond to this inquiry by logging into the admin dashboard." %}</p>
+    </div>
+
+    <div class="footer">
+        <p>© {% now "Y" %} SkunkMonkey. {% trans "All rights reserved." %}</p>
+        <p>{% trans "You're receiving this email because you're a staff member of SkunkMonkey." %}</p>
+    </div>
+</body>
+</html>

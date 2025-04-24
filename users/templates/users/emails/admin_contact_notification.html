@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Contact Form Submission</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+        }
+        .message-box {
+            background-color: #fff;
+            border: 1px solid #eee;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        .user-info {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f2f9ff;
+            border: 1px solid #d0e3f0;
+            border-radius: 5px;
+        }
+        .priority-high {
+            color: #d9534f;
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #777;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .action-button {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #4a69bd;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>New Contact Form Submission</h2>
+    </div>
+
+    <div class="content">
+        <p><strong>A new contact form has been submitted on your website.</strong></p>
+
+        <table>
+            <tr>
+                <th>Date</th>
+                <td>{% now "F j, Y, H:i" %}</td>
+            </tr>
+            <tr>
+                <th>From</th>
+                <td>{{ email }}</td>
+            </tr>
+            {% if phone_number %}
+            <tr>
+                <th>Phone</th>
+                <td>{{ phone_number }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+                <th>Subject</th>
+                <td>{{ subject }}</td>
+            </tr>
+        </table>
+
+        <div class="message-box">
+            <p><strong>Message:</strong></p>
+            {{ message|linebreaks }}
+        </div>
+
+        {% if user %}
+        <div class="user-info">
+            <h3>User Information:</h3>
+            <p><strong>Username:</strong> {{ user.username }}</p>
+            <p><strong>Full Name:</strong> {{ user.get_full_name }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Joined:</strong> {{ user.date_joined|date:"F j, Y" }}</p>
+        </div>
+        {% endif %}
+
+        {% if request %}
+        <a href="http://{{ request.get_host }}/admin/users/contactmessage/" class="action-button">View All Messages</a>
+        {% else %}
+        <a href="{{ site_url|default:'/' }}admin/users/contactmessage/" class="action-button">View All Messages</a>
+        {% endif %}
+    </div>
+
+    <div class="footer">
+        <p>&copy; {% now "Y" %} SkunkMonkey Admin Notification</p>
+    </div>
+</body>
+</html>
