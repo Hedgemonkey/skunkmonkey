@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block head_title %}{% trans "My Messages" %}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>{% trans "My Messages" %}</h1>
+        <a href="{% url 'users:contact' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> {% trans "New Message" %}
+        </a>
+    </div>
+
+    {% if contact_messages %}
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <div class="row">
+                    <div class="col-md-5">{% trans "Subject" %}</div>
+                    <div class="col-md-2">{% trans "Date" %}</div>
+                    <div class="col-md-2">{% trans "Status" %}</div>
+                    <div class="col-md-3">{% trans "Last Updated" %}</div>
+                </div>
+            </div>
+            <div class="list-group list-group-flush">
+                {% for message in contact_messages %}
+                    <a href="{% url 'users:message_detail' message.id %}" class="list-group-item list-group-item-action">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="d-flex align-items-center">
+                                    {% if not message.is_read %}
+                                        <span class="badge bg-danger me-2">{% trans "New" %}</span>
+                                    {% endif %}
+                                    <span class="fw-semibold text-truncate">{{ message.subject }}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <small class="text-muted">{{ message.timestamp|date:"M d, Y" }}</small>
+                            </div>
+                            <div class="col-md-2">
+                                {% if message.status == 'new' %}
+                                    <span class="badge bg-primary">{% trans "New" %}</span>
+                                {% elif message.status == 'in_progress' %}
+                                    <span class="badge bg-info">{% trans "In Progress" %}</span>
+                                {% elif message.status == 'resolved' %}
+                                    <span class="badge bg-success">{% trans "Resolved" %}</span>
+                                {% elif message.status == 'closed' %}
+                                    <span class="badge bg-secondary">{% trans "Closed" %}</span>
+                                {% endif %}
+
+                                {% if message.priority == 'high' %}
+                                    <span class="badge bg-warning ms-1">{% trans "High" %}</span>
+                                {% elif message.priority == 'urgent' %}
+                                    <span class="badge bg-danger ms-1">{% trans "Urgent" %}</span>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-3">
+                                <small class="text-muted">
+                                    {% if message.response_date %}
+                                        {{ message.response_date|date:"M d, Y H:i" }}
+                                    {% elif message.resolved_date %}
+                                        {{ message.resolved_date|date:"M d, Y H:i" }}
+                                    {% else %}
+                                        {{ message.timestamp|date:"M d, Y H:i" }}
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% include "pagination.html" %}
+    {% else %}
+        <div class="alert alert-info">
+            {% trans "You don't have any messages yet." %}
+            <a href="{% url 'users:contact' %}" class="alert-link">{% trans "Send us a message" %}</a> {% trans "if you have any questions or feedback." %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

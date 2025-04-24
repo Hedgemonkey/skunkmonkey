@@ -1,6 +1,7 @@
 # users/forms.py
 from django import forms
 from django.contrib.auth import get_user_model
+from django.utils.translation import gettext_lazy as _
 
 from allauth.account.forms import AddEmailForm, ChangePasswordForm, LoginForm
 from allauth.account.models import EmailAddress
@@ -239,3 +240,16 @@ class ProfileForm(forms.ModelForm):
         self.fields['theme_preference'].help_text = (
             "✨ Coming soon! Theme customization is currently in development."
         )
+
+
+class ContactMessageReplyForm(forms.Form):
+    """Form for users to reply to contact messages."""
+    message = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 4,
+            'placeholder': _('Type your reply here...'),
+        }),
+        label=_('Your Reply'),
+        required=True,
+    )

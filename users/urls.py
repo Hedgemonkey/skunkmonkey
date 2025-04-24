@@ -2,7 +2,7 @@
 from django.urls import path
 
 from . import views
-from .views import contact_views, staff_dashboard_views
+from .views import contact_views, message_views, staff_dashboard_views
 
 app_name = 'users'
 
@@ -130,6 +130,23 @@ urlpatterns = [
     # Contact URLs
     path("contact/", contact_views.contact, name="contact"),
     path("contact/user/", contact_views.users_contact, name="users_contact"),
+
+    # User message management
+    path(
+        'messages/',
+        message_views.UserMessageListView.as_view(),
+        name='message_list'
+    ),
+    path(
+        'messages/<int:pk>/',
+        message_views.UserMessageDetailView.as_view(),
+        name='message_detail'
+    ),
+    path(
+        'messages/<int:pk>/reply/',
+        message_views.message_reply,
+        name='message_reply'
+    ),
 
     # Staff dashboard URLs
     path(
