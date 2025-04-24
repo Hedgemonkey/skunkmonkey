@@ -1,3 +1,4 @@
+# flake8: noqa: DJ0
 from crispy_forms.layout import TEMPLATE_PACK, LayoutObject
 
 

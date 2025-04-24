@@ -2,6 +2,7 @@
 from django.urls import path
 
 from . import views
+from .views import contact_views, staff_dashboard_views
 
 app_name = 'users'
 
@@ -58,6 +59,11 @@ urlpatterns = [
         'contact/',
         views.users_contact,
         name='users_contact',
+    ),
+    path(
+        "contact/",
+        views.contact,
+        name="contact",
     ),
 
     # Account status
@@ -119,6 +125,79 @@ urlpatterns = [
         'orders/<str:order_number>/',
         views.order_detail,
         name='order_detail',
+    ),
+
+    # Contact URLs
+    path("contact/", contact_views.contact, name="contact"),
+    path("contact/user/", contact_views.users_contact, name="users_contact"),
+
+    # Staff dashboard URLs
+    path(
+        "staff/dashboard/",
+        staff_dashboard_views.StaffDashboardView.as_view(),
+        name="staff_dashboard"
+    ),
+    path(
+        "staff/messages/",
+        staff_dashboard_views.ContactMessageListView.as_view(),
+        name="staff_message_list"
+    ),
+    path(
+        "staff/messages/<int:pk>/",
+        staff_dashboard_views.ContactMessageDetailView.as_view(),
+        name="staff_message_detail"
+    ),
+    path(
+        "staff/messages/bulk-action/",
+        staff_dashboard_views.message_bulk_action,
+        name="staff_message_bulk_action"
+    ),
+
+    # New URL patterns for staff message actions
+    path(
+        "staff/messages/<int:pk>/reply/",
+        staff_dashboard_views.staff_message_reply,
+        name="staff_message_reply"
+    ),
+    path(
+        "staff/messages/<int:pk>/mark-read/",
+        staff_dashboard_views.staff_message_mark_read,
+        name="staff_message_mark_read"
+    ),
+    path(
+        "staff/messages/<int:pk>/mark-unread/",
+        staff_dashboard_views.staff_message_mark_unread,
+        name="staff_message_mark_unread"
+    ),
+    path(
+        "staff/messages/<int:pk>/delete/",
+        staff_dashboard_views.staff_message_delete,
+        name="staff_message_delete"
+    ),
+    path(
+        "staff/messages/<int:pk>/response/",
+        staff_dashboard_views.staff_message_response,
+        name="staff_message_response"
+    ),
+    path(
+        "staff/messages/<int:pk>/update-status/",
+        staff_dashboard_views.staff_message_update_status,
+        name="staff_message_update_status"
+    ),
+    path(
+        "staff/messages/<int:pk>/update-notes/",
+        staff_dashboard_views.staff_message_update_notes,
+        name="staff_message_update_notes"
+    ),
+    path(
+        "staff/messages/<int:pk>/forward/",
+        staff_dashboard_views.staff_message_forward,
+        name="staff_message_forward"
+    ),
+    path(
+        "staff/messages/<int:pk>/assign/",
+        staff_dashboard_views.staff_message_assign,
+        name="staff_message_assign"
     ),
 ]
 
