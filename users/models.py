@@ -221,6 +221,8 @@ class ContactMessage(models.Model):
         blank=True,
         related_name='assigned_messages'
     )
+
+    # Legacy fields - will be deprecated after migration
     staff_notes = models.TextField(_('Staff Notes'), blank=True)
     response = models.TextField(_('Response Message'), blank=True)
     response_date = models.DateTimeField(_('Response Date'), null=True, blank=True)
@@ -259,21 +261,43 @@ class ContactMessage(models.Model):
         self.assigned_to = user
         self.save(update_fields=['assigned_to'])
 
-    def add_response(self, response_text, user=None):
+    def add_response(self, response_text, user=None, change_status=False):
         """
-        Add a response to the message and update its status.
+        Add a response to the message and update its status if requested.
 
         Args:
             response_text: The response content to be added
             user: The staff member who wrote the response (optional)
+            change_status: Whether to update status to resolved (default: False)
         """
-        self.response = response_text
+        # Create a new MessageResponse instead of appending to text field
+        response = MessageResponse.objects.create(
+            contact_message=self,
+            content=response_text,
+            created_by=user,
+            response_type='message',
+            is_visible_to_user=True
+        )
+
+        # Legacy support - format and append to existing response field
+        timestamp = timezone.now().strftime('%Y-%m-%d %H:%M')
+        formatted_response = f"[{timestamp}] STAFF RESPONSE: {response_text}"
+
+        # Append to existing response or create new one
+        if self.response:
+            self.response = f"{self.response}\n\n{formatted_response}"
+        else:
+            self.response = formatted_response
+
         self.response_date = timezone.now()
 
-        # Update status to resolved if it's currently new or in progress
-        if self.status in ['new', 'in_progress']:
+        # Update status to resolved only if explicitly requested
+        if change_status and self.status in ['new', 'in_progress']:
             self.status = 'resolved'
             self.resolved_date = timezone.now()
+        elif self.status == 'new':
+            # Always change 'new' status to 'in_progress' when responding
+            self.status = 'in_progress'
 
         # Update the assigned_to field if not already set
         if user and not self.assigned_to:
@@ -286,6 +310,8 @@ class ContactMessage(models.Model):
         # Send email notification with the response to the user
         from users.utils.email import send_response_email
         send_response_email(contact_message=self, response_text=response_text, sender=user)
+
+        return response
 
     def update_status(self, status, user=None):
         """
@@ -313,6 +339,107 @@ class ContactMessage(models.Model):
         self.save(update_fields=save_fields)
 
 
+class MessageResponse(models.Model):
+    """
+    Stores individual responses to contact messages.
+    Each response is stored as a separate record rather than appending to a text field.
+    """
+    RESPONSE_TYPE_CHOICES = [
+        ('message', _('Staff Message')),
+        ('user_reply', _('User Reply')),
+        ('phone_call_user', _('Phone Call - User Message')),
+        ('phone_call_internal', _('Phone Call - Internal Only')),
+    ]
+
+    contact_message = models.ForeignKey(
+        ContactMessage,
+        on_delete=models.CASCADE,
+        related_name='responses',
+        verbose_name=_('Contact Message')
+    )
+    content = models.TextField(_('Response Content'))
+    response_type = models.CharField(
+        _('Response Type'),
+        max_length=20,
+        choices=RESPONSE_TYPE_CHOICES,
+        default='message'
+    )
+    created_at = models.DateTimeField(_('Created At'), auto_now_add=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='message_responses',
+        verbose_name=_('Created By')
+    )
+    is_visible_to_user = models.BooleanField(
+        _('Visible to User'),
+        default=True,
+        help_text=_('Whether this response is visible to the user')
+    )
+    email_sent = models.BooleanField(
+        _('Email Sent'),
+        default=False,
+        help_text=_('Whether an email notification was sent to the user')
+    )
+
+    class Meta:
+        verbose_name = _('Message Response')
+        verbose_name_plural = _('Message Responses')
+        ordering = ['created_at']
+        indexes = [
+            models.Index(fields=['created_at']),
+            models.Index(fields=['response_type']),
+        ]
+
+    def __str__(self):
+        return f"Response to {self.contact_message} at {self.created_at}"
+
+    def save(self, *args, **kwargs):
+        is_new = not self.pk
+        super().save(*args, **kwargs)
+
+        # Update the contact message response_date field for backward compatibility
+        if is_new and self.is_visible_to_user:
+            self.contact_message.response_date = self.created_at
+            self.contact_message.save(update_fields=['response_date'])
+
+
+class MessageNote(models.Model):
+    """
+    Stores internal staff notes for contact messages.
+    Each note is stored as a separate record rather than appending to a text field.
+    """
+    contact_message = models.ForeignKey(
+        ContactMessage,
+        on_delete=models.CASCADE,
+        related_name='notes',
+        verbose_name=_('Contact Message')
+    )
+    content = models.TextField(_('Note Content'))
+    created_at = models.DateTimeField(_('Created At'), auto_now_add=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='message_notes',
+        verbose_name=_('Created By')
+    )
+
+    class Meta:
+        verbose_name = _('Message Note')
+        verbose_name_plural = _('Message Notes')
+        ordering = ['-created_at']  # Notes are displayed newest first
+        indexes = [
+            models.Index(fields=['created_at']),
+        ]
+
+    def __str__(self):
+        return f"Note for {self.contact_message} at {self.created_at}"
+
+
 @receiver(post_save, sender=User)
 def create_or_update_user_profile(sender, instance, created, **kwargs):
     """
@@ -320,4 +447,15 @@ def create_or_update_user_profile(sender, instance, created, **kwargs):
     """
     if created:
         UserProfile.objects.create(user=instance)
-    instance.userprofile.save()
+    else:
+        # Get or create the user profile if it doesn't exist
+        UserProfile.objects.get_or_create(user=instance)
+
+    # Only save the profile if it exists
+    try:
+        if hasattr(instance, 'userprofile'):
+            instance.userprofile.save()
+    except UserProfile.DoesNotExist:
+        # This shouldn't happen after the get_or_create above,
+        # but just in case to prevent any errors
+        pass
