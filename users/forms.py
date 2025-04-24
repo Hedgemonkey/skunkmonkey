@@ -51,10 +51,15 @@ class CustomAddEmailForm(AddEmailForm):
         required=True,
     )
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, request=None, *args, **kwargs):
+        self.request = request
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
+
+        # Set the user property properly
+        if request and request.user.is_authenticated:
+            self.user = request.user
 
     def clean_email2(self):
         cleaned_data = super().clean()
@@ -63,7 +68,7 @@ class CustomAddEmailForm(AddEmailForm):
 
         if email and email2 and email != email2:
             raise forms.ValidationError("Emails don't match")
-        return cleaned_data
+        return email2  # Return email2 value, not the whole cleaned_data
 
     def save(self, request):
         email_address = EmailAddress.objects.add_email(
