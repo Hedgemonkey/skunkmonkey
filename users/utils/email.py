@@ -124,13 +124,14 @@ def send_templated_email(subject, template_name, context, to_email,
         return False
 
 
-def send_contact_email(request_email, message, user=None):
+def send_contact_email(request_email, message, phone_number=None, user=None):
     """
     Send a contact form submission to site administrators.
 
     Args:
         request_email: Email address of the person submitting the contact form
         message: Message content from the contact form
+        phone_number: Phone number provided by the contact (optional)
         user: User object if the sender is logged in (optional)
 
     Returns:
@@ -142,6 +143,7 @@ def send_contact_email(request_email, message, user=None):
     context = {
         'email': request_email,
         'message': message,
+        'phone_number': phone_number,
         'user': user
     }
 
@@ -157,8 +159,13 @@ def send_contact_email(request_email, message, user=None):
         admin_subject = f"[SkunkMonkey] {subject}"
         admin_message = (
             f"Contact form submission from: {request_email}\n\n"
-            f"Message:\n{message}\n\n"
         )
+
+        if phone_number:
+            admin_message += f"Phone Number: {phone_number}\n\n"
+
+        admin_message += f"Message:\n{message}\n\n"
+
         if user:
             admin_message += (
                 f"User Information:\n"

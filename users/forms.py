@@ -13,12 +13,20 @@ from .widgets import ProfileImageCropperWidget
 
 class ContactForm(forms.Form):
     email = forms.EmailField(required=True)
+    subject = forms.CharField(max_length=100, required=True)
+    phone_number = forms.CharField(required=False, max_length=20)
     message = forms.CharField(widget=forms.Textarea, required=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = 'post'
+        self.helper.layout = Layout(
+            Field('email'),
+            Field('phone_number'),
+            Field('subject'),
+            Field('message'),
+        )
         self.helper.add_input(Submit('submit', 'Send Message'))
 
 

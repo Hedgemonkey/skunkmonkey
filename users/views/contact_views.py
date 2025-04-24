@@ -18,11 +18,13 @@ def contact(request):
             # Get form data
             email = form.cleaned_data['email']
             message = form.cleaned_data['message']
+            phone_number = form.cleaned_data['phone_number']
 
             # Send email using our utility function
             email_sent = send_contact_email(
                 request_email=email,
                 message=message,
+                phone_number=phone_number,
                 user=request.user if request.user.is_authenticated else None
             )
 
@@ -63,11 +65,13 @@ def users_contact(request):
             # Get form data
             email = form.cleaned_data['email']
             message = form.cleaned_data['message']
+            phone_number = form.cleaned_data['phone_number']
 
             # Send email using our utility function
             email_sent = send_contact_email(
                 request_email=email,
                 message=message,
+                phone_number=phone_number,
                 user=request.user
             )
 
