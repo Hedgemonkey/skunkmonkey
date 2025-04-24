@@ -123,10 +123,8 @@ def message_reply(request, pk):
 
                 if email_sent:
                     logger.info(
-                        (
-                            f"User reply notification sent for message "
-                            f"{message.id}"
-                        )
+                        f"User reply notification sent for message "
+                        f"{message.id}"
                     )
                 else:
                     # Split into multiple lines to fix line length

@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load static %}
+{% load users_extras %}
 
 {% block head_title %}{% trans "Message Details" %}{% endblock %}
 
@@ -164,12 +165,40 @@
                     </div>
 
                     {% if message.staff_notes %}
-                    <div class="staff-notes mt-4">
-                        <h5>{% trans "Staff Notes:" %}</h5>
-                        <div class="card bg-light">
-                            <div class="card-body">
-                                {{ message.staff_notes|linebreaks }}
-                            </div>
+                    <div class="conversation-history mt-4">
+                        <h5>{% trans "Conversation History:" %}</h5>
+                        <div class="message-thread">
+                            {% for note_line in message.staff_notes|split:"\n\n" %}
+                                {% if note_line|is_user_reply %}
+                                    <div class="message-item user-message mb-3">
+                                        <div class="card border-primary">
+                                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                                <span class="badge bg-primary">
+                                                    <i class="bi bi-person-fill"></i> {% trans "User" %}
+                                                </span>
+                                                <small class="text-muted">{{ note_line|slice:":19" }}</small>
+                                            </div>
+                                            <div class="card-body">
+                                                {{ note_line|slice:"19:"|safe|linebreaks }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="message-item staff-message mb-3">
+                                        <div class="card border-info">
+                                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                                <span class="badge bg-info text-dark">
+                                                    <i class="bi bi-headset"></i> {% trans "Staff" %}
+                                                </span>
+                                                <small class="text-muted">{{ note_line|slice:":19" }}</small>
+                                            </div>
+                                            <div class="card-body">
+                                                {{ note_line|slice:"19:"|safe|linebreaks }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
                         </div>
                     </div>
                     {% endif %}
