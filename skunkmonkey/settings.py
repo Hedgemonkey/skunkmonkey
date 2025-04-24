@@ -251,7 +251,9 @@ ACCOUNT_FORMS = {
 
 # Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+print(f"DEBUG: EMAIL_HOST in os.environ: {'EMAIL_HOST' in os.environ}")
 if 'EMAIL_HOST' in os.environ:
+    print(f"DEBUG: Setting up SMTP backend with host: {os.environ['EMAIL_HOST']}")
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_HOST = os.environ['EMAIL_HOST']
     EMAIL_PORT = int(os.environ['EMAIL_PORT'])
@@ -259,6 +261,13 @@ if 'EMAIL_HOST' in os.environ:
     EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
     EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
     DEFAULT_FROM_EMAIL = os.environ['DEFAULT_FROM_EMAIL']
+else:
+    print("DEBUG: EMAIL_HOST not found in environment, using console backend")
+    # Add additional console backend settings if needed
+
+# Configure Django to log all email-related actions
+if DEBUG:
+    EMAIL_DEBUG = True
 
 # Add site URL and name settings for email templates
 SITE_URL = env('SITE_URL', default='http://hedgemonkey.ddns.net:8000')
@@ -396,6 +405,13 @@ LOGGING = {
             'formatter': 'detailed',
             'mode': 'a',  # Append mode
         },
+        'mail_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOGS_DIR, 'mail.log'),
+            'formatter': 'detailed',
+            'mode': 'a',  # Append mode
+        },
     },
     'loggers': {
         'django': {
@@ -439,7 +455,7 @@ LOGGING = {
             'propagate': False,
         },
         'users': {  # Add specific logger for users app
-            'handlers': ['console', 'file', 'error_file'],
+            'handlers': ['console', 'file', 'error_file', 'mail_file'],
             'level': 'DEBUG',
             'propagate': False,
         },
@@ -450,6 +466,11 @@ LOGGING = {
         },
         'shop.webhooks': {
             'handlers': ['console', 'webhook_file', 'stripe_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'django.core.mail': {
+            'handlers': ['console', 'mail_file', 'error_file'],
             'level': 'DEBUG',
             'propagate': False,
         },
