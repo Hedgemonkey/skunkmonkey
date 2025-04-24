@@ -12,7 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView, ListView, View
 
 from users.models import ContactMessage
-from users.utils.email import send_contact_email
+from users.utils.email import send_response_email
 
 User = get_user_model()
 
@@ -312,12 +312,26 @@ def staff_message_reply(request, pk):
         message.save()
 
         # Send email if requested
-        if send_email:
-            # This would call your email sending utility
-            # Placeholder for email sending logic
-            pass
+        if send_email and message.email and '@' in message.email:
+            try:
+                # Use send_response_email function with correct parameters
+                send_response_email(
+                    contact_message=message,
+                    response_text=request.POST.get('response', ''),
+                    sender=request.user
+                )
+                messages.success(
+                    request, _("Response sent by email and saved.")
+                )
+            except Exception as e:
+                messages.error(
+                    request, _(
+                        f"Failed to send email: {str(e)}. Response was saved."
+                    )
+                )
+        else:
+            messages.success(request, _("Response saved."))
 
-        messages.success(request, _("Your reply has been sent."))
         return redirect('users:staff_message_detail', pk=pk)
 
     return render(
@@ -395,15 +409,11 @@ def staff_message_response(request, pk):
         # Send email if requested
         if send_email and message.email and '@' in message.email:
             try:
-                # Call your email utility function with correct parameter order
-                subject = f"Re: {message.subject}"
-                send_contact_email(
-                    request_or_email=message.email,  # Recipient email
-                    subject=subject,
-                    to_email=message.email,  # Use message email as recipient
-                    message=content,
-                    phone_number=message.phone_number,
-                    user=message.user
+                # Use send_response_email with correct parameters
+                send_response_email(
+                    contact_message=message,  # The ContactMessage object
+                    response_text=content,    # The response text
+                    sender=request.user       # Staff user who wrote response
                 )
                 messages.success(
                     request, _("Response sent by email and saved.")

@@ -240,6 +240,10 @@ if 'EMAIL_HOST' in os.environ:
     EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
     DEFAULT_FROM_EMAIL = os.environ['DEFAULT_FROM_EMAIL']
 
+# Add site URL and name settings for email templates
+SITE_URL = env('SITE_URL', default='http://hedgemonkey.ddns.net:8000')
+SITE_NAME = env('SITE_NAME', default='SkunkMonkey')
+CONTACT_EMAIL = env('CONTACT_EMAIL', default=DEFAULT_FROM_EMAIL)
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
