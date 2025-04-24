@@ -7,6 +7,7 @@ import logging
 from django.conf import settings
 from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.template.loader import render_to_string
+from django.utils import timezone
 from django.utils.html import strip_tags
 
 # Configure logger for email operations
@@ -94,8 +95,8 @@ def send_templated_email(subject, template_name, context, to_email,
 
     Args:
         subject: Email subject line
-        template_name: Django template path for HTML content
-        context: Dictionary of context variables for the template
+        template_name: Path to the template file
+        context: Dictionary of context data for the template
         to_email: Recipient email address or list of addresses
         from_email: Sender email (defaults to settings.DEFAULT_FROM_EMAIL)
         **kwargs: Additional email parameters (cc, bcc, headers, etc.)
@@ -103,99 +104,165 @@ def send_templated_email(subject, template_name, context, to_email,
     Returns:
         bool: True if email was sent successfully, False otherwise
     """
-    try:
-        # Render HTML content from template
-        html_message = render_to_string(template_name, context)
+    # Ensure context has common variables needed by templates
+    if 'site_name' not in context:
+        context['site_name'] = settings.SITE_NAME
 
-        # Generate plain text version from HTML
-        text_message = strip_tags(html_message)
+    if 'site_url' not in context:
+        context['site_url'] = settings.SITE_URL
 
-        # Send the email with both HTML and text alternatives
-        return send_html_email(
-            subject=subject,
-            html_message=html_message,
-            text_message=text_message,
-            to_email=to_email,
-            from_email=from_email,
-            **kwargs
-        )
-    except Exception as e:
-        logger.error(f"Error sending templated email to {to_email}: {str(e)}")
-        return False
+    # Add user_name if user is in context but user_name is not
+    if 'user_name' not in context and 'user' in context and context['user']:
+        user = context['user']
+        context['user_name'] = user.get_full_name() or user.username
+
+    html_message = render_to_string(template_name, context)
+    text_message = strip_tags(html_message)
+
+    return send_html_email(
+        subject=subject,
+        html_message=html_message,
+        text_message=text_message,
+        to_email=to_email,
+        from_email=from_email,
+        **kwargs
+    )
 
 
-def send_contact_email(request_email, message, phone_number=None, user=None):
+def send_contact_email(
+    request_or_email, subject, message, to_email=None,
+    phone_number=None, user=None
+):
     """
-    Send a contact form submission to site administrators.
+    Send emails for contact form submissions.
+    This sends a notification to the site admin and a confirmation to the user.
 
     Args:
-        request_email: Email address of the person submitting the contact form
-        message: Message content from the contact form
-        phone_number: Phone number provided by the contact (optional)
-        user: User object if the sender is logged in (optional)
+        request_or_email: Either the HTTP request object
+            or user's email address
+        subject: Subject line for the email
+        message: Message content
+        to_email: Recipient email
+            (if not provided, extracted from request_or_email)
+        phone_number: Optional phone number for contact
+        user: Optional User object if submission is from a logged-in user
 
     Returns:
-        bool: True if email was sent successfully, False otherwise
+        bool: True if both emails sent successfully, False otherwise
     """
-    subject = f"Contact Form Submission from {request_email}"
+    # Handle case where request_or_email is an email address string
+    if isinstance(request_or_email, str) and '@' in request_or_email:
+        email = request_or_email
+        host = settings.SITE_URL
+    else:
+        # Assuming it's a request object
+        request = request_or_email
+        # Don't extract email from request.POST. Instead, use the provided
+        # to_email or get it from the request if possible.
+        email = to_email or getattr(request, 'email', None)
+        # If still no email, try to get it from POST data
+        if not email and hasattr(request, 'POST'):
+            email = request.POST.get('email')
+        host = (
+            request.get_host()
+            if hasattr(request, 'get_host')
+            else settings.SITE_URL
+        )
 
-    # Create context for the email template
+    # Ensure we have a valid email
+    if not email or '@' not in email:
+        logger.error("Invalid or missing email address for contact form")
+        return False
+
+    # Common context for both emails
     context = {
-        'email': request_email,
+        'email': email,
         'message': message,
+        'subject': subject,
         'phone_number': phone_number,
-        'user': user
+        'user': user,
+        'site_url': settings.SITE_URL,
+        'host': host,
+        'request': request if not isinstance(request_or_email, str) else None,
+        'user_name': user.get_full_name() if user else email.split('@')[0]
     }
 
-    # Email to site admins
-    admin_emails = [admin[1] for admin in settings.ADMINS]
+    # Send admin notification
+    admin_notification = send_templated_email(
+        subject=f"Contact Form: {subject}",
+        template_name='users/emails/admin_contact_notification.html',
+        context=context,
+        to_email=settings.CONTACT_EMAIL or settings.DEFAULT_FROM_EMAIL
+    )
 
-    if not admin_emails:
-        # Fallback if ADMINS setting is not configured
-        admin_emails = [settings.DEFAULT_FROM_EMAIL]
+    # Send confirmation to user
+    user_confirmation = send_templated_email(
+        subject=f"We've received your message: {subject}",
+        template_name='users/emails/contact_confirmation.html',
+        context=context,
+        to_email=email
+    )
 
+    # Log result
+    logger.info(f"Contact form submission processed for {email}")
+
+    # Return True only if both emails sent successfully
+    return admin_notification and user_confirmation
+
+
+def send_response_email(contact_message, response_text, sender=None):
+    """
+    Send an email to the user with the staff's response to their contact
+    message.
+
+    Args:
+        contact_message: The ContactMessage object containing the inquiry
+            details
+        response_text: The staff response text
+        sender: The staff user who wrote the response (optional)
+
+    Returns:
+        bool: True if the email was sent successfully, False otherwise
+    """
     try:
-        # Send email to administrators
-        admin_subject = f"[SkunkMonkey] {subject}"
-        admin_message = (
-            f"Contact form submission from: {request_email}\n\n"
-        )
+        # Get recipient email from the contact message
+        recipient_email = contact_message.email
 
-        if phone_number:
-            admin_message += f"Phone Number: {phone_number}\n\n"
-
-        admin_message += f"Message:\n{message}\n\n"
-
-        if user:
-            admin_message += (
-                f"User Information:\n"
-                f"Username: {user.username}\n"
-                f"Full Name: {user.get_full_name()}\n"
-                f"Email: {user.email}\n"
+        if not recipient_email or '@' not in recipient_email:
+            logger.error(
+                f"Invalid recipient email for contact message ID: "
+                f"{contact_message.id}"
             )
+            return False
 
-        send_email(
-            subject=admin_subject,
-            message=admin_message,
-            to_email=admin_emails,
-        )
+        # Prepare context for the email template
+        context = {
+            'user_name': (
+                contact_message.user.get_full_name()
+                if contact_message.user
+                else recipient_email.split('@')[0]
+            ),
+            'original_subject': contact_message.subject,
+            'original_message': contact_message.message,
+            'response': response_text,
+            'staff_name': (
+                sender.get_full_name() if sender else 'Customer Support'
+            ),
+            'message_date': contact_message.timestamp,
+            'response_date': timezone.now(),
+            'site_url': settings.SITE_URL,
+        }
 
-        # Send confirmation email to the user using the HTML template
-        confirmation_subject = "Thank you for contacting SkunkMonkey"
-
-        # Use the templated email function with our HTML template
-        send_templated_email(
-            subject=confirmation_subject,
-            template_name='users/emails/contact_confirmation.html',
+        # Send the email
+        return send_templated_email(
+            subject=f"Response to your inquiry: {contact_message.subject}",
+            template_name='users/emails/contact_response.html',
             context=context,
-            to_email=request_email,
+            to_email=recipient_email
         )
-
-        logger.info(f"Contact form submission processed for {request_email}")
-        return True
-
     except Exception as e:
         logger.error(
-            f"Error processing contact form for {request_email}: {str(e)}"
+            f"Failed to send response email for contact message ID "
+            f"{contact_message.id}: {str(e)}"
         )
         return False
