@@ -6,6 +6,9 @@
 
 {% block head_title %}{% trans "Message Details" %}{% endblock %}
 
+{% block header %}
+{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -65,15 +68,85 @@
                         </div>
                     </div>
 
-                    <!-- Original message -->
-                    <div class="mb-4">
-                        <h5>{% trans "Your Message:" %}</h5>
-                        <div class="card bg-light">
+                    <!-- Conversation Thread -->
+                    <h5 class="mb-3">{% trans "Conversation:" %}</h5>
+
+                    <!-- Original user message -->
+                    <div class="message-item user-message mb-4">
+                        <div class="card bg-light border-primary">
+                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                <span class="badge bg-primary">
+                                    <i class="bi bi-person-fill"></i> {% trans "You" %}
+                                </span>
+                                <small class="text-muted">{{ message.timestamp|date:"F d, Y H:i" }}</small>
+                            </div>
                             <div class="card-body">
-                                <p>{{ message.message|linebreaks }}</p>
+                                {{ message.message|linebreaks }}
                             </div>
                         </div>
                     </div>
+
+                    <!-- Response field contains the entire conversation history -->
+                    {% if message.response %}
+                        {% for response_part in message.response|split:"\n\n" %}
+                            {% if "USER REPLY:" in response_part %}
+                                <!-- This is a user reply -->
+                                <div class="message-item user-message mb-4">
+                                    <div class="card bg-light border-primary">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <span class="badge bg-primary">
+                                                <i class="bi bi-person-fill"></i> {% trans "You" %}
+                                            </span>
+                                            <small class="text-muted">{{ response_part|slice:":19" }}</small>
+                                        </div>
+                                        <div class="card-body">
+                                            {{ response_part|slice:"19:"|cut:"USER REPLY: "|linebreaks }}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% elif "STAFF RESPONSE:" in response_part %}
+                                <!-- This is a staff response -->
+                                <div class="message-item staff-message mb-4">
+                                    <div class="card bg-info bg-opacity-10 border-info">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <span class="badge bg-info text-dark">
+                                                <i class="bi bi-headset"></i> {% trans "Support Team" %}
+                                            </span>
+                                            <small class="text-muted">{{ response_part|slice:":19" }}</small>
+                                        </div>
+                                        <div class="card-body">
+                                            {{ response_part|slice:"19:"|cut:"STAFF RESPONSE: "|linebreaks }}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <!-- Assume it's a staff response without explicit marker -->
+                                <div class="message-item staff-message mb-4">
+                                    <div class="card bg-info bg-opacity-10 border-info">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <span class="badge bg-info text-dark">
+                                                <i class="bi bi-headset"></i> {% trans "Support Team" %}
+                                            </span>
+                                            <small class="text-muted">
+                                                {% if message.response_date %}
+                                                    {{ message.response_date|date:"F d, Y H:i" }}
+                                                {% else %}
+                                                    {{ response_part|slice:":19" }}
+                                                {% endif %}
+                                            </small>
+                                        </div>
+                                        <div class="card-body">
+                                            {% if response_part|slice:":1" == "[" %}
+                                                {{ response_part|slice:"19:"|linebreaks }}
+                                            {% else %}
+                                                {{ response_part|linebreaks }}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
 
                     <!-- Reply form -->
                     {% if message.status != 'closed' %}
@@ -125,32 +198,10 @@
                         </p>
                     </div>
 
-                    <div class="mb-3">
-                        <h6>{% trans "Priority:" %}</h6>
-                        <p>
-                            {% if message.priority == 'low' %}
-                                <span class="badge bg-secondary">{% trans "Low" %}</span>
-                            {% elif message.priority == 'medium' %}
-                                <span class="badge bg-primary">{% trans "Medium" %}</span>
-                            {% elif message.priority == 'high' %}
-                                <span class="badge bg-warning">{% trans "High" %}</span>
-                            {% elif message.priority == 'urgent' %}
-                                <span class="badge bg-danger">{% trans "Urgent" %}</span>
-                            {% endif %}
-                        </p>
-                    </div>
-
                     {% if message.resolved_date %}
                     <div class="mb-3">
                         <h6>{% trans "Resolved On:" %}</h6>
                         <p>{{ message.resolved_date|date:"F d, Y H:i" }}</p>
-                    </div>
-                    {% endif %}
-
-                    {% if message.assigned_to %}
-                    <div class="mb-3">
-                        <h6>{% trans "Assigned To:" %}</h6>
-                        <p>{{ message.assigned_to.get_full_name }}</p>
                     </div>
                     {% endif %}
                 </div>

@@ -3,7 +3,7 @@
 {% load static %}
 {% load users_extras %}
 
-{% block head_title %}{% trans "Message Details" %}{% endblock %}
+{% block head_title %}{% trans "Conversation Details" %}{% endblock %}
 
 {% block header %}
 {% endblock %}
@@ -11,7 +11,7 @@
 {% block content %}
 <div class="container-fluid mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1>{% trans "Message Details" %}</h1>
+        <h1>{% trans "Conversation Details" %}</h1>
         <div>
             <a href="{% url 'users:staff_message_list' %}" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> {% trans "Back to Messages" %}
@@ -164,77 +164,82 @@
                         </div>
                     </div>
 
-                    {% if message.staff_notes %}
+                    <!-- Conversation Thread -->
                     <div class="conversation-history mt-4">
                         <h5>{% trans "Conversation History:" %}</h5>
                         <div class="message-thread">
-                            {% for note_line in message.staff_notes|split:"\n\n" %}
-                                {% if note_line|is_user_reply %}
-                                    <div class="message-item user-message mb-3">
-                                        <div class="card border-primary">
-                                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                                                <span class="badge bg-primary">
-                                                    <i class="bi bi-person-fill"></i> {% trans "User" %}
-                                                </span>
-                                                <small class="text-muted">{{ note_line|slice:":19" }}</small>
-                                            </div>
-                                            <div class="card-body">
-                                                {{ note_line|slice:"19:"|safe|linebreaks }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% else %}
-                                    <div class="message-item staff-message mb-3">
-                                        <div class="card border-info">
-                                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                                                <span class="badge bg-info text-dark">
-                                                    <i class="bi bi-headset"></i> {% trans "Staff" %}
-                                                </span>
-                                                <small class="text-muted">{{ note_line|slice:":19" }}</small>
-                                            </div>
-                                            <div class="card-body">
-                                                {{ note_line|slice:"19:"|safe|linebreaks }}
+                            <!-- Response field contains the entire conversation history -->
+                            {% if message.response %}
+                                {% for response_part in message.response|split:"\n\n" %}
+                                    {% if "USER REPLY:" in response_part %}
+                                        <!-- This is a user reply -->
+                                        <div class="message-item user-message mb-3">
+                                            <div class="card border-primary">
+                                                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                                    <span class="badge bg-primary">
+                                                        <i class="bi bi-person-fill"></i> {% trans "User" %}
+                                                        {% if message.user %}
+                                                            ({{ message.user.get_full_name|default:message.user.username }})
+                                                        {% endif %}
+                                                    </span>
+                                                    <small class="text-muted">{{ response_part|slice:":19" }}</small>
+                                                </div>
+                                                <div class="card-body">
+                                                    {{ response_part|slice:"19:"|cut:"USER REPLY: "|linebreaks }}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                {% endif %}
-                            {% endfor %}
+                                    {% elif "STAFF RESPONSE:" in response_part %}
+                                        <!-- This is a staff response -->
+                                        <div class="message-item staff-message mb-3">
+                                            <div class="card border-info">
+                                                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                                    <span class="badge bg-info text-dark">
+                                                        <i class="bi bi-headset"></i> {% trans "Staff" %}
+                                                    </span>
+                                                    <small class="text-muted">{{ response_part|slice:":19" }}</small>
+                                                </div>
+                                                <div class="card-body">
+                                                    {{ response_part|slice:"19:"|cut:"STAFF RESPONSE: "|linebreaks }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <!-- Assume it's a staff response without explicit marker -->
+                                        <div class="message-item staff-message mb-3">
+                                            <div class="card border-info">
+                                                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                                    <span class="badge bg-info text-dark">
+                                                        <i class="bi bi-headset"></i> {% trans "Staff" %}
+                                                    </span>
+                                                    <small class="text-muted">
+                                                        {% if message.response_date %}
+                                                            {{ message.response_date|date:"F d, Y H:i" }}
+                                                        {% else %}
+                                                            {{ response_part|slice:":19" }}
+                                                        {% endif %}
+                                                    </small>
+                                                </div>
+                                                <div class="card-body">
+                                                    {% if response_part|slice:":1" == "[" %}
+                                                        {{ response_part|slice:"19:"|linebreaks }}
+                                                    {% else %}
+                                                        {{ response_part|linebreaks }}
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
                         </div>
                     </div>
-                    {% endif %}
+
+                    <!-- Staff Notes Section removed as requested -->
                 </div>
             </div>
 
-            <!-- Response History -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    {% trans "Response History" %}
-                </div>
-                <div class="card-body">
-                    {% if responses %}
-                        <div class="response-timeline">
-                            {% for response in responses %}
-                                <div class="response-item mb-4">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div>
-                                            <span class="fw-bold">{{ response.user.get_full_name|default:response.user.username }}</span>
-                                            <span class="text-muted ms-2">{{ response.timestamp }}</span>
-                                        </div>
-                                        <span class="badge bg-secondary">{{ response.get_response_type_display }}</span>
-                                    </div>
-                                    <div class="card bg-light">
-                                        <div class="card-body">
-                                            {{ response.content|linebreaks }}
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <p class="text-muted mb-0">{% trans "No responses yet." %}</p>
-                    {% endif %}
-                </div>
-            </div>
+            <!-- Response History card removed as requested -->
 
             <!-- Quick Response Form -->
             <div class="card">
@@ -251,9 +256,10 @@
                         <div class="mb-3">
                             <label for="responseType" class="form-label">{% trans "Response Type:" %}</label>
                             <select class="form-select" id="responseType" name="response_type">
-                                {% for type_val, type_name in response_type_choices %}
-                                <option value="{{ type_val }}">{{ type_name }}</option>
-                                {% endfor %}
+                                <option value="message">{% trans "Message" %}</option>
+                                <option value="phone_call_user">{% trans "Phone Call - User Message" %}</option>
+                                <option value="phone_call_internal">{% trans "Phone Call - Internal Message" %}</option>
+                                <option value="note">{% trans "Internal Note" %}</option>
                             </select>
                         </div>
                         <div class="form-check mb-3">
@@ -317,23 +323,7 @@
                 </div>
             </div>
 
-            <!-- Staff Notes -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    {% trans "Staff Notes" %}
-                </div>
-                <div class="card-body">
-                    <form method="post" action="{% url 'users:staff_message_update_notes' message.id %}">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <textarea class="form-control" id="notes" name="notes" rows="5">{{ message.staff_notes|default:'' }}</textarea>
-                        </div>
-                        <div class="text-end">
-                            <button type="submit" class="btn btn-primary">{% trans "Save Notes" %}</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+            <!-- Staff Notes card removed as requested -->
 
             <!-- Related Information -->
             <div class="card mb-4">
@@ -364,7 +354,7 @@
                         </div>
                         <hr>
                         <div>
-                            <h6>{% trans "Previous Messages:" %}</h6>
+                            <h6>{% trans "Previous Conversations:" %}</h6>
                             {% if previous_messages %}
                                 <ul class="list-group">
                                     {% for prev_msg in previous_messages %}
@@ -380,7 +370,7 @@
                                     {% endfor %}
                                 </ul>
                             {% else %}
-                                <p class="text-muted">{% trans "No previous messages from this customer." %}</p>
+                                <p class="text-muted">{% trans "No previous conversations from this customer." %}</p>
                             {% endif %}
                         </div>
                     {% else %}
