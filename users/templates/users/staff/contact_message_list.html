@@ -1,0 +1,367 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block head_title %}{% trans "Contact Messages" %}{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>{% trans "Contact Messages" %}</h1>
+        <div>
+            <a href="{% url 'users:staff_dashboard' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> {% trans "Back to Dashboard" %}
+            </a>
+        </div>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="card mb-4">
+        <div class="card-header">
+            {% trans "Filter Messages" %}
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-2">
+                    <label for="status" class="form-label">{% trans "Status" %}</label>
+                    <select class="form-select" id="status" name="status">
+                        <option value="">{% trans "All" %}</option>
+                        {% for status_val, status_name in status_choices %}
+                        <option value="{{ status_val }}" {% if status_filter == status_val %}selected{% endif %}>
+                            {{ status_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label for="priority" class="form-label">{% trans "Priority" %}</label>
+                    <select class="form-select" id="priority" name="priority">
+                        <option value="">{% trans "All" %}</option>
+                        {% for priority_val, priority_name in priority_choices %}
+                        <option value="{{ priority_val }}" {% if priority_filter == priority_val %}selected{% endif %}>
+                            {{ priority_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label for="category" class="form-label">{% trans "Category" %}</label>
+                    <select class="form-select" id="category" name="category">
+                        <option value="">{% trans "All" %}</option>
+                        {% for category_val, category_name in category_choices %}
+                        <option value="{{ category_val }}" {% if category_filter == category_val %}selected{% endif %}>
+                            {{ category_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label for="is_read" class="form-label">{% trans "Read Status" %}</label>
+                    <select class="form-select" id="is_read" name="is_read">
+                        <option value="">{% trans "All" %}</option>
+                        <option value="true" {% if is_read_filter == 'true' %}selected{% endif %}>
+                            {% trans "Read" %}
+                        </option>
+                        <option value="false" {% if is_read_filter == 'false' %}selected{% endif %}>
+                            {% trans "Unread" %}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label for="assigned" class="form-label">{% trans "Assigned To" %}</label>
+                    <select class="form-select" id="assigned" name="assigned">
+                        <option value="">{% trans "All" %}</option>
+                        <option value="me" {% if assigned_filter == 'me' %}selected{% endif %}>
+                            {% trans "Me" %}
+                        </option>
+                        <option value="none" {% if assigned_filter == 'none' %}selected{% endif %}>
+                            {% trans "Unassigned" %}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label for="order_by" class="form-label">{% trans "Sort By" %}</label>
+                    <select class="form-select" id="order_by" name="order_by">
+                        <option value="-timestamp" {% if order_by == '-timestamp' %}selected{% endif %}>
+                            {% trans "Newest First" %}
+                        </option>
+                        <option value="timestamp" {% if order_by == 'timestamp' %}selected{% endif %}>
+                            {% trans "Oldest First" %}
+                        </option>
+                        <option value="-priority" {% if order_by == '-priority' %}selected{% endif %}>
+                            {% trans "Priority (High to Low)" %}
+                        </option>
+                        <option value="status" {% if order_by == 'status' %}selected{% endif %}>
+                            {% trans "Status" %}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-8">
+                    <label for="search" class="form-label">{% trans "Search" %}</label>
+                    <input type="text" class="form-control" id="search" name="search" placeholder="{% trans 'Search in subject, message, or email...' %}" value="{{ search_query|default:'' }}">
+                </div>
+
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">{% trans "Apply Filters" %}</button>
+                    <a href="{% url 'users:staff_message_list' %}" class="btn btn-outline-secondary">{% trans "Clear" %}</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bulk Actions -->
+    <form method="post" action="{% url 'users:staff_message_bulk_action' %}" id="bulk-actions-form">
+        {% csrf_token %}
+        <div class="card mb-4">
+            <div class="card-header">
+                {% trans "Bulk Actions" %}
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <select class="form-select" name="bulk_action" id="bulk-action-select">
+                            <option value="">{% trans "Select Action" %}</option>
+                            <option value="mark_read">{% trans "Mark as Read" %}</option>
+                            <option value="mark_unread">{% trans "Mark as Unread" %}</option>
+                            <option value="assign_to_me">{% trans "Assign to Me" %}</option>
+                            <option value="set_status">{% trans "Change Status" %}</option>
+                            <option value="set_priority">{% trans "Change Priority" %}</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3" id="status-select-container" style="display: none;">
+                        <select class="form-select" name="status" id="status-select">
+                            {% for status_val, status_name in status_choices %}
+                            <option value="{{ status_val }}">{{ status_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-3" id="priority-select-container" style="display: none;">
+                        <select class="form-select" name="priority" id="priority-select">
+                            {% for priority_val, priority_name in priority_choices %}
+                            <option value="{{ priority_val }}">{{ priority_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary" id="apply-bulk-action" disabled>
+                            {% trans "Apply" %}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages List -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    {% trans "Messages" %}
+                    <span class="badge bg-secondary">{{ contact_messages|length }}</span>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped mb-0">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="select-all" class="form-check-input">
+                                </th>
+                                <th>{% trans "Subject" %}</th>
+                                <th>{% trans "From" %}</th>
+                                <th>{% trans "Category" %}</th>
+                                <th>{% trans "Priority" %}</th>
+                                <th>{% trans "Status" %}</th>
+                                <th>{% trans "Assigned To" %}</th>
+                                <th>{% trans "Date" %}</th>
+                                <th>{% trans "Actions" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for contact_message in contact_messages %}
+                            <tr class="{% if not contact_message.is_read %}table-active fw-bold{% endif %}">
+                                <td>
+                                    <input type="checkbox" name="message_ids" value="{{ contact_message.id }}" class="form-check-input message-checkbox">
+                                </td>
+                                <td>
+                                    <a href="{% url 'users:staff_message_detail' contact_message.id %}">
+                                        {% if not contact_message.is_read %}<i class="bi bi-envelope-fill me-1"></i>{% endif %}
+                                        {{ contact_message.subject|truncatechars:40 }}
+                                    </a>
+                                </td>
+                                <td>{{ contact_message.email }}</td>
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        {{ contact_message.get_category_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge
+                                        {% if contact_message.priority == 'urgent' %}bg-danger
+                                        {% elif contact_message.priority == 'high' %}bg-warning text-dark
+                                        {% elif contact_message.priority == 'medium' %}bg-info text-dark
+                                        {% else %}bg-secondary
+                                        {% endif %}">
+                                        {{ contact_message.get_priority_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge
+                                        {% if contact_message.status == 'new' %}bg-primary
+                                        {% elif contact_message.status == 'in_progress' %}bg-warning text-dark
+                                        {% elif contact_message.status == 'resolved' %}bg-success
+                                        {% else %}bg-secondary
+                                        {% endif %}">
+                                        {{ contact_message.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if contact_message.assigned_to %}
+                                        {{ contact_message.assigned_to.get_full_name|default:contact_message.assigned_to.username }}
+                                    {% else %}
+                                        <span class="text-muted">{% trans "Unassigned" %}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span title="{{ contact_message.timestamp }}">
+                                        {{ contact_message.timestamp|timesince }} {% trans "ago" %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{% url 'users:staff_message_detail' contact_message.id %}" class="btn btn-sm btn-primary">
+                                        {% trans "View" %}
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="9" class="text-center py-4">
+                                    <p class="mb-0">{% trans "No messages found matching your criteria." %}</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if priority_filter %}&priority={{ priority_filter }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if is_read_filter %}&is_read={{ is_read_filter }}{% endif %}{% if assigned_filter %}&assigned={{ assigned_filter }}{% endif %}">
+                    {% trans "First" %}
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if priority_filter %}&priority={{ priority_filter }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if is_read_filter %}&is_read={{ is_read_filter }}{% endif %}{% if assigned_filter %}&assigned={{ assigned_filter }}{% endif %}">
+                    {% trans "Previous" %}
+                </a>
+            </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if num == page_obj.number %}
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if priority_filter %}&priority={{ priority_filter }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if is_read_filter %}&is_read={{ is_read_filter }}{% endif %}{% if assigned_filter %}&assigned={{ assigned_filter }}{% endif %}">
+                        {{ num }}
+                    </a>
+                </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if priority_filter %}&priority={{ priority_filter }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if is_read_filter %}&is_read={{ is_read_filter }}{% endif %}{% if assigned_filter %}&assigned={{ assigned_filter }}{% endif %}">
+                    {% trans "Next" %}
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if priority_filter %}&priority={{ priority_filter }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if is_read_filter %}&is_read={{ is_read_filter }}{% endif %}{% if assigned_filter %}&assigned={{ assigned_filter }}{% endif %}">
+                    {% trans "Last" %}
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Select all functionality
+        const selectAll = document.getElementById('select-all');
+        const messageCheckboxes = document.querySelectorAll('.message-checkbox');
+        const applyBulkActionBtn = document.getElementById('apply-bulk-action');
+        const bulkActionSelect = document.getElementById('bulk-action-select');
+        const statusSelectContainer = document.getElementById('status-select-container');
+        const prioritySelectContainer = document.getElementById('priority-select-container');
+
+        // Select all checkbox
+        selectAll.addEventListener('change', function() {
+            messageCheckboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+            updateApplyButton();
+        });
+
+        // Individual checkboxes
+        messageCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                updateSelectAllCheckbox();
+                updateApplyButton();
+            });
+        });
+
+        // Bulk action select
+        bulkActionSelect.addEventListener('change', function() {
+            const action = bulkActionSelect.value;
+
+            // Show/hide conditional fields based on action
+            statusSelectContainer.style.display = (action === 'set_status') ? 'block' : 'none';
+            prioritySelectContainer.style.display = (action === 'set_priority') ? 'block' : 'none';
+
+            updateApplyButton();
+        });
+
+        // Helper function to update the "Select All" checkbox state
+        function updateSelectAllCheckbox() {
+            const allChecked = Array.from(messageCheckboxes).every(checkbox => checkbox.checked);
+            const someChecked = Array.from(messageCheckboxes).some(checkbox => checkbox.checked);
+
+            selectAll.checked = allChecked;
+            selectAll.indeterminate = someChecked && !allChecked;
+        }
+
+        // Helper function to enable/disable apply button
+        function updateApplyButton() {
+            const anyChecked = Array.from(messageCheckboxes).some(checkbox => checkbox.checked);
+            const actionSelected = bulkActionSelect.value !== '';
+
+            applyBulkActionBtn.disabled = !(anyChecked && actionSelected);
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}

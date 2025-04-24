@@ -1,0 +1,433 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block head_title %}{% trans "Message Details" %}{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>{% trans "Message Details" %}</h1>
+        <div>
+            <a href="{% url 'users:staff_message_list' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> {% trans "Back to Messages" %}
+            </a>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row">
+        <!-- Message Content -->
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        {% if not message.is_read %}
+                            <span class="badge bg-danger me-2">{% trans "Unread" %}</span>
+                        {% endif %}
+                        <span class="fw-bold fs-5">{{ message.subject }}</span>
+                    </div>
+                    <div>
+                        <a href="{% url 'users:staff_message_reply' message.id %}" class="btn btn-sm btn-primary me-2">
+                            <i class="bi bi-reply-fill"></i> {% trans "Reply" %}
+                        </a>
+                        <div class="dropdown d-inline-block">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="messageActionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                {% trans "Actions" %}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="messageActionsDropdown">
+                                {% if message.is_read %}
+                                <li>
+                                    <form method="post" action="{% url 'users:staff_message_mark_unread' message.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="bi bi-envelope-fill"></i> {% trans "Mark as Unread" %}
+                                        </button>
+                                    </form>
+                                </li>
+                                {% else %}
+                                <li>
+                                    <form method="post" action="{% url 'users:staff_message_mark_read' message.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="bi bi-envelope-open-fill"></i> {% trans "Mark as Read" %}
+                                        </button>
+                                    </form>
+                                </li>
+                                {% endif %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#forwardModal">
+                                        <i class="bi bi-forward-fill"></i> {% trans "Forward" %}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#assignModal">
+                                        <i class="bi bi-person-fill"></i> {% trans "Assign" %}
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="post" action="{% url 'users:staff_message_delete' message.id %}" onsubmit="return confirm('{% trans "Are you sure you want to delete this message?" %}');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item text-danger">
+                                            <i class="bi bi-trash-fill"></i> {% trans "Delete" %}
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <div class="row mb-2">
+                            <div class="col-md-2 text-muted">{% trans "From:" %}</div>
+                            <div class="col-md-10">
+                                <strong>{{ message.email }}</strong>
+                                {% if message.user %}
+                                    ({{ message.user.get_full_name|default:message.user.username }})
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if message.phone_number %}
+                        <div class="row mb-2">
+                            <div class="col-md-2 text-muted">{% trans "Phone:" %}</div>
+                            <div class="col-md-10">{{ message.phone_number }}</div>
+                        </div>
+                        {% endif %}
+                        <div class="row mb-2">
+                            <div class="col-md-2 text-muted">{% trans "Date:" %}</div>
+                            <div class="col-md-10">{{ message.timestamp }}</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-2 text-muted">{% trans "Status:" %}</div>
+                            <div class="col-md-10">
+                                <span class="badge
+                                    {% if message.status == 'new' %}bg-primary
+                                    {% elif message.status == 'in_progress' %}bg-warning text-dark
+                                    {% elif message.status == 'resolved' %}bg-success
+                                    {% else %}bg-secondary
+                                    {% endif %}">
+                                    {{ message.get_status_display }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-2 text-muted">{% trans "Priority:" %}</div>
+                            <div class="col-md-10">
+                                <span class="badge
+                                    {% if message.priority == 'urgent' %}bg-danger
+                                    {% elif message.priority == 'high' %}bg-warning text-dark
+                                    {% elif message.priority == 'medium' %}bg-info text-dark
+                                    {% else %}bg-secondary
+                                    {% endif %}">
+                                    {{ message.get_priority_display }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-2 text-muted">{% trans "Category:" %}</div>
+                            <div class="col-md-10">
+                                <span class="badge bg-secondary">
+                                    {{ message.get_category_display }}
+                                </span>
+                            </div>
+                        </div>
+                        {% if message.assigned_to %}
+                        <div class="row mb-2">
+                            <div class="col-md-2 text-muted">{% trans "Assigned To:" %}</div>
+                            <div class="col-md-10">
+                                {{ message.assigned_to.get_full_name|default:message.assigned_to.username }}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <hr>
+
+                    <div class="message-content mt-3">
+                        <h5>{% trans "Message:" %}</h5>
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <p class="message-text">{{ message.message|linebreaks }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if message.staff_notes %}
+                    <div class="staff-notes mt-4">
+                        <h5>{% trans "Staff Notes:" %}</h5>
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                {{ message.staff_notes|linebreaks }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Response History -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    {% trans "Response History" %}
+                </div>
+                <div class="card-body">
+                    {% if responses %}
+                        <div class="response-timeline">
+                            {% for response in responses %}
+                                <div class="response-item mb-4">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <span class="fw-bold">{{ response.user.get_full_name|default:response.user.username }}</span>
+                                            <span class="text-muted ms-2">{{ response.timestamp }}</span>
+                                        </div>
+                                        <span class="badge bg-secondary">{{ response.get_response_type_display }}</span>
+                                    </div>
+                                    <div class="card bg-light">
+                                        <div class="card-body">
+                                            {{ response.content|linebreaks }}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">{% trans "No responses yet." %}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Quick Response Form -->
+            <div class="card">
+                <div class="card-header">
+                    {% trans "Add Response" %}
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'users:staff_message_response' message.id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="responseContent" class="form-label">{% trans "Response:" %}</label>
+                            <textarea class="form-control" id="responseContent" name="content" rows="4" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="responseType" class="form-label">{% trans "Response Type:" %}</label>
+                            <select class="form-select" id="responseType" name="response_type">
+                                {% for type_val, type_name in response_type_choices %}
+                                <option value="{{ type_val }}">{{ type_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" value="true" id="sendEmail" name="send_email">
+                            <label class="form-check-label" for="sendEmail">
+                                {% trans "Send response to customer by email" %}
+                            </label>
+                        </div>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">{% trans "Add Response" %}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-md-4">
+            <!-- Update Status -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    {% trans "Update Status" %}
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'users:staff_message_update_status' message.id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="status" class="form-label">{% trans "Status:" %}</label>
+                            <select class="form-select" id="status" name="status">
+                                {% for status_val, status_name in status_choices %}
+                                <option value="{{ status_val }}" {% if message.status == status_val %}selected{% endif %}>
+                                    {{ status_name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="priority" class="form-label">{% trans "Priority:" %}</label>
+                            <select class="form-select" id="priority" name="priority">
+                                {% for priority_val, priority_name in priority_choices %}
+                                <option value="{{ priority_val }}" {% if message.priority == priority_val %}selected{% endif %}>
+                                    {{ priority_name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="category" class="form-label">{% trans "Category:" %}</label>
+                            <select class="form-select" id="category" name="category">
+                                {% for category_val, category_name in category_choices %}
+                                <option value="{{ category_val }}" {% if message.category == category_val %}selected{% endif %}>
+                                    {{ category_name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">{% trans "Update" %}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Staff Notes -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    {% trans "Staff Notes" %}
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'users:staff_message_update_notes' message.id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <textarea class="form-control" id="notes" name="notes" rows="5">{{ message.staff_notes|default:'' }}</textarea>
+                        </div>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">{% trans "Save Notes" %}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Related Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    {% trans "Customer Information" %}
+                </div>
+                <div class="card-body">
+                    {% if message.user %}
+                        <div class="mb-3">
+                            <h6>{% trans "User Profile:" %}</h6>
+                            <p class="mb-1"><strong>{% trans "Name:" %}</strong> {{ message.user.get_full_name }}</p>
+                            <p class="mb-1"><strong>{% trans "Username:" %}</strong> {{ message.user.username }}</p>
+                            <p class="mb-1"><strong>{% trans "Email:" %}</strong> {{ message.user.email }}</p>
+                            <p class="mb-1">
+                                <strong>{% trans "Registered:" %}</strong>
+                                {{ message.user.date_joined|date:"F d, Y" }}
+                            </p>
+                        </div>
+                        <div class="mb-3">
+                            <a href="{% url 'admin:auth_user_change' message.user.id %}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                {% trans "View Admin Profile" %}
+                            </a>
+                        </div>
+                        <hr>
+                        <div class="mb-3">
+                            <h6>{% trans "Recent Orders:" %}</h6>
+                            <p class="text-muted">{% trans "Order history will be added in a future update" %}</p>
+                        </div>
+                        <hr>
+                        <div>
+                            <h6>{% trans "Previous Messages:" %}</h6>
+                            {% if previous_messages %}
+                                <ul class="list-group">
+                                    {% for prev_msg in previous_messages %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                                            <div class="ms-2 me-auto">
+                                                <div class="fw-bold">{{ prev_msg.subject|truncatechars:30 }}</div>
+                                                <small class="text-muted">{{ prev_msg.timestamp|date:"M d, Y" }}</small>
+                                            </div>
+                                            <a href="{% url 'users:staff_message_detail' prev_msg.id %}" class="btn btn-sm btn-outline-secondary">
+                                                {% trans "View" %}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-muted">{% trans "No previous messages from this customer." %}</p>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info mb-0">
+                            {% trans "This message was sent by a non-registered user." %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Forward Modal -->
+<div class="modal fade" id="forwardModal" tabindex="-1" aria-labelledby="forwardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'users:staff_message_forward' message.id %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="forwardModalLabel">{% trans "Forward Message" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="forwardTo" class="form-label">{% trans "Forward To:" %}</label>
+                        <select class="form-select" id="forwardTo" name="staff_id" required>
+                            <option value="" selected disabled>{% trans "Select Staff Member" %}</option>
+                            {% for staff in staff_members %}
+                            <option value="{{ staff.id }}">{{ staff.get_full_name|default:staff.username }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="forwardNote" class="form-label">{% trans "Additional Note:" %}</label>
+                        <textarea class="form-control" id="forwardNote" name="note" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="submit" class="btn btn-primary">{% trans "Forward" %}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Assign Modal -->
+<div class="modal fade" id="assignModal" tabindex="-1" aria-labelledby="assignModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'users:staff_message_assign' message.id %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="assignModalLabel">{% trans "Assign Message" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="assignTo" class="form-label">{% trans "Assign To:" %}</label>
+                        <select class="form-select" id="assignTo" name="staff_id">
+                            <option value="">{% trans "Unassigned" %}</option>
+                            {% for staff in staff_members %}
+                            <option value="{{ staff.id }}" {% if message.assigned_to == staff %}selected{% endif %}>
+                                {{ staff.get_full_name|default:staff.username }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="submit" class="btn btn-primary">{% trans "Assign" %}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block head_title %}{% trans "Staff Dashboard" %}{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <h1>{% trans "Staff Dashboard" %}</h1>
+    <p>{% trans "Manage customer inquiries and support tickets from this dashboard." %}</p>
+
+    <div class="row">
+        <!-- Statistics Cards -->
+        <div class="col-md-9">
+            <div class="row">
+                <div class="col-md-3 mb-4">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">{% trans "Total Messages" %}</h5>
+                            <h2 class="display-4">{{ messages_stats.total }}</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="card bg-danger text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">{% trans "Unread" %}</h5>
+                            <h2 class="display-4">{{ messages_stats.unread }}</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="card bg-warning text-dark">
+                        <div class="card-body">
+                            <h5 class="card-title">{% trans "Urgent" %}</h5>
+                            <h2 class="display-4">{{ messages_stats.urgent }}</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">{% trans "High Priority" %}</h5>
+                            <h2 class="display-4">{{ messages_stats.high }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            {% trans "Status Breakdown" %}
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>{% trans "New" %}</span>
+                                <span class="badge bg-primary">{{ messages_stats.new }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>{% trans "In Progress" %}</span>
+                                <span class="badge bg-warning">{{ messages_stats.in_progress }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>{% trans "Resolved" %}</span>
+                                <span class="badge bg-success">{{ messages_stats.resolved }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            {% trans "Category Distribution" %}
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>{% trans "Category" %}</th>
+                                            <th>{% trans "Count" %}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for category in category_stats %}
+                                        <tr>
+                                            <td>{{ category.category|title }}</td>
+                                            <td>{{ category.count }}</td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="2">{% trans "No data available" %}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 mb-4">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span>{% trans "Urgent Messages" %}</span>
+                            <a href="{% url 'users:staff_message_list' %}?priority=urgent&is_read=false" class="btn btn-sm btn-outline-danger">
+                                {% trans "View All" %}
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>{% trans "Subject" %}</th>
+                                            <th>{% trans "From" %}</th>
+                                            <th>{% trans "Priority" %}</th>
+                                            <th>{% trans "Status" %}</th>
+                                            <th>{% trans "Received" %}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for message in urgent_messages %}
+                                        <tr class="{% if message.priority == 'urgent' %}table-danger{% else %}table-warning{% endif %}">
+                                            <td>
+                                                <a href="{% url 'users:staff_message_detail' message.id %}">
+                                                    {{ message.subject }}
+                                                </a>
+                                            </td>
+                                            <td>{{ message.email }}</td>
+                                            <td>
+                                                <span class="badge {% if message.priority == 'urgent' %}bg-danger{% elif message.priority == 'high' %}bg-warning text-dark{% endif %}">
+                                                    {{ message.get_priority_display }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-{{ message.get_status_color }}">
+                                                    {{ message.get_status_display }}
+                                                </span>
+                                            </td>
+                                            <td>{{ message.timestamp|timesince }} ago</td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="5">{% trans "No urgent messages at this time." %}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span>{% trans "Recent Activity" %}</span>
+                            <a href="{% url 'users:staff_message_list' %}" class="btn btn-sm btn-outline-primary">
+                                {% trans "View All Messages" %}
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>{% trans "Subject" %}</th>
+                                            <th>{% trans "From" %}</th>
+                                            <th>{% trans "Category" %}</th>
+                                            <th>{% trans "Status" %}</th>
+                                            <th>{% trans "Received" %}</th>
+                                            <th>{% trans "Actions" %}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for message in recent_activity %}
+                                        <tr class="{% if not message.is_read %}table-light fw-bold{% endif %}">
+                                            <td>
+                                                <a href="{% url 'users:staff_message_detail' message.id %}">
+                                                    {{ message.subject }}
+                                                </a>
+                                            </td>
+                                            <td>{{ message.email }}</td>
+                                            <td>{{ message.get_category_display }}</td>
+                                            <td>
+                                                <span class="badge bg-{{ message.get_status_color }}">
+                                                    {{ message.get_status_display }}
+                                                </span>
+                                            </td>
+                                            <td>{{ message.timestamp|timesince }} ago</td>
+                                            <td>
+                                                <a href="{% url 'users:staff_message_detail' message.id %}" class="btn btn-sm btn-primary">
+                                                    {% trans "View" %}
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="6">{% trans "No messages found." %}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card mb-4">
+                <div class="card-header">
+                    {% trans "Quick Actions" %}
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'users:staff_message_list' %}" class="btn btn-primary btn-block mb-2 w-100">
+                        {% trans "All Messages" %}
+                    </a>
+                    <a href="{% url 'users:staff_message_list' %}?is_read=false" class="btn btn-danger btn-block mb-2 w-100">
+                        {% trans "Unread Messages" %}
+                    </a>
+                    <a href="{% url 'users:staff_message_list' %}?assigned=me" class="btn btn-info btn-block mb-2 w-100">
+                        {% trans "My Assigned Messages" %}
+                    </a>
+                    <a href="{% url 'users:staff_message_list' %}?status=new" class="btn btn-warning btn-block mb-2 w-100">
+                        {% trans "New Messages" %}
+                    </a>
+                    <a href="{% url 'users:staff_message_list' %}?status=in_progress" class="btn btn-secondary btn-block w-100">
+                        {% trans "In Progress Messages" %}
+                    </a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    {% trans "Assigned to You" %}
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for message in assigned_messages %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="{% url 'users:staff_message_detail' message.id %}">
+                                {{ message.subject|truncatechars:30 }}
+                            </a>
+                            <span class="badge bg-{{ message.get_status_color }} rounded-pill">
+                                {{ message.get_status_display }}
+                            </span>
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item">
+                            {% trans "No messages assigned to you." %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
