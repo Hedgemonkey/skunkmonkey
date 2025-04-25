@@ -338,6 +338,41 @@ class ContactMessage(models.Model):
 
         self.save(update_fields=save_fields)
 
+    def add_note(self, note_content, user=None):
+        """
+        Add a staff note to the message.
+
+        Args:
+            note_content: The note content to be added
+            user: The staff member who wrote the note (optional)
+        """
+        # Create a new MessageNote
+        note = MessageNote.objects.create(
+            contact_message=self,
+            content=note_content,
+            created_by=user
+        )
+
+        # Legacy support - format and append to existing staff_notes field
+        timestamp = timezone.now().strftime('%Y-%m-%d %H:%M')
+        staff_name = user.get_full_name() if user else "Staff"
+        formatted_note = f"[{timestamp}] {staff_name}: {note_content}"
+
+        # Prepend to existing notes (newest on top)
+        if self.staff_notes:
+            self.staff_notes = f"{formatted_note}\n\n{self.staff_notes}"
+        else:
+            self.staff_notes = formatted_note
+
+        # Update the assigned_to field if not already set
+        if user and not self.assigned_to:
+            self.assigned_to = user
+            self.save(update_fields=['staff_notes', 'assigned_to'])
+        else:
+            self.save(update_fields=['staff_notes'])
+
+        return note
+
 
 class MessageResponse(models.Model):
     """
