@@ -258,3 +258,68 @@ class ContactMessageReplyForm(forms.Form):
         label=_('Your Reply'),
         required=True,
     )
+
+
+class StaffUserSearchForm(forms.Form):
+    """Form for staff to search users."""
+    search = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': _('Search by username, email, or name...'),
+        })
+    )
+
+    STATUS_CHOICES = (
+        ('', _('All')),
+        ('active', _('Active')),
+        ('inactive', _('Inactive')),
+    )
+
+    USER_TYPE_CHOICES = (
+        ('', _('All')),
+        ('staff', _('Staff')),
+        ('customers', _('Customers')),
+    )
+
+    SORT_CHOICES = (
+        ('-date_joined', _('Newest')),
+        ('date_joined', _('Oldest')),
+        ('username', _('Username (A-Z)')),
+        ('-username', _('Username (Z-A)')),
+        ('email', _('Email (A-Z)')),
+        ('-email', _('Email (Z-A)')),
+    )
+
+    status = forms.ChoiceField(
+        choices=STATUS_CHOICES,
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+
+    user_type = forms.ChoiceField(
+        choices=USER_TYPE_CHOICES,
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+
+    sort = forms.ChoiceField(
+        choices=SORT_CHOICES,
+        required=False,
+        initial='-date_joined',
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'get'
+        self.helper.form_class = 'row g-3'
+
+        self.helper.layout = Layout(
+            Field('search', wrapper_class='col-md-6'),
+            Field('status', wrapper_class='col-md-2'),
+            Field('user_type', wrapper_class='col-md-2'),
+            Field('sort', wrapper_class='col-md-2'),
+            Submit('submit', _('Search'), css_class='btn-primary col-12 mt-2')
+        )
