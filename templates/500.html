@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block head_title %}{% trans "Server Error" %}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="error-template">
+                <h1>{% trans "500" %}</h1>
+                <h2>{% trans "Server Error" %}</h2>
+                <div class="error-details mb-4">
+                    <p>{% trans "Sorry, something went wrong on our end." %}</p>
+                    <p class="text-muted">{% trans "Our technical team has been notified and we're working to fix the issue." %}</p>
+                </div>
+                <div class="error-actions">
+                    <a href="{% url 'home' %}" class="btn btn-primary">
+                        <i class="bi bi-house"></i> {% trans "Back to Home" %}
+                    </a>
+                    <a href="{% url 'users:contact' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-chat-dots"></i> {% trans "Contact Support" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
