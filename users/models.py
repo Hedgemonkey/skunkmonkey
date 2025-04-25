@@ -327,13 +327,16 @@ class ContactMessage(models.Model):
         # Set resolved date if transitioning to resolved status
         if status == 'resolved' and old_status != 'resolved':
             self.resolved_date = timezone.now()
+        # Clear resolved date if reopening a resolved message
+        elif old_status == 'resolved' and status != 'resolved':
+            self.resolved_date = None
 
         # Update assigned_to if not set
         if user and not self.assigned_to:
             self.assigned_to = user
 
         save_fields = ['status', 'assigned_to']
-        if status == 'resolved':
+        if status == 'resolved' or old_status == 'resolved':
             save_fields.append('resolved_date')
 
         self.save(update_fields=save_fields)

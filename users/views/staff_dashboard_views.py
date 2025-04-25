@@ -389,7 +389,15 @@ def staff_message_response(request, pk):
     if request.method == 'POST':
         content = request.POST.get('content')
         response_type = request.POST.get('response_type', 'message')
-        send_email_requested = request.POST.get('send_email') == 'true'
+        send_email_param = request.POST.get('send_email')
+        send_email_requested = send_email_param == 'true'
+
+        # Debug logging
+        print(
+            f"DEBUG: send_email param received: '{send_email_param}', "
+            f"parsed as {send_email_requested}"
+        )
+        print(f"DEBUG: All POST data: {request.POST}")
 
         if not content:
             messages.error(request, _("Response content cannot be empty."))
@@ -434,13 +442,9 @@ def staff_message_response(request, pk):
                 message.status = 'in_progress'
                 message.save(update_fields=['status'])
 
-            # Send email if requested
-            if (
-                send_email_requested
-                and is_visible_to_user
-                and message.email
-                and '@' in message.email
-            ):
+            # Send email if explicitly requested
+            if send_email_requested and message.email and '@' in message.email:
+                print(f"DEBUG: Attempting to send email to {message.email}")
                 try:
                     send_response_email(
                         contact_message=message,
@@ -452,13 +456,20 @@ def staff_message_response(request, pk):
                     messages.success(
                         request, _("Response sent by email and saved.")
                     )
+                    print("DEBUG: Email sent successfully")
                 except Exception as e:
                     msg = (
                         f"Failed to send email: {str(e)}. "
                         "Response was saved."
                     )
                     messages.error(request, _(msg))
+                    print(f"DEBUG: Email send error: {str(e)}")
             else:
+                print(
+                    f"DEBUG: Not sending email. Conditions: "
+                    f"send_email_requested={send_email_requested}, "
+                    f"email={message.email}"
+                )
                 if response_type == 'message':
                     messages.success(
                         request, _("Response saved without sending email.")
