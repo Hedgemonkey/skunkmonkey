@@ -1,146 +1,210 @@
 """
-Staff dashboard view modules for the users app.
+Staff dashboard views for managing users, support tasks, etc.
 """
+import logging
+
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
-from django.contrib.auth.mixins import UserPassesTestMixin
-from django.db.models import Count, Q
+from django.core.mail import EmailMessage
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
+from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import DetailView, ListView, View
+from django.views.generic import DetailView, ListView, TemplateView, UpdateView
 
+from users.forms import StaffUserSearchForm
+from users.mixins import StaffMemberRequiredMixin
 from users.models import ContactMessage, MessageNote, MessageResponse
 from users.utils.email import send_response_email
 
 User = get_user_model()
+logger = logging.getLogger('users')
 
 
-class StaffMemberRequiredMixin(UserPassesTestMixin):
-    """Mixin to ensure only staff members can access views."""
+class StaffDashboardView(StaffMemberRequiredMixin, TemplateView):
+    """Staff dashboard home view."""
+    template_name = 'users/staff/dashboard.html'
 
-    def test_func(self):
-        return self.request.user.is_staff
+    def get_context_data(self, **kwargs):
+        """Add additional context for the dashboard."""
+        context = super().get_context_data(**kwargs)
 
+        # Get latest messages
+        context['recent_messages'] = ContactMessage.objects.order_by(
+            '-timestamp'
+        )[:5]
 
-class StaffDashboardView(StaffMemberRequiredMixin, View):
-    """Dashboard view for staff members to manage contact messages."""
-
-    def get(self, request, *args, **kwargs):
-        # Get message statistics
-        messages_stats = {
-            'total': ContactMessage.objects.count(),
-            'unread': ContactMessage.objects.filter(is_read=False).count(),
-            'urgent': ContactMessage.objects.filter(priority='urgent').count(),
-            'high': ContactMessage.objects.filter(priority='high').count(),
-            'new': ContactMessage.objects.filter(status='new').count(),
-            'in_progress': ContactMessage.objects.filter(
-                status='in_progress'
-            ).count(),
-            'resolved': ContactMessage.objects.filter(
-                status='resolved'
-            ).count(),
-        }
-
-        # Get category statistics
-        category_stats = ContactMessage.objects.values('category').annotate(
-            count=Count('id')
-        ).order_by('-count')
-
-        # Get urgent unread messages
-        urgent_messages = ContactMessage.objects.filter(
-            priority__in=['urgent', 'high'],
+        # Get unread messages count
+        context['unread_count'] = ContactMessage.objects.filter(
             is_read=False
+        ).count()
+
+        # Get urgent messages
+        context['urgent_messages'] = ContactMessage.objects.filter(
+            priority='urgent'
         ).order_by('-timestamp')[:5]
 
-        # Get messages assigned to current staff member
-        assigned_messages = ContactMessage.objects.filter(
-            assigned_to=request.user
-        ).order_by('-timestamp')
+        # Messages needing attention (unassigned with status 'new')
+        context['unassigned_new'] = ContactMessage.objects.filter(
+            assigned_to=None,
+            status='new'
+        ).count()
 
-        # Recent activity
-        recent_activity = (
-            ContactMessage.objects.all()
-            .order_by('-timestamp')[:10]
-        )
+        # Messages assigned to current user
+        context['assigned_to_me'] = ContactMessage.objects.filter(
+            assigned_to=self.request.user
+        ).count()
 
-        context = {
-            'messages_stats': messages_stats,
-            'category_stats': category_stats,
-            'urgent_messages': urgent_messages,
-            'assigned_messages': assigned_messages,
-            'recent_activity': recent_activity,
+        return context
+
+
+class StaffUserListView(StaffMemberRequiredMixin, ListView):
+    """List users for staff to manage."""
+    model = User
+    template_name = 'users/staff/user_list.html'
+    context_object_name = 'users'
+    paginate_by = 20
+
+    def get_queryset(self):
+        """Filter users based on search parameters."""
+        queryset = super().get_queryset()
+
+        search_query = self.request.GET.get('search', '')
+        if search_query:
+            queryset = queryset.filter(
+                username__icontains=search_query
+            ) | queryset.filter(
+                email__icontains=search_query
+            ) | queryset.filter(
+                first_name__icontains=search_query
+            ) | queryset.filter(
+                last_name__icontains=search_query
+            )
+
+        # Filter by active status if specified
+        status = self.request.GET.get('status', '')
+        if status == 'active':
+            queryset = queryset.filter(is_active=True)
+        elif status == 'inactive':
+            queryset = queryset.filter(is_active=False)
+
+        # Filter by staff status if specified
+        user_type = self.request.GET.get('user_type', '')
+        if user_type == 'staff':
+            queryset = queryset.filter(is_staff=True)
+        elif user_type == 'customers':
+            queryset = queryset.filter(is_staff=False)
+
+        # Default sort by join date (newest first)
+        sort_by = self.request.GET.get('sort', '-date_joined')
+        return queryset.order_by(sort_by)
+
+    def get_context_data(self, **kwargs):
+        """Add search form to context."""
+        context = super().get_context_data(**kwargs)
+        context['form'] = StaffUserSearchForm(self.request.GET)
+        # Add applied filters for display
+        context['applied_filters'] = {
+            'search': self.request.GET.get('search', ''),
+            'status': self.request.GET.get('status', ''),
+            'user_type': self.request.GET.get('user_type', ''),
+            'sort': self.request.GET.get('sort', '-date_joined')
         }
+        return context
 
-        return render(request, 'users/staff/dashboard.html', context)
+
+class StaffUserUpdateView(StaffMemberRequiredMixin, UpdateView):
+    """Update user information as staff."""
+    model = User
+    template_name = 'users/staff/user_detail.html'
+    fields = [
+        'username', 'email', 'first_name', 'last_name',
+        'is_active', 'is_staff'
+    ]
+    success_url = reverse_lazy('users:staff_user_list')
+
+    def form_valid(self, form):
+        """Add success message when form is valid."""
+        response = super().form_valid(form)
+        messages.success(
+            self.request,
+            _("User information updated successfully.")
+        )
+        return response
 
 
 class ContactMessageListView(StaffMemberRequiredMixin, ListView):
-    """
-    List view for staff to see all contact messages with filtering options.
-    """
+    """List view for staff to manage contact messages."""
     model = ContactMessage
     template_name = 'users/staff/contact_message_list.html'
     context_object_name = 'contact_messages'
     paginate_by = 20
 
     def get_queryset(self):
-        queryset = ContactMessage.objects.all()
+        """Filter and sort messages based on request parameters."""
+        queryset = super().get_queryset()
 
-        # Apply filters
-        status_filter = self.request.GET.get('status')
-        priority_filter = self.request.GET.get('priority')
-        category_filter = self.request.GET.get('category')
-        is_read_filter = self.request.GET.get('is_read')
-        assigned_filter = self.request.GET.get('assigned')
-        search_query = self.request.GET.get('search')
-        order_by = self.request.GET.get('order_by', '-timestamp')
+        # Apply search filter if provided
+        search_query = self.request.GET.get('search', '')
+        if search_query:
+            queryset = queryset.filter(
+                subject__icontains=search_query
+            ) | queryset.filter(
+                email__icontains=search_query
+            ) | queryset.filter(
+                message__icontains=search_query
+            )
 
+        # Filter by status
+        status_filter = self.request.GET.get('status', '')
         if status_filter:
             queryset = queryset.filter(status=status_filter)
 
+        # Filter by priority
+        priority_filter = self.request.GET.get('priority', '')
         if priority_filter:
             queryset = queryset.filter(priority=priority_filter)
 
+        # Filter by category
+        category_filter = self.request.GET.get('category', '')
         if category_filter:
             queryset = queryset.filter(category=category_filter)
 
-        if is_read_filter == 'true':
+        # Filter by read status
+        is_read_filter = self.request.GET.get('is_read', '')
+        if is_read_filter == 'read':
             queryset = queryset.filter(is_read=True)
-        elif is_read_filter == 'false':
+        elif is_read_filter == 'unread':
             queryset = queryset.filter(is_read=False)
 
+        # Filter by assigned status
+        assigned_filter = self.request.GET.get('assigned', '')
         if assigned_filter == 'me':
             queryset = queryset.filter(assigned_to=self.request.user)
         elif assigned_filter == 'none':
-            queryset = queryset.filter(assigned_to__isnull=True)
+            queryset = queryset.filter(assigned_to=None)
 
-        if search_query:
-            queryset = queryset.filter(
-                Q(email__icontains=search_query)
-                | Q(subject__icontains=search_query)
-                | Q(message__icontains=search_query)
-            )
-
-        # Apply ordering
+        # Default sort by timestamp (newest first)
+        order_by = self.request.GET.get('order_by', '-timestamp')
         return queryset.order_by(order_by)
 
     def get_context_data(self, **kwargs):
+        """Add additional context for filtering options."""
         context = super().get_context_data(**kwargs)
-
-        # Get choices for filters
+        # Add filter choices
         context['status_choices'] = ContactMessage.STATUS_CHOICES
         context['priority_choices'] = ContactMessage.PRIORITY_CHOICES
         context['category_choices'] = ContactMessage.CATEGORY_CHOICES
 
-        # Add current filter values to context
-        context['status_filter'] = self.request.GET.get('status')
-        context['priority_filter'] = self.request.GET.get('priority')
-        context['category_filter'] = self.request.GET.get('category')
-        context['is_read_filter'] = self.request.GET.get('is_read')
-        context['assigned_filter'] = self.request.GET.get('assigned')
-        context['search_query'] = self.request.GET.get('search')
+        # Add current filter selections for UI
+        context['search_query'] = self.request.GET.get('search', '')
+        context['status_filter'] = self.request.GET.get('status', '')
+        context['priority_filter'] = self.request.GET.get('priority', '')
+        context['category_filter'] = self.request.GET.get('category', '')
+        context['is_read_filter'] = self.request.GET.get('is_read', '')
+        context['assigned_filter'] = self.request.GET.get('assigned', '')
         context['order_by'] = self.request.GET.get('order_by', '-timestamp')
 
         return context
@@ -187,9 +251,17 @@ class ContactMessageDetailView(StaffMemberRequiredMixin, DetailView):
             ('note', _('Internal Note')),
         ]
 
-        # Get responses and notes for this message
-        context['responses'] = message.responses.order_by('created_at').all()
-        context['notes'] = message.notes.order_by('-created_at').all()
+        # Get responses and notes for this message with proper ordering
+        responses = message.responses.all().order_by('created_at')
+        notes = message.notes.all().order_by('created_at')
+        context['responses'] = responses
+        context['notes'] = notes
+
+        # For debugging - confirm counts in logs
+        logger.debug(
+            f"Message {message.id} has {responses.count()} responses "
+            f"and {notes.count()} notes"
+        )
 
         return context
 
@@ -260,49 +332,67 @@ class ContactMessageDetailView(StaffMemberRequiredMixin, DetailView):
 @staff_member_required
 def message_bulk_action(request):
     """Handle bulk actions for contact messages."""
-    if request.method == 'POST':
-        action = request.POST.get('bulk_action')
-        message_ids = request.POST.getlist('message_ids')
+    if request.method != 'POST':
+        return redirect('users:staff_message_list')
 
-        if not message_ids:
-            messages.warning(request, _("No messages selected."))
-            return redirect('users:staff_message_list')
+    action = request.POST.get('bulk_action', '')
+    message_ids = request.POST.getlist('message_ids', [])
 
-        messages_to_update = ContactMessage.objects.filter(id__in=message_ids)
+    if not action or not message_ids:
+        messages.error(
+            request,
+            _("Please select both an action and at least one message.")
+        )
+        return redirect('users:staff_message_list')
 
-        if action == 'mark_read':
-            messages_to_update.update(is_read=True)
-            messages.success(
-                request, _(f"{len(message_ids)} messages marked as read.")
+    messages_to_process = ContactMessage.objects.filter(id__in=message_ids)
+    message_count = messages_to_process.count()
+
+    if action == 'mark_read':
+        for message_obj in messages_to_process:
+            message_obj.mark_as_read()
+        messages.success(
+            request, _(f"{message_count} messages marked as read.")
+        )
+
+    elif action == 'mark_unread':
+        for message_obj in messages_to_process:
+            message_obj.mark_as_unread()
+        messages.success(
+            request, _(f"{message_count} messages marked as unread.")
+        )
+
+    elif action == 'assign_to_me':
+        for message_obj in messages_to_process:
+            message_obj.assign_to(request.user)
+        messages.success(
+            request, _(f"{message_count} messages assigned to you.")
+        )
+
+    elif action == 'set_status':
+        status = request.POST.get('status')
+        for message_obj in messages_to_process:
+            message_obj.update_status(status, request.user)
+        status_choices_dict = dict(ContactMessage.STATUS_CHOICES)
+        status_display = status_choices_dict.get(status, status)
+        messages.success(
+            request,
+            _(f"{message_count} messages set to '{status_display}'.")
+        )
+
+    elif action == 'set_priority':
+        priority = request.POST.get('priority')
+        messages_to_process.update(priority=priority)
+        priority_display = dict(ContactMessage.PRIORITY_CHOICES).get(
+            priority, priority
+        )
+        messages.success(
+            request,
+            _(
+                f"{message_count} messages set to "
+                f"'{priority_display}' priority."
             )
-
-        elif action == 'mark_unread':
-            messages_to_update.update(is_read=False)
-            messages.success(
-                request, _(f"{len(message_ids)} messages marked as unread.")
-            )
-
-        elif action == 'assign_to_me':
-            messages_to_update.update(assigned_to=request.user)
-            messages.success(
-                request, _(f"{len(message_ids)} messages assigned to you.")
-            )
-
-        elif action == 'set_status':
-            status = request.POST.get('status')
-            messages_to_update.update(status=status)
-            messages.success(
-                request, _(f"Status updated for {len(message_ids)} messages.")
-            )
-
-        elif action == 'set_priority':
-            priority = request.POST.get('priority')
-            messages_to_update.update(priority=priority)
-            messages.success(
-                request, _(
-                    f"Priority updated for {len(message_ids)} messages."
-                )
-            )
+        )
 
     return redirect('users:staff_message_list')
 
@@ -340,15 +430,22 @@ def staff_message_reply(request, pk):
                 message.resolved_date = timezone.now()
                 message.save(update_fields=['status', 'resolved_date'])
 
-            # Email is now sent by add_response automatically
             messages.success(
-                request, _("Response saved and email sent to user.")
+                request,
+                _("Your response has been sent.")
+            )
+        else:
+            messages.error(
+                request,
+                _("Response cannot be empty.")
             )
 
-            return redirect('users:staff_message_detail', pk=pk)
+        return redirect('users:staff_message_detail', pk=pk)
 
     return render(
-        request, 'users/staff/message_reply.html', {'message': message}
+        request,
+        'users/staff/message_reply.html',
+        {'message': message}
     )
 
 
@@ -356,8 +453,7 @@ def staff_message_reply(request, pk):
 def staff_message_mark_read(request, pk):
     """Mark a message as read."""
     message = get_object_or_404(ContactMessage, pk=pk)
-    message.is_read = True
-    message.save(update_fields=['is_read'])
+    message.mark_as_read()
     messages.success(request, _("Message marked as read."))
     return redirect('users:staff_message_detail', pk=pk)
 
@@ -366,10 +462,9 @@ def staff_message_mark_read(request, pk):
 def staff_message_mark_unread(request, pk):
     """Mark a message as unread."""
     message = get_object_or_404(ContactMessage, pk=pk)
-    message.is_read = False
-    message.save(update_fields=['is_read'])
+    message.mark_as_unread()
     messages.success(request, _("Message marked as unread."))
-    return redirect('users:staff_message_list')
+    return redirect('users:staff_message_detail', pk=pk)
 
 
 @staff_member_required
@@ -470,23 +565,8 @@ def staff_message_response(request, pk):
                     f"send_email_requested={send_email_requested}, "
                     f"email={message.email}"
                 )
-                if response_type == 'message':
-                    messages.success(
-                        request, _("Response saved without sending email.")
-                    )
-                elif response_type == 'phone_call_user':
-                    messages.success(
-                        request,
-                        _("Phone call record saved (visible to user).")
-                    )
-                elif response_type == 'phone_call_internal':
-                    messages.success(
-                        request, _("Internal phone call record saved.")
-                    )
+                messages.success(request, _("Response saved."))
 
-        return redirect('users:staff_message_detail', pk=pk)
-
-    # If GET request, redirect to detail page
     return redirect('users:staff_message_detail', pk=pk)
 
 
@@ -496,12 +576,20 @@ def staff_message_update_status(request, pk):
     message = get_object_or_404(ContactMessage, pk=pk)
 
     if request.method == 'POST':
-        # Update status, priority and category
-        message.status = request.POST.get('status', message.status)
-        message.priority = request.POST.get('priority', message.priority)
-        message.category = request.POST.get('category', message.category)
-        message.save()
+        status = request.POST.get('status')
+        priority = request.POST.get('priority')
+        category = request.POST.get('category')
 
+        if status:
+            message.update_status(status, request.user)
+
+        if priority:
+            message.priority = priority
+
+        if category:
+            message.category = category
+
+        message.save(update_fields=['priority', 'category'])
         messages.success(request, _("Message details updated successfully."))
 
     return redirect('users:staff_message_detail', pk=pk)
@@ -513,58 +601,69 @@ def staff_message_update_notes(request, pk):
     message = get_object_or_404(ContactMessage, pk=pk)
 
     if request.method == 'POST':
-        notes = request.POST.get('notes', '')
-        message.staff_notes = notes
-        message.save(update_fields=['staff_notes'])
-
-        messages.success(request, _("Notes updated successfully."))
+        notes = request.POST.get('staff_notes')
+        if notes is not None:
+            message.staff_notes = notes
+            message.save(update_fields=['staff_notes'])
+            messages.success(request, _("Staff notes updated successfully."))
+        else:
+            messages.error(request, _("No notes provided."))
 
     return redirect('users:staff_message_detail', pk=pk)
 
 
 @staff_member_required
 def staff_message_forward(request, pk):
-    """Forward message to another staff member."""
+    """Forward a message to another staff member."""
     message = get_object_or_404(ContactMessage, pk=pk)
 
     if request.method == 'POST':
         staff_id = request.POST.get('staff_id')
-        note = request.POST.get('note', '')
+        note = request.POST.get('note')
 
         try:
-            staff_member = User.objects.get(id=staff_id, is_staff=True)
+            staff_user = User.objects.get(id=staff_id, is_staff=True)
 
-            # Update assigned_to
-            message.assigned_to = staff_member
+            # Update message assignment
+            message.assign_to(staff_user)
 
-            # Add forwarding note
-            timestamp = timezone.now().strftime('%Y-%m-%d %H:%M')
-            current_staff = (
-                request.user.get_full_name() or request.user.username
+            # Add note about the transfer
+            forward_note = (
+                f"Message forwarded by "
+                f"{request.user.get_full_name() or request.user.username} "
+                f"to "
+                f"{staff_user.get_full_name() or staff_user.username}."
             )
-
-            forwarding_note = (
-                f"[{timestamp}] {current_staff} forwarded to "
-                f"{staff_member.get_full_name() or staff_member.username}"
-            )
-
             if note:
-                forwarding_note += f": {note}"
+                forward_note += f" Note: {note}"
 
-            forwarding_note += "\n\n"
+            message.add_note(forward_note, request.user)
 
-            # Append to existing notes
-            if message.staff_notes:
-                message.staff_notes = forwarding_note + message.staff_notes
-            else:
-                message.staff_notes = forwarding_note
-
-            message.save()
+            # Send email notification to the staff member
+            context = {
+                'message': message,
+                'forwarded_by': request.user,
+                'note': note
+            }
+            email_body = render_to_string(
+                'users/emails/staff_message_forward.html',
+                context
+            )
+            email = EmailMessage(
+                subject=f"Message Forwarded: {message.subject}",
+                body=email_body,
+                from_email=None,  # Use default
+                to=[staff_user.email],
+                reply_to=[request.user.email]
+            )
+            email.content_subtype = "html"
+            email.send(fail_silently=True)
 
             messages.success(
                 request,
-                _("Message forwarded to {}.").format(
-                    staff_member.get_full_name() or staff_member.username
+                _(
+                    f"Message forwarded to "
+                    f"{staff_user.get_full_name() or staff_user.username}."
                 )
             )
 
@@ -576,7 +675,7 @@ def staff_message_forward(request, pk):
 
 @staff_member_required
 def staff_message_assign(request, pk):
-    """Assign message to a staff member."""
+    """Assign a message to a specific staff member."""
     message = get_object_or_404(ContactMessage, pk=pk)
 
     if request.method == 'POST':
@@ -584,22 +683,61 @@ def staff_message_assign(request, pk):
 
         if staff_id:
             try:
-                staff_member = User.objects.get(id=staff_id, is_staff=True)
-                message.assigned_to = staff_member
-                message.save(update_fields=['assigned_to'])
+                staff_user = User.objects.get(id=staff_id, is_staff=True)
+                original_assignee = message.assigned_to
+
+                # Add note about reassignment
+                if original_assignee:
+                    reassign_note = (
+                        f"Message reassigned by "
+                        f"{request.user.get_full_name()
+                           or request.user.username} "
+                        f"from {original_assignee.get_full_name()
+                                or original_assignee.username} "
+                        f"to {staff_user.get_full_name()
+                              or staff_user.username}."
+                    )
+                else:
+                    reassign_note = (
+                        f"Message assigned by {request.user.get_full_name()
+                                               or request.user.username} "
+                        f"to {staff_user.get_full_name()
+                              or staff_user.username}."
+                    )
+
+                # Update assignment
+                message.assign_to(staff_user)
+                message.add_note(reassign_note, request.user)
 
                 messages.success(
                     request,
-                    _("Message assigned to {}.").format(
-                        staff_member.get_full_name() or staff_member.username
+                    _(
+                        f"Message assigned to "
+                        f"{staff_user.get_full_name() or staff_user.username}."
                     )
                 )
+
             except User.DoesNotExist:
                 messages.error(request, _("Selected staff member not found."))
         else:
             # Unassign
-            message.assigned_to = None
-            message.save(update_fields=['assigned_to'])
-            messages.success(request, _("Message unassigned."))
+            if message.assigned_to:
+                unassign_note = (
+                    "Message unassigned by "
+                    (
+                        f"{request.user.get_full_name()
+                           or request.user.username}. "
+                        f"Previously assigned to "
+                        f"{message.assigned_to.get_full_name()
+                           or message.assigned_to.username}."
+                    )
+                )
+
+                message.assigned_to = None
+                message.save(update_fields=['assigned_to'])
+                message.add_note(unassign_note, request.user)
+                messages.success(request, _("Message unassigned."))
+            else:
+                messages.info(request, _("Message was already unassigned."))
 
     return redirect('users:staff_message_detail', pk=pk)
