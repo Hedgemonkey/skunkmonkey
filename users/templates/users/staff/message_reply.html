@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block head_title %}{% trans "Reply to Message" %}{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>{% trans "Reply to Message" %}</h1>
+        <div>
+            <a href="{% url 'users:staff_message_detail' message.id %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> {% trans "Back to Conversation" %}
+            </a>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row">
+        <!-- Message Content Summary -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    {% trans "Message Summary" %}
+                </div>
+                <div class="card-body">
+                    <p><strong>{% trans "From:" %}</strong> {{ message.email }}</p>
+                    <p><strong>{% trans "Subject:" %}</strong> {{ message.subject }}</p>
+                    <p><strong>{% trans "Date:" %}</strong> {{ message.timestamp }}</p>
+                    <p><strong>{% trans "Status:" %}</strong>
+                        <span class="badge
+                            {% if message.status == 'new' %}bg-primary
+                            {% elif message.status == 'in_progress' %}bg-warning text-dark
+                            {% elif message.status == 'resolved' %}bg-success
+                            {% else %}bg-secondary
+                            {% endif %}">
+                            {{ message.get_status_display }}
+                        </span>
+                    </p>
+                    <hr>
+                    <h6>{% trans "Original Message:" %}</h6>
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <p class="message-text">{{ message.message|linebreaks }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reply Form -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    {% trans "Compose Reply" %}
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="responseType" class="form-label">{% trans "Response Type:" %}</label>
+                            <select class="form-select" id="responseType" name="response_type">
+                                <option value="message">{% trans "Message" %}</option>
+                                <option value="phone_call_user">{% trans "Phone Call - User Message" %}</option>
+                                <option value="phone_call_internal">{% trans "Phone Call - Internal Message" %}</option>
+                                <option value="note">{% trans "Internal Note" %}</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="response" class="form-label">{% trans "Reply:" %}</label>
+                            <textarea class="form-control" id="response" name="response" rows="10" required></textarea>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" value="true" id="sendEmail" name="send_email" checked>
+                            <label class="form-check-label" for="sendEmail">
+                                {% trans "Send email notification to customer" %}
+                            </label>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">{% trans "After sending:" %}</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="status_after" id="statusProgress" value="in_progress" checked>
+                                <label class="form-check-label" for="statusProgress">
+                                    {% trans "Keep as in progress" %}
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="status_after" id="statusResolved" value="resolved">
+                                <label class="form-check-label" for="statusResolved">
+                                    {% trans "Mark as resolved" %}
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <a href="{% url 'users:staff_message_detail' message.id %}" class="btn btn-outline-secondary me-2">
+                                {% trans "Cancel" %}
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-send"></i> {% trans "Send Reply" %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
