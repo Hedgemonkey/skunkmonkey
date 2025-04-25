@@ -1,19 +1,53 @@
+"""
+Custom template filters for users app.
+"""
+from itertools import chain as iterchain
+
 from django import template
 
 register = template.Library()
 
 
 @register.filter
-def split(value, arg):
-    """
-    Split the value by the argument and return a list.
-    Used for displaying conversation threads in templates.
+def split(value, delimiter=','):
+    """Split a string into a list."""
+    return value.split(delimiter)
 
-    Usage: {{ value|split:"delimiter" }}
+
+@register.filter
+def chain(value, arg):
     """
-    if value:
-        return value.split(arg)
-    return []
+    Chain two querysets together.
+    Usage: {{ queryset1|chain:queryset2 }}
+    """
+    return list(iterchain(value, arg))
+
+
+@register.filter
+def dictsort(value, key):
+    """
+    Sort a list of dictionaries or objects by a key.
+
+    Works with both:
+    - Dictionaries (using key lookups)
+    - Objects (using attribute lookups)
+    """
+    if not value:
+        return []
+
+    # Function to safely get the attribute/key value
+    def get_value(item, key):
+        # Try attribute access first (for model instances)
+        try:
+            return getattr(item, key)
+        except (AttributeError, TypeError):
+            # Fall back to dictionary access
+            try:
+                return item[key]
+            except (KeyError, TypeError):
+                return None
+
+    return sorted(value, key=lambda k: get_value(k, key))
 
 
 @register.filter
