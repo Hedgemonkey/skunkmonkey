@@ -11,7 +11,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView, ListView, View
 
-from users.models import ContactMessage
+from users.models import ContactMessage, MessageNote, MessageResponse
 from users.utils.email import send_response_email
 
 User = get_user_model()
@@ -181,13 +181,15 @@ class ContactMessageDetailView(StaffMemberRequiredMixin, DetailView):
 
         # Add response type choices
         context['response_type_choices'] = [
-            ('email', _('Email')),
-            ('call', _('Phone Call')),
+            ('message', _('Email')),
+            ('phone_call_user', _('Phone Call - Visible to User')),
+            ('phone_call_internal', _('Phone Call - Internal Only')),
             ('note', _('Internal Note')),
         ]
 
-        # Add empty responses list to prevent template errors
-        context['responses'] = []
+        # Get responses and notes for this message
+        context['responses'] = message.responses.order_by('created_at').all()
+        context['notes'] = message.notes.order_by('-created_at').all()
 
         return context
 
@@ -197,8 +199,7 @@ class ContactMessageDetailView(StaffMemberRequiredMixin, DetailView):
 
         if action == 'update_status':
             status = request.POST.get('status')
-            message.status = status
-            message.save(update_fields=['status'])
+            message.update_status(status, user=request.user)
             messages.success(request, _("Status updated successfully."))
 
         elif action == 'update_priority':
@@ -214,35 +215,43 @@ class ContactMessageDetailView(StaffMemberRequiredMixin, DetailView):
             messages.success(request, _("Category updated successfully."))
 
         elif action == 'assign_to_me':
-            message.assigned_to = request.user
-            message.save(update_fields=['assigned_to'])
+            message.assign_to(request.user)
             messages.success(request, _("Message assigned to you."))
 
         elif action == 'add_note':
-            note = request.POST.get('note')
-            timestamp = timezone.now().strftime('%Y-%m-%d %H:%M')
-            staff_name = request.user.get_full_name() or request.user.username
+            note_content = request.POST.get('note')
+            if note_content:
+                # Create a new MessageNote instead of modifying staff_notes
+                MessageNote.objects.create(
+                    contact_message=message,
+                    content=note_content,
+                    created_by=request.user
+                )
 
-            # Format: [timestamp] staff_name: note
-            formatted_note = f"[{timestamp}] {staff_name}: {note}\n\n"
+                # Legacy support for staff_notes field
+                timestamp = timezone.now().strftime('%Y-%m-%d %H:%M')
+                staff_name = (
+                    request.user.get_full_name() or request.user.username
+                )
+                formatted_note = (
+                    f"[{timestamp}] {staff_name}: {note_content}\n\n"
+                )
 
-            # Append to existing notes
-            if message.staff_notes:
-                message.staff_notes = formatted_note + message.staff_notes
-            else:
-                message.staff_notes = formatted_note
+                # Prepend to existing notes (newest on top)
+                if message.staff_notes:
+                    message.staff_notes = formatted_note + message.staff_notes
+                else:
+                    message.staff_notes = formatted_note
 
-            message.save(update_fields=['staff_notes'])
-            messages.success(request, _("Note added successfully."))
+                message.save(update_fields=['staff_notes'])
+                messages.success(request, _("Note added successfully."))
 
         elif action == 'add_response':
-            # response = request.POST.get('response')
-            # Add response logic would go here
-            messages.success(request, _("Response added and saved."))
+            # This is handled by staff_message_response view
+            pass
 
         elif action == 'mark_unread':
-            message.is_read = False
-            message.save(update_fields=['is_read'])
+            message.mark_as_unread()
             messages.success(request, _("Message marked as unread."))
 
         return self.get(request, *args, **kwargs)
@@ -305,7 +314,6 @@ def staff_message_reply(request, pk):
 
     if request.method == 'POST':
         response = request.POST.get('response')
-        # send_email = request.POST.get('send_email') == 'true'
         status_after = request.POST.get('status_after', 'in_progress')
 
         # Determine if we should change status to resolved
@@ -320,6 +328,10 @@ def staff_message_reply(request, pk):
                 user=request.user,
                 change_status=change_status_to_resolved
             )
+
+            # Note: The add_response method now creates a MessageResponse
+            # object
+            # and updates the legacy response field
 
             # If status is manually set to resolved and wasn't handled by
             # add_response
@@ -376,73 +388,94 @@ def staff_message_response(request, pk):
 
     if request.method == 'POST':
         content = request.POST.get('content')
-        response_type = request.POST.get('response_type', 'note')
+        response_type = request.POST.get('response_type', 'message')
         send_email_requested = request.POST.get('send_email') == 'true'
 
-        # Save response in database
-        timestamp = timezone.now().strftime('%Y-%m-%d %H:%M')
-        staff_name = request.user.get_full_name() or request.user.username
+        if not content:
+            messages.error(request, _("Response content cannot be empty."))
+            return redirect('users:staff_message_detail', pk=pk)
 
-        # Format note based on response type for staff_notes (private)
-        if response_type == 'message':
-            note_prefix = f"[{timestamp}] {staff_name} sent message: "
-        elif response_type == 'phone_call_user':
-            note_prefix = (
-                f"[{timestamp}] {staff_name} made phone call "
-                f"(visible to user): "
+        # Assign to current staff user if not already assigned
+        if not message.assigned_to:
+            message.assigned_to = request.user
+            message.save(update_fields=['assigned_to'])
+
+        # Determine if response should be visible to user
+        is_visible_to_user = response_type in ['message', 'phone_call_user']
+
+        # Handle based on response type
+        if response_type == 'note':
+            # Create a MessageNote using the helper method
+            message.add_note(
+                note_content=content,
+                user=request.user
             )
-        elif response_type == 'phone_call_internal':
-            note_prefix = (
-                f"[{timestamp}] {staff_name} made phone call "
-                f"(internal only): "
-            )
-        else:
-            note_prefix = f"[{timestamp}] {staff_name} noted: "
+            messages.success(request, _("Internal note added successfully."))
 
-        formatted_note = f"{note_prefix}{content}\n\n"
-
-        # Append to existing staff_notes (private to staff)
-        if message.staff_notes:
-            message.staff_notes = formatted_note + message.staff_notes
-        else:
-            message.staff_notes = formatted_note
-
-        # For message or phone_call_user type responses, we also update the
-        # response field so it's visible to the user in their conversation view
-        if response_type in ['message', 'phone_call_user']:
-            # Use the add_response method to properly format and store the
-            # response for user visibility
-            message.add_response(content, request.user)
-        else:
-            # For internal responses, we only update staff_notes
-            # and update status if needed
+            # Update status from 'new' to 'in_progress' if applicable
             if message.status == 'new':
                 message.status = 'in_progress'
-                message.save(update_fields=['staff_notes', 'status'])
-            else:
-                message.save(update_fields=['staff_notes'])
+                message.save(update_fields=['status'])
 
-        # Send email if requested
-        if send_email_requested and message.email and '@' in message.email:
-            try:
-                # Use send_response_email with correct parameters
-                send_response_email(
-                    contact_message=message,  # The ContactMessage object
-                    response_text=content,    # The response text
-                    sender=request.user       # Staff user who wrote response
-                )
-                messages.success(
-                    request, _("Response sent by email and saved.")
-                )
-            except Exception as e:
-                msg = f"Failed to send email: {str(e)}. Response was saved."
-                messages.error(request, _(msg))
         else:
-            messages.success(request, _("Response saved."))
+            # Create a MessageResponse
+            response_obj = MessageResponse.objects.create(
+                contact_message=message,
+                content=content,
+                created_by=request.user,
+                response_type=response_type,
+                is_visible_to_user=is_visible_to_user,
+                # Will be updated if email is sent successfully
+                email_sent=False
+            )
+
+            # Update status
+            if message.status == 'new':
+                message.status = 'in_progress'
+                message.save(update_fields=['status'])
+
+            # Send email if requested
+            if (
+                send_email_requested
+                and is_visible_to_user
+                and message.email
+                and '@' in message.email
+            ):
+                try:
+                    send_response_email(
+                        contact_message=message,
+                        response_text=content,
+                        sender=request.user
+                    )
+                    response_obj.email_sent = True
+                    response_obj.save(update_fields=['email_sent'])
+                    messages.success(
+                        request, _("Response sent by email and saved.")
+                    )
+                except Exception as e:
+                    msg = (
+                        f"Failed to send email: {str(e)}. "
+                        "Response was saved."
+                    )
+                    messages.error(request, _(msg))
+            else:
+                if response_type == 'message':
+                    messages.success(
+                        request, _("Response saved without sending email.")
+                    )
+                elif response_type == 'phone_call_user':
+                    messages.success(
+                        request,
+                        _("Phone call record saved (visible to user).")
+                    )
+                elif response_type == 'phone_call_internal':
+                    messages.success(
+                        request, _("Internal phone call record saved.")
+                    )
 
         return redirect('users:staff_message_detail', pk=pk)
 
-    # If GET request, render response form
+    # If GET request, redirect to detail page
     return redirect('users:staff_message_detail', pk=pk)
 
 
