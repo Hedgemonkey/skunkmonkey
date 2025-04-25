@@ -12,7 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView, ListView
 
 from users.forms import ContactMessageReplyForm
-from users.models import ContactMessage
+from users.models import ContactMessage, MessageResponse
 from users.utils.email import send_contact_email
 
 logger = logging.getLogger('users')
@@ -53,11 +53,45 @@ class UserMessageDetailView(LoginRequiredMixin, DetailView):
             raise PermissionError(
                 _("You do not have permission to view this message.")
             )
+        # Mark as read when viewed
+        if not obj.is_read:
+            obj.mark_as_read()
         return obj
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        message = self.get_object()
+
+        # Add reply form
         context['reply_form'] = ContactMessageReplyForm()
+
+        # Get ALL responses that should be visible to the user
+        responses = (
+            message.responses.filter(is_visible_to_user=True)
+            .order_by('created_at')
+            .all()
+        )
+
+        # Process legacy responses only if we have that field populated
+        # and there are no MessageResponse objects that would duplicate them
+        # legacy_responses = []
+        if message.response and not responses.exists():
+            context['legacy_response'] = message.response
+            # We'll still pass the legacy response for backwards compatibility
+            # but won't need to process it in the template since we have proper
+            # responses
+
+        # Set responses in context
+        context['responses'] = responses
+
+        # Add a debug log to help trace issues
+        logger.debug(
+            (
+                f"User message {message.id} has "
+                f"{responses.count()} visible responses"
+            )
+        )
+
         return context
 
 
@@ -86,12 +120,19 @@ def message_reply(request, pk):
             timestamp = timezone.now().strftime('%Y-%m-%d %H:%M')
             user_name = request.user.get_full_name() or request.user.username
 
-            # Create a formatted user reply that will be visible to both staff
-            # and user
+            # Create a new MessageResponse object for the user reply
+            MessageResponse.objects.create(
+                contact_message=message,
+                content=reply_content,
+                response_type='user_reply',
+                is_visible_to_user=True,
+                created_by=request.user
+            )
+
+            # Legacy support - format and append to existing response field
             formatted_reply = f"[{timestamp}] USER REPLY: {reply_content}"
 
             # Store a copy in staff_notes for historical purposes
-            # with more detail
             staff_note = (
                 f"[{timestamp}] USER REPLY - {user_name}: {reply_content}\n\n"
             )
@@ -114,7 +155,9 @@ def message_reply(request, pk):
             if message.status in ['resolved', 'closed']:
                 message.status = 'in_progress'
 
-            message.save()
+            message.save(update_fields=[
+                'staff_notes', 'response', 'response_date', 'status'
+            ])
 
             # Send notification email to staff
             try:
