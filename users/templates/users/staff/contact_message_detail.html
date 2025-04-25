@@ -168,8 +168,73 @@
                     <div class="conversation-history mt-4">
                         <h5>{% trans "Conversation History:" %}</h5>
                         <div class="message-thread">
-                            <!-- Response field contains the entire conversation history -->
-                            {% if message.response %}
+                            <!-- Initial customer message -->
+                            <div class="message-item user-message mb-3">
+                                <div class="card border-primary">
+                                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                        <span class="badge bg-primary">
+                                            <i class="bi bi-person-fill"></i> {% trans "User" %}
+                                            {% if message.user %}
+                                                ({{ message.user.get_full_name|default:message.user.username }})
+                                            {% endif %}
+                                        </span>
+                                        <small class="text-muted">{{ message.timestamp|date:"Y-m-d H:i" }}</small>
+                                    </div>
+                                    <div class="card-body">
+                                        {{ message.message|linebreaks }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Display message responses -->
+                            {% for response in responses %}
+                                {% if response.response_type == 'message' or response.response_type == 'phone_call_user' %}
+                                    <div class="message-item staff-message mb-3">
+                                        <div class="card border-info">
+                                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                                <span class="badge bg-info text-dark">
+                                                    <i class="bi bi-headset"></i> {% trans "Staff" %}
+                                                    {% if response.created_by %}
+                                                        ({{ response.created_by.get_full_name|default:response.created_by.username }})
+                                                    {% endif %}
+                                                    {% if response.response_type == 'phone_call_user' %}
+                                                        - {% trans "Phone Call" %}
+                                                    {% endif %}
+                                                </span>
+                                                <small class="text-muted">{{ response.created_at|date:"Y-m-d H:i" }}</small>
+                                            </div>
+                                            <div class="card-body">
+                                                {{ response.content|linebreaks }}
+                                                {% if response.email_sent %}
+                                                    <div class="mt-2 text-muted">
+                                                        <small><i class="bi bi-envelope-check"></i> {% trans "Email sent to customer" %}</small>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% elif response.response_type == 'user_reply' %}
+                                    <div class="message-item user-message mb-3">
+                                        <div class="card border-primary">
+                                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                                <span class="badge bg-primary">
+                                                    <i class="bi bi-person-fill"></i> {% trans "User" %}
+                                                    {% if message.user %}
+                                                        ({{ message.user.get_full_name|default:message.user.username }})
+                                                    {% endif %}
+                                                </span>
+                                                <small class="text-muted">{{ response.created_at|date:"Y-m-d H:i" }}</small>
+                                            </div>
+                                            <div class="card-body">
+                                                {{ response.content|linebreaks }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+
+                            <!-- Legacy conversation history (for backward compatibility) -->
+                            {% if not responses and message.response %}
                                 {% for response_part in message.response|split:"\n\n" %}
                                     {% if "USER REPLY:" in response_part %}
                                         <!-- This is a user reply -->
@@ -235,11 +300,85 @@
                         </div>
                     </div>
 
-                    <!-- Staff Notes Section removed as requested -->
+                    <!-- Staff Notes Section -->
+                    <div class="staff-notes mt-4">
+                        <h5>{% trans "Internal Notes:" %}</h5>
+                        <div class="notes-thread">
+                            {% if notes %}
+                                {% for note in notes %}
+                                    <div class="note-item mb-3">
+                                        <div class="card border-warning">
+                                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                                <span class="badge bg-warning text-dark">
+                                                    <i class="bi bi-sticky"></i> {% trans "Note" %}
+                                                    {% if note.created_by %}
+                                                        ({{ note.created_by.get_full_name|default:note.created_by.username }})
+                                                    {% endif %}
+                                                </span>
+                                                <small class="text-muted">{{ note.created_at|date:"Y-m-d H:i" }}</small>
+                                            </div>
+                                            <div class="card-body">
+                                                {{ note.content|linebreaks }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+
+                            <!-- Display internal phone call records -->
+                            {% for response in responses %}
+                                {% if response.response_type == 'phone_call_internal' %}
+                                    <div class="note-item mb-3">
+                                        <div class="card border-warning">
+                                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                                <span class="badge bg-warning text-dark">
+                                                    <i class="bi bi-telephone"></i> {% trans "Phone Call" %}
+                                                    {% if response.created_by %}
+                                                        ({{ response.created_by.get_full_name|default:response.created_by.username }})
+                                                    {% endif %}
+                                                </span>
+                                                <small class="text-muted">{{ response.created_at|date:"Y-m-d H:i" }}</small>
+                                            </div>
+                                            <div class="card-body">
+                                                {{ response.content|linebreaks }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+
+                            <!-- Legacy staff notes (for backward compatibility) -->
+                            {% if not notes and message.staff_notes %}
+                                {% for note_part in message.staff_notes|split:"\n\n" %}
+                                    {% if note_part %}
+                                        <div class="note-item mb-3">
+                                            <div class="card border-warning">
+                                                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                                    <span class="badge bg-warning text-dark">
+                                                        <i class="bi bi-sticky"></i> {% trans "Legacy Note" %}
+                                                    </span>
+                                                    <small class="text-muted">
+                                                        {% if note_part|slice:":1" == "[" %}
+                                                            {{ note_part|slice:":19" }}
+                                                        {% endif %}
+                                                    </small>
+                                                </div>
+                                                <div class="card-body">
+                                                    {% if note_part|slice:":1" == "[" %}
+                                                        {{ note_part|slice:"19:"|linebreaks }}
+                                                    {% else %}
+                                                        {{ note_part|linebreaks }}
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <!-- Response History card removed as requested -->
 
             <!-- Quick Response Form -->
             <div class="card">
@@ -322,8 +461,6 @@
                     </form>
                 </div>
             </div>
-
-            <!-- Staff Notes card removed as requested -->
 
             <!-- Related Information -->
             <div class="card mb-4">
