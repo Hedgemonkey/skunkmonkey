@@ -9,213 +9,250 @@
 {% block header %}
 {% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Chat styling */
+    .chat-container {
+        max-height: 600px;
+        overflow-y: auto;
+    }
+    .message-bubble {
+        position: relative;
+        border-radius: 0.85rem;
+    }
+    .user-bubble {
+        background-color: rgba(13, 110, 253, 0.1);
+        border-left: 4px solid #0d6efd;
+    }
+    .staff-bubble {
+        background-color: rgba(13, 202, 240, 0.1);
+        border-left: 4px solid #0dcaf0;
+    }
+    .message-avatar {
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
         <h1>{% trans "Message Details" %}</h1>
-        <a href="{% url 'users:message_list' %}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> {% trans "Back to Messages" %}
-        </a>
+        <div>
+            <a href="{% url 'users:message_list' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> {% trans "Back to Messages" %}
+            </a>
+        </div>
     </div>
 
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
     <div class="row">
-        <!-- Message Content -->
         <div class="col-lg-8">
             <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <div>
-                        {% if message.status == 'new' %}
-                            <span class="badge bg-primary me-2">{% trans "New" %}</span>
-                        {% elif message.status == 'in_progress' %}
-                            <span class="badge bg-info me-2">{% trans "In Progress" %}</span>
-                        {% elif message.status == 'resolved' %}
-                            <span class="badge bg-success me-2">{% trans "Resolved" %}</span>
-                        {% elif message.status == 'closed' %}
-                            <span class="badge bg-secondary me-2">{% trans "Closed" %}</span>
-                        {% endif %}
-
-                        {% if message.priority == 'urgent' %}
-                            <span class="badge bg-danger me-2">{% trans "Urgent" %}</span>
-                        {% endif %}
-
-                        <span class="fw-bold fs-5">{{ message.subject }}</span>
-                    </div>
+                <div class="card-header">
+                    <h5 class="card-title mb-0">{{ message.subject }}</h5>
                 </div>
                 <div class="card-body">
-                    <!-- Message details -->
-                    <div class="mb-4">
-                        <div class="row mb-2">
-                            <div class="col-md-3 text-muted">{% trans "Date:" %}</div>
-                            <div class="col-md-9">{{ message.timestamp|date:"F d, Y H:i" }}</div>
-                        </div>
-                        <div class="row mb-2">
-                            <div class="col-md-3 text-muted">{% trans "Category:" %}</div>
-                            <div class="col-md-9">
-                                {% if message.category == 'general' %}
-                                    {% trans "General Inquiry" %}
-                                {% elif message.category == 'support' %}
-                                    {% trans "Technical Support" %}
-                                {% elif message.category == 'billing' %}
-                                    {% trans "Billing Question" %}
-                                {% elif message.category == 'feedback' %}
-                                    {% trans "Feedback" %}
-                                {% elif message.category == 'complaint' %}
-                                    {% trans "Complaint" %}
-                                {% else %}
-                                    {% trans "Other" %}
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Conversation Thread -->
-                    <h5 class="mb-3">{% trans "Conversation:" %}</h5>
-
-                    <!-- Original user message -->
-                    <div class="message-item user-message mb-4">
-                        <div class="card bg-light border-primary">
-                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                                <span class="badge bg-primary">
-                                    <i class="bi bi-person-fill"></i> {% trans "You" %}
-                                </span>
-                                <small class="text-muted">{{ message.timestamp|date:"F d, Y H:i" }}</small>
-                            </div>
-                            <div class="card-body">
-                                {{ message.message|linebreaks }}
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Response field contains the entire conversation history -->
-                    {% if message.response %}
-                        {% for response_part in message.response|split:"\n\n" %}
-                            {% if "USER REPLY:" in response_part %}
-                                <!-- This is a user reply -->
-                                <div class="message-item user-message mb-4">
-                                    <div class="card bg-light border-primary">
-                                        <div class="card-header d-flex justify-content-between align-items-center">
-                                            <span class="badge bg-primary">
-                                                <i class="bi bi-person-fill"></i> {% trans "You" %}
-                                            </span>
-                                            <small class="text-muted">{{ response_part|slice:":19" }}</small>
-                                        </div>
-                                        <div class="card-body">
-                                            {{ response_part|slice:"19:"|cut:"USER REPLY: "|linebreaks }}
-                                        </div>
+                    <!-- Initial message -->
+                    <div class="chat-container p-3 border rounded bg-light">
+                        <!-- Original message from user -->
+                        <div class="message user-message mb-3">
+                            <div class="d-flex">
+                                <div class="message-avatar rounded-circle bg-primary d-flex align-items-center justify-content-center text-white me-2">
+                                    <i class="bi bi-person-fill"></i>
+                                </div>
+                                <div class="message-content flex-grow-1">
+                                    <div class="message-header d-flex justify-content-between">
+                                        <span class="fw-bold">{% trans "You" %}</span>
+                                        <small class="text-muted">{{ message.timestamp|date:"Y-m-d H:i" }}</small>
+                                    </div>
+                                    <div class="message-bubble user-bubble p-3 mt-1">
+                                        {{ message.message|linebreaks }}
                                     </div>
                                 </div>
-                            {% elif "STAFF RESPONSE:" in response_part %}
-                                <!-- This is a staff response -->
-                                <div class="message-item staff-message mb-4">
-                                    <div class="card bg-info bg-opacity-10 border-info">
-                                        <div class="card-header d-flex justify-content-between align-items-center">
-                                            <span class="badge bg-info text-dark">
-                                                <i class="bi bi-headset"></i> {% trans "Support Team" %}
-                                            </span>
-                                            <small class="text-muted">{{ response_part|slice:":19" }}</small>
+                            </div>
+                        </div>
+
+                        <!-- Database responses -->
+                        {% if responses or message.response %}
+                            <!-- Database-stored responses first -->
+                            {% if responses %}
+                                {% for response in responses %}
+                                    {% if response.response_type == 'message' or response.response_type == 'phone_call_user' %}
+                                        <div class="message staff-message mb-3">
+                                            <div class="d-flex">
+                                                <div class="message-avatar rounded-circle bg-info d-flex align-items-center justify-content-center text-white me-2">
+                                                    <i class="bi bi-headset"></i>
+                                                </div>
+                                                <div class="message-content flex-grow-1">
+                                                    <div class="message-header d-flex justify-content-between">
+                                                        <span class="fw-bold">{% trans "Staff" %}
+                                                            {% if response.response_type == 'phone_call_user' %}
+                                                                <span class="badge bg-info text-dark ms-2">{% trans "Phone Call" %}</span>
+                                                            {% endif %}
+                                                        </span>
+                                                        <small class="text-muted">{{ response.created_at|date:"Y-m-d H:i" }}</small>
+                                                    </div>
+                                                    <div class="message-bubble staff-bubble p-3 mt-1">
+                                                        {{ response.content|linebreaks }}
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="card-body">
-                                            {{ response_part|slice:"19:"|cut:"STAFF RESPONSE: "|linebreaks }}
+                                    {% elif response.response_type == 'user_reply' %}
+                                        <div class="message user-message mb-3">
+                                            <div class="d-flex">
+                                                <div class="message-avatar rounded-circle bg-primary d-flex align-items-center justify-content-center text-white me-2">
+                                                    <i class="bi bi-person-fill"></i>
+                                                </div>
+                                                <div class="message-content flex-grow-1">
+                                                    <div class="message-header d-flex justify-content-between">
+                                                        <span class="fw-bold">{% trans "You" %}</span>
+                                                        <small class="text-muted">{{ response.created_at|date:"Y-m-d H:i" }}</small>
+                                                    </div>
+                                                    <div class="message-bubble user-bubble p-3 mt-1">
+                                                        {{ response.content|linebreaks }}
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                            {% else %}
-                                <!-- Assume it's a staff response without explicit marker -->
-                                <div class="message-item staff-message mb-4">
-                                    <div class="card bg-info bg-opacity-10 border-info">
-                                        <div class="card-header d-flex justify-content-between align-items-center">
-                                            <span class="badge bg-info text-dark">
-                                                <i class="bi bi-headset"></i> {% trans "Support Team" %}
-                                            </span>
-                                            <small class="text-muted">
-                                                {% if message.response_date %}
-                                                    {{ message.response_date|date:"F d, Y H:i" }}
-                                                {% else %}
-                                                    {{ response_part|slice:":19" }}
-                                                {% endif %}
-                                            </small>
-                                        </div>
-                                        <div class="card-body">
-                                            {% if response_part|slice:":1" == "[" %}
-                                                {{ response_part|slice:"19:"|linebreaks }}
-                                            {% else %}
-                                                {{ response_part|linebreaks }}
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </div>
+                                    {% endif %}
+                                {% endfor %}
                             {% endif %}
-                        {% endfor %}
-                    {% endif %}
 
-                    <!-- Reply form -->
-                    {% if message.status != 'closed' %}
-                    <div class="card mt-4">
-                        <div class="card-header">
-                            {% trans "Reply to this message" %}
-                        </div>
-                        <div class="card-body">
-                            <form method="post" action="{% url 'users:message_reply' message.id %}">
-                                {% csrf_token %}
-                                {{ reply_form|crispy }}
-                                <div class="text-end mt-3">
-                                    <button type="submit" class="btn btn-primary">{% trans "Send Reply" %}</button>
-                                </div>
-                            </form>
-                        </div>
+                            <!-- Legacy responses handling - always show these for completeness -->
+                            {% if message.response %}
+                                {% with should_show_legacy=True %}
+                                    {% for response_part in message.response|split:"\n\n" %}
+                                        {% if response_part %}
+                                            {% if "USER REPLY:" in response_part %}
+                                                <!-- Check if this legacy response has already been migrated to the database -->
+                                                {% with is_migrated=False %}
+                                                    {% if responses %}
+                                                        {% for resp in responses %}
+                                                            {% if resp.response_type == 'user_reply' and resp.content in response_part|slice:"33:" %}
+                                                                {% with is_migrated=True %}{% endwith %}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endif %}
+
+                                                    {% if not is_migrated %}
+                                                        <div class="message user-message mb-3">
+                                                            <div class="d-flex">
+                                                                <div class="message-avatar rounded-circle bg-primary d-flex align-items-center justify-content-center text-white me-2">
+                                                                    <i class="bi bi-person-fill"></i>
+                                                                </div>
+                                                                <div class="message-content flex-grow-1">
+                                                                    <div class="message-header d-flex justify-content-between">
+                                                                        <span class="fw-bold">{% trans "You" %}</span>
+                                                                        <small class="text-muted">{{ response_part|slice:":19" }}</small>
+                                                                    </div>
+                                                                    <div class="message-bubble user-bubble p-3 mt-1">
+                                                                        {{ response_part|slice:"33:"|linebreaks }}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endwith %}
+                                            {% else %}
+                                                <!-- Check if this legacy response has already been migrated to the database -->
+                                                {% with is_migrated=False %}
+                                                    {% if responses and response_part|slice:":1" == "[" and "STAFF RESPONSE:" in response_part %}
+                                                        {% for resp in responses %}
+                                                            {% if resp.content in response_part|slice:"35:" %}
+                                                                {% with is_migrated=True %}{% endwith %}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endif %}
+
+                                                    {% if not is_migrated %}
+                                                        <div class="message staff-message mb-3">
+                                                            <div class="d-flex">
+                                                                <div class="message-avatar rounded-circle bg-info d-flex align-items-center justify-content-center text-white me-2">
+                                                                    <i class="bi bi-headset"></i>
+                                                                </div>
+                                                                <div class="message-content flex-grow-1">
+                                                                    <div class="message-header d-flex justify-content-between">
+                                                                        <span class="fw-bold">{% trans "Staff" %}</span>
+                                                                        <small class="text-muted">
+                                                                            {% if response_part|slice:":1" == "[" %}
+                                                                                {{ response_part|slice:":19" }}
+                                                                            {% endif %}
+                                                                        </small>
+                                                                    </div>
+                                                                    <div class="message-bubble staff-bubble p-3 mt-1">
+                                                                        {% if response_part|slice:":1" == "[" and "STAFF RESPONSE:" in response_part %}
+                                                                            {{ response_part|slice:"35:"|linebreaks }}
+                                                                        {% else %}
+                                                                            {{ response_part|linebreaks }}
+                                                                        {% endif %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endwith %}
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endwith %}
+                            {% endif %}
+                        {% endif %}
                     </div>
-                    {% else %}
-                    <div class="alert alert-secondary mt-4">
-                        {% trans "This conversation has been closed. If you have additional questions, please start a new conversation." %}
-                        <a href="{% url 'users:contact' %}" class="alert-link">{% trans "Contact Us" %}</a>
+
+                    <!-- Reply Form -->
+                    <div class="mt-4">
+                        <h5>{% trans "Reply to this message" %}</h5>
+                        <form method="post" action="{% url 'users:message_reply' message.id %}">
+                            {% csrf_token %}
+                            <div class="form-group mb-3">
+                                <textarea name="message" class="form-control" rows="4" required placeholder="{% trans 'Type your reply here...' %}"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-reply-fill me-1"></i> {% trans "Send Reply" %}
+                            </button>
+                        </form>
                     </div>
-                    {% endif %}
                 </div>
             </div>
         </div>
 
-        <!-- Sidebar -->
         <div class="col-lg-4">
             <div class="card mb-4">
-                <div class="card-header">{% trans "Status Information" %}</div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <h6>{% trans "Current Status:" %}</h6>
-                        <p>
-                            {% if message.status == 'new' %}
-                                <span class="badge bg-primary">{% trans "New" %}</span>
-                                <small class="d-block mt-2">{% trans "Your message has been received but not yet reviewed by our staff." %}</small>
-                            {% elif message.status == 'in_progress' %}
-                                <span class="badge bg-info">{% trans "In Progress" %}</span>
-                                <small class="d-block mt-2">{% trans "Our team is currently working on your request." %}</small>
-                            {% elif message.status == 'resolved' %}
-                                <span class="badge bg-success">{% trans "Resolved" %}</span>
-                                <small class="d-block mt-2">{% trans "Your issue has been resolved. You can still reply if needed." %}</small>
-                            {% elif message.status == 'closed' %}
-                                <span class="badge bg-secondary">{% trans "Closed" %}</span>
-                                <small class="d-block mt-2">{% trans "This conversation has been closed and cannot be replied to." %}</small>
-                            {% endif %}
-                        </p>
-                    </div>
-
-                    {% if message.resolved_date %}
-                    <div class="mb-3">
-                        <h6>{% trans "Resolved On:" %}</h6>
-                        <p>{{ message.resolved_date|date:"F d, Y H:i" }}</p>
-                    </div>
-                    {% endif %}
+                <div class="card-header">
+                    <h5 class="card-title mb-0">{% trans "Message Info" %}</h5>
                 </div>
-            </div>
-
-            <div class="card mb-4">
-                <div class="card-header">{% trans "Need More Help?" %}</div>
                 <div class="card-body">
-                    <p>{% trans "If you need additional assistance, you can:" %}</p>
-                    <ul>
-                        <li>{% trans "Continue this conversation by replying above" %}</li>
-                        <li><a href="{% url 'users:contact' %}">{% trans "Start a new conversation" %}</a></li>
-                        <li>{% trans "Call us at" %} <a href="tel:+1234567890">123-456-7890</a></li>
-                    </ul>
+                    <div class="info-item mb-2">
+                        <div class="fw-bold">{% trans "Status:" %}</div>
+                        <div>
+                            {% if message.is_resolved %}
+                                <span class="badge bg-success">{% trans "Resolved" %}</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">{% trans "Open" %}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="info-item mb-2">
+                        <div class="fw-bold">{% trans "Category:" %}</div>
+                        <div>{{ message.category|default:"General Inquiry" }}</div>
+                    </div>
+                    <div class="info-item mb-2">
+                        <div class="fw-bold">{% trans "Date Submitted:" %}</div>
+                        <div>{{ message.timestamp|date:"F j, Y" }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="fw-bold">{% trans "Last Updated:" %}</div>
+                        <div>{{ message.last_updated|date:"F j, Y" }}</div>
+                    </div>
                 </div>
             </div>
         </div>

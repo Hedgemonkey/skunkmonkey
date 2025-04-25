@@ -8,6 +8,37 @@
 {% block header %}
 {% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Chat styling */
+    .chat-container {
+        max-height: 600px;
+        overflow-y: auto;
+    }
+    .message-bubble {
+        position: relative;
+        border-radius: 0.85rem;
+    }
+    .user-bubble {
+        background-color: rgba(13, 110, 253, 0.1);
+        border-left: 4px solid #0d6efd;
+    }
+    .staff-bubble {
+        background-color: rgba(13, 202, 240, 0.1);
+        border-left: 4px solid #0dcaf0;
+    }
+    .internal-bubble {
+        background-color: rgba(255, 193, 7, 0.1);
+        border-left: 4px solid #ffc107;
+    }
+    .message-avatar {
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container-fluid mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -155,262 +186,229 @@
 
                     <hr>
 
-                    <div class="message-content mt-3">
-                        <h5>{% trans "Message:" %}</h5>
-                        <div class="card bg-light">
-                            <div class="card-body">
-                                <p class="message-text">{{ message.message|linebreaks }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Conversation Thread -->
+                    <!-- Chat-style Conversation History -->
                     <div class="conversation-history mt-4">
                         <h5>{% trans "Conversation History:" %}</h5>
-                        <div class="message-thread">
+
+                        <div class="chat-container p-3 border rounded bg-light">
                             <!-- Initial customer message -->
-                            <div class="message-item user-message mb-3">
-                                <div class="card border-primary">
-                                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                                        <span class="badge bg-primary">
-                                            <i class="bi bi-person-fill"></i> {% trans "User" %}
-                                            {% if message.user %}
-                                                ({{ message.user.get_full_name|default:message.user.username }})
-                                            {% endif %}
-                                        </span>
-                                        <small class="text-muted">{{ message.timestamp|date:"Y-m-d H:i" }}</small>
+                            <div class="message user-message mb-3">
+                                <div class="d-flex">
+                                    <div class="message-avatar rounded-circle bg-primary d-flex align-items-center justify-content-center text-white me-2">
+                                        <i class="bi bi-person-fill"></i>
                                     </div>
-                                    <div class="card-body">
-                                        {{ message.message|linebreaks }}
+                                    <div class="message-content flex-grow-1">
+                                        <div class="message-header d-flex justify-content-between">
+                                            <span class="fw-bold">
+                                                {% if message.user %}
+                                                    {{ message.user.get_full_name|default:message.user.username }}
+                                                {% else %}
+                                                    {{ message.email }}
+                                                {% endif %}
+                                            </span>
+                                            <small class="text-muted">{{ message.timestamp|date:"Y-m-d H:i" }}</small>
+                                        </div>
+                                        <div class="message-bubble user-bubble p-3 rounded">
+                                            {{ message.message|linebreaks }}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Display message responses -->
-                            {% for response in responses %}
-                                {% if response.response_type == 'message' or response.response_type == 'phone_call_user' %}
-                                    <div class="message-item staff-message mb-3">
-                                        <div class="card border-info">
-                                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                                                <span class="badge bg-info text-dark">
-                                                    <i class="bi bi-headset"></i> {% trans "Staff" %}
-                                                    {% if response.created_by %}
-                                                        ({{ response.created_by.get_full_name|default:response.created_by.username }})
-                                                    {% endif %}
-                                                    {% if response.response_type == 'phone_call_user' %}
-                                                        - {% trans "Phone Call" %}
-                                                    {% endif %}
-                                                </span>
-                                                <small class="text-muted">{{ response.created_at|date:"Y-m-d H:i" }}</small>
-                                            </div>
-                                            <div class="card-body">
-                                                {{ response.content|linebreaks }}
-                                                {% if response.email_sent %}
-                                                    <div class="mt-2 text-muted">
-                                                        <small><i class="bi bi-envelope-check"></i> {% trans "Email sent to customer" %}</small>
+                            <!-- Combined responses and notes in chronological order -->
+                            {% if responses or notes or message.response %}
+                                {% with combined_items=responses|chain:notes|dictsortreversed:"created_at" %}
+                                    <!-- Database-stored responses -->
+                                    {% for item in combined_items reversed %}
+                                        {% if item.response_type == 'message' or item.response_type == 'phone_call_user' %}
+                                            <!-- Staff response visible to user -->
+                                            <div class="message staff-message mb-3">
+                                                <div class="d-flex">
+                                                    <div class="message-avatar rounded-circle bg-info d-flex align-items-center justify-content-center text-white me-2">
+                                                        <i class="bi bi-headset"></i>
                                                     </div>
-                                                {% endif %}
+                                                    <div class="message-content flex-grow-1">
+                                                        <div class="message-header d-flex justify-content-between">
+                                                            <span class="fw-bold">
+                                                                {% if item.created_by %}
+                                                                    {{ item.created_by.get_full_name|default:item.created_by.username }}
+                                                                    {% if item.response_type == 'phone_call_user' %}
+                                                                        <span class="badge bg-info text-dark ms-2">{% trans "Phone Call" %}</span>
+                                                                    {% endif %}
+                                                                {% else %}
+                                                                    {% trans "Staff" %}
+                                                                {% endif %}
+                                                            </span>
+                                                            <small class="text-muted">{{ item.created_at|date:"Y-m-d H:i" }}</small>
+                                                        </div>
+                                                        <div class="message-bubble staff-bubble p-3 rounded">
+                                                            {{ item.content|linebreaks }}
+                                                            {% if item.email_sent %}
+                                                                <div class="mt-2 text-muted">
+                                                                    <small><i class="bi bi-envelope-check"></i> {% trans "Email sent to customer" %}</small>
+                                                                </div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                {% elif response.response_type == 'user_reply' %}
-                                    <div class="message-item user-message mb-3">
-                                        <div class="card border-primary">
-                                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                                                <span class="badge bg-primary">
-                                                    <i class="bi bi-person-fill"></i> {% trans "User" %}
-                                                    {% if message.user %}
-                                                        ({{ message.user.get_full_name|default:message.user.username }})
-                                                    {% endif %}
-                                                </span>
-                                                <small class="text-muted">{{ response.created_at|date:"Y-m-d H:i" }}</small>
+                                        {% elif item.response_type == 'user_reply' %}
+                                            <!-- User reply -->
+                                            <div class="message user-message mb-3">
+                                                <div class="d-flex">
+                                                    <div class="message-avatar rounded-circle bg-primary d-flex align-items-center justify-content-center text-white me-2">
+                                                        <i class="bi bi-person-fill"></i>
+                                                    </div>
+                                                    <div class="message-content flex-grow-1">
+                                                        <div class="message-header d-flex justify-content-between">
+                                                            <span class="fw-bold">
+                                                                {% if message.user %}
+                                                                    {{ message.user.get_full_name|default:message.user.username }}
+                                                                {% else %}
+                                                                    {{ message.email }}
+                                                                {% endif %}
+                                                            </span>
+                                                            <small class="text-muted">{{ item.created_at|date:"Y-m-d H:i" }}</small>
+                                                        </div>
+                                                        <div class="message-bubble user-bubble p-3 rounded">
+                                                            {{ item.content|linebreaks }}
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="card-body">
-                                                {{ response.content|linebreaks }}
+                                        {% elif item.response_type == 'phone_call_internal' or item.response_type == 'note' %}
+                                            <!-- Internal note or phone call -->
+                                            <div class="message internal-message mb-3">
+                                                <div class="d-flex">
+                                                    <div class="message-avatar rounded-circle bg-warning d-flex align-items-center justify-content-center text-dark me-2">
+                                                        <i class="{% if item.response_type == 'phone_call_internal' %}bi bi-telephone{% else %}bi bi-sticky{% endif %}"></i>
+                                                    </div>
+                                                    <div class="message-content flex-grow-1">
+                                                        <div class="message-header d-flex justify-content-between">
+                                                            <span class="fw-bold">
+                                                                {{ item.created_by.get_full_name|default:item.created_by.username }}
+                                                                {% if item.response_type == 'phone_call_internal' %}
+                                                                    <span class="badge bg-warning text-dark ms-2">{% trans "Internal Call Note" %}</span>
+                                                                {% else %}
+                                                                    <span class="badge bg-warning text-dark ms-2">{% trans "Internal Note" %}</span>
+                                                                {% endif %}
+                                                            </span>
+                                                            <small class="text-muted">{{ item.created_at|date:"Y-m-d H:i" }}</small>
+                                                        </div>
+                                                        <div class="message-bubble internal-bubble p-3 rounded">
+                                                            {{ item.content|linebreaks }}
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                {% endif %}
-                            {% endfor %}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endwith %}
 
-                            <!-- Legacy conversation history (for backward compatibility) -->
-                            {% if not responses and message.response %}
-                                {% for response_part in message.response|split:"\n\n" %}
-                                    {% if "USER REPLY:" in response_part %}
-                                        <!-- This is a user reply -->
-                                        <div class="message-item user-message mb-3">
-                                            <div class="card border-primary">
-                                                <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                                                    <span class="badge bg-primary">
-                                                        <i class="bi bi-person-fill"></i> {% trans "User" %}
-                                                        {% if message.user %}
-                                                            ({{ message.user.get_full_name|default:message.user.username }})
-                                                        {% endif %}
-                                                    </span>
-                                                    <small class="text-muted">{{ response_part|slice:":19" }}</small>
+                                <!-- Legacy response handling - always process these for completeness -->
+                                {% if message.response %}
+                                    {% for response_part in message.response|split:"\n\n" %}
+                                        {% if response_part %}
+                                            {% if "USER REPLY:" in response_part %}
+                                                <!-- User reply -->
+                                                <div class="message user-message mb-3">
+                                                    <div class="d-flex">
+                                                        <div class="message-avatar rounded-circle bg-primary d-flex align-items-center justify-content-center text-white me-2">
+                                                            <i class="bi bi-person-fill"></i>
+                                                        </div>
+                                                        <div class="message-content flex-grow-1">
+                                                            <div class="message-header d-flex justify-content-between">
+                                                                <span class="fw-bold">
+                                                                    {% if message.user %}
+                                                                        {{ message.user.get_full_name|default:message.user.username }}
+                                                                    {% else %}
+                                                                        {{ message.email }}
+                                                                    {% endif %}
+                                                                </span>
+                                                                <small class="text-muted">{{ response_part|slice:":19" }}</small>
+                                                            </div>
+                                                            <div class="message-bubble user-bubble p-3 rounded">
+                                                                {{ response_part|slice:"33:"|linebreaks }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="card-body">
-                                                    {{ response_part|slice:"19:"|cut:"USER REPLY: "|linebreaks }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    {% elif "STAFF RESPONSE:" in response_part %}
-                                        <!-- This is a staff response -->
-                                        <div class="message-item staff-message mb-3">
-                                            <div class="card border-info">
-                                                <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                                                    <span class="badge bg-info text-dark">
-                                                        <i class="bi bi-headset"></i> {% trans "Staff" %}
-                                                    </span>
-                                                    <small class="text-muted">{{ response_part|slice:":19" }}</small>
-                                                </div>
-                                                <div class="card-body">
-                                                    {{ response_part|slice:"19:"|cut:"STAFF RESPONSE: "|linebreaks }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    {% else %}
-                                        <!-- Assume it's a staff response without explicit marker -->
-                                        <div class="message-item staff-message mb-3">
-                                            <div class="card border-info">
-                                                <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                                                    <span class="badge bg-info text-dark">
-                                                        <i class="bi bi-headset"></i> {% trans "Staff" %}
-                                                    </span>
-                                                    <small class="text-muted">
-                                                        {% if message.response_date %}
-                                                            {{ message.response_date|date:"F d, Y H:i" }}
-                                                        {% else %}
-                                                            {{ response_part|slice:":19" }}
-                                                        {% endif %}
-                                                    </small>
-                                                </div>
-                                                <div class="card-body">
-                                                    {% if response_part|slice:":1" == "[" %}
-                                                        {{ response_part|slice:"19:"|linebreaks }}
-                                                    {% else %}
-                                                        {{ response_part|linebreaks }}
+                                            {% else %}
+                                                <!-- Check if this legacy response has already been migrated to the database -->
+                                                {% with is_migrated=False %}
+                                                    <!-- Skip displaying if this looks like a migrated message -->
+                                                    {% if response_part|slice:":1" == "[" and "STAFF RESPONSE:" in response_part and responses %}
+                                                        {% for resp in responses %}
+                                                            {% if resp.content in response_part %}
+                                                                {% with is_migrated=True %}{% endwith %}
+                                                            {% endif %}
+                                                        {% endfor %}
                                                     {% endif %}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    {% endif %}
-                                {% endfor %}
+
+                                                    {% if not is_migrated %}
+                                                        <!-- Staff message -->
+                                                        <div class="message staff-message mb-3">
+                                                            <div class="d-flex">
+                                                                <div class="message-avatar rounded-circle bg-info d-flex align-items-center justify-content-center text-white me-2">
+                                                                    <i class="bi bi-headset"></i>
+                                                                </div>
+                                                                <div class="message-content flex-grow-1">
+                                                                    <div class="message-header d-flex justify-content-between">
+                                                                        <span class="fw-bold">{% trans "Staff" %}</span>
+                                                                        <small class="text-muted">
+                                                                            {% if response_part|slice:":1" == "[" %}
+                                                                                {{ response_part|slice:":19" }}
+                                                                            {% endif %}
+                                                                        </small>
+                                                                    </div>
+                                                                    <div class="message-bubble staff-bubble p-3 rounded">
+                                                                        {% if response_part|slice:":1" == "[" and "STAFF RESPONSE:" in response_part %}
+                                                                            {{ response_part|slice:"35:"|linebreaks }}
+                                                                        {% else %}
+                                                                            {{ response_part|linebreaks }}
+                                                                        {% endif %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endwith %}
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
                             {% endif %}
                         </div>
                     </div>
 
-                    <!-- Staff Notes Section -->
-                    <div class="staff-notes mt-4">
-                        <h5>{% trans "Internal Notes:" %}</h5>
-                        <div class="notes-thread">
-                            {% if notes %}
-                                {% for note in notes %}
-                                    <div class="note-item mb-3">
-                                        <div class="card border-warning">
-                                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                                                <span class="badge bg-warning text-dark">
-                                                    <i class="bi bi-sticky"></i> {% trans "Note" %}
-                                                    {% if note.created_by %}
-                                                        ({{ note.created_by.get_full_name|default:note.created_by.username }})
-                                                    {% endif %}
-                                                </span>
-                                                <small class="text-muted">{{ note.created_at|date:"Y-m-d H:i" }}</small>
-                                            </div>
-                                            <div class="card-body">
-                                                {{ note.content|linebreaks }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            {% endif %}
-
-                            <!-- Display internal phone call records -->
-                            {% for response in responses %}
-                                {% if response.response_type == 'phone_call_internal' %}
-                                    <div class="note-item mb-3">
-                                        <div class="card border-warning">
-                                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                                                <span class="badge bg-warning text-dark">
-                                                    <i class="bi bi-telephone"></i> {% trans "Phone Call" %}
-                                                    {% if response.created_by %}
-                                                        ({{ response.created_by.get_full_name|default:response.created_by.username }})
-                                                    {% endif %}
-                                                </span>
-                                                <small class="text-muted">{{ response.created_at|date:"Y-m-d H:i" }}</small>
-                                            </div>
-                                            <div class="card-body">
-                                                {{ response.content|linebreaks }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% endif %}
-                            {% endfor %}
-
-                            <!-- Legacy staff notes (for backward compatibility) -->
-                            {% if not notes and message.staff_notes %}
-                                {% for note_part in message.staff_notes|split:"\n\n" %}
-                                    {% if note_part %}
-                                        <div class="note-item mb-3">
-                                            <div class="card border-warning">
-                                                <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                                                    <span class="badge bg-warning text-dark">
-                                                        <i class="bi bi-sticky"></i> {% trans "Legacy Note" %}
-                                                    </span>
-                                                    <small class="text-muted">
-                                                        {% if note_part|slice:":1" == "[" %}
-                                                            {{ note_part|slice:":19" }}
-                                                        {% endif %}
-                                                    </small>
-                                                </div>
-                                                <div class="card-body">
-                                                    {% if note_part|slice:":1" == "[" %}
-                                                        {{ note_part|slice:"19:"|linebreaks }}
-                                                    {% else %}
-                                                        {{ note_part|linebreaks }}
-                                                    {% endif %}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    {% endif %}
-                                {% endfor %}
-                            {% endif %}
-                        </div>
+                    <!-- Response Form -->
+                    <div class="response-form mt-4">
+                        <h5>{% trans "Add Response" %}</h5>
+                        <form method="post" action="{% url 'users:staff_message_response' message.id %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <textarea class="form-control" name="content" rows="4" placeholder="{% trans "Type your response..." %}" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="responseType" class="form-label">{% trans "Response Type:" %}</label>
+                                <select class="form-select" id="responseType" name="response_type">
+                                    <option value="message">{% trans "Message" %}</option>
+                                    <option value="phone_call_user">{% trans "Phone Call - User Message" %}</option>
+                                    <option value="phone_call_internal">{% trans "Phone Call - Internal Message" %}</option>
+                                    <option value="note">{% trans "Internal Note" %}</option>
+                                </select>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" value="true" id="sendEmail" name="send_email">
+                                <label class="form-check-label" for="sendEmail">
+                                    {% trans "Send response to customer by email" %}
+                                </label>
+                            </div>
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-primary">{% trans "Add Response" %}</button>
+                            </div>
+                        </form>
                     </div>
-                </div>
-            </div>
-
-            <!-- Quick Response Form -->
-            <div class="card">
-                <div class="card-header">
-                    {% trans "Add Response" %}
-                </div>
-                <div class="card-body">
-                    <form method="post" action="{% url 'users:staff_message_response' message.id %}">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label for="responseContent" class="form-label">{% trans "Response:" %}</label>
-                            <textarea class="form-control" id="responseContent" name="content" rows="4" required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="responseType" class="form-label">{% trans "Response Type:" %}</label>
-                            <select class="form-select" id="responseType" name="response_type">
-                                <option value="message">{% trans "Message" %}</option>
-                                <option value="phone_call_user">{% trans "Phone Call - User Message" %}</option>
-                                <option value="phone_call_internal">{% trans "Phone Call - Internal Message" %}</option>
-                                <option value="note">{% trans "Internal Note" %}</option>
-                            </select>
-                        </div>
-                        <div class="form-check mb-3">
-                            <input class="form-check-input" type="checkbox" value="true" id="sendEmail" name="send_email">
-                            <label class="form-check-label" for="sendEmail">
-                                {% trans "Send response to customer by email" %}
-                            </label>
-                        </div>
-                        <div class="text-end">
-                            <button type="submit" class="btn btn-primary">{% trans "Add Response" %}</button>
-                        </div>
-                    </form>
                 </div>
             </div>
         </div>
@@ -455,17 +453,15 @@
                                 {% endfor %}
                             </select>
                         </div>
-                        <div class="text-end">
-                            <button type="submit" class="btn btn-primary">{% trans "Update" %}</button>
-                        </div>
+                        <button type="submit" class="btn btn-primary w-100">{% trans "Update" %}</button>
                     </form>
                 </div>
             </div>
 
-            <!-- Related Information -->
+            <!-- Customer Info -->
             <div class="card mb-4">
                 <div class="card-header">
-                    {% trans "Customer Information" %}
+                    {% trans "Customer Info" %}
                 </div>
                 <div class="card-body">
                     {% if message.user %}
