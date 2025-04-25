@@ -4,7 +4,9 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
-from .models import Address, ContactMessage, UserProfile
+from .models import (
+    Address, ContactMessage, MessageNote, MessageResponse, UserProfile,
+)
 
 User = get_user_model()
 
@@ -93,6 +95,25 @@ class AddressAdmin(admin.ModelAdmin):
     raw_id_fields = ('user',)
 
 
+class MessageResponseInline(admin.TabularInline):
+    """Inline display of message responses for ContactMessage."""
+    model = MessageResponse
+    extra = 0
+    readonly_fields = ['created_at']
+    fields = ('content', 'response_type', 'created_by',
+              'created_at', 'is_visible_to_user', 'email_sent')
+    ordering = ['created_at']
+
+
+class MessageNoteInline(admin.TabularInline):
+    """Inline display of message notes for ContactMessage."""
+    model = MessageNote
+    extra = 0
+    readonly_fields = ['created_at']
+    fields = ('content', 'created_by', 'created_at')
+    ordering = ['-created_at']
+
+
 class ContactMessageAdmin(admin.ModelAdmin):
     """Admin interface for managing contact form submissions."""
     list_display = [
@@ -110,6 +131,7 @@ class ContactMessageAdmin(admin.ModelAdmin):
     readonly_fields = ['timestamp']
     date_hierarchy = 'timestamp'
     list_per_page = 50
+    inlines = [MessageResponseInline, MessageNoteInline]
 
     # Define custom fieldsets for better organization in the admin form
     fieldsets = (
@@ -128,6 +150,9 @@ class ContactMessageAdmin(admin.ModelAdmin):
                 'response_date', 'resolved_date'
             ),
             'classes': ('collapse',),
+            'description': _(
+                'Legacy fields - messages and notes should be added \
+                    using the dedicated sections below.')
         }),
     )
 
@@ -233,6 +258,67 @@ class ContactMessageAdmin(admin.ModelAdmin):
             obj.is_read = True
 
         super().save_model(request, obj, form, change)
+
+
+@admin.register(MessageResponse)
+class MessageResponseAdmin(admin.ModelAdmin):
+    """Admin interface for MessageResponse model."""
+    list_display = [
+        'contact_message_subject', 'response_type',
+        'created_at', 'created_by_name', 'is_visible_to_user'
+    ]
+    list_filter = [
+        'response_type', 'created_at', 'is_visible_to_user', 'email_sent'
+    ]
+    search_fields = [
+        'content', 'contact_message__subject', 'contact_message__email'
+    ]
+    readonly_fields = ['created_at']
+    date_hierarchy = 'created_at'
+    raw_id_fields = ['contact_message', 'created_by']
+
+    def contact_message_subject(self, obj):
+        """Display the subject of the related contact message."""
+        return obj.contact_message.subject
+    contact_message_subject.short_description = _('Subject')
+    contact_message_subject.admin_order_field = 'contact_message__subject'
+
+    def created_by_name(self, obj):
+        """Display the name of the user who created the response."""
+        if obj.created_by:
+            return obj.created_by.get_full_name() or obj.created_by.username
+        return '-'
+    created_by_name.short_description = _('Created By')
+    created_by_name.admin_order_field = 'created_by'
+
+
+@admin.register(MessageNote)
+class MessageNoteAdmin(admin.ModelAdmin):
+    """Admin interface for MessageNote model."""
+    list_display = [
+        'contact_message_subject', 'created_at', 'created_by_name'
+    ]
+    list_filter = ['created_at']
+    search_fields = [
+        'content', 'contact_message__subject', 'contact_message__email'
+    ]
+    readonly_fields = ['created_at']
+    date_hierarchy = 'created_at'
+    raw_id_fields = ['contact_message', 'created_by']
+
+    def contact_message_subject(self, obj):
+        """Display the subject of the related contact message."""
+        return obj.contact_message.subject
+    contact_message_subject.short_description = _('Subject')
+    contact_message_subject.admin_order_field = 'contact_message__subject'
+
+    def created_by_name(self, obj):
+        """Display the name of the user who created the note."""
+        if obj.created_by:
+            return obj.created_by.get_full_name() or obj.created_by.username
+        return '-'
+    created_by_name.short_description = _('Created By')
+    created_by_name.admin_order_field = 'created_by'
 
 
 # Register your models here
