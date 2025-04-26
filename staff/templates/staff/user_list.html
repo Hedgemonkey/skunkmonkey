@@ -1,0 +1,186 @@
+{% extends 'staff/staff_base.html' %}
+{% load static %}
+
+{% block staff_title %}User Management{% endblock %}
+
+{% block staff_actions %}
+<a href="{% url 'staff:user_create' %}" class="btn btn-primary">
+    <i class="bi bi-plus-circle"></i> Create New User
+</a>
+{% endblock %}
+
+{% block staff_content %}
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Total Users</h5>
+                <h3>{{ total_users }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Active Users</h5>
+                <h3>{{ active_users }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Staff</h5>
+                <h3>{{ staff_users }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">New (30 days)</h5>
+                <h3>{{ new_users_30d }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">User Filter</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                {{ filter_form.query.label_tag }}
+                {{ filter_form.query }}
+            </div>
+            <div class="col-md-2">
+                {{ filter_form.is_active.label_tag }}
+                {{ filter_form.is_active }}
+            </div>
+            <div class="col-md-2">
+                {{ filter_form.is_staff.label_tag }}
+                {{ filter_form.is_staff }}
+            </div>
+            <div class="col-md-2">
+                <label for="{{ filter_form.date_joined_from.id_for_label }}">
+                    Joined From
+                </label>
+                {{ filter_form.date_joined_from }}
+            </div>
+            <div class="col-md-2">
+                <label for="{{ filter_form.date_joined_to.id_for_label }}">
+                    Joined To
+                </label>
+                {{ filter_form.date_joined_to }}
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-filter"></i> Filter
+                </button>
+                <a href="{% url 'staff:user_list' %}" class="btn btn-light">
+                    <i class="bi bi-x-circle"></i> Clear
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">User List</h5>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover table-striped">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Date Joined</th>
+                    <th>Last Login</th>
+                    <th>Status</th>
+                    <th>Type</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.get_full_name|default:"-" }}</td>
+                    <td>{{ user.email|default:"-" }}</td>
+                    <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                    <td>{{ user.last_login|date:"M d, Y"|default:"Never" }}</td>
+                    <td>
+                        {% if user.is_active %}
+                        <span class="badge bg-success">Active</span>
+                        {% else %}
+                        <span class="badge bg-danger">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.is_superuser %}
+                        <span class="badge bg-danger">Superuser</span>
+                        {% elif user.is_staff %}
+                        <span class="badge bg-primary">Staff</span>
+                        {% else %}
+                        <span class="badge bg-secondary">Customer</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'staff:user_detail' user.id %}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-eye"></i> View
+                        </a>
+                        <a href="{% url 'staff:user_update' user.id %}" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-pencil"></i> Edit
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if users %}
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <nav aria-label="User pagination" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">First</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Previous</a>
+            </li>
+            {% endif %}
+
+            <!-- Current page -->
+            <li class="page-item active">
+                <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            </li>
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Next</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Last</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <div class="alert alert-info text-center">
+        <p class="mb-0">No users found matching your criteria.</p>
+        <p class="mb-0">
+            <a href="{% url 'staff:user_list' %}" class="alert-link">Clear all filters</a> to see all users.
+        </p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
