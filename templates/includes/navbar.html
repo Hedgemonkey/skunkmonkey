@@ -37,9 +37,15 @@
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownManagement">
                         <li><a class="dropdown-item" href="{% url 'products:product_management' %}">Product Management</a></li>
+                        <li><a class="dropdown-item" href="{% url 'staff:dashboard' %}">Staff Dashboard</a></li>
+                        <li><a class="dropdown-item" href="{% url 'staff:order_list' %}">Order Management</a></li>
+                        <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="{% url 'users:staff_dashboard' %}">Messages Dashboard</a></li>
                         <li><a class="dropdown-item" href="{% url 'users:staff_message_list' %}">List Messages</a></li>
-                        <!-- Add other management links here as needed -->
+                        {% if user.staffprofile.is_manager %}
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'staff:staff_list' %}">Manage Staff</a></li>
+                        {% endif %}
                     </ul>
                 </li>
                 {% endif %}
