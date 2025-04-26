@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'products',
     'shop',
+    'staff.apps.StaffConfig',
     'djstripe',
     'django_countries',
     'django_vite',
@@ -135,6 +136,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.media',
                 'shop.context_processors.wishlist_processor',
+                'staff.context_processors.unread_notifications',  # Add staff context processor
             ],
         },
     },
@@ -456,6 +458,11 @@ LOGGING = {
         },
         'users': {  # Add specific logger for users app
             'handlers': ['console', 'file', 'error_file', 'mail_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'staff': {  # Add specific logger for staff app
+            'handlers': ['console', 'file', 'error_file'],
             'level': 'DEBUG',
             'propagate': False,
         },
