@@ -1,0 +1,190 @@
+/**
+ * Main staff styling
+ * For use with django-vite integration
+ */
+
+/* Variables to match the project's colors */
+:root {
+    --staff-sidebar-bg: #343a40;
+    --staff-sidebar-active: #495057;
+    --staff-primary: #0d6efd;
+    --staff-secondary: #6c757d;
+    --staff-success: #198754;
+    --staff-info: #0dcaf0;
+    --staff-warning: #ffc107;
+    --staff-danger: #dc3545;
+}
+
+/* Staff layout styling */
+.staff-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.staff-sidebar {
+    width: 250px;
+    min-height: 100vh;
+    background-color: var(--staff-sidebar-bg);
+    color: rgba(255, 255, 255, 0.9);
+    transition: width 0.3s ease;
+}
+
+.staff-content {
+    flex: 1;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    body:not(.sb-sidenav-toggled) .staff-sidebar {
+        margin-left: -250px;
+    }
+
+    body.sb-sidenav-toggled .staff-sidebar {
+        margin-left: 0;
+    }
+
+    .staff-content {
+        padding: 1rem;
+    }
+}
+
+/* Navigation styles */
+.staff-nav {
+    padding: 0;
+}
+
+.staff-nav .nav-link {
+    color: rgba(255, 255, 255, 0.75);
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.staff-nav .nav-link:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.staff-nav .nav-link.active {
+    color: #fff;
+    background-color: var(--staff-sidebar-active);
+}
+
+.staff-nav .nav-link i {
+    margin-right: 0.5rem;
+}
+
+/* Dashboard card hover effect */
+.card-hover {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Border accents on dashboard cards */
+.border-left-primary {
+    border-left: 4px solid var(--staff-primary);
+}
+
+.border-left-success {
+    border-left: 4px solid var(--staff-success);
+}
+
+.border-left-info {
+    border-left: 4px solid var(--staff-info);
+}
+
+.border-left-warning {
+    border-left: 4px solid var(--staff-warning);
+}
+
+.border-left-danger {
+    border-left: 4px solid var(--staff-danger);
+}
+
+/* Timeline styling for order history */
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: 1.5rem;
+}
+
+.timeline-item:last-child {
+    padding-bottom: 0;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -30px;
+    top: 0;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background-color: var(--staff-primary);
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 2px var(--staff-primary);
+}
+
+.timeline-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: -23px;
+    top: 15px;
+    height: calc(100% - 15px);
+    width: 2px;
+    background-color: #e9ecef;
+}
+
+.timeline-content {
+    padding: 0.5rem 1rem;
+    background-color: #f8f9fa;
+    border-radius: 0.3rem;
+}
+
+/* Notification styling */
+.unread {
+    position: relative;
+    background-color: rgba(13, 110, 253, 0.05);
+    border-left: 3px solid var(--staff-primary);
+}
+
+.priority-urgent {
+    border-left-color: var(--staff-danger);
+}
+
+.priority-high {
+    border-left-color: var(--staff-warning);
+}
+
+.priority-medium {
+    border-left-color: var(--staff-info);
+}
+
+.important-note {
+    background-color: rgba(220, 53, 69, 0.05);
+    border-left: 3px solid var(--staff-danger);
+}
+
+/* Filter collapse panel */
+.filter-collapse {
+    margin-bottom: 1rem;
+}
+
+/* Quick View modal styling */
+.quick-view-loading {
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
