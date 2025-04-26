@@ -1,0 +1,238 @@
+{% extends 'staff/staff_base.html' %}
+{% load staff_filters %}
+
+{% block staff_title %}User: {{ user_obj.username }}{% endblock %}
+
+{% block staff_actions %}
+<a href="{% url 'staff:user_update' user_obj.id %}" class="btn btn-sm btn-outline-primary">
+    <i class="bi bi-pencil"></i> Edit
+</a>
+<a href="{% url 'staff:user_list' %}" class="btn btn-sm btn-outline-secondary">
+    <i class="bi bi-arrow-left"></i> Back to Users
+</a>
+{% endblock %}
+
+{% block staff_content %}
+<div class="container-fluid px-4">
+    <div class="row">
+        <!-- Left column: User details -->
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 fw-bold">User Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div class="display-6 mb-2">
+                            <i class="bi bi-person-circle"></i>
+                        </div>
+                        <h5 class="fw-bold">{{ user_obj.get_full_name|default:user_obj.username }}</h5>
+                        <div>
+                            <span class="badge {% if user_obj.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                                {% if user_obj.is_active %}Active{% else %}Inactive{% endif %}
+                            </span>
+                            <span class="badge {% if user_obj.is_staff %}bg-primary{% else %}bg-secondary{% endif %}">
+                                {% if user_obj.is_staff %}Staff{% else %}Customer{% endif %}
+                            </span>
+                            {% if user_obj.is_superuser %}
+                            <span class="badge bg-danger">Superuser</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <strong>Username:</strong> {{ user_obj.username }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Email:</strong> {{ user_obj.email|default:"Not set" }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>First Name:</strong> {{ user_obj.first_name|default:"Not set" }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Last Name:</strong> {{ user_obj.last_name|default:"Not set" }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Date Joined:</strong> {{ user_obj.date_joined|date:"d M Y, H:i" }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Last Login:</strong>
+                            {% if last_login %}
+                                {{ last_login|date:"d M Y, H:i" }}
+                            {% else %}
+                                Never
+                            {% endif %}
+                        </li>
+                    </ul>
+
+                    {% if not user == user_obj %}
+                    <div class="mt-3">
+                        <form method="post" action="{% url 'staff:user_toggle_status' user_obj.id %}" class="d-inline">
+                            {% csrf_token %}
+                            {% if user_obj.is_active %}
+                                <button type="submit" class="btn btn-sm btn-danger w-100" onclick="return confirm('Are you sure you want to deactivate this user?')">
+                                    <i class="bi bi-person-x"></i> Deactivate User
+                                </button>
+                            {% else %}
+                                <button type="submit" class="btn btn-sm btn-success w-100">
+                                    <i class="bi bi-person-check"></i> Activate User
+                                </button>
+                            {% endif %}
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Group membership -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 fw-bold">Group Memberships</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'staff:user_groups' user_obj.id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            {% for group in all_groups %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="groups"
+                                    value="{{ group.id }}" id="group_{{ group.id }}"
+                                    {% if group in groups %}checked{% endif %}>
+                                <label class="form-check-label" for="group_{{ group.id }}">
+                                    {{ group.name }}
+                                </label>
+                            </div>
+                            {% empty %}
+                            <div class="alert alert-info">
+                                No groups defined. Create groups in the Django admin.
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm">Update Groups</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right column: Additional information -->
+        <div class="col-lg-8">
+            <!-- User Profile Information -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 fw-bold">Profile Information</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'staff:user_profile_update' user_obj.id %}">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="{{ profile_form.default_phone_number.id_for_label }}" class="form-label">Phone</label>
+                                {{ profile_form.default_phone_number }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ profile_form.default_country.id_for_label }}" class="form-label">Country</label>
+                                {{ profile_form.default_country }}
+                            </div>
+                            <div class="col-md-12">
+                                <label for="{{ profile_form.default_street_address1.id_for_label }}" class="form-label">Address Line 1</label>
+                                {{ profile_form.default_street_address1 }}
+                            </div>
+                            <div class="col-md-12">
+                                <label for="{{ profile_form.default_street_address2.id_for_label }}" class="form-label">Address Line 2</label>
+                                {{ profile_form.default_street_address2 }}
+                            </div>
+                            <div class="col-md-4">
+                                <label for="{{ profile_form.default_town_or_city.id_for_label }}" class="form-label">City</label>
+                                {{ profile_form.default_town_or_city }}
+                            </div>
+                            <div class="col-md-4">
+                                <label for="{{ profile_form.default_county.id_for_label }}" class="form-label">County/State</label>
+                                {{ profile_form.default_county }}
+                            </div>
+                            <div class="col-md-4">
+                                <label for="{{ profile_form.default_postcode.id_for_label }}" class="form-label">Postal Code</label>
+                                {{ profile_form.default_postcode }}
+                            </div>
+                        </div>
+                        <div class="mt-3 text-end">
+                            <button type="submit" class="btn btn-primary">Save Profile</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Recent Orders -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 fw-bold">Recent Orders</h6>
+                    {% if order_count > 5 %}
+                    <a href="#" class="btn btn-sm btn-outline-primary">View All ({{ order_count }})</a>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% if orders %}
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Date</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Payment</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in orders %}
+                                <tr>
+                                    <td>{{ order.order_number }}</td>
+                                    <td>{{ order.created_at|date:"d M Y" }}</td>
+                                    <td>£{{ order.grand_total }}</td>
+                                    <td>
+                                        <span class="badge
+                                            {% if order.status == 'created' %}bg-info
+                                            {% elif order.status == 'paid' %}bg-primary
+                                            {% elif order.status == 'processing' %}bg-warning
+                                            {% elif order.status == 'shipped' %}bg-secondary
+                                            {% elif order.status == 'delivered' %}bg-success
+                                            {% elif order.status == 'cancelled' %}bg-danger
+                                            {% else %}bg-secondary{% endif %}">
+                                            {{ order.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge
+                                            {% if order.payment_status == 'pending' %}bg-warning
+                                            {% elif order.payment_status == 'processing' %}bg-info
+                                            {% elif order.payment_status == 'completed' %}bg-success
+                                            {% elif order.payment_status == 'failed' %}bg-danger
+                                            {% elif order.payment_status == 'refunded' %}bg-secondary
+                                            {% else %}bg-secondary{% endif %}">
+                                            {{ order.get_payment_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'staff:order_detail' order.id %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        No orders found for this user.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
