@@ -50,6 +50,9 @@ export default defineConfig({
         profileImageManager: resolve(__dirname, 'src/users/js/profile_image_manager.js'),
         accountActions: resolve(__dirname, 'src/users/js/account_actions.js'),
         addressManagement: resolve(__dirname, 'src/users/js/address-management.js'),
+        // Staff - new entries
+        staff: resolve(__dirname, 'src/staff/js/staff.js'),
+        orderManager: resolve(__dirname, 'src/staff/js/order-manager.js'),
       },
       output: {
         assetFileNames: (assetInfo) => {
@@ -60,6 +63,7 @@ export default defineConfig({
             if (assetInfo.name.includes('shop')) return `css/shop/[name][extname]`;
             if (assetInfo.name.includes('users')) return `css/users/[name][extname]`;
             if (assetInfo.name.includes('home')) return `css/home/[name][extname]`;
+            if (assetInfo.name.includes('staff')) return `css/staff/[name][extname]`;
             return `css/core/[name][extname]`;
           }
           if (assetInfo.name && assetInfo.name.match(/\.(woff2?|ttf|eot|otf)$/)) {
@@ -83,6 +87,7 @@ export default defineConfig({
           if (chunkInfo.name && chunkInfo.name.includes('shop')) return 'js/shop/[name].js';
           if (chunkInfo.name && chunkInfo.name.includes('users')) return 'js/users/[name].js';
           if (chunkInfo.name && chunkInfo.name.includes('home')) return 'js/home/[name].js';
+          if (chunkInfo.name && chunkInfo.name.includes('staff')) return 'js/staff/[name].js';
           return 'js/core/[name].js';
         },
         entryFileNames: (chunkInfo) => {
@@ -90,6 +95,7 @@ export default defineConfig({
           if (chunkInfo.name && chunkInfo.name.includes('shop')) return 'js/shop/[name].js';
           if (chunkInfo.name && chunkInfo.name.includes('users')) return 'js/users/[name].js';
           if (chunkInfo.name && chunkInfo.name.includes('home')) return 'js/home/[name].js';
+          if (chunkInfo.name && chunkInfo.name.includes('staff')) return 'js/staff/[name].js';
           return 'js/core/[name].js';
         },
       },
@@ -103,6 +109,7 @@ export default defineConfig({
       '@shop': resolve(__dirname, 'src/shop'),
       '@users': resolve(__dirname, 'src/users'),
       '@home': resolve(__dirname, 'src/home'),
+      '@staff': resolve(__dirname, 'src/staff'),
       '@image_cropper': resolve(__dirname, 'src/common/js/image_cropper.js'),
       // Clean path alias for FontAwesome assets
       '@fortawesome': resolve(__dirname, '../node_modules/@fortawesome'),
@@ -172,6 +179,9 @@ export default defineConfig({
                 'imageCropper': '/static/src/common/js/image_cropper.js',
                 'apiClient': '/static/src/common/js/api-client.js',
                 'home': '/static/src/home/js/home.js',
+                // Staff entries - new
+                'staff': '/static/src/staff/js/staff.js',
+                'orderManager': '/static/src/staff/js/order-manager.js',
 
                 // CSS files
                 'mainStyle': '/static/src/core/css/main.css',
@@ -188,7 +198,9 @@ export default defineConfig({
                 'productListStyle': '/static/src/shop/css/product-list.css',
                 'stripeStyle': '/static/src/shop/css/stripe.css',
                 'wishlistStyle': '/static/src/shop/css/wishlist.css',
-                'profileStyle': '/static/src/users/css/profile.css'
+                'profileStyle': '/static/src/users/css/profile.css',
+                // Staff CSS - new
+                'staffStyle': '/static/src/staff/css/staff.css'
               };
 
               // Check if the exact path or the base name matches one of our entry points
