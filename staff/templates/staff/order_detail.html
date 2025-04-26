@@ -1,0 +1,460 @@
+{% extends "staff/staff_base.html" %}
+{% load static %}
+
+{% block staff_title %}Order #{{ order.order_number }}{% endblock %}
+
+{% block staff_actions %}
+<div class="btn-group">
+    <a href="{% url 'staff:order_list' %}" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back to Orders
+    </a>
+    <a href="{% url 'staff:order_update' order.id %}" class="btn btn-sm btn-outline-primary">
+        <i class="bi bi-pencil me-1"></i> Edit Order
+    </a>
+</div>
+{% endblock %}
+
+{% block staff_content %}
+<div class="row mb-4">
+    <!-- Order summary card -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Order Summary</h5>
+                <span class="badge {% if order.status == 'cancelled' %}bg-danger{% elif order.status == 'delivered' %}bg-success{% elif order.status == 'shipped' %}bg-primary{% elif order.status == 'paid' %}bg-info{% else %}bg-warning{% endif %} px-3 py-2">
+                    {{ order.get_status_display }}
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <p class="mb-0"><strong>Order Number:</strong></p>
+                        <p>{{ order.order_number }}</p>
+                    </div>
+                    <div class="col-6">
+                        <p class="mb-0"><strong>Date Placed:</strong></p>
+                        <p>{{ order.created_at|date:"M d, Y H:i" }}</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <p class="mb-0"><strong>Total Items:</strong></p>
+                        <p>{{ order.items.count }}</p>
+                    </div>
+                    <div class="col-6">
+                        <p class="mb-0"><strong>Total:</strong></p>
+                        <p class="h5">£{{ order.total_price }}</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <p class="mb-0"><strong>Payment Status:</strong></p>
+                        <p><span class="badge {% if order.payment_status == 'completed' %}bg-success{% elif order.payment_status == 'refunded' %}bg-secondary{% elif order.payment_status == 'failed' %}bg-danger{% else %}bg-warning{% endif %}">
+                            {{ order.get_payment_status_display }}
+                        </span></p>
+                    </div>
+                    <div class="col-6">
+                        <p class="mb-0"><strong>Paid On:</strong></p>
+                        <p>{% if order.paid_at %}{{ order.paid_at|date:"M d, Y H:i" }}{% else %}Not paid yet{% endif %}</p>
+                    </div>
+                </div>
+
+                {% if order.tracking_number %}
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <p class="mb-0"><strong>Tracking Number:</strong></p>
+                        <p>{{ order.tracking_number }}</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="row">
+                    <div class="col-6">
+                        <p class="mb-0"><strong>Shipped On:</strong></p>
+                        <p>{% if order.shipped_at %}{{ order.shipped_at|date:"M d, Y" }}{% else %}Not shipped yet{% endif %}</p>
+                    </div>
+                    <div class="col-6">
+                        <p class="mb-0"><strong>Delivered On:</strong></p>
+                        <p>{% if order.delivered_at %}{{ order.delivered_at|date:"M d, Y" }}{% else %}Not delivered yet{% endif %}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer information card -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header">
+                <h5 class="mb-0">Customer Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <p class="mb-0"><strong>Customer Name:</strong></p>
+                        <p>{{ order.full_name }}</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <p class="mb-0"><strong>Email:</strong></p>
+                        <p>{{ order.email }}</p>
+                    </div>
+                    <div class="col-6">
+                        <p class="mb-0"><strong>Phone:</strong></p>
+                        <p>{{ order.phone_number|default:"Not provided" }}</p>
+                    </div>
+                </div>
+
+                <!-- Billing Address Section -->
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <p class="mb-0"><strong>Billing Address:</strong></p>
+                        <address>
+                            {% if address_mapping.address_line_1 %}{{ address_mapping.address_line_1 }}<br>{% endif %}
+                            {% if address_mapping.address_line_2 %}{{ address_mapping.address_line_2 }}<br>{% endif %}
+                            {% if address_mapping.town_or_city %}{{ address_mapping.town_or_city }}<br>{% endif %}
+                            {% if address_mapping.county %}{{ address_mapping.county }}<br>{% endif %}
+                            {% if address_mapping.postcode %}{{ address_mapping.postcode }}<br>{% endif %}
+                            {% if address_mapping.country.name %}{{ address_mapping.country.name }}{% endif %}
+                        </address>
+                    </div>
+                </div>
+
+                {% if order.user %}
+                <div class="row">
+                    <div class="col-12">
+                        <p class="mb-0"><strong>Account:</strong></p>
+                        <p>Registered user (ID: {{ order.user.id }})</p>
+                    </div>
+                </div>
+                {% else %}
+                <div class="row">
+                    <div class="col-12">
+                        <p class="mb-0"><strong>Account:</strong></p>
+                        <p>Guest checkout</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Order items card -->
+    <div class="col-12 mb-4">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0">Order Items</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;"></th>
+                                <th>Product</th>
+                                <th class="text-center">Quantity</th>
+                                <th class="text-end">Price</th>
+                                <th class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                            <tr>
+                                <td>
+                                    {% if item.product.image %}
+                                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-fluid" style="max-height: 50px;">
+                                    {% else %}
+                                    <img src="{{ MEDIA_URL }}noimage.png" alt="No image available" class="img-fluid" style="max-height: 50px;">
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ item.product.name }}
+                                    {% if item.product_variant %}
+                                    <small class="text-muted d-block">Variant: {{ item.product_variant }}</small>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">{{ item.quantity }}</td>
+                                <td class="text-end">£{{ item.price }}</td>
+                                <td class="text-end">£{{ item.total_price }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="4" class="text-end">Subtotal:</th>
+                                <th class="text-end">£{{ pricing.subtotal_price }}</th>
+                            </tr>
+                            {% if pricing.shipping_price %}
+                            <tr>
+                                <th colspan="4" class="text-end">Shipping:</th>
+                                <td class="text-end">£{{ pricing.shipping_price }}</td>
+                            </tr>
+                            {% endif %}
+                            {% if pricing.discount_amount %}
+                            <tr>
+                                <th colspan="4" class="text-end">Discount:</th>
+                                <td class="text-end">-£{{ pricing.discount_amount }}</td>
+                            </tr>
+                            {% endif %}
+                            <tr>
+                                <th colspan="4" class="text-end">Total:</th>
+                                <th class="text-end">£{{ order.total_price }}</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabs for actions, notes, and history -->
+<div class="row">
+    <div class="col-12">
+        <ul class="nav nav-tabs" id="orderTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="actions-tab" data-bs-toggle="tab" data-bs-target="#actions" type="button" role="tab" aria-controls="actions" aria-selected="true">
+                    Actions
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="notes-tab" data-bs-toggle="tab" data-bs-target="#notes" type="button" role="tab" aria-controls="notes" aria-selected="false">
+                    Staff Notes <span class="badge bg-secondary rounded-pill">{{ notes|length }}</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false">
+                    History <span class="badge bg-secondary rounded-pill">{{ actions|length }}</span>
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content p-4 border border-top-0 rounded-bottom shadow-sm mb-4" id="orderTabsContent">
+            <!-- Actions tab -->
+            <div class="tab-pane fade show active" id="actions" role="tabpanel" aria-labelledby="actions-tab">
+                <div class="row">
+                    <!-- Update status card -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Update Status</h5>
+                            </div>
+                            <div class="card-body">
+                                <form method="post" action="{% url 'staff:order_update' order.id %}">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label for="id_status" class="form-label">Order Status</label>
+                                        {{ update_form.status }}
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="id_payment_status" class="form-label">Payment Status</label>
+                                        {{ update_form.payment_status }}
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Update Status</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shipping info card -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Update Shipping</h5>
+                            </div>
+                            <div class="card-body">
+                                <form method="post" action="{% url 'staff:shipping_update' order.id %}">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label for="id_tracking_number" class="form-label">Tracking Number</label>
+                                        {{ shipping_form.tracking_number }}
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="id_shipping_carrier" class="form-label">Shipping Carrier</label>
+                                        {{ shipping_form.shipping_carrier }}
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="id_shipping_notes" class="form-label">Shipping Notes</label>
+                                        {{ shipping_form.shipping_notes }}
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        {{ shipping_form.notify_customer }}
+                                        <label class="form-check-label" for="id_notify_customer">
+                                            Notify customer by email
+                                        </label>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Update Shipping</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact customer card -->
+                    <div class="col-12 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Contact Customer</h5>
+                            </div>
+                            <div class="card-body">
+                                <form method="post" action="{% url 'staff:contact_customer' order.id %}">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label for="id_subject" class="form-label">Subject</label>
+                                        {{ contact_form.subject }}
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="id_message" class="form-label">Message</label>
+                                        {{ contact_form.message }}
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-check mb-3">
+                                                {{ contact_form.send_email }}
+                                                <label class="form-check-label" for="id_send_email">
+                                                    Send email to {{ order.email }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check mb-3">
+                                                {{ contact_form.log_contact }}
+                                                <label class="form-check-label" for="id_log_contact">
+                                                    Log this contact in order history
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Send Message</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes tab -->
+            <div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes-tab">
+                <div class="mb-4">
+                    <form method="post" action="{% url 'staff:add_note' order.id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="id_content" class="form-label">Add Internal Note</label>
+                            {{ note_form.content }}
+                        </div>
+                        <div class="form-check mb-3">
+                            {{ note_form.is_important }}
+                            <label class="form-check-label" for="id_is_important">
+                                Mark as important
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Note</button>
+                    </form>
+                </div>
+
+                <div class="list-group">
+                    {% for note in notes %}
+                    <div class="list-group-item {% if note.is_important %}important-note{% endif %}">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ note.staff_user.username }}</h6>
+                            <small>{{ note.created_at|date:"M d, Y H:i" }}</small>
+                        </div>
+                        <p class="mb-1">{{ note.content|linebreaks }}</p>
+                        {% if note.is_important %}
+                        <span class="badge bg-danger">Important</span>
+                        {% endif %}
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-4">
+                        <p class="mb-0 text-muted">No notes have been added to this order yet.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- History tab -->
+            <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+                <div class="timeline">
+                    {% for action in actions %}
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <h6 class="mb-1">
+                                {% if action.action_type == 'status_change' %}
+                                <i class="bi bi-arrow-repeat text-primary me-1"></i> Status Changed
+                                {% elif action.action_type == 'note_added' %}
+                                <i class="bi bi-sticky text-info me-1"></i> Note Added
+                                {% elif action.action_type == 'payment_action' %}
+                                <i class="bi bi-credit-card text-success me-1"></i> Payment Update
+                                {% elif action.action_type == 'customer_contact' %}
+                                <i class="bi bi-envelope text-warning me-1"></i> Customer Contacted
+                                {% elif action.action_type == 'shipping_update' %}
+                                <i class="bi bi-truck text-primary me-1"></i> Shipping Update
+                                {% else %}
+                                <i class="bi bi-gear text-secondary me-1"></i> Other Action
+                                {% endif %}
+                            </h6>
+                            <p class="mb-1">{{ action.description }}</p>
+                            <small class="text-muted">
+                                {{ action.created_at|date:"M d, Y H:i" }} by {{ action.staff_user.username }}
+                            </small>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-4">
+                        <p class="mb-0 text-muted">No actions have been recorded for this order yet.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block staff_js %}
+<style>
+    /* Timeline styling */
+    .timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+    .timeline-item {
+        position: relative;
+        padding-bottom: 1.5rem;
+    }
+    .timeline-item:last-child {
+        padding-bottom: 0;
+    }
+    .timeline-marker {
+        position: absolute;
+        left: -30px;
+        top: 0;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background-color: #007bff;
+        border: 2px solid #fff;
+        box-shadow: 0 0 0 2px #007bff;
+    }
+    .timeline-item:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        left: -23px;
+        top: 15px;
+        height: calc(100% - 15px);
+        width: 2px;
+        background-color: #e9ecef;
+    }
+    .timeline-content {
+        padding: 0.5rem 1rem;
+        background-color: #f8f9fa;
+        border-radius: 0.3rem;
+    }
+</style>
+{% endblock %}

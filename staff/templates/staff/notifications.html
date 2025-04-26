@@ -1,0 +1,115 @@
+{% extends "staff/staff_base.html" %}
+{% load static %}
+
+{% block staff_title %}Notifications{% endblock %}
+
+{% block staff_actions %}
+<div class="btn-group">
+    <a href="{% url 'staff:notifications' %}" class="btn btn-sm btn-outline-secondary {% if not request.GET.unread_only %}active{% endif %}">
+        All Notifications
+    </a>
+    <a href="{% url 'staff:notifications' %}?unread_only=true" class="btn btn-sm btn-outline-secondary {% if request.GET.unread_only %}active{% endif %}">
+        Unread Only
+    </a>
+</div>
+{% endblock %}
+
+{% block staff_content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for notification in notifications %}
+                    <div class="list-group-item {% if not notification.is_read %}unread{% endif %} priority-{{ notification.priority }}">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="mb-1">{{ notification.title }}</h5>
+                                <p class="mb-2">{{ notification.message }}</p>
+                                <div class="d-flex align-items-center">
+                                    <small class="text-muted me-3">
+                                        <i class="bi bi-clock me-1"></i>
+                                        {{ notification.created_at|date:"M d, Y H:i" }}
+                                    </small>
+                                    <span class="badge {% if notification.priority == 'urgent' %}bg-danger{% elif notification.priority == 'high' %}bg-warning{% elif notification.priority == 'medium' %}bg-info{% else %}bg-secondary{% endif %}">
+                                        {{ notification.get_priority_display }}
+                                    </span>
+                                    {% if notification.related_order %}
+                                    <a href="{% url 'staff:order_detail' notification.related_order.id %}" class="ms-2 text-decoration-none">
+                                        <i class="bi bi-box"></i>
+                                        Order #{{ notification.related_order.order_number }}
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div>
+                                {% if not notification.is_read %}
+                                <a href="{% url 'staff:mark_notification_read' notification.id %}?next={% url 'staff:notifications' %}{% if request.GET.unread_only %}?unread_only=true{% endif %}"
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-check-lg"></i> Mark as Read
+                                </a>
+                                {% else %}
+                                <span class="badge bg-light text-dark">
+                                    <i class="bi bi-check2-all"></i> Read {{ notification.read_at|date:"M d, Y" }}
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-bell-slash fs-1 text-muted"></i>
+                        <p class="mt-3 mb-0">No notifications found</p>
+                        {% if request.GET.unread_only %}
+                        <a href="{% url 'staff:notifications' %}" class="btn btn-sm btn-outline-primary mt-2">
+                            View All Notifications
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        {% if is_paginated %}
+        <nav class="mt-4" aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1{% if request.GET.unread_only %}&unread_only=true{% endif %}" aria-label="First">
+                        <span aria-hidden="true">&laquo;&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.unread_only %}&unread_only=true{% endif %}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item"><a class="page-link" href="?page={{ num }}{% if request.GET.unread_only %}&unread_only=true{% endif %}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.unread_only %}&unread_only=true{% endif %}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.unread_only %}&unread_only=true{% endif %}" aria-label="Last">
+                        <span aria-hidden="true">&raquo;&raquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

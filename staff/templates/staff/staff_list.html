@@ -1,0 +1,169 @@
+{% extends "staff/staff_base.html" %}
+{% load static %}
+{% load staff_filters %}
+
+{% block staff_title %}Staff Management{% endblock %}
+
+{% block staff_content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="card shadow">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Staff Members</h5>
+                <div>
+                    <a href="{% url 'admin:auth_user_add' %}" class="btn btn-sm btn-primary" target="_blank">
+                        <i class="bi bi-person-plus me-1"></i> Add New Staff
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Department</th>
+                                <th>Role</th>
+                                <th>Last Login</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for staff_member in staff_members %}
+                            <tr>
+                                <td>{{ staff_member.username }}</td>
+                                <td>
+                                    {% if staff_member.first_name or staff_member.last_name %}
+                                        {{ staff_member.first_name }} {{ staff_member.last_name }}
+                                    {% else %}
+                                        <span class="text-muted">Not provided</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ staff_member.email }}</td>
+                                <td>
+                                    {% if staff_profiles|get_item:staff_member.id %}
+                                        {{ staff_profiles|get_item:staff_member.id|get_attr:"get_department_display" }}
+                                    {% else %}
+                                        <span class="text-muted">Not assigned</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if staff_member.is_superuser %}
+                                        <span class="badge bg-danger">Administrator</span>
+                                    {% elif staff_profiles|get_item:staff_member.id and staff_profiles|get_item:staff_member.id|get_attr:"is_manager" %}
+                                        <span class="badge bg-primary">Manager</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Staff</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if staff_member.last_login %}
+                                        {{ staff_member.last_login|date:"M d, Y H:i" }}
+                                    {% else %}
+                                        <span class="text-muted">Never</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="{% url 'admin:auth_user_change' staff_member.id %}" class="btn btn-sm btn-outline-secondary" target="_blank" title="Edit user">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        {% if not staff_member.is_superuser %}
+                                            {% if staff_profiles|get_item:staff_member.id and staff_profiles|get_item:staff_member.id|get_attr:"is_manager" %}
+                                                <a href="{% url 'staff:toggle_manager' staff_member.id %}" class="btn btn-sm btn-outline-danger" title="Remove manager role">
+                                                    <i class="bi bi-arrow-down-circle"></i>
+                                                </a>
+                                            {% else %}
+                                                <a href="{% url 'staff:toggle_manager' staff_member.id %}" class="btn btn-sm btn-outline-primary" title="Make manager">
+                                                    <i class="bi bi-arrow-up-circle"></i>
+                                                </a>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4">No staff members found</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Role information cards -->
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">Staff</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Regular staff members can:</p>
+                <ul class="mb-0">
+                    <li>View and manage orders</li>
+                    <li>Update order statuses</li>
+                    <li>Contact customers</li>
+                    <li>Add notes to orders</li>
+                    <li>View their notifications</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Manager</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Managers can do everything staff can, plus:</p>
+                <ul class="mb-0">
+                    <li>Access all departments</li>
+                    <li>Manage staff roles</li>
+                    <li>View staff performance</li>
+                    <li>Create and assign tasks</li>
+                    <li>View sales reports</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">Administrator</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Administrators have full system access:</p>
+                <ul class="mb-0">
+                    <li>Complete system control</li>
+                    <li>Add/remove staff accounts</li>
+                    <li>Configure system settings</li>
+                    <li>Access to Django admin</li>
+                    <li>Manage all shop aspects</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block staff_js %}
+<script>
+    // Custom template filters
+    function getItem(obj, key) {
+        return obj[key];
+    }
+
+    function getAttribute(obj, attr) {
+        return obj[attr];
+    }
+</script>
+{% endblock %}

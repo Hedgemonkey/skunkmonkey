@@ -1,0 +1,219 @@
+{% extends 'staff/staff_base.html' %}
+
+{% block staff_title %}Dashboard{% endblock %}
+
+{% block staff_content %}
+<div class="container-fluid px-4">
+    <!-- Stats Row -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-left-primary card-hover shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-primary text-uppercase mb-1">
+                                Total Orders
+                            </div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">{{ total_orders }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-cart-fill fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-left-success card-hover shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-success text-uppercase mb-1">
+                                Paid Orders
+                            </div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">{{ paid_orders }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-cash-stack fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-left-info card-hover shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-info text-uppercase mb-1">
+                                Processing Orders
+                            </div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">{{ processing_orders }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-gear-fill fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-left-warning card-hover shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-warning text-uppercase mb-1">
+                                Pending Orders
+                            </div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">{{ pending_orders }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-clock-fill fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Recent Orders -->
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 fw-bold">Recent Orders</h6>
+                    <a href="{% url 'staff:order_list' %}" class="btn btn-sm btn-primary">
+                        View All Orders
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if recent_orders %}
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Date</th>
+                                    <th>Customer</th>
+                                    <th>Status</th>
+                                    <th>Total</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in recent_orders %}
+                                <tr>
+                                    <td>{{ order.order_number }}</td>
+                                    <td>{{ order.created_at|date:"d M Y" }}</td>
+                                    <td>{{ order.full_name }}</td>
+                                    <td>
+                                        <span class="badge {% if order.status == 'created' %}bg-warning
+                                                          {% elif order.status == 'processing' %}bg-info
+                                                          {% elif order.status == 'shipped' %}bg-primary
+                                                          {% elif order.status == 'delivered' %}bg-success
+                                                          {% elif order.status == 'cancelled' %}bg-danger
+                                                          {% else %}bg-secondary{% endif %}">
+                                            {{ order.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>£{{ order.order_total }}</td>
+                                    <td>
+                                        <a href="{% url 'staff:order_detail' order.id %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-center">No recent orders found.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 fw-bold">Unread Notifications</h6>
+                    <a href="{% url 'staff:notifications' %}" class="btn btn-sm btn-primary">
+                        View All
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if notifications %}
+                    <div class="list-group">
+                        {% for notification in notifications %}
+                        <a href="{% url 'staff:mark_notification_read' notification.id %}?next={% url 'staff:dashboard' %}"
+                           class="list-group-item list-group-item-action unread {% if notification.priority == 'urgent' %}priority-urgent
+                                                                               {% elif notification.priority == 'high' %}priority-high
+                                                                               {% elif notification.priority == 'medium' %}priority-medium{% endif %}">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ notification.title }}</h6>
+                                <small>{{ notification.created_at|timesince }} ago</small>
+                            </div>
+                            <p class="mb-1 small">{{ notification.message|truncatechars:100 }}</p>
+                            {% if notification.related_order %}
+                            <small>
+                                <i class="bi bi-box"></i>
+                                Order #{{ notification.related_order.order_number }}
+                            </small>
+                            {% endif %}
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-center">No unread notifications.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 fw-bold">Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row justify-content-center">
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'staff:order_list' %}?status=created" class="btn btn-lg btn-outline-warning w-100 h-100 py-4">
+                                <i class="bi bi-clock-fill d-block mb-2" style="font-size: 2rem;"></i>
+                                Process Pending Orders
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'staff:order_list' %}?status=processing" class="btn btn-lg btn-outline-info w-100 h-100 py-4">
+                                <i class="bi bi-truck d-block mb-2" style="font-size: 2rem;"></i>
+                                Update Shipping Info
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'staff:notifications' %}?unread_only=true" class="btn btn-lg btn-outline-primary w-100 h-100 py-4">
+                                <i class="bi bi-bell-fill d-block mb-2" style="font-size: 2rem;"></i>
+                                Check Notifications
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'staff:profile' %}" class="btn btn-lg btn-outline-secondary w-100 h-100 py-4">
+                                <i class="bi bi-gear-fill d-block mb-2" style="font-size: 2rem;"></i>
+                                Staff Settings
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

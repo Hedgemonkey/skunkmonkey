@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load django_vite %}
+{% load staff_filters %}
+
+{% block extra_title %}Staff Portal{% endblock %}
+
+{% block extra_css %}
+    {{ block.super }}
+    {% vite_asset 'staff' %}
+    {% vite_asset 'orderManager' %}
+{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block staff-sidebar collapse">
+            <div class="position-sticky pt-3">
+                <div class="sidebar-heading">Main</div>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'staff:dashboard' %}">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'order_' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'staff:order_list' %}">
+                            <i class="bi bi-cart"></i> Orders
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'notifications' %}active{% endif %}" href="{% url 'staff:notifications' %}">
+                            <i class="bi bi-bell"></i> Notifications
+                            {% if request.user.unread_notifications_count > 0 %}
+                            <span class="badge bg-danger rounded-pill ms-2">
+                                {{ request.user.unread_notifications_count }}
+                            </span>
+                            {% endif %}
+                        </a>
+                    </li>
+                </ul>
+
+                <hr class="my-3">
+
+                <div class="sidebar-heading">Administration</div>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}" href="{% url 'staff:profile' %}">
+                            <i class="bi bi-person"></i> My Profile
+                        </a>
+                    </li>
+                    {% if request.user.is_superuser or request.user.staff_profile.is_manager %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'staff_list' %}active{% endif %}" href="{% url 'staff:staff_list' %}">
+                            <i class="bi bi-people"></i> Staff Management
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% if request.user.is_superuser %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin:index' %}">
+                            <i class="bi bi-gear"></i> Admin Panel
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 staff-main">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+                <h1 class="h2">{% block staff_title %}Staff Area{% endblock %}</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    {% block staff_actions %}{% endblock %}
+                </div>
+            </div>
+
+            {% if messages %}
+            <div class="messages mb-4">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% block staff_content %}{% endblock %}
+        </main>
+    </div>
+</div>
+{% endblock %}

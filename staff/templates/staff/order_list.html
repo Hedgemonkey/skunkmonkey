@@ -1,0 +1,276 @@
+{% extends 'staff/staff_base.html' %}
+{% load staff_filters %}
+
+{% block staff_title %}Order Management{% endblock %}
+
+{% block staff_actions %}
+<button class="btn btn-sm btn-outline-secondary me-2" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse">
+    <i class="bi bi-funnel"></i> Filter
+</button>
+<a href="{% url 'staff:order_list' %}" class="btn btn-sm btn-outline-secondary">
+    <i class="bi bi-arrow-repeat"></i> Reset
+</a>
+{% endblock %}
+
+{% block staff_content %}
+<div class="container-fluid px-4">
+    <!-- Filter panel -->
+    <div class="collapse filter-collapse mb-4" id="filterCollapse">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Filter Orders</h5>
+            </div>
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <label for="id_order_number" class="form-label">Order Number</label>
+                        {{ form.order_number }}
+                    </div>
+                    <div class="col-md-3">
+                        <label for="id_customer_email" class="form-label">Customer Email</label>
+                        {{ form.customer_email }}
+                    </div>
+                    <div class="col-md-3">
+                        <label for="id_status" class="form-label">Status</label>
+                        {{ form.status }}
+                    </div>
+                    <div class="col-md-3">
+                        <label for="id_payment_status" class="form-label">Payment Status</label>
+                        {{ form.payment_status }}
+                    </div>
+                    <div class="col-md-3">
+                        <label for="id_date_from" class="form-label">Date From</label>
+                        {{ form.date_from }}
+                    </div>
+                    <div class="col-md-3">
+                        <label for="id_date_to" class="form-label">Date To</label>
+                        {{ form.date_to }}
+                    </div>
+                    <div class="col-12 text-end">
+                        <button type="submit" class="btn btn-primary">Apply Filters</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status stats bar -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body py-2">
+                    <div class="row text-center">
+                        {% for status_code, status_name in status_filters %}
+                        <div class="col border-end">
+                            <a href="{% url 'staff:order_list' %}?status={{ status_code }}" class="text-decoration-none">
+                                <div class="small text-muted mb-1">{{ status_name }}</div>
+                                <div class="h5 mb-0 fw-bold">{{ status_counts|get_item:status_code|default:"0" }}</div>
+                            </a>
+                        </div>
+                        {% endfor %}
+                        <div class="col">
+                            <a href="{% url 'staff:order_list' %}" class="text-decoration-none">
+                                <div class="small text-muted mb-1">All Orders</div>
+                                <div class="h5 mb-0 fw-bold">{{ paginator.count }}</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders list -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 fw-bold">Order List</h6>
+        </div>
+        <div class="card-body">
+            {% if orders %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Date</th>
+                            <th>Customer</th>
+                            <th>Status</th>
+                            <th>Payment</th>
+                            <th>Total</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td>{{ order.order_number }}</td>
+                            <td>{{ order.created_at|date:"d M Y" }}</td>
+                            <td>
+                                {{ order.full_name }}<br>
+                                <small class="text-muted">{{ order.email }}</small>
+                            </td>
+                            <td>
+                                <span class="badge {% if order.status == 'created' %}bg-warning
+                                                  {% elif order.status == 'processing' %}bg-info
+                                                  {% elif order.status == 'shipped' %}bg-primary
+                                                  {% elif order.status == 'delivered' %}bg-success
+                                                  {% elif order.status == 'cancelled' %}bg-danger
+                                                  {% else %}bg-secondary{% endif %}">
+                                    {{ order.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge {% if order.payment_status == 'pending' %}bg-warning
+                                                  {% elif order.payment_status == 'paid' %}bg-success
+                                                  {% elif order.payment_status == 'failed' %}bg-danger
+                                                  {% else %}bg-secondary{% endif %}">
+                                    {{ order.get_payment_status_display }}
+                                </span>
+                            </td>
+                            <td>£{{ order.grand_total }}</td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="{% url 'staff:order_detail' order.id %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary quick-view-btn" data-bs-toggle="modal" data-bs-target="#quickViewModal" data-order-id="{{ order.id }}">
+                                        <i class="bi bi-search"></i> Quick View
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <nav aria-label="Order pagination" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Previous</a>
+                    </li>
+                    {% endif %}
+
+                    <!-- Current page -->
+                    <li class="page-item active">
+                        <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Last</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+            {% else %}
+            <div class="alert alert-info text-center">
+                <p class="mb-0">No orders found matching your criteria.</p>
+                <p class="mb-0">
+                    <a href="{% url 'staff:order_list' %}" class="alert-link">Clear all filters</a> to see all orders.
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Quick View Modal -->
+<div class="modal fade" id="quickViewModal" tabindex="-1" aria-labelledby="quickViewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="quickViewModalLabel">Order Quick View</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Loading state -->
+                <div id="quickViewLoader" class="quick-view-loading">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-3">Loading order details...</p>
+                </div>
+
+                <!-- Error state -->
+                <div id="quickViewError" class="d-none">
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        An error occurred while loading the order details.
+                    </div>
+                </div>
+
+                <!-- Content state -->
+                <div id="quickViewContent" class="d-none">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold">Order Details</h6>
+                            <p class="mb-1">
+                                <strong>Order Number:</strong> <span id="qv-order-number"></span>
+                            </p>
+                            <p class="mb-1">
+                                <strong>Date:</strong> <span id="qv-date"></span>
+                            </p>
+                            <p class="mb-1">
+                                <strong>Status:</strong> <span id="qv-status"></span>
+                            </p>
+                            <p class="mb-0">
+                                <strong>Payment Status:</strong> <span id="qv-payment-status"></span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold">Customer Details</h6>
+                            <p class="mb-1">
+                                <strong>Name:</strong> <span id="qv-customer"></span>
+                            </p>
+                            <p class="mb-1">
+                                <strong>Email:</strong> <span id="qv-email"></span>
+                            </p>
+                            <p class="mb-0">
+                                <strong>Total:</strong> <span id="qv-total"></span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <h6 class="fw-bold">Order Items</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th class="text-center">Quantity</th>
+                                    <th class="text-end">Price</th>
+                                    <th class="text-end">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="qv-items">
+                                <!-- Items will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a id="viewFullOrderBtn" href="#" class="btn btn-primary" data-url-template="{% url 'staff:order_detail' 0 %}">
+                    View Full Order
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden API URL for JavaScript -->
+<input type="hidden" id="quickViewApiUrl" value="{% url 'staff:order_quickview' 0 %}">
+{% endblock %}
