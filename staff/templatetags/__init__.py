@@ -1,0 +1,3 @@
+"""
+Template tag library initialization
+"""
