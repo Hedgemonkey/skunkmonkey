@@ -51,6 +51,7 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('products/', include('products.urls')),
     path('shop/', include('shop.urls')),
+    path('staff/', include('staff.urls')),  # Add staff URLs
     path('', include('home.urls')),
     path('stripe/webhook/', webhook, name='stripe_webhook'),  # Add webhook URL
     path('stripe/', include('djstripe.urls', namespace='djstripe')),
