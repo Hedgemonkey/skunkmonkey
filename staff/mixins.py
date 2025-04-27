@@ -4,12 +4,38 @@ Mixins for staff functionality
 import logging
 
 from django.contrib import messages
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 
 # Set up logger
 logger = logging.getLogger(__name__)
+
+
+# Decorator for function-based views to check if user is staff
+def staff_required(view_func):
+    """
+    Decorator for views that checks that the user is a staff member.
+    """
+    def check_staff(user):
+        if user.is_authenticated and user.is_staff:
+            logger.debug("Staff access granted to %s", user.username)
+            return True
+        if user.is_authenticated:
+            logger.warning(
+                "Non-staff user %s attempted to access staff area",
+                user.username
+            )
+        else:
+            logger.info("Unauthenticated user attempted to access staff area")
+        return False
+
+    decorated_view_func = user_passes_test(
+        check_staff,
+        login_url=reverse_lazy('account_login')
+    )(view_func)
+    return decorated_view_func
 
 
 class StaffAccessMixin(UserPassesTestMixin):
