@@ -1,78 +1,80 @@
 {% extends 'staff/staff_base.html' %}
+{% load static %}
+{% load django_vite %}
 {% load staff_filters %}
 
-{% block staff_title %}Order Management{% endblock %}
-
-{% block staff_actions %}
-<button class="btn btn-sm btn-outline-secondary me-2" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse">
-    <i class="bi bi-funnel"></i> Filter
-</button>
-<a href="{% url 'staff:order_list' %}" class="btn btn-sm btn-outline-secondary">
-    <i class="bi bi-arrow-repeat"></i> Reset
-</a>
-{% endblock %}
+{% block staff_title %}Orders{% endblock %}
 
 {% block staff_content %}
 <div class="container-fluid px-4">
-    <!-- Filter panel -->
-    <div class="collapse filter-collapse mb-4" id="filterCollapse">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Filter Orders</h5>
-            </div>
-            <div class="card-body">
-                <form method="get" class="row g-3">
-                    <div class="col-md-3">
-                        <label for="id_order_number" class="form-label">Order Number</label>
-                        {{ form.order_number }}
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Orders
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_orders }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fa fa-shopping-cart fa-2x text-gray-300"></i>
+                        </div>
                     </div>
-                    <div class="col-md-3">
-                        <label for="id_customer_email" class="form-label">Customer Email</label>
-                        {{ form.customer_email }}
-                    </div>
-                    <div class="col-md-3">
-                        <label for="id_status" class="form-label">Status</label>
-                        {{ form.status }}
-                    </div>
-                    <div class="col-md-3">
-                        <label for="id_payment_status" class="form-label">Payment Status</label>
-                        {{ form.payment_status }}
-                    </div>
-                    <div class="col-md-3">
-                        <label for="id_date_from" class="form-label">Date From</label>
-                        {{ form.date_from }}
-                    </div>
-                    <div class="col-md-3">
-                        <label for="id_date_to" class="form-label">Date To</label>
-                        {{ form.date_to }}
-                    </div>
-                    <div class="col-12 text-end">
-                        <button type="submit" class="btn btn-primary">Apply Filters</button>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Status stats bar -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body py-2">
-                    <div class="row text-center">
-                        {% for status_code, status_name in status_filters %}
-                        <div class="col border-end">
-                            <a href="{% url 'staff:order_list' %}?status={{ status_code }}" class="text-decoration-none">
-                                <div class="small text-muted mb-1">{{ status_name }}</div>
-                                <div class="h5 mb-0 fw-bold">{{ status_counts|get_item:status_code|default:"0" }}</div>
-                            </a>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Today's Orders
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ orders_today }}</div>
                         </div>
-                        {% endfor %}
-                        <div class="col">
-                            <a href="{% url 'staff:order_list' %}" class="text-decoration-none">
-                                <div class="small text-muted mb-1">All Orders</div>
-                                <div class="h5 mb-0 fw-bold">{{ paginator.count }}</div>
-                            </a>
+                        <div class="col-auto">
+                            <i class="fa fa-calendar-day fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Pending Orders
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ pending_orders }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fa fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Total Revenue
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">£{{ total_revenue }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fa fa-coins fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
@@ -80,63 +82,228 @@
         </div>
     </div>
 
-    <!-- Orders list -->
+    <!-- Filters -->
     <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 fw-bold">Order List</h6>
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 fw-bold">Filter Orders</h6>
+            <button class="btn btn-sm btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFilters" aria-expanded="false" aria-controls="collapseFilters">
+                <i class="fa fa-filter me-1"></i> Toggle Filters
+            </button>
+        </div>
+        <div class="collapse show" id="collapseFilters">
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="id_order_number" class="form-label">Order Number</label>
+                        <input type="text" id="id_order_number" name="order_number" class="form-control" value="{{ request.GET.order_number|default:'' }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="id_customer_name" class="form-label">Customer Name</label>
+                        <input type="text" id="id_customer_name" name="customer_name" class="form-control" value="{{ request.GET.customer_name|default:'' }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="id_customer_email" class="form-label">Customer Email</label>
+                        <input type="email" id="id_customer_email" name="customer_email" class="form-control" value="{{ request.GET.customer_email|default:'' }}">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="id_date_from" class="form-label">Date From</label>
+                        <input type="date" id="id_date_from" name="date_from" class="form-control" value="{{ request.GET.date_from|default:'' }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="id_date_to" class="form-label">Date To</label>
+                        <input type="date" id="id_date_to" name="date_to" class="form-control" value="{{ request.GET.date_to|default:'' }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="id_status" class="form-label">Order Status</label>
+                        <select id="id_status" name="status" class="form-select">
+                            <option value="">All Statuses</option>
+                            <option value="created" {% if request.GET.status == 'created' %}selected{% endif %}>Created</option>
+                            <option value="paid" {% if request.GET.status == 'paid' %}selected{% endif %}>Paid</option>
+                            <option value="processing" {% if request.GET.status == 'processing' %}selected{% endif %}>Processing</option>
+                            <option value="shipped" {% if request.GET.status == 'shipped' %}selected{% endif %}>Shipped</option>
+                            <option value="delivered" {% if request.GET.status == 'delivered' %}selected{% endif %}>Delivered</option>
+                            <option value="cancelled" {% if request.GET.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="id_payment_status" class="form-label">Payment Status</label>
+                        <select id="id_payment_status" name="payment_status" class="form-select">
+                            <option value="">All Payment Statuses</option>
+                            <option value="pending" {% if request.GET.payment_status == 'pending' %}selected{% endif %}>Pending</option>
+                            <option value="processing" {% if request.GET.payment_status == 'processing' %}selected{% endif %}>Processing</option>
+                            <option value="completed" {% if request.GET.payment_status == 'completed' %}selected{% endif %}>Completed</option>
+                            <option value="failed" {% if request.GET.payment_status == 'failed' %}selected{% endif %}>Failed</option>
+                            <option value="refunded" {% if request.GET.payment_status == 'refunded' %}selected{% endif %}>Refunded</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-label">Price Range</div>
+                        <div class="input-group">
+                            <span class="input-group-text">£</span>
+                            <input type="number" id="id_min_price" name="min_price" class="form-control" placeholder="Min" value="{{ request.GET.min_price|default:'' }}">
+                            <span class="input-group-text">-</span>
+                            <input type="number" id="id_max_price" name="max_price" class="form-control" placeholder="Max" value="{{ request.GET.max_price|default:'' }}">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="id_sort" class="form-label">Sort By</label>
+                        <select id="id_sort" name="sort" class="form-select">
+                            <option value="-created_at" {% if request.GET.sort == '-created_at' or not request.GET.sort %}selected{% endif %}>Newest First</option>
+                            <option value="created_at" {% if request.GET.sort == 'created_at' %}selected{% endif %}>Oldest First</option>
+                            <option value="-total_price" {% if request.GET.sort == '-total_price' %}selected{% endif %}>Price (High to Low)</option>
+                            <option value="total_price" {% if request.GET.sort == 'total_price' %}selected{% endif %}>Price (Low to High)</option>
+                            <option value="status" {% if request.GET.sort == 'status' %}selected{% endif %}>Status (A-Z)</option>
+                            <option value="-status" {% if request.GET.sort == '-status' %}selected{% endif %}>Status (Z-A)</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa fa-filter me-1"></i> Apply Filters
+                        </button>
+                        <a href="{% url 'staff:order_list' %}" class="btn btn-outline-secondary">
+                            <i class="fa fa-times-circle me-1"></i> Clear Filters
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 fw-bold">
+                Orders
+                {% if filtered %}<span class="text-muted">(Filtered)</span>{% endif %}
+            </h6>
+            <div>
+                <button id="bulkActionBtn" class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" disabled>
+                    Bulk Actions
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <a href="#" class="dropdown-item" id="markProcessingBtn">
+                            <i class="fa fa-cogs me-1"></i> Mark as Processing
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="dropdown-item" id="markShippedBtn">
+                            <i class="fa fa-truck me-1"></i> Mark as Shipped
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <!-- Export feature placeholder - we'll add proper functionality later -->
+                    <li>
+                        <a href="#" class="dropdown-item" id="exportSelectedBtn">
+                            <i class="fa fa-file-export me-1"></i> Export Selected
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
         <div class="card-body">
-            {% if orders %}
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
                         <tr>
+                            <th>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="selectAllOrders">
+                                    <label class="form-check-label" for="selectAllOrders"></label>
+                                </div>
+                            </th>
                             <th>Order #</th>
                             <th>Date</th>
                             <th>Customer</th>
+                            <th>Items</th>
+                            <th>Total</th>
                             <th>Status</th>
                             <th>Payment</th>
-                            <th>Total</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for order in orders %}
                         <tr>
-                            <td>{{ order.order_number }}</td>
-                            <td>{{ order.created_at|date:"d M Y" }}</td>
                             <td>
-                                {{ order.full_name }}<br>
-                                <small class="text-muted">{{ order.email }}</small>
+                                <div class="form-check">
+                                    <input class="form-check-input order-checkbox" type="checkbox" value="{{ order.id }}" id="order_{{ order.id }}">
+                                    <label class="form-check-label" for="order_{{ order.id }}"></label>
+                                </div>
                             </td>
+                            <td><a href="{% url 'staff:order_detail' order.id %}" class="fw-bold text-decoration-none">{{ order.order_number }}</a></td>
+                            <td>{{ order.created_at|date:"d M Y H:i" }}</td>
                             <td>
-                                <span class="badge {% if order.status == 'created' %}bg-warning
-                                                  {% elif order.status == 'processing' %}bg-info
-                                                  {% elif order.status == 'shipped' %}bg-primary
+                                {{ order.full_name|truncatechars:20 }}
+                                {% if order.user %}<span class="badge bg-primary">Account</span>{% endif %}
+                            </td>
+                            <td>{{ order.items.count }}</td>
+                            <td>£{{ order.total_price }}</td>
+                            <td>
+                                <span class="badge {% if order.status == 'cancelled' %}bg-danger
                                                   {% elif order.status == 'delivered' %}bg-success
-                                                  {% elif order.status == 'cancelled' %}bg-danger
-                                                  {% else %}bg-secondary{% endif %}">
+                                                  {% elif order.status == 'shipped' %}bg-primary
+                                                  {% elif order.status == 'processing' %}bg-info
+                                                  {% else %}bg-warning{% endif %}">
                                     {{ order.get_status_display }}
                                 </span>
                             </td>
                             <td>
-                                <span class="badge {% if order.payment_status == 'pending' %}bg-warning
-                                                  {% elif order.payment_status == 'paid' %}bg-success
+                                <span class="badge {% if order.payment_status == 'completed' %}bg-success
+                                                  {% elif order.payment_status == 'processing' %}bg-info
                                                   {% elif order.payment_status == 'failed' %}bg-danger
-                                                  {% else %}bg-secondary{% endif %}">
+                                                  {% elif order.payment_status == 'refunded' %}bg-secondary
+                                                  {% else %}bg-warning{% endif %}">
                                     {{ order.get_payment_status_display }}
                                 </span>
                             </td>
-                            <td>£{{ order.grand_total }}</td>
                             <td>
                                 <div class="btn-group">
                                     <a href="{% url 'staff:order_detail' order.id %}" class="btn btn-sm btn-outline-primary">
-                                        <i class="bi bi-eye"></i> View
+                                        <i class="fa fa-eye"></i>
                                     </a>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary quick-view-btn" data-bs-toggle="modal" data-bs-target="#quickViewModal" data-order-id="{{ order.id }}">
-                                        <i class="bi bi-search"></i> Quick View
+                                    <a href="{% url 'staff:order_update' order.id %}" class="btn btn-sm btn-outline-secondary">
+                                        <i class="fa fa-edit"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-outline-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fa fa-cog"></i>
                                     </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li>
+                                            <a href="{% url 'staff:order_update' order.id %}" class="dropdown-item">
+                                                <i class="fa fa-cogs me-1"></i> Mark as Processing
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{% url 'staff:order_update' order.id %}" class="dropdown-item">
+                                                <i class="fa fa-truck me-1"></i> Mark as Shipped
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{% url 'staff:order_update' order.id %}" class="dropdown-item">
+                                                <i class="fa fa-check-circle me-1"></i> Mark as Delivered
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <hr class="dropdown-divider">
+                                        </li>
+                                    </ul>
                                 </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center py-4">
+                                <p class="mb-0">No orders found matching your criteria.</p>
+                                {% if filtered %}
+                                <p class="mb-0">
+                                    <a href="{% url 'staff:order_list' %}" class="alert-link">Clear all filters</a> to see all orders.
+                                </p>
+                                {% endif %}
                             </td>
                         </tr>
                         {% endfor %}
@@ -144,133 +311,110 @@
                 </table>
             </div>
 
-            <!-- Pagination -->
             {% if is_paginated %}
-            <nav aria-label="Order pagination" class="mt-4">
+            <nav aria-label="Orders pagination" class="mt-4">
                 <ul class="pagination justify-content-center">
                     {% if page_obj.has_previous %}
                     <li class="page-item">
-                        <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">First</a>
+                        <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                            First
+                        </a>
                     </li>
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Previous</a>
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                            Previous
+                        </a>
                     </li>
                     {% endif %}
 
-                    <!-- Current page -->
                     <li class="page-item active">
-                        <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                        <span class="page-link">
+                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                        </span>
                     </li>
 
                     {% if page_obj.has_next %}
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Next</a>
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                            Next
+                        </a>
                     </li>
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Last</a>
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                            Last
+                        </a>
                     </li>
                     {% endif %}
                 </ul>
             </nav>
             {% endif %}
-
-            {% else %}
-            <div class="alert alert-info text-center">
-                <p class="mb-0">No orders found matching your criteria.</p>
-                <p class="mb-0">
-                    <a href="{% url 'staff:order_list' %}" class="alert-link">Clear all filters</a> to see all orders.
-                </p>
-            </div>
-            {% endif %}
         </div>
     </div>
 </div>
+{% endblock %}
 
-<!-- Quick View Modal -->
-<div class="modal fade" id="quickViewModal" tabindex="-1" aria-labelledby="quickViewModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="quickViewModalLabel">Order Quick View</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <!-- Loading state -->
-                <div id="quickViewLoader" class="quick-view-loading">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                    <p class="mt-3">Loading order details...</p>
-                </div>
+{% block staff_js %}
+{% vite_asset 'orderManager' %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Select all orders checkbox functionality
+        const selectAllCheckbox = document.getElementById('selectAllOrders');
+        const orderCheckboxes = document.querySelectorAll('.order-checkbox');
+        const bulkActionBtn = document.getElementById('bulkActionBtn');
+        const selectedOrderIdsInputs = document.querySelectorAll('#selectedOrderIds, #selectedOrderIds2, #exportOrderIds');
 
-                <!-- Error state -->
-                <div id="quickViewError" class="d-none">
-                    <div class="alert alert-danger">
-                        <i class="bi bi-exclamation-triangle-fill"></i>
-                        An error occurred while loading the order details.
-                    </div>
-                </div>
+        if (selectAllCheckbox) {
+            selectAllCheckbox.addEventListener('change', function() {
+                const isChecked = this.checked;
 
-                <!-- Content state -->
-                <div id="quickViewContent" class="d-none">
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <h6 class="fw-bold">Order Details</h6>
-                            <p class="mb-1">
-                                <strong>Order Number:</strong> <span id="qv-order-number"></span>
-                            </p>
-                            <p class="mb-1">
-                                <strong>Date:</strong> <span id="qv-date"></span>
-                            </p>
-                            <p class="mb-1">
-                                <strong>Status:</strong> <span id="qv-status"></span>
-                            </p>
-                            <p class="mb-0">
-                                <strong>Payment Status:</strong> <span id="qv-payment-status"></span>
-                            </p>
-                        </div>
-                        <div class="col-md-6">
-                            <h6 class="fw-bold">Customer Details</h6>
-                            <p class="mb-1">
-                                <strong>Name:</strong> <span id="qv-customer"></span>
-                            </p>
-                            <p class="mb-1">
-                                <strong>Email:</strong> <span id="qv-email"></span>
-                            </p>
-                            <p class="mb-0">
-                                <strong>Total:</strong> <span id="qv-total"></span>
-                            </p>
-                        </div>
-                    </div>
+                orderCheckboxes.forEach(checkbox => {
+                    checkbox.checked = isChecked;
+                });
 
-                    <h6 class="fw-bold">Order Items</h6>
-                    <div class="table-responsive">
-                        <table class="table table-sm table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Product</th>
-                                    <th class="text-center">Quantity</th>
-                                    <th class="text-end">Price</th>
-                                    <th class="text-end">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody id="qv-items">
-                                <!-- Items will be populated by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <a id="viewFullOrderBtn" href="#" class="btn btn-primary" data-url-template="{% url 'staff:order_detail' 0 %}">
-                    View Full Order
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
+                updateBulkActionButton();
+                updateSelectedOrderIds();
+            });
+        }
 
-<!-- Hidden API URL for JavaScript -->
-<input type="hidden" id="quickViewApiUrl" value="{% url 'staff:order_quickview' 0 %}">
+        // Individual checkbox functionality
+        orderCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                updateBulkActionButton();
+                updateSelectedOrderIds();
+
+                // Update "select all" checkbox
+                if (!this.checked) {
+                    selectAllCheckbox.checked = false;
+                } else {
+                    // Check if all checkboxes are checked
+                    const allChecked = Array.from(orderCheckboxes).every(cb => cb.checked);
+                    selectAllCheckbox.checked = allChecked;
+                }
+            });
+        });
+
+        // Update bulk action button state
+        function updateBulkActionButton() {
+            const checkedCount = document.querySelectorAll('.order-checkbox:checked').length;
+            bulkActionBtn.disabled = checkedCount === 0;
+
+            if (checkedCount > 0) {
+                bulkActionBtn.innerHTML = `Bulk Actions (${checkedCount})`;
+            } else {
+                bulkActionBtn.innerHTML = 'Bulk Actions';
+            }
+        }
+
+        // Update hidden input with selected order IDs
+        function updateSelectedOrderIds() {
+            const selectedIds = Array.from(document.querySelectorAll('.order-checkbox:checked'))
+                .map(checkbox => checkbox.value)
+                .join(',');
+
+            selectedOrderIdsInputs.forEach(input => {
+                input.value = selectedIds;
+            });
+        }
+    });
+</script>
 {% endblock %}

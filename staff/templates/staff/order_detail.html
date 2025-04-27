@@ -1,15 +1,16 @@
 {% extends "staff/staff_base.html" %}
 {% load static %}
+{% load django_vite %}
 
 {% block staff_title %}Order #{{ order.order_number }}{% endblock %}
 
 {% block staff_actions %}
 <div class="btn-group">
-    <a href="{% url 'staff:order_list' %}" class="btn btn-sm btn-outline-secondary">
-        <i class="bi bi-arrow-left me-1"></i> Back to Orders
+    <a href="{% url 'staff:order_list' %}" class="btn btn-secondary mb-3">
+        <i class="fa fa-arrow-left me-1"></i> Back to Orders
     </a>
-    <a href="{% url 'staff:order_update' order.id %}" class="btn btn-sm btn-outline-primary">
-        <i class="bi bi-pencil me-1"></i> Edit Order
+    <a href="{% url 'staff:order_edit' order.id %}" class="btn btn-primary mb-3">
+        <i class="fa fa-edit me-1"></i> Edit Order
     </a>
 </div>
 {% endblock %}
@@ -386,17 +387,17 @@
                         <div class="timeline-content">
                             <h6 class="mb-1">
                                 {% if action.action_type == 'status_change' %}
-                                <i class="bi bi-arrow-repeat text-primary me-1"></i> Status Changed
+                                <i class="fa fa-refresh text-primary me-1"></i> Status Changed
                                 {% elif action.action_type == 'note_added' %}
-                                <i class="bi bi-sticky text-info me-1"></i> Note Added
+                                <i class="fa fa-sticky-note text-info me-1"></i> Note Added
                                 {% elif action.action_type == 'payment_action' %}
-                                <i class="bi bi-credit-card text-success me-1"></i> Payment Update
+                                <i class="fa fa-credit-card text-success me-1"></i> Payment Update
                                 {% elif action.action_type == 'customer_contact' %}
-                                <i class="bi bi-envelope text-warning me-1"></i> Customer Contacted
+                                <i class="fa fa-envelope text-warning me-1"></i> Customer Contacted
                                 {% elif action.action_type == 'shipping_update' %}
-                                <i class="bi bi-truck text-primary me-1"></i> Shipping Update
+                                <i class="fa fa-truck text-primary me-1"></i> Shipping Update
                                 {% else %}
-                                <i class="bi bi-gear text-secondary me-1"></i> Other Action
+                                <i class="fa fa-cog text-secondary me-1"></i> Other Action
                                 {% endif %}
                             </h6>
                             <p class="mb-1">{{ action.description }}</p>
@@ -418,43 +419,5 @@
 {% endblock %}
 
 {% block staff_js %}
-<style>
-    /* Timeline styling */
-    .timeline {
-        position: relative;
-        padding-left: 30px;
-    }
-    .timeline-item {
-        position: relative;
-        padding-bottom: 1.5rem;
-    }
-    .timeline-item:last-child {
-        padding-bottom: 0;
-    }
-    .timeline-marker {
-        position: absolute;
-        left: -30px;
-        top: 0;
-        width: 15px;
-        height: 15px;
-        border-radius: 50%;
-        background-color: #007bff;
-        border: 2px solid #fff;
-        box-shadow: 0 0 0 2px #007bff;
-    }
-    .timeline-item:not(:last-child)::after {
-        content: '';
-        position: absolute;
-        left: -23px;
-        top: 15px;
-        height: calc(100% - 15px);
-        width: 2px;
-        background-color: #e9ecef;
-    }
-    .timeline-content {
-        padding: 0.5rem 1rem;
-        background-color: #f8f9fa;
-        border-radius: 0.3rem;
-    }
-</style>
+{% vite_asset 'orderManager' %}
 {% endblock %}

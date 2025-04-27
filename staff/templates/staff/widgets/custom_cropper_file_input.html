@@ -1,0 +1,174 @@
+{% load static %}
+<div class="image-upload-container mb-3">
+    <label for="id_{{ widget.name }}" class="form-label">{{ widget.label }}</label>
+
+    {% if widget.is_initial %}
+        <div class="current-image-container mb-3">
+            <label>Current image:</label>
+            <div>
+                <img src="{{ widget.value.url }}" alt="Current image" class="img-thumbnail mb-2" style="max-height: 200px;">
+            </div>
+            <div class="form-check">
+                <input type="checkbox" name="{{ widget.checkbox_name }}" id="{{ widget.checkbox_id }}" class="form-check-input">
+                <label class="form-check-label" for="{{ widget.checkbox_id }}">Clear</label>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="mb-3">
+        <label{% if widget.attrs.id %} for="{{ widget.attrs.id }}"{% endif %} class="form-label">
+            {% if widget.is_initial %}Change:{% else %}Image:{% endif %}
+        </label>
+        <input type="{{ widget.type }}" name="{{ widget.name }}"{% if widget.value != None %} value="{{ widget.value|stringformat:'s' }}"{% endif %}{% include "django/forms/widgets/attrs.html" %}>
+    </div>
+
+    <div class="cropper-container" style="display: none;">
+        <div class="mb-3">
+            <div id="image-cropper"></div>
+        </div>
+        <div class="mb-3">
+            <button type="button" id="crop-button" class="btn btn-primary">Crop Image</button>
+            <button type="button" id="cancel-crop" class="btn btn-secondary">Cancel</button>
+        </div>
+        <input type="hidden" name="cropped_image_data" id="cropped_image_data">
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let cropper = null;
+        const imageInput = document.getElementById('{{ widget.attrs.id }}');
+        const cropperContainer = document.querySelector('.cropper-container');
+        const cropperElement = document.getElementById('image-cropper');
+        const croppedImageData = document.getElementById('cropped_image_data');
+        const cropButton = document.getElementById('crop-button');
+        const cancelButton = document.getElementById('cancel-crop');
+
+        if (imageInput) {
+            imageInput.addEventListener('change', function(e) {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        // Create image element for cropper
+                        cropperElement.innerHTML = '';
+                        const img = document.createElement('img');
+                        img.id = 'image-to-crop';
+                        img.src = e.target.result;
+                        img.style.maxWidth = '100%';
+                        cropperElement.appendChild(img);
+
+                        // Show cropper container
+                        cropperContainer.style.display = 'block';
+
+                        // Initialize cropper
+                        if (typeof Cropper !== 'undefined') {
+                            cropper = new Cropper(img, {
+                                aspectRatio: 1,
+                                viewMode: 2,
+                                autoCropArea: 1,
+                            });
+                        } else {
+                            console.error('Cropper.js is not loaded.');
+                            alert('Image cropping functionality is not available. Please make sure you have an internet connection.');
+                        }
+                    };
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+        }
+
+        // Crop button functionality
+        if (cropButton) {
+            cropButton.addEventListener('click', function() {
+                if (cropper) {
+                    const canvas = cropper.getCroppedCanvas({
+                        width: 500,
+                        height: 500
+                    });
+
+                    if (canvas) {
+                        // Get the data URL of the cropped image
+                        const croppedImageDataURL = canvas.toDataURL('image/jpeg');
+
+                        // Set the value of the hidden input field
+                        croppedImageData.value = croppedImageDataURL;
+
+                        // Show a preview of the cropped image
+                        const previewContainer = document.createElement('div');
+                        previewContainer.className = 'cropped-preview mt-3';
+                        previewContainer.innerHTML = '<h6>Cropped Preview:</h6>';
+
+                        const previewImg = document.createElement('img');
+                        previewImg.src = croppedImageDataURL;
+                        previewImg.className = 'img-thumbnail';
+                        previewImg.style.maxHeight = '200px';
+
+                        previewContainer.appendChild(previewImg);
+
+                        // Remove any existing preview
+                        const existingPreview = document.querySelector('.cropped-preview');
+                        if (existingPreview) {
+                            existingPreview.remove();
+                        }
+
+                        cropperContainer.appendChild(previewContainer);
+
+                        // Hide the cropper
+                        cropperElement.style.display = 'none';
+                        cropButton.style.display = 'none';
+                        cancelButton.style.display = 'none';
+
+                        // Add a reset button
+                        const resetButton = document.createElement('button');
+                        resetButton.type = 'button';
+                        resetButton.className = 'btn btn-warning mt-2';
+                        resetButton.textContent = 'Reset Crop';
+
+                        resetButton.addEventListener('click', function() {
+                            // Show the cropper again
+                            cropperElement.style.display = 'block';
+                            cropButton.style.display = 'inline-block';
+                            cancelButton.style.display = 'inline-block';
+
+                            // Remove the preview
+                            previewContainer.remove();
+
+                            // Remove the reset button
+                            resetButton.remove();
+
+                            // Clear the cropped image data
+                            croppedImageData.value = '';
+                        });
+
+                        cropperContainer.appendChild(resetButton);
+                    }
+                }
+            });
+        }
+
+        // Cancel button functionality
+        if (cancelButton) {
+            cancelButton.addEventListener('click', function() {
+                if (cropper) {
+                    cropper.destroy();
+                    cropper = null;
+                }
+
+                // Reset the file input
+                imageInput.value = '';
+
+                // Hide the cropper container
+                cropperContainer.style.display = 'none';
+
+                // Clear any preview
+                const existingPreview = document.querySelector('.cropped-preview');
+                if (existingPreview) {
+                    existingPreview.remove();
+                }
+
+                // Clear the cropped image data
+                croppedImageData.value = '';
+            });
+        }
+    });
+</script>

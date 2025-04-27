@@ -12,7 +12,7 @@
                 <h5 class="mb-0">Staff Members</h5>
                 <div>
                     <a href="{% url 'admin:auth_user_add' %}" class="btn btn-sm btn-primary" target="_blank">
-                        <i class="bi bi-person-plus me-1"></i> Add New Staff
+                        <i class="fa fa-user-plus me-1"></i> Add New Staff
                     </a>
                 </div>
             </div>
@@ -68,18 +68,23 @@
                                 <td>
                                     <div class="btn-group">
                                         <a href="{% url 'admin:auth_user_change' staff_member.id %}" class="btn btn-sm btn-outline-secondary" target="_blank" title="Edit user">
-                                            <i class="bi bi-pencil"></i>
+                                            <i class="fa fa-pencil-alt"></i>
                                         </a>
                                         {% if not staff_member.is_superuser %}
                                             {% if staff_profiles|get_item:staff_member.id and staff_profiles|get_item:staff_member.id|get_attr:"is_manager" %}
                                                 <a href="{% url 'staff:toggle_manager' staff_member.id %}" class="btn btn-sm btn-outline-danger" title="Remove manager role">
-                                                    <i class="bi bi-arrow-down-circle"></i>
+                                                    <i class="fa fa-arrow-circle-down"></i>
                                                 </a>
                                             {% else %}
                                                 <a href="{% url 'staff:toggle_manager' staff_member.id %}" class="btn btn-sm btn-outline-primary" title="Make manager">
-                                                    <i class="bi bi-arrow-up-circle"></i>
+                                                    <i class="fa fa-arrow-circle-up"></i>
                                                 </a>
                                             {% endif %}
+                                        {% endif %}
+                                        {% if not staff_member.is_superuser %}
+                                            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteStaffModal" data-staff-id="{{ staff_member.id }}" data-staff-name="{{ staff_member.get_full_name|default:staff_member.username }}">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
                                         {% endif %}
                                     </div>
                                 </td>
@@ -153,6 +158,29 @@
         </div>
     </div>
 </div>
+
+<!-- Delete Staff Modal -->
+<div class="modal fade" id="deleteStaffModal" tabindex="-1" aria-labelledby="deleteStaffModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteStaffModalLabel">Confirm Staff Removal</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to remove <span id="staff-name-to-delete"></span> from staff?</p>
+                <p class="text-danger"><i class="fa fa-exclamation-triangle me-2"></i>This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="delete-staff-form" method="post" action="">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Remove Staff</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block staff_js %}
@@ -165,5 +193,20 @@
     function getAttribute(obj, attr) {
         return obj[attr];
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle delete staff modal
+        const deleteStaffModal = document.getElementById('deleteStaffModal');
+        if (deleteStaffModal) {
+            deleteStaffModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const staffId = button.getAttribute('data-staff-id');
+                const staffName = button.getAttribute('data-staff-name');
+
+                document.getElementById('staff-name-to-delete').textContent = staffName;
+                document.getElementById('delete-staff-form').action = `/staff/staff/${staffId}/delete/`;
+            });
+        }
+    });
 </script>
 {% endblock %}
