@@ -1,0 +1,336 @@
+{% extends 'staff/staff_base.html' %}
+{% load static %}
+{% load django_vite %}
+
+{% block extra_css %}
+{{ block.super }}
+{% vite_asset 'productManager' %}
+{% endblock %}
+
+{% block title %}Product Management{% endblock %}
+
+{% block staff_content %}
+<div class="container-fluid staff-product-container py-4">
+    <div class="staff-product-header d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="h3 mb-0">Product Management</h1>
+            <p class="text-muted">Manage your store's products</p>
+        </div>
+        <div>
+            <a href="{% url 'staff:product_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Add Product
+            </a>
+            <a href="{% url 'staff:category_list' %}" class="btn btn-outline-secondary ms-2">
+                <i class="fas fa-tags me-2"></i>Categories
+            </a>
+        </div>
+    </div>
+
+    <!-- Product Statistics -->
+    <div class="stat-cards mb-4">
+        <div class="stat-card">
+            <div class="stat-card-title">
+                <i class="fas fa-box stat-card-icon"></i>Total Products
+            </div>
+            <div class="stat-card-value" id="total-products-stat">{{ total_count }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-title">
+                <i class="fas fa-check-circle stat-card-icon text-success"></i>Active Products
+            </div>
+            <div class="stat-card-value" id="active-products-stat">{{ active_products }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-title">
+                <i class="fas fa-exclamation-triangle stat-card-icon text-warning"></i>Low Stock
+            </div>
+            <div class="stat-card-value" id="low-stock-stat">{{ low_stock }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-title">
+                <i class="fas fa-exclamation-circle stat-card-icon text-danger"></i>Out of Stock
+            </div>
+            <div class="stat-card-value" id="out-of-stock-stat">{{ out_of_stock }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-title">
+                <i class="fas fa-dollar-sign stat-card-icon"></i>Total Stock Value
+            </div>
+            <div class="stat-card-value" id="total-stock-value-stat">{{ total_stock_value|floatformat:2 }}</div>
+        </div>
+    </div>
+
+    <!-- Batch Actions Bar (initially hidden) -->
+    <div id="batch-actions-container" class="batch-actions-bar d-none">
+        <div class="batch-actions-summary">
+            <span id="selected-count">0</span> products selected
+        </div>
+        <div class="batch-actions-controls d-flex">
+            <select id="batch-action" class="form-select form-select-sm me-2">
+                <option value="">-- Select Action --</option>
+                <option value="activate">Activate</option>
+                <option value="deactivate">Deactivate</option>
+                <option value="delete">Delete</option>
+                <option value="export">Export to CSV</option>
+            </select>
+            <button id="apply-batch-action" class="btn btn-primary btn-sm" disabled>
+                Apply
+            </button>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="staff-product-filters">
+        <form id="product-filter-form" method="get">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label for="search" class="form-label">Search Products</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="search" class="form-control" id="search" name="search"
+                               placeholder="Search by name, description..."
+                               value="{{ search_query }}">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label for="category" class="form-label">Category</label>
+                    <select class="form-select" id="category" name="category">
+                        <option value="">All Categories</option>
+                        {% for category in categories %}
+                        <option value="{{ category.id }}"
+                                {% if selected_category|slugify == category.id|slugify %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="stock_status" class="form-label">Stock Status</label>
+                    <select class="form-select" id="stock_status" name="stock_status">
+                        {% for option in stock_status_options %}
+                        <option value="{{ option.value }}"
+                                {% if stock_status == option.value %}selected{% endif %}>
+                            {{ option.label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="status" class="form-label">Status</label>
+                    <select class="form-select" id="status" name="status">
+                        {% for option in status_options %}
+                        <option value="{{ option.value }}"
+                                {% if status == option.value %}selected{% endif %}>
+                            {{ option.label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="button" class="btn btn-outline-secondary w-100 reset-filters">
+                        Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- Advanced Filters (collapsible) -->
+            <div class="mt-3">
+                <a class="advanced-filters-toggle" data-bs-toggle="collapse"
+                   href="#advancedFilters" role="button" aria-expanded="false"
+                   aria-controls="advancedFilters">
+                    Advanced Filters <i class="fas fa-chevron-down ms-1"></i>
+                </a>
+                <div class="collapse" id="advancedFilters">
+                    <div class="card card-body bg-light border-0">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="price_min" class="form-label">Price Range</label>
+                                <div class="d-flex">
+                                    <div class="input-group me-2">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" id="price_min"
+                                               name="price_min" placeholder="Min" min="0" step="0.01">
+                                    </div>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" id="price_max"
+                                               name="price_max" placeholder="Max" min="0" step="0.01">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="sort" class="form-label">Sort By</label>
+                                <select class="form-select" id="sort" name="sort">
+                                    {% for option in sort_options %}
+                                    <option value="{{ option.value }}"
+                                            {% if current_sort == option.value %}selected{% endif %}>
+                                        {{ option.label }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <!-- Reserved for future additional filters -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Product List -->
+    <div class="product-grid-container">
+        <!-- Loading Spinner -->
+        <div id="loading-spinner" class="spinner-container" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Product List Container (will be populated by JS) -->
+        <div id="product-list-container">
+            <!-- Initial server-rendered content -->
+            {% if products %}
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="select-all-products">
+                                <label class="form-check-label" for="select-all-products"></label>
+                            </div>
+                        </th>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr data-product-id="{{ product.id }}">
+                        <td>
+                            <div class="form-check">
+                                <input class="form-check-input product-select-checkbox" type="checkbox"
+                                       data-product-id="{{ product.id }}">
+                            </div>
+                        </td>
+                        <td>
+                            <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'assets/images/noimage.png' %}{% endif %}"
+                                 alt="{{ product.name }}" class="img-thumbnail product-thumbnail" width="50">
+                        </td>
+                        <td>
+                            <a href="{% url 'staff:product_detail' product.id %}">
+                                {{ product.name }}
+                            </a>
+                        </td>
+                        <td>{{ product.category.name }}</td>
+                        <td class="price-cell" data-value="{{ product.price }}">
+                            ${{ product.price }}
+                            <a href="#" class="quick-edit-link ms-2" data-product-id="{{ product.id }}"
+                               data-field="price">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </td>
+                        <td class="stock_quantity-cell {% if product.stock_quantity == 0 %}text-danger{% elif product.stock_quantity <= 5 %}text-warning{% endif %}"
+                            data-value="{{ product.stock_quantity }}">
+                            {% if product.stock_quantity == 0 %}
+                            <i class="fas fa-exclamation-circle text-danger me-1"></i>
+                            {% elif product.stock_quantity <= 5 %}
+                            <i class="fas fa-exclamation-triangle text-warning me-1"></i>
+                            {% endif %}
+                            {{ product.stock_quantity }}
+                            <a href="#" class="quick-edit-link ms-2" data-product-id="{{ product.id }}"
+                               data-field="stock_quantity">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </td>
+                        <td class="is_active-cell" data-value="{{ product.is_active|lower }}">
+                            <span class="badge {% if product.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                                {% if product.is_active %}Active{% else %}Inactive{% endif %}
+                            </span>
+                            <a href="#" class="quick-edit-link ms-2" data-product-id="{{ product.id }}"
+                               data-field="is_active">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{% url 'staff:product_detail' product.id %}"
+                                   class="btn btn-sm btn-info" title="View">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{% url 'staff:product_update' product.id %}"
+                                   class="btn btn-sm btn-primary" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="alert alert-info">
+                No products found matching your criteria.
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Pagination -->
+        <div id="pagination-container" class="mt-4">
+            {% if is_paginated %}
+            <nav aria-label="Product pagination">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.stock_status %}&stock_status={{ request.GET.stock_status }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" tabindex="-1">Previous</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1">Previous</a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active">
+                        <a class="page-link" href="#">{{ num }}</a>
+                    </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.stock_status %}&stock_status={{ request.GET.stock_status }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">{{ num }}</a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.stock_status %}&stock_status={{ request.GET.stock_status }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">Next</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">Next</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notification-container"></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+{% vite_asset 'productManager' %}
+{% endblock %}

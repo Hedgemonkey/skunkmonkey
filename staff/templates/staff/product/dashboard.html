@@ -1,0 +1,287 @@
+{% extends 'staff/staff_base.html' %}
+{% load static %}
+{% load django_vite %}
+{% load staff_filters %}
+
+{% block extra_css %}
+{{ block.super }}
+{% vite_asset 'productDashboard' %}
+{% endblock %}
+
+{% block title %}Product Dashboard{% endblock %}
+
+{% block staff_content %}
+<div class="container-fluid staff-product-container py-4">
+    <div class="staff-product-header d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="h3 mb-0">Product Dashboard</h1>
+            <p class="text-muted">Overview of your product inventory</p>
+        </div>
+        <div>
+            <a href="{% url 'staff:product_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Add Product
+            </a>
+            <a href="{% url 'staff:product_list' %}" class="btn btn-outline-secondary ms-2">
+                <i class="fas fa-list me-2"></i>All Products
+            </a>
+        </div>
+    </div>
+
+    <!-- Product Statistics -->
+    <div class="stat-cards mb-4">
+        <div class="stat-card">
+            <div class="stat-card-title">
+                <i class="fas fa-box stat-card-icon"></i>Total Products
+            </div>
+            <div class="stat-card-value" id="total-products-stat">{{ total_products }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-title">
+                <i class="fas fa-check-circle stat-card-icon text-success"></i>Active Products
+            </div>
+            <div class="stat-card-value" id="active-products-stat">{{ active_products }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-title">
+                <i class="fas fa-exclamation-circle stat-card-icon text-danger"></i>Out of Stock
+            </div>
+            <div class="stat-card-value" id="out-of-stock-stat">{{ out_of_stock }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-title">
+                <i class="fas fa-tags stat-card-icon"></i>Categories
+            </div>
+            <div class="stat-card-value">{{ total_categories }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-title">
+                <i class="fas fa-dollar-sign stat-card-icon"></i>Total Stock Value
+            </div>
+            <div class="stat-card-value" id="total-stock-value-stat">${{ total_stock_value|floatformat:2 }}</div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Category Breakdown -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Products by Category</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="categoryChart"
+                        data-labels='{{ category_labels }}'
+                        data-values='{{ category_values }}'
+                        height="250"></canvas>
+                </div>
+                <div class="card-footer bg-white">
+                    <a href="{% url 'staff:category_list' %}" class="btn btn-sm btn-outline-primary">
+                        Manage Categories
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Price Statistics -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Price Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-0">
+                        <div class="col-md-4 text-center py-3">
+                            <h6 class="text-muted mb-1">Minimum</h6>
+                            <h4>${{ price_stats.min_price|default:"0.00"|floatformat:2 }}</h4>
+                        </div>
+                        <div class="col-md-4 text-center py-3 border-start border-end">
+                            <h6 class="text-muted mb-1">Average</h6>
+                            <h4>${{ price_stats.avg_price|default:"0.00"|floatformat:2 }}</h4>
+                        </div>
+                        <div class="col-md-4 text-center py-3">
+                            <h6 class="text-muted mb-1">Maximum</h6>
+                            <h4>${{ price_stats.max_price|default:"0.00"|floatformat:2 }}</h4>
+                        </div>
+                    </div>
+                    <hr>
+                    <canvas id="priceChart"
+                        data-labels='{{ price_range_labels }}'
+                        data-values='{{ price_range_values }}'
+                        height="180"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Recently Added Products -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Recently Added Products</h5>
+                    <a href="{% url 'staff:product_list' %}" class="btn btn-sm btn-outline-primary">
+                        View All
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Stock</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in recent_products %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'assets/images/noimage.png' %}{% endif %}"
+                                                alt="{{ product.name }}" class="me-2 product-thumbnail">
+                                            <span>{{ product.name }}</span>
+                                        </div>
+                                    </td>
+                                    <td>{{ product.category.name }}</td>
+                                    <td>${{ product.price }}</td>
+                                    <td class="{% if product.stock_quantity == 0 %}text-danger{% elif product.stock_quantity <= 5 %}text-warning{% endif %}">
+                                        {% if product.stock_quantity == 0 %}
+                                        <i class="fas fa-exclamation-circle text-danger me-1"></i>
+                                        {% elif product.stock_quantity <= 5 %}
+                                        <i class="fas fa-exclamation-triangle text-warning me-1"></i>
+                                        {% endif %}
+                                        {{ product.stock_quantity }}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{% url 'staff:product_detail' product.id %}" class="btn btn-sm btn-info">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{% url 'staff:product_update' product.id %}" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-3">No products found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Low Stock Products -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center bg-warning bg-opacity-10">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                        Low Stock Products
+                    </h5>
+                    <a href="{% url 'staff:product_list' %}?stock_status=low_stock" class="btn btn-sm btn-outline-warning">
+                        View All
+                    </a>
+                </div>
+                <div class="card-body p-0" id="low-stock-container">
+                    <div class="spinner-container p-4 text-center d-none">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Stock</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="low-stock-table-body">
+                                <!-- Low stock products will be loaded via AJAX -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inventory Management Quick Links -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <a href="{% url 'staff:product_create' %}" class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
+                                <i class="fas fa-plus-circle fa-2x mb-2"></i>
+                                <span>Add New Product</span>
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{% url 'staff:category_create' %}" class="btn btn-outline-secondary w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
+                                <i class="fas fa-tags fa-2x mb-2"></i>
+                                <span>Create Category</span>
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="#" class="btn btn-outline-success w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3" id="export-products-btn">
+                                <i class="fas fa-file-export fa-2x mb-2"></i>
+                                <span>Export Products</span>
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="#" class="btn btn-outline-info w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3" id="import-products-btn">
+                                <i class="fas fa-file-import fa-2x mb-2"></i>
+                                <span>Import Products</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Import Products Modal -->
+<div class="modal fade" id="importProductsModal" tabindex="-1" aria-labelledby="importProductsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="importProductsModalLabel">Import Products</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="importProductsForm" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="importFile" class="form-label">CSV File</label>
+                        <input type="file" class="form-control" id="importFile" name="importFile" accept=".csv">
+                    </div>
+                    <div class="form-text mb-3">
+                        <a href="#" id="downloadTemplateBtn">Download template CSV</a>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="submitImportBtn">Import</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

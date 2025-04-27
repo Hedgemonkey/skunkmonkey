@@ -1,0 +1,293 @@
+{% extends 'staff/staff_base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block staff_title %}{% if form.instance.pk %}Edit Product{% else %}Add New Product{% endif %}{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+<style>
+    .image-preview-container {
+        max-width: 100%;
+        position: relative;
+    }
+    #image-preview {
+        max-width: 100%;
+        max-height: 300px;
+    }
+    .cropper-container {
+        max-height: 400px;
+    }
+</style>
+{% endblock %}
+
+{% block staff_actions %}
+<div class="btn-group">
+    {% if form.instance.pk %}
+    <a href="{% url 'staff:product_detail' form.instance.pk %}" class="btn btn-sm btn-outline-secondary">
+        <i class="fa fa-arrow-left"></i> Back to Product
+    </a>
+    {% else %}
+    <a href="{% url 'staff:product_list' %}" class="btn btn-sm btn-outline-secondary">
+        <i class="fa fa-arrow-left"></i> Back to Products
+    </a>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block staff_content %}
+<div class="container-fluid px-4">
+    <div class="row">
+        <div class="col-xl-8 col-lg-10 mx-auto">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 fw-bold">
+                        {% if form.instance.pk %}
+                        Edit Product: {{ form.instance.name }}
+                        {% else %}
+                        Add New Product
+                        {% endif %}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" id="product-form">
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <div class="row mb-4">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    {{ form.name|as_crispy_field }}
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.category|as_crispy_field }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.sku|as_crispy_field }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.price|as_crispy_field }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.stock_quantity|as_crispy_field }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    {{ form.is_active }}
+                                    <label class="form-check-label" for="{{ form.is_active.id_for_label }}">Active</label>
+                                    <div class="form-text text-muted">Inactive products won't be displayed on the site.</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Product Image</label>
+                                    <div class="image-preview-container mb-2">
+                                        {% if form.instance.image %}
+                                        <img src="{{ form.instance.image.url }}" id="image-preview" class="img-fluid mb-2">
+                                        {% else %}
+                                        <div class="bg-light text-center p-4 mb-2" id="no-image">
+                                            <i class="fa fa-image text-muted" style="font-size: 3rem;"></i>
+                                            <p class="text-muted">No image selected</p>
+                                        </div>
+                                        <img src="" id="image-preview" class="img-fluid mb-2 d-none">
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="input-group">
+                                        <input type="file" class="form-control" id="id_image" name="image" accept="image/*">
+                                        {% if form.instance.image %}
+                                        <button type="button" class="btn btn-outline-danger" id="remove-image-btn">Remove</button>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- Hidden field to store cropped image data -->
+                                    <input type="hidden" name="cropped_image_data" id="cropped-image-data">
+
+                                    {% if form.image.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.image.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.description|as_crispy_field }}
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="button" class="btn btn-secondary" onclick="history.back()">Cancel</button>
+                            <button type="submit" class="btn btn-primary" id="submit-btn">
+                                {% if form.instance.pk %}
+                                Update Product
+                                {% else %}
+                                Save Product
+                                {% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image Cropper Modal -->
+<div class="modal fade" id="cropperModal" tabindex="-1" aria-labelledby="cropperModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cropperModalLabel">Crop Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="img-container">
+                    <img id="image-to-crop" src="" style="max-width: 100%;">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="crop-btn">Crop & Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block staff_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Elements
+        const imageInput = document.getElementById('id_image');
+        const imagePreview = document.getElementById('image-preview');
+        const noImageDiv = document.getElementById('no-image');
+        const cropperModal = new bootstrap.Modal(document.getElementById('cropperModal'));
+        const imageToCrop = document.getElementById('image-to-crop');
+        const cropBtn = document.getElementById('crop-btn');
+        const croppedImageDataInput = document.getElementById('cropped-image-data');
+        const removeImageBtn = document.getElementById('remove-image-btn');
+        const productForm = document.getElementById('product-form');
+
+        // Cropper instance
+        let cropper;
+
+        // Handle image input change
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Show image in preview
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    // Set the image to crop
+                    imageToCrop.src = event.target.result;
+
+                    // Show the cropper modal
+                    cropperModal.show();
+
+                    // Initialize cropper after modal is shown
+                    cropperModal._element.addEventListener('shown.bs.modal', function() {
+                        if (cropper) {
+                            cropper.destroy();
+                        }
+
+                        cropper = new Cropper(imageToCrop, {
+                            aspectRatio: 1, // Square aspect ratio
+                            viewMode: 2, // Restrict the crop box to not exceed the size of the canvas
+                            minContainerWidth: 300,
+                            minContainerHeight: 300
+                        });
+                    }, { once: true });
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Handle crop button click
+        cropBtn.addEventListener('click', function() {
+            if (cropper) {
+                // Get cropped canvas as data URL
+                const croppedData = cropper.getCroppedCanvas({
+                    minWidth: 256,
+                    minHeight: 256,
+                    maxWidth: 1000,
+                    maxHeight: 1000
+                }).toDataURL();
+
+                // Update preview image
+                imagePreview.src = croppedData;
+                imagePreview.classList.remove('d-none');
+
+                // Hide the placeholder
+                if (noImageDiv) {
+                    noImageDiv.style.display = 'none';
+                }
+
+                // Store cropped image data in hidden input
+                croppedImageDataInput.value = croppedData;
+
+                // Close modal
+                cropperModal.hide();
+
+                // Destroy cropper
+                cropper.destroy();
+                cropper = null;
+            }
+        });
+
+        // Handle form submission
+        productForm.addEventListener('submit', function(e) {
+            // Custom validation or processing could be added here
+        });
+
+        // Handle remove image button
+        if (removeImageBtn) {
+            removeImageBtn.addEventListener('click', function() {
+                // Clear the file input
+                imageInput.value = '';
+
+                // Clear the preview
+                imagePreview.src = '';
+                imagePreview.classList.add('d-none');
+
+                // Show the placeholder if it exists
+                if (noImageDiv) {
+                    noImageDiv.style.display = 'block';
+                }
+
+                // Add a flag to indicate the image should be removed
+                const removeImageFlag = document.createElement('input');
+                removeImageFlag.type = 'hidden';
+                removeImageFlag.name = 'remove_image';
+                removeImageFlag.value = 'true';
+                productForm.appendChild(removeImageFlag);
+
+                // Remove the remove button itself
+                this.style.display = 'none';
+            });
+        }
+    });
+</script>
+{% endblock %}

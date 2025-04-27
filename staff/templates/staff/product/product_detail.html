@@ -1,0 +1,433 @@
+{% extends 'staff/staff_base.html' %}
+{% load static %}
+{% load django_vite %}
+
+{% block staff_actions %}
+<div class="btn-group">
+    <a href="{% url 'staff:product_update' product.id %}" class="btn btn-sm btn-outline-primary">
+        <i class="bi bi-pencil"></i> Edit
+    </a>
+    <a href="{% url 'staff:product_list' %}" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Products
+    </a>
+    <a href="{{ product.get_absolute_url }}" class="btn btn-sm btn-outline-info" target="_blank">
+        <i class="bi bi-eye"></i> View on Site
+    </a>
+</div>
+{% endblock %}
+
+{% block staff_content %}
+<div class="container-fluid px-4">
+    <div class="row">
+        <!-- Left column: Main product info -->
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 fw-bold">Product Information</h6>
+                    <span class="badge {% if product.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                        {% if product.is_active %}Active{% else %}Inactive{% endif %}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded mb-3" style="max-height: 200px;">
+                        {% else %}
+                        <div class="bg-light text-center p-5 rounded mb-3">
+                            <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                            <p class="text-muted mb-0">No image available</p>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <strong>Name:</strong> {{ product.name }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Category:</strong> {{ product.category.name }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>SKU:</strong> {{ product.sku|default:"Not set" }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Price:</strong> £{{ product.price }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Stock Quantity:</strong>
+                            {% if product.stock_quantity > 0 %}
+                                <span class="{% if product.stock_quantity <= 5 %}text-warning{% endif %}">
+                                    {{ product.stock_quantity }}
+                                </span>
+                            {% else %}
+                                <span class="badge bg-danger">Out of stock</span>
+                            {% endif %}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Date Added:</strong> {{ product.created_at|date:"d M Y" }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Last Updated:</strong> {{ product.updated_at|date:"d M Y H:i" }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Additional Images -->
+            {% if product_images %}
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 fw-bold">Additional Images</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for image in product_images %}
+                        <div class="col-6 mb-3">
+                            <img src="{{ image.image.url }}" alt="{{ product.name }} - Image {{ forloop.counter }}" class="img-thumbnail" style="width: 100%; height: 100px; object-fit: cover;">
+                            <div class="mt-2 d-flex justify-content-between">
+                                <small class="text-muted">Image {{ forloop.counter }}</small>
+                                <button class="btn btn-sm btn-outline-danger delete-image-btn" data-image-id="{{ image.id }}">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <form method="post" action="{% url 'staff:product_add_image' product.id %}" enctype="multipart/form-data" class="mt-3">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input type="file" class="form-control" id="new-image" name="image" accept="image/*">
+                            <button class="btn btn-outline-primary" type="submit">Add</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Right column: Additional information -->
+        <div class="col-lg-8">
+            <!-- Product Description -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 fw-bold">Product Description</h6>
+                </div>
+                <div class="card-body">
+                    {% if product.description %}
+                    <div class="product-description">
+                        {{ product.description|linebreaks }}
+                    </div>
+                    {% else %}
+                    <p class="text-muted fst-italic">No description provided.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Stock History -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 fw-bold">Inventory Management</h6>
+                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#adjustStockModal">
+                        <i class="bi bi-plus-circle me-1"></i> Adjust Stock
+                    </button>
+                </div>
+                <div class="card-body">
+                    {% if inventory_logs %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Change</th>
+                                    <th>New Stock</th>
+                                    <th>Staff Member</th>
+                                    <th>Reason</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for log in inventory_logs %}
+                                <tr>
+                                    <td>{{ log.created_at|date:"d M Y H:i" }}</td>
+                                    <td>
+                                        {% if log.change > 0 %}
+                                        <span class="text-success">+{{ log.change }}</span>
+                                        {% else %}
+                                        <span class="text-danger">{{ log.change }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ log.new_quantity }}</td>
+                                    <td>{{ log.staff_user.username }}</td>
+                                    <td>{{ log.reason }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-center mb-0">No inventory changes have been recorded.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Sales History -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 fw-bold">Sales History</h6>
+                </div>
+                <div class="card-body">
+                    {% if sales_data %}
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card border-left-success shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs fw-bold text-success text-uppercase mb-1">
+                                                Total Units Sold
+                                            </div>
+                                            <div class="h5 mb-0 fw-bold text-gray-800">{{ sales_data.total_units }}</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="bi bi-box fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs fw-bold text-primary text-uppercase mb-1">
+                                                Revenue
+                                            </div>
+                                            <div class="h5 mb-0 fw-bold text-gray-800">£{{ sales_data.total_revenue }}</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="bi bi-cash fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Order #</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sale in sales_history %}
+                                <tr>
+                                    <td>{{ sale.order.created_at|date:"d M Y" }}</td>
+                                    <td>
+                                        <a href="{% url 'staff:order_detail' sale.order.id %}">{{ sale.order.order_number }}</a>
+                                    </td>
+                                    <td>{{ sale.quantity }}</td>
+                                    <td>£{{ sale.price_per_item }}</td>
+                                    <td>£{{ sale.line_total }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-center mb-0">This product has not been sold yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Related Products -->
+            {% if related_products %}
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 fw-bold">Related Products</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for related in related_products %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="text-center pt-3">
+                                    {% if related.image %}
+                                    <img src="{{ related.image.url }}" alt="{{ related.name }}" class="img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;">
+                                    {% else %}
+                                    <div class="bg-light text-center" style="width: 80px; height: 80px; line-height: 80px; display: inline-block;">
+                                        <i class="bi bi-image text-muted"></i>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="card-body text-center">
+                                    <h6>{{ related.name }}</h6>
+                                    <p class="mb-0">£{{ related.price }}</p>
+                                    <a href="{% url 'staff:product_detail' related.id %}" class="btn btn-sm btn-outline-primary mt-2">View</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Stock Adjustment Modal -->
+<div class="modal fade" id="adjustStockModal" tabindex="-1" aria-labelledby="adjustStockModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'staff:product_adjust_stock' product.id %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="adjustStockModalLabel">Adjust Stock</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="adjustment_type" class="form-label">Adjustment Type</label>
+                        <select class="form-select" id="adjustment_type" name="adjustment_type" required>
+                            <option value="">Select an option</option>
+                            <option value="add">Add Stock</option>
+                            <option value="remove">Remove Stock</option>
+                            <option value="set">Set Exact Quantity</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="quantity" class="form-label">Quantity</label>
+                        <input type="number" class="form-control" id="quantity" name="quantity" min="1" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="reason" class="form-label">Reason</label>
+                        <select class="form-select" id="reason" name="reason" required>
+                            <option value="">Select a reason</option>
+                            <option value="restock">Restocked from supplier</option>
+                            <option value="correction">Inventory correction</option>
+                            <option value="damaged">Damaged goods</option>
+                            <option value="returned">Customer returns</option>
+                            <option value="other">Other (please specify)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3" id="other_reason_group" style="display: none;">
+                        <label for="other_reason" class="form-label">Specify Reason</label>
+                        <input type="text" class="form-control" id="other_reason" name="other_reason">
+                    </div>
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Notes (Optional)</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block staff_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Show/hide other reason field based on selection
+        const reasonSelect = document.getElementById('reason');
+        const otherReasonGroup = document.getElementById('other_reason_group');
+
+        reasonSelect.addEventListener('change', function() {
+            if (this.value === 'other') {
+                otherReasonGroup.style.display = 'block';
+            } else {
+                otherReasonGroup.style.display = 'none';
+            }
+        });
+
+        // Handle image deletion
+        const deleteImageBtns = document.querySelectorAll('.delete-image-btn');
+
+        deleteImageBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (confirm('Are you sure you want to delete this image?')) {
+                    const imageId = this.dataset.imageId;
+
+                    fetch(`/staff/products/images/${imageId}/delete/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': getCsrfToken(),
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Remove the image from the UI
+                            this.closest('.col-6').remove();
+                            showToast('Success', 'Image deleted successfully', 'success');
+                        } else {
+                            showToast('Error', data.error || 'An error occurred', 'danger');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error deleting image:', error);
+                        showToast('Error', 'An error occurred while deleting the image', 'danger');
+                    });
+                }
+            });
+        });
+
+        // Helper function to get CSRF token
+        function getCsrfToken() {
+            return document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+        }
+
+        // Helper function to show toast notifications
+        function showToast(title, message, type) {
+            // Create toast element
+            const toastContainer = document.createElement('div');
+            toastContainer.style.position = 'fixed';
+            toastContainer.style.top = '20px';
+            toastContainer.style.right = '20px';
+            toastContainer.style.zIndex = '9999';
+
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type} border-0`;
+            toast.setAttribute('role', 'alert');
+            toast.setAttribute('aria-live', 'assertive');
+            toast.setAttribute('aria-atomic', 'true');
+
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <strong>${title}:</strong> ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            `;
+
+            toastContainer.appendChild(toast);
+            document.body.appendChild(toastContainer);
+
+            const bsToast = new bootstrap.Toast(toast, {
+                delay: 3000
+            });
+
+            bsToast.show();
+
+            // Remove toast container after hidden
+            toast.addEventListener('hidden.bs.toast', () => {
+                document.body.removeChild(toastContainer);
+            });
+        }
+    });
+</script>
+{% endblock %}
