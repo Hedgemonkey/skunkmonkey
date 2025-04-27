@@ -6,5 +6,4 @@
 <form id="product-update-form" method="post" enctype="multipart/form-data" action="{% url 'products:product_update' product.slug %}">
     {% csrf_token %}
     {% crispy form %}
-    {{ form.image }}
 </form>

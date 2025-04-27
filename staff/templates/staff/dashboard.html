@@ -1,4 +1,5 @@
 {% extends 'staff/staff_base.html' %}
+{% load django_vite %}
 
 {% block staff_title %}Dashboard{% endblock %}
 
@@ -17,7 +18,7 @@
                             <div class="h5 mb-0 fw-bold text-gray-800">{{ total_orders }}</div>
                         </div>
                         <div class="col-auto">
-                            <i class="bi bi-cart-fill fa-2x text-gray-300"></i>
+                            <i class="fa fa-shopping-cart fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
@@ -35,7 +36,7 @@
                             <div class="h5 mb-0 fw-bold text-gray-800">{{ paid_orders }}</div>
                         </div>
                         <div class="col-auto">
-                            <i class="bi bi-cash-stack fa-2x text-gray-300"></i>
+                            <i class="fa fa-money-bill-wave fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
@@ -53,7 +54,7 @@
                             <div class="h5 mb-0 fw-bold text-gray-800">{{ processing_orders }}</div>
                         </div>
                         <div class="col-auto">
-                            <i class="bi bi-gear-fill fa-2x text-gray-300"></i>
+                            <i class="fa fa-cogs fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
@@ -71,7 +72,7 @@
                             <div class="h5 mb-0 fw-bold text-gray-800">{{ pending_orders }}</div>
                         </div>
                         <div class="col-auto">
-                            <i class="bi bi-clock-fill fa-2x text-gray-300"></i>
+                            <i class="fa fa-clock fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
@@ -120,10 +121,10 @@
                                             {{ order.get_status_display }}
                                         </span>
                                     </td>
-                                    <td>£{{ order.order_total }}</td>
+                                    <td>£{{ order.grand_total }}</td>
                                     <td>
                                         <a href="{% url 'staff:order_detail' order.id %}" class="btn btn-sm btn-outline-primary">
-                                            <i class="bi bi-eye"></i> View
+                                            <i class="fa fa-eye"></i> View
                                         </a>
                                     </td>
                                 </tr>
@@ -162,7 +163,7 @@
                             <p class="mb-1 small">{{ notification.message|truncatechars:100 }}</p>
                             {% if notification.related_order %}
                             <small>
-                                <i class="bi bi-box"></i>
+                                <i class="fa fa-box"></i>
                                 Order #{{ notification.related_order.order_number }}
                             </small>
                             {% endif %}
@@ -188,25 +189,25 @@
                     <div class="row justify-content-center">
                         <div class="col-md-3 mb-3">
                             <a href="{% url 'staff:order_list' %}?status=created" class="btn btn-lg btn-outline-warning w-100 h-100 py-4">
-                                <i class="bi bi-clock-fill d-block mb-2" style="font-size: 2rem;"></i>
+                                <i class="fa fa-clock d-block mb-2" style="font-size: 2rem;"></i>
                                 Process Pending Orders
                             </a>
                         </div>
                         <div class="col-md-3 mb-3">
                             <a href="{% url 'staff:order_list' %}?status=processing" class="btn btn-lg btn-outline-info w-100 h-100 py-4">
-                                <i class="bi bi-truck d-block mb-2" style="font-size: 2rem;"></i>
+                                <i class="fa fa-truck d-block mb-2" style="font-size: 2rem;"></i>
                                 Update Shipping Info
                             </a>
                         </div>
                         <div class="col-md-3 mb-3">
                             <a href="{% url 'staff:notifications' %}?unread_only=true" class="btn btn-lg btn-outline-primary w-100 h-100 py-4">
-                                <i class="bi bi-bell-fill d-block mb-2" style="font-size: 2rem;"></i>
+                                <i class="fa fa-bell d-block mb-2" style="font-size: 2rem;"></i>
                                 Check Notifications
                             </a>
                         </div>
                         <div class="col-md-3 mb-3">
                             <a href="{% url 'staff:profile' %}" class="btn btn-lg btn-outline-secondary w-100 h-100 py-4">
-                                <i class="bi bi-gear-fill d-block mb-2" style="font-size: 2rem;"></i>
+                                <i class="fa fa-cog d-block mb-2" style="font-size: 2rem;"></i>
                                 Staff Settings
                             </a>
                         </div>

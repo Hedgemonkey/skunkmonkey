@@ -14,33 +14,47 @@
 {% block header %}
 {% endblock %}
 
-
 {% block content %}
 <div class="container-fluid">
     <div class="row">
         <!-- Sidebar -->
-        <nav class="col-md-3 col-lg-2 d-md-block staff-sidebar collapse">
+        <nav id="staffSidebar" class="col-md-3 col-lg-2 d-md-block staff-sidebar collapse">
             <div class="position-sticky pt-3">
                 <div class="sidebar-heading">Main</div>
                 <ul class="nav flex-column">
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'staff:dashboard' %}">
-                            <i class="bi bi-speedometer2"></i> Dashboard
+                            <i class="fa fa-gauge"></i> Dashboard
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if 'order_' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'staff:order_list' %}">
-                            <i class="bi bi-cart"></i> Orders
+                            <i class="fa fa-shopping-cart"></i> Orders
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'product_' in request.resolver_match.url_name or request.resolver_match.url_name == 'product_management' %}active{% endif %}" href="{% url 'staff:product_management' %}">
+                            <i class="fas fa-box"></i> Products
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'category_' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'staff:category_list' %}">
+                            <i class="fas fa-tags"></i> Categories
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'notifications' %}active{% endif %}" href="{% url 'staff:notifications' %}">
-                            <i class="bi bi-bell"></i> Notifications
+                            <i class="fas fa-bell"></i> Notifications
                             {% if request.user.unread_notifications_count > 0 %}
                             <span class="badge bg-danger rounded-pill ms-2">
                                 {{ request.user.unread_notifications_count }}
                             </span>
                             {% endif %}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'customer_' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'staff:user_list' %}">
+                            <i class="fa fa-users"></i> Customers
                         </a>
                     </li>
                 </ul>
@@ -51,25 +65,25 @@
                 <ul class="nav flex-column">
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}" href="{% url 'staff:profile' %}">
-                            <i class="bi bi-person"></i> My Profile
+                            <i class="fas fa-user-circle"></i> My Profile
                         </a>
                     </li>
-                    {% if request.user.is_superuser or request.user.staff_profile.is_manager %}
+                    {% if request.user.is_superuser or request.user|safe_profile_access:"is_manager" %}
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'staff_list' %}active{% endif %}" href="{% url 'staff:staff_list' %}">
-                            <i class="bi bi-people"></i> Staff Management
+                            <i class="fas fa-users"></i> Staff Management
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if 'user_' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'staff:user_list' %}">
-                            <i class="bi bi-person-badge"></i> User Management
+                            <i class="fas fa-user"></i> User Management
                         </a>
                     </li>
                     {% endif %}
                     {% if request.user.is_superuser %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'admin:index' %}">
-                            <i class="bi bi-gear"></i> Admin Panel
+                            <i class="fas fa-screwdriver-wrench"></i> Admin Panel
                         </a>
                     </li>
                     {% endif %}
@@ -101,4 +115,25 @@
         </main>
     </div>
 </div>
+
+<!-- Mobile sidebar toggle button -->
+<button id="sidebarToggle" class="btn btn-dark sidebar-toggle rounded-circle shadow" aria-label="Toggle staff menu">
+    <i class="fas fa-bars"></i>
+</button>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+    // Toggle sidebar on mobile
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', function() {
+                document.querySelector('.staff-sidebar').classList.toggle('show');
+            });
+        }
+    });
+</script>
+{% block staff_js %}{% endblock %}
 {% endblock %}

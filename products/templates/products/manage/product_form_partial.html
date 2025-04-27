@@ -9,5 +9,4 @@
     action="{% url 'products:product_add' %}">
     {% csrf_token %}
     {% crispy form %}
-    {{ form.image }}
 </form>
