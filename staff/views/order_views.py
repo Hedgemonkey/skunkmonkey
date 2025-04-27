@@ -88,6 +88,48 @@ class OrderListView(DepartmentAccessMixin, ListView):
             item['status']: item['count'] for item in status_counts
         }
 
+        # Add missing context variables needed by the template
+        import logging
+
+        from django.utils import timezone
+
+        logger = logging.getLogger(__name__)
+
+        # Calculate order statistics
+        total_orders = Order.objects.count()
+        context['total_orders'] = total_orders
+
+        # Orders placed today
+        today_start = timezone.now().replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+        orders_today = Order.objects.filter(
+            created_at__gte=today_start).count()
+        context['orders_today'] = orders_today
+
+        # Pending orders (orders that haven't been shipped or delivered)
+        pending_orders = Order.objects.filter(
+            status__in=['created', 'paid']
+        ).count()
+        context['pending_orders'] = pending_orders
+
+        # Total revenue (using total_price as the field name based on template)
+        revenue = Order.objects.filter(
+            status__in=['paid', 'shipped', 'delivered']
+        ).aggregate(Sum('total_price'))['total_price__sum']
+        context['total_revenue'] = revenue if revenue else 0
+
+        # Flag for filtered results
+        context['filtered'] = bool(self.request.GET)
+
+        # Add debug logging
+        logger.info(
+            f"Order list context: total_orders={total_orders}, "
+            f"orders_today={orders_today}, "
+            f"pending_orders={pending_orders}, "
+            f"total_revenue={context['total_revenue']}"
+        )
+
         return context
 
 

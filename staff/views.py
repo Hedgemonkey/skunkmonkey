@@ -15,6 +15,11 @@ from staff.views.order_views import (  # noqa:F401
     CustomerContactView, OrderDetailView, OrderListView, OrderNoteCreateView,
     OrderQuickViewAPI, OrderShippingUpdateView, OrderUpdateView,
 )
+from staff.views.product_views import (  # noqa:F401
+    CategoryCreateView, CategoryListView, CategoryUpdateView,
+    ProductCreateView, ProductDashboardView, ProductDetailView,
+    ProductListView, ProductUpdateView, category_ajax_list, product_quick_edit,
+)
 from staff.views.profile_views import (  # noqa:F401
     StaffListView, StaffProfileView, ToggleManagerStatusView,
 )

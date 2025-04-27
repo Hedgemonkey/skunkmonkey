@@ -4,7 +4,7 @@ URL patterns for staff functionality
 from django.urls import path
 
 from . import views
-from .views import user_views
+from .views import product_api_views, user_views
 
 app_name = 'staff'
 
@@ -29,6 +29,48 @@ urlpatterns = [
     path('api/orders/<int:pk>/quick-view/', views.OrderQuickViewAPI.as_view(),
          name='order_quickview'),
 
+    # Products
+    path('products/', views.ProductDashboardView.as_view(),
+         name='product_dashboard'),
+    path('products/management/', views.ProductDashboardView.as_view(),
+         name='product_management'),
+    path('products/list/', views.ProductListView.as_view(),
+         name='product_list'),
+    path('products/create/', views.ProductCreateView.as_view(),
+         name='product_create'),
+    path('products/<int:pk>/', views.ProductDetailView.as_view(),
+         name='product_detail'),
+    path('products/<int:pk>/update/', views.ProductUpdateView.as_view(),
+         name='product_update'),
+    path('products/<int:pk>/quick-edit/', views.product_quick_edit,
+         name='product_quick_edit'),
+
+    # Product API endpoints
+    path('api/products/list/', product_api_views.product_ajax_list,
+         name='product_ajax_list'),
+    path('api/products/stats/', product_api_views.product_stats,
+         name='product_stats'),
+    path('api/products/low-stock/', product_api_views.get_low_stock_products,
+         name='low_stock_products'),
+    path('api/products/batch-action/', product_api_views.product_batch_action,
+         name='product_batch_action'),
+    path('api/products/export/', product_api_views.export_products,
+         name='export_products'),
+    path('api/products/export-template/', product_api_views.export_template,
+         name='export_template'),
+    path('api/products/import/', product_api_views.import_products,
+         name='import_products'),
+
+    # Categories
+    path('categories/', views.CategoryListView.as_view(),
+         name='category_list'),
+    path('categories/create/', views.CategoryCreateView.as_view(),
+         name='category_create'),
+    path('categories/<int:pk>/update/', views.CategoryUpdateView.as_view(),
+         name='category_update'),
+    path('api/categories/list/', views.category_ajax_list,
+         name='category_ajax_list'),
+
     # Notifications
     path('notifications/', views.NotificationListView.as_view(),
          name='notifications'),
@@ -44,7 +86,7 @@ urlpatterns = [
     path('staff-list/', views.StaffListView.as_view(), name='staff_list'),
     path('staff-list/<int:pk>/toggle-manager/',
          views.ToggleManagerStatusView.as_view(),
-         name='toggle_manager_status'),
+         name='toggle_manager'),
 
     # User Management
     path('users/', user_views.UserListView.as_view(), name='user_list'),
