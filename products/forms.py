@@ -15,6 +15,7 @@ class ProductForm(forms.ModelForm):
         model = Product
         fields = [
             'name',
+            'sku',
             'category',
             'description',
             'price',
@@ -44,6 +45,10 @@ class ProductForm(forms.ModelForm):
             Row(
                 Column('name', css_class='form-group col-md-6 mb-0'),
                 Column('category', css_class='form-group col-md-6 mb-0'),
+                css_class='form-row'
+            ),
+            Row(
+                Column('sku', css_class='form-group col-md-6 mb-0'),
                 css_class='form-row'
             ),
             'description',
