@@ -53,6 +53,8 @@ export default defineConfig({
         // Staff - new entries
         staff: resolve(__dirname, 'src/staff/js/staff.js'),
         orderManager: resolve(__dirname, 'src/staff/js/order-manager.js'),
+        productManager: resolve(__dirname, 'src/staff/js/product-manager.js'), // Staff product manager
+        productDashboard: resolve(__dirname, 'src/staff/js/product-dashboard.js'), // Product dashboard
       },
       output: {
         assetFileNames: (assetInfo) => {
@@ -182,6 +184,8 @@ export default defineConfig({
                 // Staff entries - new
                 'staff': '/static/src/staff/js/staff.js',
                 'orderManager': '/static/src/staff/js/order-manager.js',
+                'productManager': '/static/src/staff/js/product-manager.js', // Staff product manager
+                'productDashboard': '/static/src/staff/js/product-dashboard.js', // Product dashboard
 
                 // CSS files
                 'mainStyle': '/static/src/core/css/main.css',

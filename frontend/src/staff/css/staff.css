@@ -5,7 +5,7 @@
 
 /* Variables to match the project's colors */
 :root {
-    --staff-sidebar-bg: #343a40;
+    --staff-sidebar-bg: #212529;
     --staff-sidebar-active: #495057;
     --staff-primary: #0d6efd;
     --staff-secondary: #6c757d;
@@ -21,33 +21,87 @@
     min-height: 100vh;
 }
 
+/* Staff sidebar styling */
 .staff-sidebar {
-    width: 250px;
-    min-height: 100vh;
     background-color: var(--staff-sidebar-bg);
-    color: rgba(255, 255, 255, 0.9);
-    transition: width 0.3s ease;
+    min-height: calc(100vh - 56px);
+    padding-top: 1rem;
 }
 
+.staff-sidebar .nav-link {
+    color: rgba(255, 255, 255, .55);
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.staff-sidebar .nav-link:hover {
+    color: rgba(255, 255, 255, .75);
+    background-color: rgba(255, 255, 255, .1);
+}
+
+.staff-sidebar .nav-link.active {
+    color: #fff;
+    background-color: rgba(255, 255, 255, .2);
+}
+
+.sidebar-heading {
+    color: rgba(255, 255, 255, .55);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    padding: 0.5rem 1rem;
+    font-weight: bold;
+}
+
+.staff-sidebar hr {
+    border-color: rgba(255, 255, 255, .1);
+}
+
+/* Mobile sidebar toggle button */
+.sidebar-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1030;
+    display: none;
+}
+
+/* Responsive styles */
+@media (max-width: 767.98px) {
+    .staff-sidebar {
+        position: fixed;
+        top: 56px;
+        bottom: 0;
+        left: 0;
+        z-index: 1000;
+        padding: 0;
+        overflow-x: hidden;
+        overflow-y: auto;
+        width: 80%;
+        max-width: 250px;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+
+    .staff-sidebar.show {
+        transform: translateX(0);
+    }
+
+    .sidebar-toggle {
+        display: block;
+    }
+
+    .staff-main {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+}
+
+/* Staff content */
 .staff-content {
     flex: 1;
     padding: 1.5rem;
     background-color: #f8f9fa;
-}
-
-/* Responsive styles */
-@media (max-width: 768px) {
-    body:not(.sb-sidenav-toggled) .staff-sidebar {
-        margin-left: -250px;
-    }
-
-    body.sb-sidenav-toggled .staff-sidebar {
-        margin-left: 0;
-    }
-
-    .staff-content {
-        padding: 1rem;
-    }
 }
 
 /* Navigation styles */

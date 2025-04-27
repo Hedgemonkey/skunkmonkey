@@ -6,6 +6,36 @@
 // Import styles - this allows Vite to bundle the CSS with this JavaScript file
 import '@staff/css/staff.css';
 
+// Import FontAwesome
+import { library, dom } from '@fortawesome/fontawesome-svg-core';
+import {
+    faPlus, faTags, faBox, faCheckCircle,
+    faExclamationTriangle, faExclamationCircle,
+    faDollarSign, faSearch, faChevronDown,
+    faEdit, faEye, faTrash, faArrowLeft,
+    faSpinner, faUserCircle, faUsers, faGear,
+    faBell, faCog, faPerson, faShoppingCart,
+    faGauge, faList, faClipboard, faBars, faUser
+} from '@fortawesome/free-solid-svg-icons';
+
+// Import staff modules
+import staffDashboard from './modules/staff-dashboard';
+import staffCharts from './modules/staff-charts';
+
+// Add all icons to the library
+library.add(
+    faPlus, faTags, faBox, faCheckCircle,
+    faExclamationTriangle, faExclamationCircle,
+    faDollarSign, faSearch, faChevronDown,
+    faEdit, faEye, faTrash, faArrowLeft,
+    faSpinner, faUserCircle, faUsers, faGear,
+    faBell, faCog, faPerson, faShoppingCart,
+    faGauge, faList, faClipboard, faBars, faUser
+);
+
+// Replace any existing <i> tags with SVG
+dom.watch();
+
 /**
  * StaffManager class for handling staff-related functionality
  */
@@ -13,6 +43,8 @@ class StaffManager {
     constructor() {
         this.initEventListeners();
         this.initBootstrapComponents();
+        this.dashboard = staffDashboard;
+        this.charts = staffCharts;
     }
 
     /**
@@ -20,12 +52,23 @@ class StaffManager {
      */
     initEventListeners() {
         document.addEventListener('DOMContentLoaded', () => {
-            // Toggle the sidebar on mobile
+            // Mobile sidebar toggle functionality
             const sidebarToggle = document.getElementById('sidebarToggle');
-            if (sidebarToggle) {
-                sidebarToggle.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    document.body.classList.toggle('sb-sidenav-toggled');
+            const staffSidebar = document.getElementById('staffSidebar');
+
+            if (sidebarToggle && staffSidebar) {
+                sidebarToggle.addEventListener('click', () => {
+                    staffSidebar.classList.toggle('show');
+                });
+
+                // Close sidebar when clicking outside on mobile
+                document.addEventListener('click', (event) => {
+                    const isClickInside = staffSidebar.contains(event.target) ||
+                                          sidebarToggle.contains(event.target);
+
+                    if (!isClickInside && staffSidebar.classList.contains('show')) {
+                        staffSidebar.classList.remove('show');
+                    }
                 });
             }
 
