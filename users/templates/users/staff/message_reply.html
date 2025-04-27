@@ -14,7 +14,7 @@
         <h1>{% trans "Reply to Message" %}</h1>
         <div>
             <a href="{% url 'users:staff_message_detail' message.id %}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i> {% trans "Back to Conversation" %}
+                <i class="fa fa-arrow-left"></i> {% trans "Back to Conversation" %}
             </a>
         </div>
     </div>
@@ -108,7 +108,7 @@
                                 {% trans "Cancel" %}
                             </a>
                             <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-send"></i> {% trans "Send Reply" %}
+                                <i class="fa fa-paper-plane"></i> {% trans "Send Reply" %}
                             </button>
                         </div>
                     </form>

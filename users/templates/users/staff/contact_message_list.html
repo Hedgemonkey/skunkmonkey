@@ -11,9 +11,9 @@
 <div class="container-fluid mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1>{% trans "Contact Messages" %}</h1>
-        <div>
-            <a href="{% url 'users:staff_dashboard' %}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i> {% trans "Back to Dashboard" %}
+        <div class="btn-group">
+            <a href="{% url 'staff:dashboard' %}" class="btn btn-sm btn-outline-secondary">
+                <i class="fa fa-arrow-left"></i> {% trans "Back to Dashboard" %}
             </a>
         </div>
     </div>
@@ -197,7 +197,7 @@
                                 </td>
                                 <td>
                                     <a href="{% url 'users:staff_message_detail' contact_message.id %}">
-                                        {% if not contact_message.is_read %}<i class="bi bi-envelope-fill me-1"></i>{% endif %}
+                                        {% if not contact_message.is_read %}<i class="fa fa-envelope-fill me-1"></i>{% endif %}
                                         {{ contact_message.subject|truncatechars:40 }}
                                     </a>
                                 </td>

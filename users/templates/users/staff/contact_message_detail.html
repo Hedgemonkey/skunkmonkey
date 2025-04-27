@@ -45,7 +45,7 @@
         <h1>{% trans "Conversation Details" %}</h1>
         <div>
             <a href="{% url 'users:staff_message_list' %}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i> {% trans "Back to Messages" %}
+                <i class="fa fa-arrow-left"></i> {% trans "Back to Messages" %}
             </a>
         </div>
     </div>
@@ -69,7 +69,7 @@
                     </div>
                     <div>
                         <a href="{% url 'users:staff_message_reply' message.id %}" class="btn btn-sm btn-primary me-2">
-                            <i class="bi bi-reply-fill"></i> {% trans "Reply" %}
+                            <i class="fa fa-reply"></i> {% trans "Reply" %}
                         </a>
                         <div class="dropdown d-inline-block">
                             <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="messageActionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -81,7 +81,7 @@
                                     <form method="post" action="{% url 'users:staff_message_mark_unread' message.id %}">
                                         {% csrf_token %}
                                         <button type="submit" class="dropdown-item">
-                                            <i class="bi bi-envelope-fill"></i> {% trans "Mark as Unread" %}
+                                            <i class="fa fa-envelope"></i> {% trans "Mark as Unread" %}
                                         </button>
                                     </form>
                                 </li>
@@ -90,7 +90,7 @@
                                     <form method="post" action="{% url 'users:staff_message_mark_read' message.id %}">
                                         {% csrf_token %}
                                         <button type="submit" class="dropdown-item">
-                                            <i class="bi bi-envelope-open-fill"></i> {% trans "Mark as Read" %}
+                                            <i class="fa fa-envelope-open"></i> {% trans "Mark as Read" %}
                                         </button>
                                     </form>
                                 </li>
@@ -98,12 +98,12 @@
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#forwardModal">
-                                        <i class="bi bi-forward-fill"></i> {% trans "Forward" %}
+                                        <i class="fa fa-share"></i> {% trans "Forward" %}
                                     </a>
                                 </li>
                                 <li>
                                     <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#assignModal">
-                                        <i class="bi bi-person-fill"></i> {% trans "Assign" %}
+                                        <i class="fa fa-user"></i> {% trans "Assign" %}
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
@@ -111,7 +111,7 @@
                                     <form method="post" action="{% url 'users:staff_message_delete' message.id %}" onsubmit="return confirm('{% trans "Are you sure you want to delete this message?" %}');">
                                         {% csrf_token %}
                                         <button type="submit" class="dropdown-item text-danger">
-                                            <i class="bi bi-trash-fill"></i> {% trans "Delete" %}
+                                            <i class="fa fa-trash"></i> {% trans "Delete" %}
                                         </button>
                                     </form>
                                 </li>
@@ -195,7 +195,7 @@
                             <div class="message user-message mb-3">
                                 <div class="d-flex">
                                     <div class="message-avatar rounded-circle bg-primary d-flex align-items-center justify-content-center text-white me-2">
-                                        <i class="bi bi-person-fill"></i>
+                                        <i class="fa fa-user"></i>
                                     </div>
                                     <div class="message-content flex-grow-1">
                                         <div class="message-header d-flex justify-content-between">
@@ -225,7 +225,7 @@
                                             <div class="message staff-message mb-3">
                                                 <div class="d-flex">
                                                     <div class="message-avatar rounded-circle bg-info d-flex align-items-center justify-content-center text-white me-2">
-                                                        <i class="bi bi-headset"></i>
+                                                        <i class="fa fa-headset"></i>
                                                     </div>
                                                     <div class="message-content flex-grow-1">
                                                         <div class="message-header d-flex justify-content-between">
@@ -245,7 +245,7 @@
                                                             {{ item.content|linebreaks }}
                                                             {% if item.email_sent %}
                                                                 <div class="mt-2 text-muted">
-                                                                    <small><i class="bi bi-envelope-check"></i> {% trans "Email sent to customer" %}</small>
+                                                                    <small><i class="fa fa-envelope-check"></i> {% trans "Email sent to customer" %}</small>
                                                                 </div>
                                                             {% endif %}
                                                         </div>
@@ -257,7 +257,7 @@
                                             <div class="message user-message mb-3">
                                                 <div class="d-flex">
                                                     <div class="message-avatar rounded-circle bg-primary d-flex align-items-center justify-content-center text-white me-2">
-                                                        <i class="bi bi-person-fill"></i>
+                                                        <i class="fa fa-user"></i>
                                                     </div>
                                                     <div class="message-content flex-grow-1">
                                                         <div class="message-header d-flex justify-content-between">
@@ -281,7 +281,7 @@
                                             <div class="message internal-message mb-3">
                                                 <div class="d-flex">
                                                     <div class="message-avatar rounded-circle bg-warning d-flex align-items-center justify-content-center text-dark me-2">
-                                                        <i class="{% if item.response_type == 'phone_call_internal' %}bi bi-telephone{% else %}bi bi-sticky{% endif %}"></i>
+                                                        <i class="{% if item.response_type == 'phone_call_internal' %}fa fa-phone{% else %}fa fa-sticky-note{% endif %}"></i>
                                                     </div>
                                                     <div class="message-content flex-grow-1">
                                                         <div class="message-header d-flex justify-content-between">
@@ -314,7 +314,7 @@
                                                 <div class="message user-message mb-3">
                                                     <div class="d-flex">
                                                         <div class="message-avatar rounded-circle bg-primary d-flex align-items-center justify-content-center text-white me-2">
-                                                            <i class="bi bi-person-fill"></i>
+                                                            <i class="fa fa-user"></i>
                                                         </div>
                                                         <div class="message-content flex-grow-1">
                                                             <div class="message-header d-flex justify-content-between">
@@ -350,7 +350,7 @@
                                                         <div class="message staff-message mb-3">
                                                             <div class="d-flex">
                                                                 <div class="message-avatar rounded-circle bg-info d-flex align-items-center justify-content-center text-white me-2">
-                                                                    <i class="bi bi-headset"></i>
+                                                                    <i class="fa fa-headset"></i>
                                                                 </div>
                                                                 <div class="message-content flex-grow-1">
                                                                     <div class="message-header d-flex justify-content-between">
