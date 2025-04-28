@@ -40,10 +40,10 @@
     {% block extra_css %}{% endblock %}
     {% block messages-js %}
     <script>
-        // This minimal inline script is acceptable as it simply transfers server-side data to JS
-        const messages = [];
+        // Store Django messages for processing by SweetAlert2 toasts
+        window.messages = [];
         {% for django_message in messages %}
-            messages.push({
+            window.messages.push({
                 message: "{{ django_message|escapejs }}",
                 tags: "{{ django_message.tags|default:''|escapejs }}"
             });
@@ -53,19 +53,6 @@
 </head>
 <body>
     {% block navbar %}{% include 'includes/navbar.html' %}{% endblock %}
-
-    {% block messages %}
-        {% if messages %}
-            <div class="container mt-3">
-                {% for django_message in messages %}
-                    <div class="alert alert-{{ django_message.tags|default:'info' }} alert-dismissible fade show" role="alert">
-                        {{ django_message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endblock %}
 
     {% block header %}
         <header class="py-5 bg-image-full">
