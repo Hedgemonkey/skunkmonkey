@@ -61,12 +61,20 @@ def safe_profile_access(user, attr):
     if not user:
         return None
 
-    try:
-        # First try to access attribute via staff_profile (the correct way)
-        if hasattr(user, 'staff_profile'):
-            return getattr(user.staff_profile, attr)
-        # If that fails, return None but don't raise an error
+    # First try to access attribute via staff_profile (the correct way)
+    if hasattr(user, 'staff_profile'):
+        profile = user.staff_profile
+    # Try the alternative spelling
+    elif hasattr(user, 'staffprofile'):
+        profile = user.staffprofile
+    else:
+        # No profile found
         return None
+
+    # Now try to get the attribute from the profile
+    try:
+        result = getattr(profile, attr)
+        return result() if callable(result) else result
     except (AttributeError, TypeError):
         return None
 
@@ -101,3 +109,28 @@ def with_fallback(obj, attr):
         return result() if callable(result) else result
 
     return None
+
+
+@register.filter
+def default_if_none(value, default=None):
+    """
+    Returns the default value if the provided value is None.
+
+    Usage: {{ my_variable|default_if_none:"Default Value" }}
+    """
+    if value is None:
+        return default
+    return value
+
+
+@register.simple_tag(takes_context=True)
+def get_safe_context(context, var_name, default=None):
+    """
+    Safely gets a context variable, returning a default if it doesn't exist.
+
+    Usage: {% get_safe_context 'product_images' as product_images %}
+    """
+    try:
+        return context.get(var_name, default)
+    except Exception:
+        return default

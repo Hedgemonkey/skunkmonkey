@@ -1,6 +1,7 @@
 {% extends 'staff/staff_base.html' %}
 {% load static %}
 {% load django_vite %}
+{% load staff_filters %}
 
 {% block staff_actions %}
 <div class="btn-group">
@@ -17,6 +18,10 @@
 {% endblock %}
 
 {% block staff_content %}
+<!-- Get safe context variables -->
+{% get_safe_context 'product_images' as product_images %}
+{% get_safe_context 'sales_history' as sales_history %}
+
 <div class="container-fluid px-4">
     <div class="row">
         <!-- Left column: Main product info -->
@@ -156,8 +161,15 @@
                                         <span class="text-danger">{{ log.change }}</span>
                                         {% endif %}
                                     </td>
-                                    <td>{{ log.new_quantity }}</td>
-                                    <td>{{ log.staff_user.username }}</td>
+                                    <td>
+                                        <!-- Current stock isn't stored in log, only the change amount -->
+                                        <!-- Consider adding this to the model in the future -->
+                                        <span class="text-muted">--</span>
+                                    </td>
+                                    <td>
+                                        <!-- User not recorded in current model -->
+                                        <span class="text-muted">System</span>
+                                    </td>
                                     <td>{{ log.reason }}</td>
                                 </tr>
                                 {% endfor %}

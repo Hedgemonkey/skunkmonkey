@@ -1,12 +1,13 @@
 # staff/views/product_views.py
-import base64
-import json  # Add this import for JSON serialization
+import base64  # noqa F401
+import json
 import logging
 from decimal import Decimal
 
+from django.conf import settings  # noqa F401
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.files.base import ContentFile
+from django.core.files.base import ContentFile  # noqa F401
 from django.core.paginator import Paginator  # noqa F401
 from django.db import models, transaction  # noqa F401
 from django.db.models import Avg, Count, Max, Min, Q, Sum
@@ -20,6 +21,7 @@ from django.views.generic import (
 
 from products.forms import CategoryForm, ProductForm
 from products.models import Category, InventoryLog, Product
+from skunkmonkey.utils.s3_utils import upload_base64_to_model_field
 from staff.mixins import StaffAccessMixin
 
 logger = logging.getLogger(__name__)
@@ -365,16 +367,20 @@ class ProductCreateView(StaffAccessMixin, CreateView):
         cropped_image_data = self.request.POST.get('cropped_image_data')
 
         if cropped_image_data:
-            try:
-                format, imgstr = cropped_image_data.split(';base64,')
-                ext = format.split('/')[-1]
-                image_data = ContentFile(
-                    base64.b64decode(imgstr),
-                    name=f'product_{form.instance.name}.{ext}'
+            logger.info("Processing cropped image data in ProductCreateView")
+            # Use our utility function to handle S3 upload
+            upload_result = upload_base64_to_model_field(
+                model_instance=form.instance,
+                field_name='image',
+                base64_data=cropped_image_data,
+                folder_path='product_images',
+                file_name_prefix=f'product_{form.instance.name}'
+            )
+
+            if not upload_result['success']:
+                logger.error(
+                    f"Failed to upload image: {upload_result['message']}"
                 )
-                form.instance.image = image_data
-            except Exception as e:
-                logger.error(f"Error processing cropped image: {e}")
 
         response = super().form_valid(form)
 
@@ -417,22 +423,31 @@ class ProductUpdateView(StaffAccessMixin, UpdateView):
         cropped_image_data = self.request.POST.get('cropped_image_data')
 
         if cropped_image_data:
-            try:
-                format, imgstr = cropped_image_data.split(';base64,')
-                ext = format.split('/')[-1]
-                image_data = ContentFile(
-                    base64.b64decode(imgstr),
-                    name=f'product_{form.instance.name}.{ext}'
+            logger.info("Processing cropped image data")
+            # Use our utility function to handle S3 upload
+            upload_result = upload_base64_to_model_field(
+                model_instance=form.instance,
+                field_name='image',
+                base64_data=cropped_image_data,
+                folder_path='product_images',
+                file_name_prefix=f'product_{form.instance.name}'
+            )
+
+            if not upload_result['success']:
+                logger.error(
+                    f"Failed to upload image: {upload_result['message']}"
                 )
-                form.instance.image = image_data
-            except Exception as e:
-                logger.error(f"Error processing cropped image: {e}")
 
         # Handle image removal
         if self.request.POST.get('remove_image') == 'true':
+            logger.info("Removing product image")
             form.instance.image = None
 
+        # Call the parent form_valid which will save the object
         response = super().form_valid(form)
+
+        if self.object.image:
+            logger.info(f"Product image URL: {self.object.image.url}")
 
         # Create inventory log entry if stock changed
         if old_stock != new_stock:

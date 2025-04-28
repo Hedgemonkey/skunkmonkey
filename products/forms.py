@@ -37,10 +37,14 @@ class ProductForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        print("ProductForm loaded")  # Debugging statement
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.form_show_labels = True
+
+        # Set form field wrapper class to match bootstrap5 expectations
+        self.helper.field_template = 'bootstrap5/field.html'
+        self.helper.wrapper_class = 'mb-3'
+
         self.helper.layout = Layout(
             Row(
                 Column('name', css_class='form-group col-md-6 mb-0'),
@@ -57,11 +61,6 @@ class ProductForm(forms.ModelForm):
                 Column('stock_quantity', css_class='form-group col-md-6 mb-0'),
                 css_class='form-row'
             ),
-            # Row(
-            #     Field('image', css_class='form-group col-md-12 mb-0'),
-            # Explicitly use Field to ensure custom widget
-            #     css_class='form-row'
-            # ),
             'is_active',
         )
 
