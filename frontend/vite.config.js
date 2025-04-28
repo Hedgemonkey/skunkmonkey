@@ -23,7 +23,7 @@ export default defineConfig({
         filters: resolve(__dirname, 'src/products/js/filters.js'),
         cropperInit: resolve(__dirname, 'src/products/js/cropper_init.js'),
         categoryManager: resolve(__dirname, 'src/products/js/category-manager.js'),
-        productManager: resolve(__dirname, 'src/products/js/product-manager.js'),
+        productsManager: resolve(__dirname, 'src/products/js/product-manager.js'),
         formUtils: resolve(__dirname, 'src/products/utilities/js/form-utils.js'),
         arrayUtils: resolve(__dirname, 'src/products/utilities/js/array-utils.js'),
         baseManager: resolve(__dirname, 'src/products/utilities/js/base-manager.js'),
@@ -53,7 +53,7 @@ export default defineConfig({
         // Staff - new entries
         staff: resolve(__dirname, 'src/staff/js/staff.js'),
         orderManager: resolve(__dirname, 'src/staff/js/order-manager.js'),
-        productManager: resolve(__dirname, 'src/staff/js/product-manager.js'), // Staff product manager
+        staffProductManager: resolve(__dirname, 'src/staff/js/product-manager.js'), // Staff product manager
         productDashboard: resolve(__dirname, 'src/staff/js/product-dashboard.js'), // Product dashboard
         productEditor: resolve(__dirname, 'src/staff/js/product-editor.js'), // Product editor with image cropper
       },
@@ -154,7 +154,7 @@ export default defineConfig({
                 'filters': '/static/src/products/js/filters.js',
                 'cropperInit': '/static/src/products/js/cropper_init.js',
                 'categoryManager': '/static/src/products/js/category-manager.js',
-                'productManager': '/static/src/products/js/product-manager.js',
+                'productsManager': '/static/src/products/js/product-manager.js',
                 'formUtils': '/static/src/products/utilities/js/form-utils.js',
                 'arrayUtils': '/static/src/products/utilities/js/array-utils.js',
                 'baseManager': '/static/src/products/utilities/js/base-manager.js',
@@ -185,7 +185,7 @@ export default defineConfig({
                 // Staff entries - new
                 'staff': '/static/src/staff/js/staff.js',
                 'orderManager': '/static/src/staff/js/order-manager.js',
-                'productManager': '/static/src/staff/js/product-manager.js', // Staff product manager
+                'staffProductManager': '/static/src/staff/js/product-manager.js', // Staff product manager
                 'productDashboard': '/static/src/staff/js/product-dashboard.js', // Product dashboard
                 'productEditor': '/static/src/staff/js/product-editor.js', // Product editor with image cropper
 
