@@ -14,7 +14,9 @@ from django.http import HttpResponseBadRequest, JsonResponse  # noqa F401
 from django.shortcuts import get_object_or_404, redirect, render  # noqa F401
 from django.urls import reverse
 from django.views.decorators.http import require_POST
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.views.generic import (
+    CreateView, DetailView, FormView, ListView, UpdateView,
+)
 
 from products.forms import CategoryForm, ProductForm
 from products.models import Category, InventoryLog, Product
@@ -289,7 +291,8 @@ class ProductDetailView(StaffAccessMixin, DetailView):
             revenue = order_items.aggregate(
                 total=Sum(ExpressionWrapper(
                     models.F('price') * models.F('quantity'),
-                    output_field=FloatField()))
+                    output_field=FloatField()
+                ))
             )['total'] or 0
 
             context['sales_data'] = {
@@ -304,6 +307,8 @@ class ProductDetailView(StaffAccessMixin, DetailView):
             from django.utils import timezone
 
             six_months_ago = timezone.now() - timedelta(days=180)
+
+            # First calculate the quantity per month
             monthly_sales = OrderItem.objects.filter(
                 product=product,
                 order__status__in=['completed', 'shipped', 'delivered'],
@@ -311,9 +316,24 @@ class ProductDetailView(StaffAccessMixin, DetailView):
             ).annotate(
                 month=TruncMonth('order__created_at')
             ).values('month').annotate(
-                quantity=Sum('quantity'),
-                revenue=Sum(models.F('price') * models.F('quantity'))
+                quantity=Sum('quantity')
             ).order_by('month')
+
+            # Then calculate revenue as a separate step
+            for month_data in monthly_sales:
+                # Get all order items for this product in this month
+                month_items = OrderItem.objects.filter(
+                    product=product,
+                    order__status__in=['completed', 'shipped', 'delivered'],
+                    order__created_at__month=month_data['month'].month,
+                    order__created_at__year=month_data['month'].year
+                )
+                # Sum the product of price and quantity
+                revenue = sum(
+                    item.price * item.quantity
+                    for item in month_items
+                )
+                month_data['revenue'] = revenue
 
             context['monthly_sales'] = monthly_sales
 
@@ -441,6 +461,84 @@ class ProductUpdateView(StaffAccessMixin, UpdateView):
         ).order_by('-created_at')[:10]
 
         return context
+
+
+class ProductAdjustStockView(StaffAccessMixin, FormView):
+    """View to adjust product stock with reason tracking."""
+    template_name = 'staff/product/adjust_stock.html'
+
+    def get_form_class(self):
+        """Dynamically create a form with initial stock value."""
+        from django import forms
+
+        class StockAdjustmentForm(forms.Form):
+            quantity = forms.IntegerField(
+                label="Quantity to adjust",
+                help_text=(
+                    "Use positive values to add stock, negative to remove"
+                )
+            )
+            reason = forms.CharField(
+                label="Reason for adjustment",
+                max_length=255,
+                widget=forms.Textarea(attrs={'rows': 3}),
+                help_text="Provide a reason for this stock adjustment"
+            )
+
+        return StockAdjustmentForm
+
+    def get_context_data(self, **kwargs):
+        """Add product to context."""
+        context = super().get_context_data(**kwargs)
+        product_id = self.kwargs.get('pk')
+        product = get_object_or_404(Product, pk=product_id)
+        context['product'] = product
+        context['current_stock'] = product.stock_quantity
+
+        # Get recent inventory logs
+        context['inventory_logs'] = InventoryLog.objects.filter(
+            product=product
+        ).order_by('-created_at')[:10]
+
+        return context
+
+    def form_valid(self, form):
+        """Process the stock adjustment."""
+        product_id = self.kwargs.get('pk')
+        product = get_object_or_404(Product, pk=product_id)
+
+        # Get form data
+        quantity = form.cleaned_data['quantity']
+        reason = form.cleaned_data['reason']
+
+        # Validate the stock adjustment
+        new_stock_level = product.stock_quantity + quantity
+        if new_stock_level < 0:
+            form.add_error(
+                'quantity',
+                f"Cannot reduce stock below 0. "
+                f"Current stock: {product.stock_quantity}"
+            )
+            return self.form_invalid(form)
+
+        # Update the product stock
+        product.stock_quantity = new_stock_level
+        product.save(update_fields=['stock_quantity'])
+
+        # Create inventory log entry
+        InventoryLog.objects.create(
+            product=product,
+            change=quantity,
+            reason=reason
+        )
+
+        messages.success(
+            self.request,
+            f"Stock {'+' if quantity > 0 else ''}{quantity} units applied. "
+            f"New stock level: {new_stock_level}"
+        )
+
+        return redirect('staff:product_detail', pk=product.id)
 
 
 class CategoryListView(StaffAccessMixin, ListView):

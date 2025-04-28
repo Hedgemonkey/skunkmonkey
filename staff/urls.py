@@ -4,7 +4,11 @@ URL patterns for staff functionality
 from django.urls import path
 
 from . import views
-from .views import product_api_views, user_views
+from .views import product_api_views, product_views, user_views
+from .views.notification_views import (
+    DeleteNotificationView, MarkAllNotificationsReadView,
+    MarkNotificationReadView, NotificationListView,
+)
 
 app_name = 'staff'
 
@@ -18,6 +22,9 @@ urlpatterns = [
          name='order_detail'),
     path('orders/<int:pk>/update/', views.OrderUpdateView.as_view(),
          name='order_update'),
+    # Adding 'order_edit' name as an alias to order_update for template compatibility
+    path('orders/<int:pk>/edit/', views.OrderUpdateView.as_view(),
+         name='order_edit'),
     path('orders/<int:pk>/shipping-update/',
          views.OrderShippingUpdateView.as_view(),
          name='shipping_update'),
@@ -44,6 +51,8 @@ urlpatterns = [
          name='product_update'),
     path('products/<int:pk>/quick-edit/', views.product_quick_edit,
          name='product_quick_edit'),
+    path('products/<int:pk>/adjust-stock/', product_views.ProductAdjustStockView.as_view(),
+         name='product_adjust_stock'),
 
     # Product API endpoints
     path('api/products/list/', product_api_views.product_ajax_list,
@@ -72,14 +81,22 @@ urlpatterns = [
          name='category_ajax_list'),
 
     # Notifications
-    path('notifications/', views.NotificationListView.as_view(),
+    path('notifications/', NotificationListView.as_view(),
          name='notifications'),
     path('notifications/<int:pk>/mark-read/',
-         views.MarkNotificationReadView.as_view(),
+         MarkNotificationReadView.as_view(),
          name='mark_notification_read'),
     path('notifications/mark-all-read/',
-         views.MarkAllNotificationsReadView.as_view(),
+         MarkAllNotificationsReadView.as_view(),
          name='mark_all_notifications_read'),
+    # Adding this alias for template compatibility
+    path('notifications/mark-all-read/',
+         MarkAllNotificationsReadView.as_view(),
+         name='mark_all_read'),
+    # Adding missing delete notification URL
+    path('notifications/<int:pk>/delete/',
+         DeleteNotificationView.as_view(),
+         name='delete_notification'),
 
     # Staff
     path('profile/', views.StaffProfileView.as_view(), name='profile'),

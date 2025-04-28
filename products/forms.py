@@ -82,7 +82,7 @@ class ProductForm(forms.ModelForm):
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
-        fields = ['name', 'slug']
+        fields = ['name', 'slug', 'is_active']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -95,6 +95,7 @@ class CategoryForm(forms.ModelForm):
                 Column('slug', css_class='form-group col-md-6 mb-0'),
                 css_class='form-row'
             ),
+            'is_active',
             Submit('submit', 'Save', css_class='btn btn-primary mt-3')
         )
 

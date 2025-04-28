@@ -39,12 +39,29 @@ class NotificationListView(StaffAccessMixin, ListView):
         if unread_only == 'true':
             queryset = queryset.filter(is_read=False)
 
+        # Filter by priority level
+        priority = self.request.GET.get('priority')
+        if priority:
+            if priority == 'urgent':
+                queryset = queryset.filter(priority='urgent')
+            elif priority == 'high':
+                queryset = queryset.filter(priority__in=['high', 'urgent'])
+            elif priority == 'medium':
+                queryset = queryset.filter(
+                    priority__in=['medium', 'high', 'urgent']
+                )
+            elif priority == 'low':
+                queryset = queryset.filter(
+                    priority__in=['low', 'medium', 'high', 'urgent']
+                )
+
         return queryset.order_by('-created_at')
 
     def get_context_data(self, **kwargs):
         """Add filter information to context"""
         context = super().get_context_data(**kwargs)
         context['unread_only'] = self.request.GET.get('unread_only') == 'true'
+        context['priority'] = self.request.GET.get('priority', '')
         context['unread_count'] = StaffNotification.objects.filter(
             recipient=self.request.user,
             is_read=False
@@ -108,3 +125,47 @@ class MarkAllNotificationsReadView(StaffAccessMixin, View):
             f'Marked {count} notifications as read.'
         )
         return redirect('staff:notifications')
+
+    def post(self, request):
+        """Handle POST request to mark all notifications as read"""
+        notifications = StaffNotification.objects.filter(
+            recipient=request.user,
+            is_read=False
+        )
+
+        now = timezone.now()
+        count = notifications.count()
+        notifications.update(is_read=True, read_at=now)
+
+        # Check if AJAX request - return JSON response
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'success': True, 'count': count})
+
+        messages.success(
+            request,
+            f'Marked {count} notifications as read.'
+        )
+        next_url = request.POST.get('next', reverse('staff:notifications'))
+        return HttpResponseRedirect(next_url)
+
+
+class DeleteNotificationView(StaffAccessMixin, View):
+    """
+    Delete a notification
+    """
+    def post(self, request, pk):
+        """Handle POST request to delete notification"""
+        notification = get_object_or_404(
+            StaffNotification,
+            pk=pk,
+            recipient=request.user
+        )
+        notification.delete()
+
+        # Check if AJAX request - return JSON response
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'success': True})
+
+        messages.success(request, 'Notification deleted.')
+        next_url = request.POST.get('next', reverse('staff:notifications'))
+        return HttpResponseRedirect(next_url)

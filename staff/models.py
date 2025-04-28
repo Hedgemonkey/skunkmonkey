@@ -116,6 +116,14 @@ class StaffNotification(models.Model):
         ('urgent', 'Urgent'),
     )
 
+    CATEGORY_CHOICES = (
+        ('order', 'Order'),
+        ('system', 'System'),
+        ('user', 'User'),
+        ('product', 'Product'),
+        ('other', 'Other'),
+    )
+
     recipient = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -128,6 +136,11 @@ class StaffNotification(models.Model):
         max_length=10,
         choices=PRIORITY_CHOICES,
         default='medium'
+    )
+    category = models.CharField(
+        max_length=20,
+        choices=CATEGORY_CHOICES,
+        default='other'
     )
     related_order = models.ForeignKey(
         Order,
@@ -152,6 +165,11 @@ class StaffNotification(models.Model):
     def __str__(self):
         """String representation of a notification"""
         return f"{self.title} for {self.recipient}"
+
+    @property
+    def read(self):
+        """Property to access is_read for template compatibility"""
+        return self.is_read
 
     def mark_as_read(self):
         """Mark the notification as read"""
