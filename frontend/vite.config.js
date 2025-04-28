@@ -9,6 +9,7 @@ export default defineConfig({
     emptyOutDir: true,
     // Disable source maps completely - this will prevent browsers from requesting .map files
     sourcemap: false,
+    manifest: true, // Enable manifest.json generation
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'src/core/js/main.js'),
