@@ -16,8 +16,8 @@ from pathlib import Path
 from django.urls import reverse
 
 import dj_database_url
-# Fix import to use django_environ instead of just environ
-from django_environ import Env  # noqa
+# Fix import to use environ instead of django_environ
+from environ import Env  # noqa
 
 # Initialize environment variables
 env = Env()
