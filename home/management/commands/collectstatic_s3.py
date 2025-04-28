@@ -111,7 +111,11 @@ class Command(CollectstaticCommand):
             # Set verbosity and other options
             options['verbosity'] = 2
             options['clear'] = True  # Always clear to force full upload
-            options['no_input'] = True
+            options['no_input'] = True  # Don't prompt for confirmation
+            options['interactive'] = False  # Ensure no interactive prompts
+            
+            # CRITICAL: Force yes to avoid interactive prompt that hangs in Heroku
+            self.interactive = False
             
             # Call the standard collectstatic command
             super().handle(*args, **options)
