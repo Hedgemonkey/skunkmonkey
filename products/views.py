@@ -1,10 +1,8 @@
 # products/views.py
-import base64
 import logging
 
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
-from django.core.files.base import ContentFile
 from django.db.models import Count, Q
 from django.db.utils import IntegrityError
 from django.http import HttpResponseBadRequest, JsonResponse
@@ -13,6 +11,8 @@ from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, UpdateView
+
+from skunkmonkey.utils.s3_utils import upload_base64_to_model_field
 
 from .forms import CategoryForm, ProductForm
 from .models import Category, Product
@@ -77,13 +77,23 @@ def product_add(request):
 
         if cropped_image_data:
             try:
-                format, imgstr = cropped_image_data.split(';base64,')
-                ext = format.split('/')[-1]
-                image_data = ContentFile(base64.b64decode(imgstr),
-                                         name=f'cropped_image.{ext}')
-                product.image.save(f'cropped_image.{ext}',
-                                   image_data,
-                                   save=False)
+                # Use our standardized S3 utility to handle the image
+                # upload
+                result = upload_base64_to_model_field(
+                    product,
+                    'image',
+                    cropped_image_data,
+                    'product_images',
+                    f"product_{product.name.replace(' ', '_').lower()}"
+                )
+
+                if not result['success']:
+                    logger.error(f"S3 upload error: {result['message']}")
+                    return JsonResponse({
+                        'success': False,
+                        'errors': f'Error processing image: '
+                                  f'{result["message"]}'
+                    }, status=400)
             except Exception as e:
                 logger.error(f"Image processing error: {str(e)}")
                 return JsonResponse({
@@ -116,13 +126,23 @@ def product_update(request, slug):
             cropped_image_data = request.POST.get('cropped_image_data')
             if cropped_image_data:
                 try:
-                    format, imgstr = cropped_image_data.split(';base64,')
-                    ext = format.split('/')[-1]
-                    image_data = ContentFile(base64.b64decode(imgstr),
-                                             name=f'cropped_image.{ext}')
-                    product.image.save(f'cropped_image.{ext}',
-                                       image_data,
-                                       save=False)
+                    # Use our standardized S3 utility to handle the image
+                    # upload
+                    result = upload_base64_to_model_field(
+                        product,
+                        'image',
+                        cropped_image_data,
+                        'product_images',
+                        f"product_{product.name.replace(' ', '_').lower()}"
+                    )
+
+                    if not result['success']:
+                        logger.error(f"S3 upload error: {result['message']}")
+                        return JsonResponse({
+                            'success': False,
+                            'errors': f'Error processing image: '
+                                      f'{result["message"]}'
+                        }, status=400)
                 except Exception as e:
                     logger.error(f"Image processing error: {str(e)}")
                     return JsonResponse({

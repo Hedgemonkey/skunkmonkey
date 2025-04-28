@@ -2,15 +2,12 @@
 Profile-related views for the users app.
 Handles user profile dashboard and profile management.
 """
-import base64
-import uuid
-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.files.base import ContentFile
 from django.shortcuts import redirect, render
 
 from shop.models import Order
+from skunkmonkey.utils.s3_utils import upload_base64_to_model_field
 
 from ..forms import ProfileForm, UserForm
 from ..models import UserProfile
@@ -132,6 +129,7 @@ def _handle_profile_image_update(request, profile, profile_form):
         'profile-image-file' in request.FILES
         and image_selected == '1'
     ):
+        # Standard file upload - the form will handle it
         file = request.FILES['profile-image-file']
         profile.profile_image = file
     # If cropped image data was provided and user selected it
@@ -139,13 +137,11 @@ def _handle_profile_image_update(request, profile, profile_form):
         cropped_image_data and cropped_image_data[0]
         and image_selected == '1'
     ):
-        # Parse the base64 image data
-        format, imgstr = cropped_image_data[0].split(';base64,')
-        ext = format.split('/')[-1]
-
-        # Generate a unique filename
-        filename = f"{uuid.uuid4()}.{ext}"
-
-        # Convert base64 to file and save to profile
-        data = ContentFile(base64.b64decode(imgstr), name=filename)
-        profile.profile_image = data
+        # Use the S3 utility function to handle base64 image uploads
+        upload_base64_to_model_field(
+            profile,
+            'profile_image',
+            cropped_image_data[0],
+            'profile_images',
+            f"user_{profile.user.id}"
+        )
