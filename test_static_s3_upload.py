@@ -1,141 +1,45 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-# Filename: test_static_s3_upload.py
-# flake8: noqa
 """
-Test script to verify static file uploads to S3
+Test script for direct static file uploads to S3.
+Run this locally to verify S3 uploads before deploying to Heroku.
 """
-import logging
 import os
-import sys
-import traceback
+from pathlib import Path
 
-import boto3
-from botocore.exceptions import ClientError
+# Import the direct uploader module
+from direct_static_s3_upload import verify_s3_connection, handle_vite_manifest
 
-# Set up Django settings
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "skunkmonkey.settings")
+# Initialize environment
+BASE_DIR = Path(__file__).resolve().parent
 
-# Import Django and set it up
-import django
+print("=" * 80)
+print("TESTING DIRECT S3 STATIC FILE UPLOAD")
+print("=" * 80)
 
-django.setup()
+# First verify S3 connection
+if verify_s3_connection():
+    print("\nS3 connection successful!")
+else:
+    print("\nS3 connection failed! Verify your AWS credentials.")
+    exit(1)
 
-# Once Django is set up, we can import from settings
-from django.conf import settings
+# Test handling of Vite manifest
+print("\nTesting Vite manifest handling...")
+manifest_success = handle_vite_manifest()
 
-# Configure logging
-logging.basicConfig(level=logging.INFO,
-                   format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger('static_s3_test')
+if manifest_success:
+    print("\nVite manifest test successful! Your manifest.json is valid and was uploaded to S3.")
+else:
+    print("\nVite manifest test failed. Please check your manifest.json file.")
 
-def test_s3_connection():
-    """Test if we can connect to S3 and list objects"""
-    try:
-        # Get S3 bucket and region from settings
-        bucket_name = settings.AWS_STORAGE_BUCKET_NAME
-        region_name = settings.AWS_S3_REGION_NAME
-        static_location = settings.STATICFILES_LOCATION
+# If we have a manifest.json, print its content for debugging
+manifest_path = os.path.join(BASE_DIR, 'staticfiles', 'manifest.json')
+if os.path.exists(manifest_path):
+    print("\nManifest content preview:")
+    with open(manifest_path, 'r') as f:
+        content = f.read()
+        print(content[:500] + "..." if len(content) > 500 else content)
+else:
+    print("\nCould not find manifest.json at:", manifest_path)
 
-        logger.info(f"Testing S3 connection to bucket: {bucket_name}")
-        logger.info(f"Region: {region_name}")
-        logger.info(f"Static location: {static_location}")
-
-        # Create S3 client
-        s3 = boto3.client(
-            's3',
-            region_name=region_name,
-            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
-        )
-
-        # List objects in the static prefix
-        response = s3.list_objects_v2(
-            Bucket=bucket_name,
-            Prefix=static_location + '/'
-        )
-
-        # Check if objects exist in the static folder
-        if 'Contents' in response:
-            logger.info(f"Found {len(response['Contents'])} static objects in S3 bucket")
-
-            # Print first 10 objects for reference
-            logger.info("First 10 static files in the bucket:")
-            for i, obj in enumerate(response['Contents'][:10]):
-                logger.info(f"  {i+1}. {obj['Key']} ({obj['Size']} bytes)")
-
-            return True
-        else:
-            logger.warning(f"No static files found in bucket {bucket_name}/{static_location}/")
-            return False
-
-    except ClientError as e:
-        logger.error(f"AWS S3 error: {e}")
-        logger.error(traceback.format_exc())
-        return False
-    except Exception as e:
-        logger.error(f"Unexpected error: {e}")
-        logger.error(traceback.format_exc())
-        return False
-
-def try_upload_test_file():
-    """Try to upload a test file to the static folder in S3"""
-    try:
-        bucket_name = settings.AWS_STORAGE_BUCKET_NAME
-        region_name = settings.AWS_S3_REGION_NAME
-        static_location = settings.STATICFILES_LOCATION
-
-        logger.info(f"Attempting to upload a test file to {bucket_name}/{static_location}/")
-
-        # Create test file content
-        test_content = b"This is a test file to verify S3 upload permissions."
-        file_key = f"{static_location}/test_upload.txt"
-
-        # Create S3 resource
-        s3 = boto3.resource(
-            's3',
-            region_name=region_name,
-            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
-        )
-
-        # Upload the file
-        s3.Bucket(bucket_name).put_object(
-            Key=file_key,
-            Body=test_content,
-            ContentType='text/plain'
-        )
-
-        logger.info(f"Successfully uploaded test file to {bucket_name}/{file_key}")
-        return True
-
-    except ClientError as e:
-        logger.error(f"Failed to upload test file: {e}")
-        logger.error(traceback.format_exc())
-        return False
-    except Exception as e:
-        logger.error(f"Unexpected error during test upload: {e}")
-        logger.error(traceback.format_exc())
-        return False
-
-if __name__ == "__main__":
-    print("\n=== Testing S3 Static Files Connection ===")
-    connection_success = test_s3_connection()
-
-    if not connection_success:
-        print("\n=== Trying to upload a test file ===")
-        upload_success = try_upload_test_file()
-
-        if upload_success:
-            print("\n✅ Test file upload successful. Your AWS credentials and bucket permissions seem correct.")
-            print("   The issue might be with the collectstatic process or Django's staticfiles configuration.")
-        else:
-            print("\n❌ Test file upload failed. This suggests there might be an issue with:")
-            print("   1. AWS credentials")
-            print("   2. S3 bucket permissions")
-            print("   3. The bucket name or region configuration")
-            print("   Check the logs above for specific error details.")
-    else:
-        print("\n✅ Successfully connected to S3 and found existing static files.")
-        print("   Your static files are already in the S3 bucket.")
+print("\nTest complete. You can now commit and deploy these changes to Heroku.")
