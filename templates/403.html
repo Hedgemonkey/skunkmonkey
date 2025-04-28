@@ -12,7 +12,7 @@
                 <h1>{% trans "403" %}</h1>
                 <h2>{% trans "Permission Denied" %}</h2>
                 <div class="error-details mb-4">
-                    <p>{{ message|default:"You do not have permission to access this page." }}</p>
+                    <p>{{ exception|default:"You do not have permission to access this page." }}</p>
                 </div>
                 <div class="error-actions">
                     <a href="{% url 'home' %}" class="btn btn-primary">

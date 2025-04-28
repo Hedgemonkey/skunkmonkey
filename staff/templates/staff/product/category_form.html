@@ -40,12 +40,28 @@
 
                         <div class="mb-3">
                             <label for="{{ form.name.id_for_label }}" class="form-label">Category Name*</label>
-                            {{ form.name|as_crispy_field }}
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.name.errors }}
+                                </div>
+                            {% endif %}
+                            {% if form.name.help_text %}
+                                <div class="form-text text-muted">{{ form.name.help_text }}</div>
+                            {% endif %}
                         </div>
 
                         <div class="mb-3">
                             <label for="{{ form.description.id_for_label }}" class="form-label">Description (Optional)</label>
-                            {{ form.description|as_crispy_field }}
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.description.errors }}
+                                </div>
+                            {% endif %}
+                            {% if form.description.help_text %}
+                                <div class="form-text text-muted">{{ form.description.help_text }}</div>
+                            {% endif %}
                         </div>
 
                         <div class="form-check form-switch mb-3">
@@ -63,7 +79,15 @@
                                 <img src="{{ form.instance.image.url }}" class="img-fluid mb-2" style="max-height: 200px;">
                                 {% endif %}
                             </div>
-                            {{ form.image|as_crispy_field }}
+                            {{ form.image }}
+                            {% if form.image.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.image.errors }}
+                                </div>
+                            {% endif %}
+                            {% if form.image.help_text %}
+                                <div class="form-text text-muted">{{ form.image.help_text }}</div>
+                            {% endif %}
                         </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
