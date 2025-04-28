@@ -10,8 +10,6 @@ from django.contrib.staticfiles.management.commands.collectstatic import (
 from django.core.management.base import CommandError
 from django.conf import settings
 
-from home.force_s3_upload import run_collectstatic_with_s3
-
 logger = logging.getLogger('django')
 
 
@@ -69,6 +67,9 @@ class VitePreservingCollector:
 
 class Command(CollectstaticCommand):
     help = 'Collect static files directly to S3 with enhanced logging'
+    
+    # Initialize the attribute here to prevent 'no attribute' error
+    preserve_vite = True
 
     def add_arguments(self, parser):
         super().add_arguments(parser)
@@ -78,10 +79,6 @@ class Command(CollectstaticCommand):
             default=True,
             help='Preserve Vite manifest files during collection',
         )
-
-    def set_options(self, **options):
-        super().set_options(**options)
-        self.preserve_vite = options['preserve_vite']
         
     def handle(self, *args, **options):
         self.stdout.write(self.style.SUCCESS('Starting S3 static file collection...'))
@@ -93,6 +90,9 @@ class Command(CollectstaticCommand):
             )
 
         try:
+            # Set preserve_vite at the beginning to avoid attribute error
+            self.preserve_vite = options.get('preserve_vite', True)
+            
             # Print AWS settings for debugging
             bucket = settings.AWS_STORAGE_BUCKET_NAME
             region = settings.AWS_S3_REGION_NAME
@@ -114,7 +114,6 @@ class Command(CollectstaticCommand):
             options['no_input'] = True
             
             # Call the standard collectstatic command
-            self.set_options(**options)
             super().handle(*args, **options)
             
             # Restore Vite files if needed
