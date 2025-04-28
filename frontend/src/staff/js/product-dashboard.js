@@ -1,5 +1,5 @@
 // Import required CSS
-import '../css/product-manager.css';
+import '@staff/css/product-manager.css';
 
 // Create a flag to check if this module should handle initialization
 window.SKM = window.SKM || {};

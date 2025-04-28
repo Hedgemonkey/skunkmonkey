@@ -55,6 +55,7 @@ export default defineConfig({
         orderManager: resolve(__dirname, 'src/staff/js/order-manager.js'),
         productManager: resolve(__dirname, 'src/staff/js/product-manager.js'), // Staff product manager
         productDashboard: resolve(__dirname, 'src/staff/js/product-dashboard.js'), // Product dashboard
+        productEditor: resolve(__dirname, 'src/staff/js/product-editor.js'), // Product editor with image cropper
       },
       output: {
         assetFileNames: (assetInfo) => {
@@ -186,6 +187,7 @@ export default defineConfig({
                 'orderManager': '/static/src/staff/js/order-manager.js',
                 'productManager': '/static/src/staff/js/product-manager.js', // Staff product manager
                 'productDashboard': '/static/src/staff/js/product-dashboard.js', // Product dashboard
+                'productEditor': '/static/src/staff/js/product-editor.js', // Product editor with image cropper
 
                 // CSS files
                 'mainStyle': '/static/src/core/css/main.css',
