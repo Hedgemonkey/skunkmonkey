@@ -98,6 +98,7 @@ MIDDLEWARE = [
     'allauth.account.middleware.AccountMiddleware',
     'shop.middleware.ComparisonMiddleware',
     'shop.middleware.CartMiddleware',  # Add the shop cart middleware
+    'staff.middleware.StaffProfileMiddleware',  # Add middleware to handle staffprofile
     'csp.middleware.CSPMiddleware',    # Add Content Security Policy middleware
     'skunkmonkey.middleware.SourceMapIgnoreMiddleware',  # Add custom middleware to handle source map requests
 ]
@@ -109,9 +110,9 @@ SECURE_BROWSER_XSS_FILTER = True
 # Configure CSP settings
 CSP_DEFAULT_SRC = ("'self'",)
 CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", "https://fonts.googleapis.com")
-CSP_IMG_SRC = ("'self'", "data:", "https://*.stripe.com", "https://source.unsplash.com")
+CSP_IMG_SRC = ("'self'", "data:", "https://*.stripe.com", "https://source.unsplash.com", "https://*.cloudfront.net")
 CSP_FONT_SRC = ("'self'", "data:", "https://fonts.gstatic.com", "https://use.fontawesome.com", "blob:")
-CSP_CONNECT_SRC = ("'self'", "https://*.stripe.com", "http://hedgemonkey.ddns.net:5173")
+CSP_CONNECT_SRC = ("'self'", "https://*.stripe.com", "http://hedgemonkey.ddns.net:5173", "https://*.amazonaws.com")
 CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'", "https://js.stripe.com", "http://hedgemonkey.ddns.net:5173")
 CSP_FRAME_SRC = ("'self'", "https://*.stripe.com")
 
@@ -161,12 +162,19 @@ CRISPY_CLASS_CONVERTERS = {
     'fileinput': "form-control",
 }
 
-# Default context variables for crispy forms
-CRISPY_CONTEXT_PROCESSORS = [
-    'crispy_forms.context_processors.form_helper',
-    'crispy_forms.context_processors.wrapper_class',
-    'crispy_forms.context_processors.include_media',
-]
+# Define this variable globally to fix the wrapper_class issue
+CRISPY_WRAPPER_CLASS = "mb-3"
+
+# Override the default template pack settings for Bootstrap 5
+CRISPY_BOOTSTRAP5_SETTINGS = {
+    'wrapper_class': 'mb-3',  # This is the key setting for field wrapper
+    'field_class': '',
+    'label_class': '',
+    'form_group_wrapper_class': '',
+    'help_text_inline': True,
+    'error_text_inline': True,
+    'include_media': True,
+}
 
 WSGI_APPLICATION = 'skunkmonkey.wsgi.application'
 
@@ -297,9 +305,41 @@ STATICFILES_DIRS = [
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Media files
+# Media files - local settings that will be overridden if AWS is configured
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIAFILES_LOCATION = 'media'
+
+# Add storages to installed apps
+INSTALLED_APPS += [
+    'storages',
+]
+
+# Use AWS settings if configured
+if env.bool('USE_S3', default=False):
+    # Import AWS settings
+    from .aws import *
+
+    # Add debug output to confirm AWS settings are loaded
+    print(f"DEBUG: AWS S3 enabled - using bucket {AWS_STORAGE_BUCKET_NAME}")
+    print(f"DEBUG: AWS Region: {AWS_S3_REGION_NAME}")
+    print(f"DEBUG: AWS CloudFront: {AWS_S3_CUSTOM_DOMAIN}")
+
+    # Use S3 for media
+    DEFAULT_FILE_STORAGE = 'skunkmonkey.custom_storages.MediaStorage'
+
+    # Now print the storage class after it's defined
+    print(f"DEBUG: Media Storage: {DEFAULT_FILE_STORAGE}")
+
+    # Update media URL to use CloudFront if domain is set
+    if AWS_S3_CUSTOM_DOMAIN:
+        if AWS_S3_CUSTOM_DOMAIN.startswith('https://'):
+            MEDIA_URL = f'{AWS_S3_CUSTOM_DOMAIN}/{MEDIAFILES_LOCATION}/'
+        else:
+            MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{MEDIAFILES_LOCATION}/'
+        # Log CloudFront configuration for debugging
+        print(f"DEBUG: CloudFront domain: {AWS_S3_CUSTOM_DOMAIN}")
+        print(f"DEBUG: Media URL set to: {MEDIA_URL}")
 
 # if os.environ.get("SKUNKMONKEY_VPS_HOST", False):
 #   STATIC_URL = 'http://devel.skunkmonkey.co.uk/static/'
@@ -485,6 +525,11 @@ LOGGING = {
             'handlers': ['console', 'file', 'error_file'],
             'level': 'DEBUG',
             'propagate': True,
+        },
+        'skunkmonkey.custom_storages': {
+            'handlers': ['console', 'file', 'error_file'],
+            'level': 'DEBUG',
+            'propagate': False,
         },
     },
 }
