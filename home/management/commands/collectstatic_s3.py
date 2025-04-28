@@ -2,25 +2,87 @@
 Custom management command to force collectstatic with S3 storage
 """
 import logging
+import os
 
+from django.contrib.staticfiles.management.commands.collectstatic import (
+    Command as CollectstaticCommand
+)
+from django.core.management.base import CommandError
 from django.conf import settings
-from django.core.management.base import BaseCommand, CommandError
 
 from home.force_s3_upload import run_collectstatic_with_s3
 
 logger = logging.getLogger('django')
 
 
-class Command(BaseCommand):
+class VitePreservingCollector:
+    """
+    Custom collector that preserves important Vite files
+    """
+    def __init__(self, command_instance):
+        self.command = command_instance
+        self.preserved_files = ['manifest.json']
+        self.preserved_paths = {}
+        
+    def preserve_vite_files(self):
+        """Save copies of important Vite files before collectstatic runs"""
+        try:
+            static_root = settings.STATIC_ROOT
+            if not os.path.exists(static_root):
+                os.makedirs(static_root)
+                
+            for filename in self.preserved_files:
+                filepath = os.path.join(static_root, filename)
+                if os.path.exists(filepath):
+                    with open(filepath, 'rb') as f:
+                        self.preserved_paths[filename] = f.read()
+                    self.command.stdout.write(
+                        f"Preserved {filename} before collectstatic"
+                    )
+        except Exception as e:
+            self.command.stdout.write(
+                self.command.style.WARNING(
+                    f"Error preserving Vite files: {str(e)}"
+                )
+            )
+        
+    def restore_vite_files(self):
+        """Restore important Vite files after collectstatic runs"""
+        try:
+            static_root = settings.STATIC_ROOT
+            for filename, content in self.preserved_paths.items():
+                filepath = os.path.join(static_root, filename)
+                with open(filepath, 'wb') as f:
+                    f.write(content)
+                self.command.stdout.write(
+                    self.command.style.SUCCESS(
+                        f"Restored {filename} after collectstatic"
+                    )
+                )
+        except Exception as e:
+            self.command.stdout.write(
+                self.command.style.ERROR(
+                    f"Error restoring Vite files: {str(e)}"
+                )
+            )
+
+
+class Command(CollectstaticCommand):
     help = 'Collect static files directly to S3 with enhanced logging'
 
     def add_arguments(self, parser):
+        super().add_arguments(parser)
         parser.add_argument(
-            '--no-clear',
+            '--preserve-vite',
             action='store_true',
-            help='Do not clear the existing files first',
+            default=True,
+            help='Preserve Vite manifest files during collection',
         )
 
+    def set_options(self, **options):
+        super().set_options(**options)
+        self.preserve_vite = options['preserve_vite']
+        
     def handle(self, *args, **options):
         self.stdout.write(self.style.SUCCESS('Starting S3 static file collection...'))
 
@@ -31,9 +93,6 @@ class Command(BaseCommand):
             )
 
         try:
-            clear_files = not options['no_clear']
-            self.stdout.write(f'Clear existing files: {clear_files}')
-
             # Print AWS settings for debugging
             bucket = settings.AWS_STORAGE_BUCKET_NAME
             region = settings.AWS_S3_REGION_NAME
@@ -42,32 +101,32 @@ class Command(BaseCommand):
             self.stdout.write(f'AWS Bucket: {bucket}')
             self.stdout.write(f'AWS Region: {region}')
             self.stdout.write(f'Static Storage: {storage}')
-
-            # Extra debugging for storage class
-            from importlib import import_module
-            module_path, class_name = storage.rsplit('.', 1)
-            try:
-                module = import_module(module_path)
-                storage_class = getattr(module, class_name)
-                self.stdout.write(f'Storage class: {storage_class}')
-                # Create an instance to verify it works
-                storage_instance = storage_class()
-                location = storage_instance.location
-                self.stdout.write(f'Storage location: {location}')
-            except Exception as e:
-                error_msg = f'Error importing storage class: {str(e)}'
-                self.stdout.write(self.style.ERROR(error_msg))
-
-            # Run the collectstatic process with enhanced logging
-            success = run_collectstatic_with_s3(clear=clear_files)
-
-            if success:
-                success_msg = 'Successfully collected static files to S3'
-                self.stdout.write(self.style.SUCCESS(success_msg))
-            else:
-                failure_msg = 'Failed to collect static files to S3'
-                self.stdout.write(self.style.ERROR(failure_msg))
-
+            
+            # Create a Vite file preserver if enabled
+            vite_preserver = None
+            if self.preserve_vite:
+                vite_preserver = VitePreservingCollector(self)
+                vite_preserver.preserve_vite_files()
+            
+            # Set verbosity and other options
+            options['verbosity'] = 2
+            options['clear'] = True  # Always clear to force full upload
+            options['no_input'] = True
+            
+            # Call the standard collectstatic command
+            self.set_options(**options)
+            super().handle(*args, **options)
+            
+            # Restore Vite files if needed
+            if vite_preserver:
+                vite_preserver.restore_vite_files()
+                
+            self.stdout.write(
+                self.style.SUCCESS(
+                    'Successfully collected static files to S3'
+                )
+            )
+            
         except Exception as e:
             logger.exception('Error in collectstatic_s3 command')
             error_msg = f'Error: {str(e)}'

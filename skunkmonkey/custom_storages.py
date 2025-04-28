@@ -195,18 +195,10 @@ class StaticStorage(S3Boto3Storage):
             region = region.split('#')[0].strip()
             print(f"DEBUG: Cleaned AWS region name to: {region}")
 
-        # Configure the AWS client with appropriate settings
-        config = Config(
-            region_name=region,
-            signature_version=settings.AWS_S3_SIGNATURE_VERSION,
-            retries={
-                'max_attempts': self.max_retries,
-                'mode': 'standard'
-            }
-        )
-
-        # Override kwargs with our clean config
-        kwargs['config'] = config
+        # Set S3 options directly as class attributes instead of trying to use config
+        # These will be picked up by S3Boto3Storage
+        self.region_name = region
+        self.signature_version = settings.AWS_S3_SIGNATURE_VERSION
 
         print(
             f"DEBUG: Initializing StaticStorage with region: {region}, "
@@ -214,11 +206,16 @@ class StaticStorage(S3Boto3Storage):
         )
         super().__init__(*args, **kwargs)
         self.fallback_storage = FileSystemStorage(location=settings.STATIC_ROOT)
-
+        print("DEBUG: StaticStorage initialization complete")
+        
     def _save(self, name, content):
         """
         Override _save to enhance error handling and logging when uploading static files to S3
         """
+        # Special handling for manifest.json to ensure it's not deleted
+        if name == 'manifest.json':
+            print("DEBUG: Special handling for manifest.json file")
+            
         print(f"DEBUG: StaticStorage._save called for file: {name}")
         logger.info(f"Attempting to save static file to S3: {name}")
 
