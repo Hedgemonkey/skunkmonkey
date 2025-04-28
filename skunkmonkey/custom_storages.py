@@ -174,3 +174,40 @@ class MediaStorage(S3Boto3Storage):
             logger.error(f"Traceback: {traceback.format_exc()}")
             # Raise the error since we have no more fallbacks
             raise
+
+
+class StaticStorage(S3Boto3Storage):
+    """
+    Custom storage for static files using S3 with CloudFront
+    """
+    location = settings.STATICFILES_LOCATION
+    file_overwrite = True  # Allow overwriting static files during deployment
+    max_retries = 3  # Number of retries for S3 operations
+
+    def __init__(self, *args, **kwargs):
+        print("DEBUG: StaticStorage class initialized")
+
+        # Clean the AWS region name first to ensure it doesn't have comments
+        region = settings.AWS_S3_REGION_NAME
+        if region and '#' in region:
+            region = region.split('#')[0].strip()
+            print(f"DEBUG: Cleaned AWS region name to: {region}")
+
+        # Configure the AWS client with appropriate settings
+        config = Config(
+            region_name=region,
+            signature_version=settings.AWS_S3_SIGNATURE_VERSION,
+            retries={
+                'max_attempts': self.max_retries,
+                'mode': 'standard'
+            }
+        )
+
+        # Override kwargs with our clean config
+        kwargs['config'] = config
+
+        print(
+            f"DEBUG: Initializing StaticStorage with region: {region}, "
+            f"bucket: {settings.AWS_STORAGE_BUCKET_NAME}"
+        )
+        super().__init__(*args, **kwargs)

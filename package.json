@@ -26,7 +26,11 @@
   "scripts": {
     "dev": "vite --config frontend/vite.config.js",
     "build": "vite build --config frontend/vite.config.js",
-    "preview": "vite preview --config frontend/vite.config.js"
+    "preview": "vite preview --config frontend/vite.config.js",
+    "heroku-postbuild": "npm run build && echo 'Vite build completed for Heroku deployment'"
+  },
+  "engines": {
+    "node": "20.x"
   },
   "repository": {
     "type": "git",

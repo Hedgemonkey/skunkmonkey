@@ -1,4 +1,5 @@
 {% load django_vite %}
+{% load skunkmonkey_vite %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -31,10 +32,15 @@
     {% endblock %}
     <title>{% block title %}SkunkMonkey{% endblock %}</title>
     {% block css %}
-        {% vite_hmr_client %}
-        {% vite_asset 'main' %}
+        {% if debug %}
+            {% vite_hmr_client %}
+            {% vite_asset 'main' %}
+        {% else %}
+            {% aws_vite_asset 'main' %}
+        {% endif %}
         <script>
-            console.log("Vite HMR Client URL:", document.querySelector('script[src*="vite/client"]')?.src);
+            console.log("Debug mode: {{ debug }}");
+            console.log("Static URL: {{ STATIC_URL }}");
         </script>
     {% endblock %}
     {% block extra_css %}{% endblock %}

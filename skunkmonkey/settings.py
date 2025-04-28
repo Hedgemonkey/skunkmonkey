@@ -117,11 +117,11 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 SECURE_BROWSER_XSS_FILTER = True
 # Configure CSP settings
 CSP_DEFAULT_SRC = ("'self'",)
-CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", "https://fonts.googleapis.com")
-CSP_IMG_SRC = ("'self'", "data:", "https://*.stripe.com", "https://source.unsplash.com", "https://*.cloudfront.net")
-CSP_FONT_SRC = ("'self'", "data:", "https://fonts.gstatic.com", "https://use.fontawesome.com", "blob:")
-CSP_CONNECT_SRC = ("'self'", "https://*.stripe.com", "http://hedgemonkey.ddns.net:5173", "https://*.amazonaws.com")
-CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'", "https://js.stripe.com", "http://hedgemonkey.ddns.net:5173")
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://*.cloudfront.net")
+CSP_IMG_SRC = ("'self'", "data:", "https://*.stripe.com", "https://source.unsplash.com", "https://*.cloudfront.net", "https://*.amazonaws.com")
+CSP_FONT_SRC = ("'self'", "data:", "https://fonts.gstatic.com", "https://use.fontawesome.com", "blob:", "https://*.cloudfront.net")
+CSP_CONNECT_SRC = ("'self'", "https://*.stripe.com", "http://hedgemonkey.ddns.net:5173", "https://*.amazonaws.com", "https://*.cloudfront.net")
+CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'", "https://js.stripe.com", "http://hedgemonkey.ddns.net:5173", "https://*.cloudfront.net")
 CSP_FRAME_SRC = ("'self'", "https://*.stripe.com")
 
 # Crispy Forms settings
@@ -312,6 +312,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_LOCATION = 'static'  # Define static files location for S3
 
 # Media files - local settings that will be overridden if AWS is configured
 MEDIA_URL = '/media/'
@@ -333,21 +334,32 @@ if env.bool('USE_S3', default=False):
     print(f"DEBUG: AWS Region: {AWS_S3_REGION_NAME}")
     print(f"DEBUG: AWS CloudFront: {AWS_S3_CUSTOM_DOMAIN}")
 
-    # Use S3 for media
+    # Use S3 for media and static files
     DEFAULT_FILE_STORAGE = 'skunkmonkey.custom_storages.MediaStorage'
+    STATICFILES_STORAGE = 'skunkmonkey.custom_storages.StaticStorage'
 
     # Now print the storage class after it's defined
     print(f"DEBUG: Media Storage: {DEFAULT_FILE_STORAGE}")
+    print(f"DEBUG: Static Storage: {STATICFILES_STORAGE}")
 
     # Update media URL to use CloudFront if domain is set
     if AWS_S3_CUSTOM_DOMAIN:
         if AWS_S3_CUSTOM_DOMAIN.startswith('https://'):
             MEDIA_URL = f'{AWS_S3_CUSTOM_DOMAIN}/{MEDIAFILES_LOCATION}/'
+            STATIC_URL = f'{AWS_S3_CUSTOM_DOMAIN}/{STATICFILES_LOCATION}/'
         else:
             MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{MEDIAFILES_LOCATION}/'
+            STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATICFILES_LOCATION}/'
         # Log CloudFront configuration for debugging
         print(f"DEBUG: CloudFront domain: {AWS_S3_CUSTOM_DOMAIN}")
         print(f"DEBUG: Media URL set to: {MEDIA_URL}")
+        print(f"DEBUG: Static URL set to: {STATIC_URL}")
+
+    # Configure django-vite to use the CDN URL for assets in production
+    if not DEBUG:
+        DJANGO_VITE_ASSETS_PATH = STATIC_ROOT
+        DJANGO_VITE_MANIFEST_PATH = os.path.join(STATIC_ROOT, 'manifest.json')
+
 
 # if os.environ.get("SKUNKMONKEY_VPS_HOST", False):
 #   STATIC_URL = 'http://devel.skunkmonkey.co.uk/static/'
