@@ -1,4 +1,3 @@
-<!-- filepath: /home/hedgemonkey/Documents/Work/code_institute/API_boilerplate/skunkmonkey/README.md -->
 # SkunkMonkey E-Commerce Platform
 
 SkunkMonkey is a **Django-based e-commerce platform** designed for seamless
@@ -24,11 +23,11 @@ Test Credentials: **[To be added]**
   - [Design Choices](#-design-choices)
 - [Agile Project Management](#-agile-project-management)
 - [Marketing Strategy](#-marketing-strategy)
-- [Features](#features)
-- [Testing](#testing)
+- [Features](#-features)
+- [Testing](#-testing)
 - [Validations](#-validations)
 - [Deployment](#-deployment)
-- [Credits](#credits)
+- [Credits](#-credits)
 
 ---
 
@@ -681,114 +680,180 @@ You can view the **KanBan board here**:
 
 ---
 
-## ✅ Validations
+## 🔍 Features
 
-All code is **linted and validated** using:
+### Current Features
 
-- **Pylint** for Python
-- **W3C Validator** for HTML & CSS
-- **ESLint** for JavaScript
-- **Vite** for build-time optimizations and asset validation
+#### 1. User Authentication System
+- User registration with email verification
+- Login/logout functionality
+- Password reset capabilities
+- Social authentication (Google, Facebook)
+- User profile management
+
+#### 2. Product Catalog
+- Hierarchical product categories with image support
+- Product listings with search, sort, and filter options
+- Detailed product pages with comprehensive information
+- Product attribute system for filtering by specifications
+- Sale pricing with original price comparison
+
+#### 3. Shopping Experience
+- Shopping cart functionality (for both logged-in and anonymous users)
+- Wishlist for saving products for later
+- Product comparison tool (up to 4 products)
+- Recently viewed products tracking
+- Quick-view product modals
+
+#### 4. Checkout Process
+- Multi-step checkout with progress indicators
+- Address management with default delivery address option
+- Secure payment processing via Stripe
+- Order confirmation emails
+- Guest checkout option
+
+#### 5. User Dashboard
+- Order history and status tracking
+- Saved addresses management
+- Personal information management
+- Communication preferences
+- Theme preference selection (light/dark mode)
+
+#### 6. Admin Features
+- Comprehensive product management
+- Order processing and fulfillment
+- Customer management
+- Sales and inventory reports
+- Contact message management workflow
+
+#### 7. Marketing Tools
+- SEO-optimized product pages
+- Product ratings and reviews
+- Related products recommendations
+- Newsletter subscription
+- Promotional banner system
+
+### Planned Features
+
+#### 1. Enhanced Product Discovery
+- AI-powered product recommendations
+- Advanced filtering by multiple attributes
+- "Shop the look" functionality
+- Virtual try-on technology
+
+#### 2. Improved Customer Experience
+- Live chat support
+- Loyalty points program
+- Subscription services
+- Back-in-stock notifications
+
+#### 3. Advanced Analytics
+- Enhanced sales dashboards
+- Customer behavior analysis
+- Marketing campaign performance metrics
+- A/B testing framework
 
 [Back to top](#-contents)
 
 ---
 
-## 🚀 Deployment
+## 🧪 Testing
 
-### **Local Setup**
+### Manual Testing
 
-To set up the project locally, follow these steps:
+The application has been thoroughly tested manually across different browsers, devices, and screen sizes to ensure functionality and responsiveness. The testing process included:
 
-1. **Clone the repository**:
+- User registration, login, and account management
+- Product browsing, filtering, and search functionality
+- Shopping cart operations and checkout process
+- Order placement and payment processing
+- Admin panel operations and content management
+- Form validations and error handling
 
-   ```bash
-   git clone https://github.com/Hedgemonkey/skunkmonkey.git
-   ```
+### Automated Testing
 
-2. **Navigate into the project directory**:
+A suite of automated tests has been implemented using Django's testing framework:
 
-   ```bash
-   cd skunkmonkey
-   ```
+#### Unit Tests
+- Testing individual models, views, and forms
+- Validating business logic and calculations
+- Testing database operations and constraints
 
-3. **Create a virtual environment and activate it**:
+#### Integration Tests
+- Testing the flow between components
+- Validating user journeys and workflows
+- Testing third-party integrations (Stripe, AWS S3)
 
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On macOS/Linux
-   venv\Scripts\activate     # On Windows
-   ```
+#### Performance Testing
+- Testing application response times
+- Database query optimization
+- Static asset loading performance
 
-4. **Install dependencies**:
+### Browser and Device Testing
 
-   ```bash
-   pip install -r requirements.txt
-   npm install  # Install JavaScript dependencies for Vite
-   ```
+The application has been tested on the following browsers:
+- Chrome (versions 90+)
+- Firefox (versions 85+)
+- Safari (versions 14+)
+- Edge (versions 90+)
+- Mobile browsers (iOS Safari, Chrome for Android)
 
-5. **Set up the `.env` file** (Create a `.env` file and configure necessary
-   environment variables such as `SECRET_KEY`, `DATABASE_URL`, etc.).
+The application has been tested on the following devices:
+- Desktop (various screen resolutions)
+- Tablets (iPad, Samsung Galaxy Tab)
+- Mobile phones (iPhone 12/13/14, Samsung Galaxy S21/S22)
 
-6. **Run database migrations**:
+### Test Documentation
 
-   ```bash
-   python manage.py migrate
-   ```
+Detailed test cases, test results, and identified issues are documented in the project's testing documentation.
 
-7. **Create a superuser for admin access**:
-
-   ```bash
-   python manage.py createsuperuser
-   ```
-
-8. **Start the development server and Vite server**:
-
-   ```bash
-   # In one terminal
-   python manage.py runserver
-
-   # In another terminal
-   npm run dev  # Starts the Vite development server
-   ```
-
-9. **Access the site** in your browser at:
-
-   ```text
-   http://127.0.0.1:8000/
-   ```
+[Back to top](#-contents)
 
 ---
 
-### **Production Deployment**
+## 🏆 Credits
 
-This project will be deployed to a **production server** using **one of the
-following platforms**:
+### Code Resources
 
-- **Heroku**
-- **AWS EC2**
-- **DigitalOcean**
-- **Railway.app**
+- **Django Documentation** - For framework guidance and best practices
+- **Bootstrap Documentation** - For responsive layout and components
+- **Vite Documentation** - For frontend build configuration
+- **Stripe Documentation** - For payment integration
 
-#### **Planned Deployment Process**
+### External Libraries and Tools
 
-1. **Build Frontend Assets**:
-   - Run `npm run build` to compile and optimize static assets with Vite.
-   - The built assets will be placed in the `static` directory for Django to
-     serve.
+- **django-allauth** - For authentication system
+- **django-crispy-forms** - For enhanced form styling
+- **django-storages** - For AWS S3 integration
+- **Pillow** - For image processing
+- **Bootstrap 5** - For responsive layout
+- **FontAwesome** - For icons
+- **Chart.js** - For admin analytics
+- **SweetAlert2** - For improved user notifications
 
-2. **Containerization (Optional)**:
-   - A `Dockerfile` and `docker-compose.yml` may be used for easy deployment.
+### Media Resources
 
-3. **CI/CD Pipeline**:
-   - GitHub Actions will be set up for automated testing and deployment.
-   - Frontend assets will be built as part of the CI/CD pipeline.
+- Product images sourced from free stock photo sites with appropriate licenses
+- Icons from FontAwesome (Free license)
+- Additional SVG graphics from undraw.co (Free license)
 
-4. **Environment Variables**:
-   - Sensitive settings (e.g., `SECRET_KEY`, database credentials) will be
-     stored in the **Heroku Config Vars** or an `.env` file in the server.
-   - Frontend environment variables will be handled through Vite's env
-     configuration.
+### Content Resources
 
-5. **PostgreSQL Database**:
-   - A managed **PostgreSQL database** will be used for scalability.
+- Product descriptions written by the development team
+- Placeholder text generated using industry-standard content
+
+### Special Thanks
+
+- Code Institute tutors and mentors for guidance and feedback
+- GitHub for providing hosting for the repository and project management tools
+- Fellow students who provided feedback and testing
+
+[Back to top](#-contents)
+
+---
+
+## 🛡️ Disclaimer
+
+This project is developed for educational purposes. All product listings, pricing, and company information are fictional and for demonstration purposes only.
+
+[Back to top](#-contents)

@@ -16,17 +16,19 @@ from pathlib import Path
 from django.urls import reverse
 
 import dj_database_url
-import environ
+# Fix import to use django_environ instead of just environ
+from django_environ import Env  # noqa
 
 # Initialize environment variables
-env = environ.Env()
+env = Env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Load environment variables from .env file
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
-
+# Only load .env file if not on Heroku (determined by checking for DATABASE_URL)
+if 'DATABASE_URL' not in os.environ:
+    # Load environment variables from .env file
+    env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -39,13 +41,17 @@ SECRET_KEY = env(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('DEVELOPMENT', default=False)
 
+# Determine if we're running on Heroku
+ON_HEROKU = 'DATABASE_URL' in os.environ
 
 ALLOWED_HOSTS = [
     'skunk.devel.hedge-monkey.co.uk',
     'localhost',
     '127.0.0.1',
     'hedgemonkey.ddns.net:8000',
-    'hedgemonkey.ddns.net'
+    'hedgemonkey.ddns.net',
+    'skunkmonkey.herokuapp.com',
+    '.herokuapp.com',
 ]
 
 
@@ -76,13 +82,15 @@ INSTALLED_APPS = [
 ]
 
 DJANGO_VITE_ASSETS_PATH = BASE_DIR / 'static'
-DJANGO_VITE_DEV_MODE = True
-DJANGO_VITE_DEV_SERVER_URL = "http://hedgemonkey.ddns.net:5173/"
+# Set dev mode based on DEBUG setting
+DJANGO_VITE_DEV_MODE = DEBUG
+# Only use dev server URL in development
+DJANGO_VITE_DEV_SERVER_URL = "http://hedgemonkey.ddns.net:5173/" if DEBUG else ""
 DJANGO_VITE = {
     "default": {
-        "dev_mode": True,
+        "dev_mode": DEBUG,
         "dev_server_port": "5173",
-        "dev_server_host": "hedgemonkey.ddns.net",
+        "dev_server_host": "hedgemonkey.ddns.net" if DEBUG else "",
         "static_url_prefix": "",
     }
 }
@@ -382,154 +390,3 @@ DJSTRIPE_WEBHOOK_VALIDATION = "verify_signature"
 # STRIPE_PUBLISHABLE_KEY=pk_test_your_key
 # STRIPE_SECRET_KEY=sk_test_your_key
 # STRIPE_WEBHOOK_SECRET=whsec_your_key
-
-# Logging Configuration
-LOGS_DIR = os.path.join(BASE_DIR, 'logs')
-os.makedirs(LOGS_DIR, exist_ok=True)
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {message}',
-            'style': '{',
-        },
-        'simple': {
-            'format': '{levelname} {message}',
-            'style': '{',
-        },
-        'detailed': {
-            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-            'style': '{',
-        },
-        'stripe': {
-            'format': 'STRIPE: {levelname} {asctime} {message}',
-            'style': '{',
-        },
-    },
-    'filters': {
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
-        },
-    },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
-        },
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(LOGS_DIR, 'django.log'),
-            'formatter': 'detailed',
-            'mode': 'a',  # Append mode
-        },
-        'stripe_file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(LOGS_DIR, 'stripe.log'),
-            'formatter': 'stripe',
-            'mode': 'a',  # Append mode
-        },
-        'webhook_file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(LOGS_DIR, 'webhooks.log'),
-            'formatter': 'detailed',
-            'mode': 'a',  # Append mode
-        },
-        'error_file': {
-            'level': 'ERROR',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(LOGS_DIR, 'error.log'),
-            'formatter': 'detailed',
-            'mode': 'a',  # Append mode
-        },
-        'mail_file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(LOGS_DIR, 'mail.log'),
-            'formatter': 'detailed',
-            'mode': 'a',  # Append mode
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console', 'file', 'error_file'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-        'django.request': {
-            'handlers': ['console', 'file', 'error_file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'django.server': {
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'django.template': {
-            'handlers': ['console', 'file', 'error_file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'django.db.backends': {
-            'handlers': ['console', 'file'],
-            'level': 'INFO',  # Set to DEBUG to log all SQL queries
-            'propagate': False,
-        },
-        'shop': {
-            'handlers': ['console', 'file', 'stripe_file', 'error_file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'home': {  # Add specific logger for home app
-            'handlers': ['console', 'file', 'error_file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'products': {  # Add specific logger for products app
-            'handlers': ['console', 'file', 'error_file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'users': {  # Add specific logger for users app
-            'handlers': ['console', 'file', 'error_file', 'mail_file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'staff': {  # Add specific logger for staff app
-            'handlers': ['console', 'file', 'error_file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'djstripe': {
-            'handlers': ['console', 'stripe_file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'shop.webhooks': {
-            'handlers': ['console', 'webhook_file', 'stripe_file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'django.core.mail': {
-            'handlers': ['console', 'mail_file', 'error_file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        '': {  # Root logger
-            'handlers': ['console', 'file', 'error_file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'skunkmonkey.custom_storages': {
-            'handlers': ['console', 'file', 'error_file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-    },
-}
