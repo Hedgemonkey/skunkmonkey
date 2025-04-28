@@ -79,43 +79,39 @@ class Command(CollectstaticCommand):
             default=True,
             help='Preserve Vite manifest files during collection',
         )
+    
+    def copy_file(self, source_path, prefixed_path, source_storage=None):
+        """
+        Override copy_file to properly show S3 destinations in logs
+        This implementation maintains compatibility with Django's signature
+        """
+        # First, let the parent implementation do the actual file copying
+        # and get the result
+        result = super().copy_file(source_path, prefixed_path, source_storage)
         
-    def log_copied_file(self, src_path, dst_path):
-        """
-        Override to add enhanced logging for S3 destinations
-        """
-        # Get the relative path from the source
-        if hasattr(src_path, 'name'):
-            # For storage-based files, use the name attribute
-            src_name = src_path.name
-        else:
-            # For regular files, use the path
-            src_name = str(src_path)
+        if result:
+            # Get the original source path for display
+            source_display_name = source_path if isinstance(source_path, str) else source_path.name
             
-        # Get relative path - this will be part of the S3 key
-        try:
-            rel_path = self.storage.get_relative_path(src_name) if hasattr(self.storage, 'get_relative_path') else src_name
-        except:
-            rel_path = str(src_name)
+            # Calculate the S3 destination path
+            bucket = settings.AWS_STORAGE_BUCKET_NAME
+            
+            # The prefixed_path is the destination path relative to the storage root
+            s3_path = f"s3://{bucket}/static/{prefixed_path}"
+            
+            # Add CloudFront URL if available
+            cloudfront_url = None
+            if hasattr(settings, 'CLOUDFRONT_DOMAIN'):
+                cloudfront_url = f"https://{settings.CLOUDFRONT_DOMAIN}/static/{prefixed_path}"
+            
+            # Print enhanced message (in addition to the default "Copying" message)
+            destination_msg = f"S3 destination: '{s3_path}'"
+            if cloudfront_url:
+                destination_msg += f" (accessible at {cloudfront_url})"
+            
+            self.stdout.write(f"  → {destination_msg}")
         
-        # Construct the full S3 destination
-        bucket = settings.AWS_STORAGE_BUCKET_NAME
-        s3_path = f"s3://{bucket}/static/{rel_path}"
-        
-        # Construct CloudFront URL if available
-        cloudfront_url = None
-        if hasattr(settings, 'CLOUDFRONT_DOMAIN'):
-            cloudfront_url = f"https://{settings.CLOUDFRONT_DOMAIN}/static/{rel_path}"
-        
-        # Build the enhanced log message
-        message = f"Copied '{src_path}' to '{s3_path}'"
-        if cloudfront_url:
-            message += f" (accessible at {cloudfront_url})"
-        
-        self.stdout.write(message)
-        
-    # The standard collectstatic's copy_file method calls log_copied_file,
-    # so we don't need to override copy_file, just the logging method
+        return result
         
     def handle(self, *args, **options):
         self.stdout.write(self.style.SUCCESS('Starting S3 static file collection...'))
