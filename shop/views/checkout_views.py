@@ -71,8 +71,106 @@ class CheckoutView(CartAccessMixin, View):
                 # Store the new client secret and cart signature
                 store_stripe_session_data(request, cart, client_secret)
 
-        # Initialize empty form
-        form = CheckoutForm()
+        # Initialize form with default values if the user has a default address
+        initial_data = {}
+
+        if request.user.is_authenticated:
+            # Try to get user's profile and default address
+            try:
+                # Pre-fill user's email and name if available
+                initial_data['email'] = request.user.email
+
+                # Get first and last name if available on the user model
+                if (
+                    hasattr(request.user, 'first_name')
+                    and request.user.first_name
+                ):
+                    initial_data['first_name'] = request.user.first_name
+                if (
+                    hasattr(request.user, 'last_name')
+                    and request.user.last_name
+                ):
+                    initial_data['last_name'] = request.user.last_name
+
+                # Check if user has a userprofile with default address
+                if hasattr(request.user, 'userprofile'):
+                    userprofile = request.user.userprofile
+
+                    # Pre-fill phone number from profile if available
+                    if userprofile.phone_number:
+                        initial_data['phone_number'] = userprofile.phone_number
+
+                    # Check if there's a default delivery address
+                    if userprofile.default_delivery_address:
+                        default_address = userprofile.default_delivery_address
+                        logger.debug(f"Auto-filling form with default address \
+                                     for user {request.user.username}")
+
+                        # Map address fields to form fields
+                        address_mapping = {
+                            'address_line_1': 'shipping_address1',
+                            'address_line_2': 'shipping_address2',
+                            'town_or_city': 'shipping_city',
+                            'county': 'shipping_state',
+                            'postcode': 'shipping_zipcode',
+                            'country': 'shipping_country',
+                            'phone_number': 'phone_number',
+                        }
+
+                        # Copy values from default address to initial data
+                        for address_field, form_field in (
+                                address_mapping.items()):
+                            if (
+                                hasattr(default_address, address_field)
+                                and getattr(default_address, address_field)
+                            ):
+                                initial_data[form_field] = getattr(
+                                    default_address,
+                                    address_field
+                                )
+
+                        # Split user's name for shipping fields if we don't
+                        # have first/last name
+                        # This is a fallback if user model doesn't have
+                        # separate name fields
+                        if (
+                            'first_name' not in initial_data
+                            and 'last_name' not in initial_data
+                        ):
+                            # Try to get full name from user model
+                            full_name = (
+                                request.user.get_full_name()
+                                if hasattr(request.user, 'get_full_name')
+                                else ''
+                            )
+                            if full_name:
+                                # Simple split on first space - not perfect
+                                # but a reasonable fallback
+                                name_parts = full_name.split(' ', 1)
+                                initial_data['shipping_first_name'] = (
+                                    name_parts[0]
+                                )
+                                initial_data['shipping_last_name'] = (
+                                    name_parts[1]
+                                    if len(name_parts) > 1 else ''
+                                )
+                        else:
+                            # Use the first/last name we already have
+                            initial_data['shipping_first_name'] = (
+                                initial_data.get('first_name', '')
+                            )
+                            initial_data['shipping_last_name'] = (
+                                initial_data.get('last_name', '')
+                            )
+
+            except Exception as e:
+                # Log the error but continue with empty form
+                logger.error(
+                    f"Error pre-filling form with default address: {e}"
+                )
+
+        # Initialize the form, either empty or with pre-filled data
+        form = CheckoutForm(initial=initial_data)
 
         context = {
             'cart': cart,

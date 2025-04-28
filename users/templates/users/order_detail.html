@@ -21,7 +21,7 @@
                         <p><strong>Order Total:</strong> £{{ order.grand_total|floatformat:2 }}</p>
                         <p><strong>Status:</strong>
                             {% if order.status %}
-                                <span class="badge {% if order.status == 'Completed' %}bg-success{% elif order.status == 'Processing' %}bg-warning text-dark{% elif order.status == 'Cancelled' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                <span class="badge {% if order.status == 'delivered' %}bg-success{% elif order.status == 'processing' %}bg-warning text-dark{% elif order.status == 'cancelled' %}bg-danger{% else %}bg-secondary{% endif %}">
                                     {{ order.get_status_display|default:order.status }}
                                 </span>
                             {% else %}
@@ -30,22 +30,22 @@
                         </p>
                     </div>
                     <div class="col-md-6">
-                         <h5>Delivery Address</h5>
-                         {% if order.delivery_address %} <!-- Check if delivery address is stored on the order -->
-                            <address>
-                                {{ order.delivery_address.get_full_address|linebreaksbr }}
-                                {% if order.delivery_address.phone_number %}
-                                    <br>Tel: {{ order.delivery_address.phone_number }}
-                                {% endif %}
-                             </address>
-                         {% elif user.userprofile.default_delivery_address %}
-                             <p><em>(Using default address at time of order)</em></p>
-                             <address>
-                                {{ user.userprofile.default_delivery_address.get_full_address|linebreaksbr }}
-                             </address>
-                         {% else %}
-                             <p class="text-danger">No delivery address recorded for this order.</p>
-                         {% endif %}
+                         <h5>Shipping Address</h5>
+                         <!-- Use the shipping address fields directly from the order -->
+                         <address>
+                             {{ order.full_name }}<br>
+                             {{ order.shipping_address1 }}<br>
+                             {% if order.shipping_address2 %}
+                                 {{ order.shipping_address2 }}<br>
+                             {% endif %}
+                             {{ order.shipping_city }}<br>
+                             {{ order.shipping_state }}<br>
+                             {{ order.shipping_zipcode }}<br>
+                             {{ order.shipping_country }}<br>
+                             {% if order.phone_number %}
+                                 Tel: {{ order.phone_number }}
+                             {% endif %}
+                         </address>
                     </div>
                 </div>
 
@@ -62,28 +62,25 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for item in order.lineitems.all %} {# Adjust related name if needed #}
+                            {% for item in order.items.all %}
                                 <tr>
                                     <td>
                                         {% if item.product %}
                                              <a href="{{ item.product.get_absolute_url }}">{{ item.product.name }}</a>
-                                             {% if item.product_variant %}
-                                                <small class="text-muted d-block">{{ item.product_variant.get_display_name }}</small> {# Example for variants #}
-                                             {% endif %}
                                         {% else %}
                                             <span class="text-muted">Product not found</span>
                                         {% endif %}
                                     </td>
                                     <td class="text-center">{{ item.quantity }}</td>
                                     <td class="text-end">£{{ item.price|floatformat:2 }}</td>
-                                    <td class="text-end">£{{ item.lineitem_total|floatformat:2 }}</td>
+                                    <td class="text-end">£{{ item.subtotal|floatformat:2 }}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
                          <tfoot>
                             <tr>
-                                <td colspan="3" class="text-end"><strong>Delivery:</strong></td>
-                                <td class="text-end">£{{ order.delivery_cost|floatformat:2 }}</td>
+                                <td colspan="3" class="text-end"><strong>Shipping:</strong></td>
+                                <td class="text-end">£{{ order.shipping_cost|floatformat:2 }}</td>
                             </tr>
                              <tr>
                                 <td colspan="3" class="text-end"><strong>Grand Total:</strong></td>

@@ -52,46 +52,165 @@ class CheckoutView(CartAccessMixin, View):
         if request.user.is_authenticated:
             self.logger.debug(
                 f"Pre-filling form for authenticated user: \
-                    {request.user.username}")
+                {request.user.username}"
+            )
+
+            # Basic user information
+            first_name = request.user.first_name
+            last_name = request.user.last_name
+
+            # Log user name details to debug form population
+            self.logger.debug(
+                f"User first name: {first_name}, last name: {last_name}"
+            )
+
             initial_data = {
-                'full_name': request.user.get_full_name(),
+                'first_name': first_name,
+                'last_name': last_name,
                 'email': request.user.email
             }
 
-            # Get the most recent order for this user to pre-fill address
-            # fields
+            # Try to get user profile and default address
             try:
-                last_order = Order.objects.filter(
-                    user=request.user).latest('created_at')
-                if last_order:
+                # Log if userprofile exists
+                has_profile = hasattr(request.user, 'userprofile')
+                self.logger.debug(f"User has profile: {has_profile}")
+
+                if has_profile:
+                    # Log if default address exists
+                    has_default_address = (
+                        request.user.userprofile.default_delivery_address
+                        is not None
+                    )
                     self.logger.debug(
-                        f"Found previous order {
-                            last_order.order_number} - using for \
-                                address pre-fill")
-                    # Pre-fill shipping address
-                    initial_data.update({
-                        'shipping_address1': last_order.shipping_address1,
-                        'shipping_address2': last_order.shipping_address2,
-                        'shipping_city': last_order.shipping_city,
-                        'shipping_state': last_order.shipping_state,
-                        'shipping_zipcode': last_order.shipping_zipcode,
-                        'shipping_country': last_order.shipping_country,
-                        # Pre-fill billing address
-                        'billing_address1': last_order.billing_address1,
-                        'billing_address2': last_order.billing_address2,
-                        'billing_city': last_order.billing_city,
-                        'billing_state': last_order.billing_state,
-                        'billing_zipcode': last_order.billing_zipcode,
-                        'billing_country': last_order.billing_country,
-                        'phone_number': last_order.phone_number,
-                    })
-            except Order.DoesNotExist:
-                self.logger.debug("No previous orders found for user")
-                # No previous order, just use the basic user info
+                        f"User has default address: {has_default_address}"
+                    )
+
+                    if has_default_address:
+                        default_address = (
+                            request.user.userprofile.default_delivery_address
+                        )
+                        self.logger.debug(
+                            f"Default address: {default_address}"
+                        )
+
+                        # Map the default address fields to the checkout form
+                        # fields. This is where the form population happens
+                        address_data = {
+                            'shipping_address1': (
+                                default_address.address_line_1
+                            ),
+                            'shipping_address2': (
+                                default_address.address_line_2
+                            ),
+                            'shipping_city': (
+                                default_address.town_or_city
+                            ),
+                            'shipping_state': (
+                                default_address.county
+                            ),
+                            'shipping_zipcode': (
+                                default_address.postcode
+                            ),
+                            'shipping_country': (
+                                default_address.country
+                            ),
+                            'phone_number': (
+                                default_address.phone_number
+                                or getattr(
+                                    request.user.userprofile,
+                                    'phone_number',
+                                    ''
+                                )
+                            ),
+
+                            # Populate the shipping name fields
+                            'shipping_first_name': first_name,
+                            'shipping_last_name': last_name,
+                        }
+
+                        # Log the address data being used
+                        self.logger.debug(
+                            f"Pre-filling form with address data: \
+                                {address_data}"
+                        )
+
+                        initial_data.update(address_data)
+                    else:
+                        self.logger.debug(
+                            "No default address found for user, "
+                            "checking previous orders"
+                        )
+
+                        # Get the most recent order for this user to pre-fill
+                        #  address fields
+                        try:
+                            last_order = Order.objects.filter(
+                                user=request.user).latest('created_at')
+                            if last_order:
+                                self.logger.debug(
+                                    f"Found previous order \
+                                        {last_order.order_number} - \
+                                            using for address pre-fill")
+                                # Pre-fill shipping address
+                                order_data = {
+                                    'shipping_address1': (
+                                        last_order.shipping_address1
+                                    ),
+                                    'shipping_address2': (
+                                        last_order.shipping_address2
+                                    ),
+                                    'shipping_city': (
+                                        last_order.shipping_city
+                                    ),
+                                    'shipping_state': (
+                                        last_order.shipping_state
+                                    ),
+                                    'shipping_zipcode': (
+                                        last_order.shipping_zipcode
+                                    ),
+                                    'shipping_country': (
+                                        last_order.shipping_country
+                                    ),
+
+                                    # Phone number
+                                    'phone_number': last_order.phone_number,
+
+                                    # Shipping name fields
+                                    'shipping_first_name': first_name,
+                                    'shipping_last_name': last_name,
+                                }
+
+                                # Log the order data being used
+                                self.logger.debug(
+                                    f"Pre-filling form with order data: \
+                                        {order_data}")
+
+                                initial_data.update(order_data)
+                        except Order.DoesNotExist:
+                            self.logger.debug(
+                                "No previous orders found for user")
+                else:
+                    self.logger.debug("User doesn't have a userprofile")
+            except Exception as e:
+                self.logger.error(f"Error getting user profile or address \
+                                  data: {e}", exc_info=True)
         else:
             self.logger.debug("User is not authenticated - no form pre-fill")
 
+        # Log final initial data for form
+        self.logger.debug(f"Final initial data for form: {initial_data}")
+
+        # Check if the form has billing fields that need to be populated
+        form_fields = list(CheckoutForm.Meta.fields)
+        self.logger.debug(f"Form fields: {form_fields}")
+
         form = CheckoutForm(initial=initial_data)
+
+        # Check if form has billing fields that need to be populated
+        form_fields = list(form.fields.keys())
+        self.logger.debug(f"All form fields after initialization: \
+                          {form_fields}")
 
         # Get Stripe API key
         stripe_public_key = settings.STRIPE_PUBLISHABLE_KEY
@@ -102,7 +221,7 @@ class CheckoutView(CartAccessMixin, View):
             'stripe_public_key': stripe_public_key,
             'client_secret': request.session.get('client_secret', ''),
             'order_id': '',  # Add empty order_id to avoid template error
-            'djstripe_webhook_url': '/stripe/webhook/'
+            'djstripe_webhook_url': '/stripe/webhook/',
         }
 
         self.logger.info("Checkout page prepared successfully")
@@ -225,7 +344,7 @@ class CheckoutView(CartAccessMixin, View):
                 'form': form,
                 'stripe_public_key': stripe_public_key,
                 'client_secret': request.session.get('client_secret', ''),
-                'djstripe_webhook_url': '/stripe/webhook/'
+                'djstripe_webhook_url': '/stripe/webhook/',
             }
             return render(request, self.template_name, context)
 

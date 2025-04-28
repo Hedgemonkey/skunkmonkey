@@ -1,0 +1,33 @@
+/* Custom styles for SkunkMonkey - separate from main.css */
+
+/* Fix for stretched checkboxes with form-control class */
+input[type="checkbox"].form-control,
+input[type="checkbox"].form-check-input,
+input[type="checkbox"] {
+  width: 1em !important;
+  height: 1em !important;
+  min-width: 1em !important;
+  max-width: 1em !important;
+  min-height: 1em !important;
+  max-height: 1em !important;
+  flex: none !important;
+  display: inline-block !important;
+  margin-top: 0.25em !important;
+  margin-right: 0.5em !important;
+  padding: 0 !important;
+  transform: none !important;
+}
+
+/* Fix checkbox container div styling */
+div:has(> input[type="checkbox"]) {
+  width: auto !important;
+  height: auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+/* Ensure label alignment with checkboxes */
+label.form-check-label {
+  display: inline-block !important;
+  vertical-align: middle !important;
+}

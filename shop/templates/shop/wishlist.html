@@ -27,10 +27,10 @@
                     <div class="col">
                         <div class="card h-100 product-card">
                             <!-- Product image -->
-                            {% if item.product.image %}
-                                <img src="{{ item.product.image.url }}" class="card-img-top product-image" alt="{{ item.product.name }}">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" class="card-img-top product-image" alt="{{ product.name }}">
                             {% else %}
-                                <img src="{% static 'img/no-image.png' %}" class="card-img-top product-image" alt="No image available">
+                                <img src="{{ MEDIA_URL }}noimage.png" class="card-img-top product-image" alt="No image available">
                             {% endif %}
 
                             <!-- Product details -->

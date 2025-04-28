@@ -3,6 +3,7 @@
  * Manages adding, removing, and updating items in the shopping cart
  */
 import '../css/cart.css';
+import '../css/components/product-images.css';
 import { ApiClient } from '@common/js/api-client.js';
 
 class CartManager {

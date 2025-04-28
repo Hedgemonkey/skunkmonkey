@@ -262,9 +262,11 @@ class CheckoutForm(forms.ModelForm):
                 # Save Payment Info Option
                 Field('save_payment_info', css_class='mb-3'),
 
-                # Hidden Fields
-                Field('payment_intent_id'),
-                Field('payment_method_type'),
+                # Hidden Fields - using HTML to render directly without labels
+                HTML('<input type="hidden" name="payment_intent_id" \
+                     id="payment_intent_id">'),
+                HTML('<input type="hidden" name="payment_method_type" \
+                     id="payment_method_type">'),
 
                 css_class='payment-form-section mb-4'
             ),

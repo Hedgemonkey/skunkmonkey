@@ -5,7 +5,9 @@
 {% block title %}Checkout - SkunkMonkey Shop{% endblock %}
 
 {% block extra_css %}
-    {% vite_asset 'shop/checkout.css' %}
+    {% vite_asset 'checkout' %}
+    {% vite_asset 'checkoutManager' %}
+    {% vite_asset 'stripeIntegration' %}
 {% endblock %}
 
 {% block header %}
@@ -81,15 +83,10 @@
                         <div class="d-flex mb-3">
                             <div class="flex-shrink-0">
                                 {% if item.product.image %}
-                                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}"
-                                         class="checkout-item-img img-fluid"
-                                         width="60" height="60"
-                                         loading="lazy"
-                                         onerror="this.onerror=null; this.src='{% static 'img/no-image.png' %}';">
+                                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="checkout-item-img"
+                                         onerror="this.onerror=null; this.src='{{ MEDIA_URL }}noimage.png';">
                                 {% else %}
-                                    <img src="{% static 'img/no-image.png' %}" alt="No image"
-                                         class="checkout-item-img img-fluid"
-                                         width="60" height="60">
+                                    <img src="{{ MEDIA_URL }}noimage.png" alt="No image" class="checkout-item-img" width="60" height="60">
                                 {% endif %}
                             </div>
                             <div class="flex-grow-1 ms-3">
@@ -140,22 +137,9 @@
         <p class="mt-2">Processing your payment...</p>
     </div>
 </div>
-
-{% if DEBUG %}
-<div class="stripe-test-mode-banner">
-    <strong>STRIPE TEST MODE</strong> - No real payments will be processed
-</div>
-{% endif %}
 {% endblock %}
 
 {% block postloadjs %}
     {{ block.super }}
     <script src="https://js.stripe.com/v3/"></script>
-    {% vite_asset 'shop/checkout.js' %}
-{% endblock %}
-
-{% block extra_js %}
-    {% vite_asset 'shop/checkout.js' %}
-    {% vite_asset 'shop/checkout-manager.js' %}
-    {% vite_asset 'shop/stripe-integration.js' %}
 {% endblock %}

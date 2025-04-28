@@ -1,9 +1,11 @@
 /**
  * Wishlist Manager
- * Handles wishlist functionality for the shop
+ * Manages wishlist functionality for the shop
  */
+
+import { ApiClient } from '@common/js/api-client.js';
 import '../css/wishlist.css';
-import apiClient from '@common/js/api-client.js';
+import '../css/components/product-images.css';
 
 /**
  * WishlistManager class for handling wishlist functionality
@@ -266,7 +268,7 @@ class WishlistManager {
         const url = `/shop/wishlist/toggle/${productId}/`;
         this.log('POSTing to:', url);
 
-        apiClient.post(url, { product_id: productId })
+        ApiClient.post(url, { product_id: productId })
             .then(response => {
                 // ... (Keep the .then() logic for parsing, determining final state, updating Set, showing toast, removing item) ...
                 this.log('Raw response:', response);

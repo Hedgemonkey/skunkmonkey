@@ -1,10 +1,12 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load django_vite %}
 
 {% block title %}Your Cart - SkunkMonkey Shop{% endblock %}
 
 {% block extra_css %}
-    {% vite_asset 'shop/cart.css' %}
+    {{ block.super }}
+    {% vite_asset 'cartManager' %}
 {% endblock %}
 
 {% block header %}
@@ -45,7 +47,7 @@
                                             {% if item.product.image %}
                                                 <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="cart-item-img rounded">
                                             {% else %}
-                                                <img src="{% static 'img/no-image.png' %}" alt="No image" class="cart-item-img rounded">
+                                                <img src="{{ MEDIA_URL }}noimage.png" alt="No image" class="cart-item-img rounded">
                                             {% endif %}
                                         </td>
                                         <td>
@@ -138,13 +140,4 @@
         </div>
     {% endif %}
 </div>
-{% endblock %}
-
-{% block postloadjs %}
-    {{ block.super }}
-    {% vite_asset 'shop/cart.js' %}
-{% endblock %}
-
-{% block extra_js %}
-    {% vite_asset 'shop/cart-manager.js' %}
 {% endblock %}

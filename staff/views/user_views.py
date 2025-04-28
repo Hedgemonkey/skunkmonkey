@@ -124,6 +124,28 @@ class UserDetailView(ManagerAccessMixin, DetailView):
         # Profile form for updates
         context['profile_form'] = UserProfileForm(instance=profile)
 
+        # Add empty address_form to prevent template errors
+        context['address_form'] = None
+
+        # Check if user has a default delivery address and create a form for it
+        try:
+            if (
+                hasattr(profile, 'default_delivery_address')
+                and profile.default_delivery_address
+            ):
+                # Import the AddressForm if available
+                try:
+                    from users.forms import AddressForm
+                    context['address_form'] = AddressForm(
+                        instance=profile.default_delivery_address)
+                except ImportError:
+                    logger.debug(
+                        "AddressForm not available, address form section "
+                        "will be hidden"
+                    )
+        except Exception as e:
+            logger.error(f"Error getting address form: {e}")
+
         # Last login information
         context['last_login'] = user.last_login
 

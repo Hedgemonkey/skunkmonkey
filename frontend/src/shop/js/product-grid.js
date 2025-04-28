@@ -1,8 +1,9 @@
 /**
- * Product Grid JavaScript
- * Handles the functionality for the product grid component
- * Imports wishlist functionality rather than reimplementing it
+ * Product Grid functionality
+ * Handles product grid layout and interactions
  */
+import '../css/product-list.css';
+import '../css/components/product-images.css';
 
 // Import dependencies
 import { Tooltip } from 'bootstrap'; // Correct: Import only the Tooltip component

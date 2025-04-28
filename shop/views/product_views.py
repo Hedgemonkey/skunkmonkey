@@ -28,7 +28,6 @@ def product_list_ajax(request):
         category = request.GET.get('category')
         search = request.GET.get('search', '').lower()
         sort = request.GET.get('sort', 'name-asc')
-        # Removed unused items_only variable
         count_only = request.GET.get('count_only') == 'true'
 
         products = Product.objects.filter(is_active=True)
@@ -210,12 +209,57 @@ class ProductDetailView(CartAccessMixin, DetailView):
 
         # Track view if user is authenticated
         if self.request.user.is_authenticated:
-            # Add to recently viewed
-            RecentlyViewedItem.objects.update_or_create(
-                user=self.request.user,
-                product=product,
-                defaults={'viewed_at': timezone.now()}
-            )
+            # Fix for multiple RecentlyViewedItem records
+            try:
+                # First, delete any duplicate entries for this user and product
+                duplicate_items = RecentlyViewedItem.objects.filter(
+                    user=self.request.user,
+                    product=product
+                )
+                # If there are multiple entries, delete all but keep the most
+                # recent one
+                if duplicate_items.count() > 1:
+                    # Keep the most recent entry
+                    most_recent = (
+                        duplicate_items.order_by('-viewed_at').first())
+                    # Delete all other entries
+                    duplicate_items.exclude(id=most_recent.id).delete()
+                    # Update the timestamp on the kept entry
+                    most_recent.viewed_at = timezone.now()
+                    most_recent.save()
+                elif duplicate_items.count() == 1:
+                    # Just update the timestamp on the existing entry
+                    item = duplicate_items.first()
+                    item.viewed_at = timezone.now()
+                    item.save()
+                else:
+                    # Create a new entry if none exists
+                    RecentlyViewedItem.objects.create(
+                        user=self.request.user,
+                        product=product,
+                        viewed_at=timezone.now()
+                    )
+
+                # Add recently viewed products to context
+                recent_items = RecentlyViewedItem.objects.filter(
+                    user=self.request.user
+                ).exclude(
+                    product=product
+                ).order_by(
+                    '-viewed_at'
+                )[:5]
+
+                # Get the actual Product objects
+                context['recently_viewed'] = [
+                    item.product for item in recent_items
+                ]
+            except Exception as e:
+                # Log any errors but don't break the page viewing experience
+                logger.error(f"Error tracking recently viewed item: {e}")
+                context['recently_viewed'] = []
+        else:
+            # For unauthenticated users, set empty list
+            context['recently_viewed'] = []
 
         return context
 

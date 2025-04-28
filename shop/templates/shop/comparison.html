@@ -1,11 +1,16 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load custom_filters %}
+{% load django_vite %}
+{% load crispy_forms_tags %}
+
+{% block header %}
+{% endblock %}
 
 {% block title %}Product Comparison - SkunkMonkey Shop{% endblock %}
 
 {% block extra_css %}
-    {% vite_asset 'shop/product-list.css' %}
+    {% vite_asset 'comparisonManager' %}
 {% endblock %}
 
 {% block content %}
@@ -29,7 +34,7 @@
                                 {% if product.image %}
                                     <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image mb-2">
                                 {% else %}
-                                    <img src="{% static 'img/no-image.png' %}" alt="No image" class="product-image mb-2">
+                                    <img src="{{ MEDIA_URL }}noimage.png" alt="No image" class="product-image mb-2">
                                 {% endif %}
                                 <div class="product-price mb-2">${{ product.price }}</div>
                                 <a href="{% url 'shop:product_detail' product.slug %}" class="btn btn-sm btn-outline-primary mb-2">View Details</a>
@@ -133,8 +138,4 @@
             // Nothing to do here, just a placeholder for any future JS
         });
     </script>
-{% endblock %}
-
-{% block extra_js %}
-    {% vite_asset 'shop/comparison-manager.js' %}
 {% endblock %}

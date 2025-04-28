@@ -7,7 +7,6 @@
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 <li class="nav-item"><a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">Home</a></li>
                 <li class="nav-item"><a class="nav-link {% if '/shop/' in request.path %}active{% endif %}" href="{% url 'shop:product_list' %}">Shop</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">About</a></li>
                 <li class="nav-item"><a class="nav-link {% if '/users/contact/' in request.path %}active{% endif %}" href="{% url 'users:users_contact' %}">Contact</a></li>
 
                 <!-- Cart icon with item count -->
@@ -36,7 +35,7 @@
                         Management
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownManagement">
-                        <li><a class="dropdown-item" href="{% url 'products:product_management' %}">Product Management</a></li>
+                        <li><a class="dropdown-item" href="{% url 'staff:product_management' %}">Product Management</a></li>
                         <li><a class="dropdown-item" href="{% url 'staff:dashboard' %}">Staff Dashboard</a></li>
                         <li><a class="dropdown-item" href="{% url 'staff:order_list' %}">Order Management</a></li>
                         {% if user.staff_profile.is_manager or user.is_superuser %}

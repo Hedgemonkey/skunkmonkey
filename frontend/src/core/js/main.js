@@ -1,4 +1,5 @@
 import '../css/main.css';
+import '../css/style.css'; // Custom styles - loads after main.css to override defaults
 /*!
 * Start Bootstrap - Full Width Pics v5.0.6 (https://startbootstrap.com/template/full-width-pics)
 * Copyright 2013-2023 Start Bootstrap

@@ -4,9 +4,12 @@ Direct S3 upload test script.
 This script bypasses Django and directly tests AWS S3 connectivity and uploads.
 """
 import os
+import sys  # noqa: F401
 from pathlib import Path
 
-import boto3
+import django  # noqa: F401
+
+import boto3  # noqa: F401
 from botocore.exceptions import ClientError
 from dotenv import load_dotenv
 

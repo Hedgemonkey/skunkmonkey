@@ -93,7 +93,7 @@ class OrderListView(DepartmentAccessMixin, ListView):
 
         from django.utils import timezone
 
-        logger = logging.getLogger(__name__)
+        logger = logging.getLogger(__name__)  # noqa
 
         # Calculate order statistics
         total_orders = Order.objects.count()
@@ -122,13 +122,21 @@ class OrderListView(DepartmentAccessMixin, ListView):
         # Flag for filtered results
         context['filtered'] = bool(self.request.GET)
 
-        # Add debug logging
-        logger.info(
-            f"Order list context: total_orders={total_orders}, "
-            f"orders_today={orders_today}, "
-            f"pending_orders={pending_orders}, "
-            f"total_revenue={context['total_revenue']}"
-        )
+        # Add a template-friendly request_params dict with defaults for all
+        # parameters. This replaces direct access to request.GET in the
+        # template.
+        context['request_params'] = {
+            'order_number': self.request.GET.get('order_number', ''),
+            'customer_name': self.request.GET.get('customer_name', ''),
+            'customer_email': self.request.GET.get('customer_email', ''),
+            'date_from': self.request.GET.get('date_from', ''),
+            'date_to': self.request.GET.get('date_to', ''),
+            'status': self.request.GET.get('status', ''),
+            'payment_status': self.request.GET.get('payment_status', ''),
+            'min_price': self.request.GET.get('min_price', ''),
+            'max_price': self.request.GET.get('max_price', ''),
+            'sort': self.request.GET.get('sort', '-created_at'),
+        }
 
         return context
 

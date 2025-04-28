@@ -10,6 +10,9 @@
     {% vite_asset 'productDetailManager' %}
 {% endblock %}
 
+{% block header %}
+{% endblock %}
+
 {% block content %}
 {% get_wishlist_items as wishlist_product_ids %}
 <div class="container my-5">
@@ -29,7 +32,7 @@
                 {% if product.image %}
                     <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded shadow">
                 {% else %}
-                    <img src="{% static 'img/no-image.png' %}" alt="No image available" class="img-fluid rounded shadow">
+                    <img src="{{ MEDIA_URL }}noimage.png" alt="No image available" class="img-fluid rounded shadow">
                 {% endif %}
             </div>
         </div>
@@ -138,7 +141,7 @@
                     {% if related.image %}
                         <img src="{{ related.image.url }}" class="card-img-top" alt="{{ related.name }}">
                     {% else %}
-                        <img src="{% static 'img/no-image.png' %}" class="card-img-top" alt="No image available">
+                        <img src="{{ MEDIA_URL }}noimage.png" class="card-img-top" alt="No image available">
                     {% endif %}
                     <div class="card-body">
                         <h5 class="card-title">{{ related.name }}</h5>
@@ -164,7 +167,7 @@
                     {% if viewed_product.image %}
                         <img src="{{ viewed_product.image.url }}" class="card-img-top" alt="{{ viewed_product.name }}" loading="lazy">
                     {% else %}
-                        <img src="{% static 'img/no-image.png' %}" class="card-img-top" alt="No image available" loading="lazy">
+                        <img src="{{ MEDIA_URL }}noimage.png" class="card-img-top" alt="No image available" loading="lazy">
                     {% endif %}
                     <div class="card-body">
                         <h5 class="card-title">{{ viewed_product.name }}</h5>

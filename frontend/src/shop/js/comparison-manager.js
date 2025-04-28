@@ -1,14 +1,8 @@
 /**
  * Comparison Manager
- * Handles product comparison functionality
- *
- * This module provides functionality for managing product comparisons,
- * including adding and removing products from the comparison list,
- * updating the UI, and displaying notifications.
+ * Manages product comparison functionality for the shop
  */
-
-// Use path alias instead of absolute path
-import apiClient from '@common/js/api-client.js';
+import '../css/components/product-images.css';
 
 /**
  * ComparisonManager class for handling product comparison functionality

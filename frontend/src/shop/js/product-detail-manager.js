@@ -3,6 +3,8 @@
  * Manages quantity selectors and integrates with cart and wishlist
  */
 import '../css/product-detail.css';
+import '../css/components/product-images.css';
+
 class ProductDetailManager {
     constructor() {
         this.initQuantityControls();
