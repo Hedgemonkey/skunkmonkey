@@ -59,3 +59,4 @@ flake8_*.txt
 .coverage
 htmlcov/
 coverage.xml
+assessment.md
