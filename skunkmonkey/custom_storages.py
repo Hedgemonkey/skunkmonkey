@@ -211,3 +211,115 @@ class StaticStorage(S3Boto3Storage):
             f"bucket: {settings.AWS_STORAGE_BUCKET_NAME}"
         )
         super().__init__(*args, **kwargs)
+        self.fallback_storage = FileSystemStorage(location=settings.STATIC_ROOT)
+        
+    def _save(self, name, content):
+        """
+        Override _save to enhance error handling and logging when uploading static files to S3
+        """
+        logger.info(f"Attempting to save static file to S3: {name}")
+
+        try:
+            # Try to connect to S3 directly to test connection
+            s3 = boto3.client(
+                's3',
+                region_name=settings.AWS_S3_REGION_NAME.split('#')[0].strip(),
+                aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
+            )
+
+            # Test S3 connection by listing objects
+            try:
+                s3.list_objects_v2(
+                    Bucket=settings.AWS_STORAGE_BUCKET_NAME,
+                    MaxKeys=1
+                )
+                logger.info("S3 connection test successful for static files")
+            except Exception as e:
+                logger.error(f"S3 connection test failed for static files: {str(e)}")
+                return self._save_to_fallback(name, content)
+
+            # Try uploading to S3 with retries
+            retry_count = 0
+            while retry_count < self.max_retries:
+                try:
+                    logger.info(
+                        f"S3 static file upload attempt {retry_count + 1} for {name}"
+                    )
+
+                    # Log S3 configuration for debugging
+                    logger.info(
+                        "S3 Static Configuration: Bucket=%s, Region=%s, Location=%s",
+                        settings.AWS_STORAGE_BUCKET_NAME,
+                        settings.AWS_S3_REGION_NAME,
+                        self.location
+                    )
+
+                    # Try to perform the actual save operation
+                    result = super()._save(name, content)
+
+                    # Log success
+                    logger.info(f"Successfully saved static file to S3: {name}")
+
+                    # Return the result
+                    return result
+
+                except ClientError as e:
+                    # Log detailed S3 errors
+                    error_code = e.response['Error']['Code']
+                    error_message = e.response['Error']['Message']
+                    logger.error(
+                        (
+                            f"AWS S3 error saving static file {name}: "
+                            f"{error_code} - {error_message}"
+                        )
+                    )
+
+                    retry_count += 1
+                    if retry_count < self.max_retries:
+                        # Wait before retrying (exponential backoff)
+                        time.sleep(2 ** retry_count)
+                    else:
+                        # All retries failed, try fallback storage
+                        logger.warning(
+                            f"S3 static upload failed after "
+                            f"{self.max_retries} attempts. "
+                            f"Using local fallback for {name}"
+                        )
+                        return self._save_to_fallback(name, content)
+
+                except Exception as e:
+                    # Log other unexpected errors
+                    logger.error(
+                        f"Unexpected error saving static file to S3: {name} - "
+                        f"Error: {str(e)}"
+                    )
+                    logger.error(f"Traceback: {traceback.format_exc()}")
+                    return self._save_to_fallback(name, content)
+
+        except Exception as outer_e:
+            logger.error(f"Error in S3 static upload wrapper: {str(outer_e)}")
+            logger.error(f"Traceback: {traceback.format_exc()}")
+            return self._save_to_fallback(name, content)
+
+    def _save_to_fallback(self, name, content):
+        """
+        Save static file to local storage as fallback when S3 fails
+        """
+        try:
+            logger.info(f"Saving static file to local fallback storage: {name}")
+            # Reset file pointer to beginning
+            if hasattr(content, 'seek'):
+                content.seek(0)
+
+            # Save to local fallback storage
+            local_path = self.fallback_storage.save(name, content)
+            logger.info(f"Static file saved to local storage: {local_path}")
+            return local_path
+
+        except Exception as e:
+            logger.error(f"Even fallback storage failed for static file {name}: {str(e)}")
+            logger.error(f"Traceback: {traceback.format_exc()}")
+            # Raise the error since we have no more fallbacks
+            raise
+```

@@ -36,3 +36,6 @@ AWS_MAX_SIZE_MB = int(os.environ.get('AWS_MAX_SIZE_MB', 10))  # Default to 10MB
 
 # Media location
 MEDIAFILES_LOCATION = 'media'
+
+# Static files location
+STATICFILES_LOCATION = 'static'
