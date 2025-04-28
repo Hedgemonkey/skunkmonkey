@@ -80,6 +80,42 @@ class Command(CollectstaticCommand):
             help='Preserve Vite manifest files during collection',
         )
         
+    def copy_file(self, path, file, **options):
+        """
+        Override copy_file to display S3 destination paths in the logs
+        """
+        # Get the S3 key/path for this file
+        if hasattr(file, 'name'):
+            # For storage-based files, use the name attribute
+            src_path = file.name
+        else:
+            # For regular files, use the path argument
+            src_path = path
+        
+        # Get relative path - this is what becomes the S3 key
+        rel_path = self.storage.get_relative_path(src_path)
+        
+        # Construct the full S3 destination
+        bucket = settings.AWS_STORAGE_BUCKET_NAME
+        s3_path = f"s3://{bucket}/static/{rel_path}"
+        
+        # Construct CloudFront URL if available
+        cloudfront_url = None
+        if hasattr(settings, 'CLOUDFRONT_DOMAIN'):
+            cloudfront_url = f"https://{settings.CLOUDFRONT_DOMAIN}/static/{rel_path}"
+        
+        # Call the parent implementation to actually copy the file
+        result = super().copy_file(path, file, **options)
+        
+        # If successful copy, enhance the log message with destination info
+        if result:
+            message = f"Copied '{path}' to '{s3_path}'"
+            if cloudfront_url:
+                message += f" (accessible at {cloudfront_url})"
+            self.stdout.write(message)
+        
+        return result
+        
     def handle(self, *args, **options):
         self.stdout.write(self.style.SUCCESS('Starting S3 static file collection...'))
 
