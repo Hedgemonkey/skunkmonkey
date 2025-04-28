@@ -82,10 +82,21 @@ INSTALLED_APPS = [
 ]
 
 DJANGO_VITE_ASSETS_PATH = BASE_DIR / 'static'
+
 # Set dev mode based on DEBUG setting
 DJANGO_VITE_DEV_MODE = DEBUG
+
 # Only use dev server URL in development
 DJANGO_VITE_DEV_SERVER_URL = "http://hedgemonkey.ddns.net:5173/" if DEBUG else ""
+
+# Configure django-vite to use the correct entry point (important for production)
+DJANGO_VITE_CONFIGS = {
+    'default': {
+        'entry_points': ['frontend/src/core/js/main.js'],
+    },
+}
+
+# Additional dev server configuration
 DJANGO_VITE = {
     "default": {
         "dev_mode": DEBUG,
@@ -324,6 +335,28 @@ INSTALLED_APPS += [
     'storages',
 ]
 
+# Base Vite configuration - may be overridden for production
+DJANGO_VITE_ASSETS_PATH = BASE_DIR / 'static'
+DJANGO_VITE_DEV_MODE = DEBUG
+DJANGO_VITE_DEV_SERVER_URL = "http://hedgemonkey.ddns.net:5173/" if DEBUG else ""
+
+# Configure entry points for django-vite - these need to be preserved in all environments
+DJANGO_VITE_CONFIGS = {
+    'default': {
+        'entry_points': ['main'],  # Use just 'main' as the entry point
+    },
+}
+
+# Dev server configuration
+DJANGO_VITE = {
+    "default": {
+        "dev_mode": DEBUG,
+        "dev_server_port": "5173",
+        "dev_server_host": "hedgemonkey.ddns.net" if DEBUG else "",
+        "static_url_prefix": "",
+    }
+}
+
 # Use AWS settings if configured
 if env.bool('USE_S3', default=False):
     # Import AWS settings
@@ -355,11 +388,17 @@ if env.bool('USE_S3', default=False):
         print(f"DEBUG: Media URL set to: {MEDIA_URL}")
         print(f"DEBUG: Static URL set to: {STATIC_URL}")
 
-    # Configure django-vite to use the CDN URL for assets in production
+    # Configure django-vite settings for production with S3
     if not DEBUG:
         DJANGO_VITE_ASSETS_PATH = STATIC_ROOT
         DJANGO_VITE_MANIFEST_PATH = os.path.join(STATIC_ROOT, 'manifest.json')
-
+        
+        # Ensure we maintain the entry points configuration
+        DJANGO_VITE_CONFIGS = {
+            'default': {
+                'entry_points': ['main'],  # Use just 'main' as the entry point
+            },
+        }
 
 # if os.environ.get("SKUNKMONKEY_VPS_HOST", False):
 #   STATIC_URL = 'http://devel.skunkmonkey.co.uk/static/'
@@ -380,17 +419,6 @@ STRIPE_CURRENCY = 'gbp'  # British Pound as default currency
 # dj-stripe will manage the actual API keys through the admin
 STRIPE_PUBLISHABLE_KEY = env('STRIPE_PUBLISHABLE_KEY', default='')
 STRIPE_WEBHOOK_SECRET = env('STRIPE_WEBHOOK_SECRET', default='')
-
-# dj-stripe settings - must be compliant with their recommendations
-DJSTRIPE_WEBHOOK_SECRET = STRIPE_WEBHOOK_SECRET
-DJSTRIPE_USE_NATIVE_JSONFIELD = True
-DJSTRIPE_FOREIGN_KEY_TO_FIELD = "id"
-
-# This is critical - tells dj-stripe to only use the secret key when syncing
-# The empty string for TEST_API_KEY forces dj-stripe to use only keys from
-# the admin
-DJSTRIPE_TEST_API_KEY = ""
-DJSTRIPE_LIVE_API_KEY = ""
 
 # Use a stable API version
 STRIPE_API_VERSION = "2023-10-16"
