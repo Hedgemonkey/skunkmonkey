@@ -60,3 +60,5 @@ flake8_*.txt
 htmlcov/
 coverage.xml
 assessment.md
+hedge/
+hedge/*
