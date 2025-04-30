@@ -10,6 +10,9 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+echo "==== Fixing manifest.json to ensure it has the 'main' entry point ===="
+python fix_heroku_manifest.py
+
 echo "==== Uploading manifest.json to S3 ===="
 python direct_static_s3_upload.py
 
