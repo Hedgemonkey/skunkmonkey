@@ -142,7 +142,8 @@ def test_put_object():
         # Use media/ prefix to match Django
         test_key = 'media/test_s3_upload.txt'
         print(f"Uploading to S3 at key: {test_key}")
-
+        
+        # Note: Not using ExtraArgs with ACL since your bucket has Object Ownership set to "Bucket owner enforced"
         with open(test_file_path, 'rb') as f:
             s3.upload_fileobj(
                 f,

@@ -39,7 +39,7 @@ SECRET_KEY = env(
     default='django-insecure-default-key-for-dev')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool('DEVELOPMENT', default=False)
+DEBUG = False # env.bool('DEVELOPMENT', default=False)
 
 # Determine if we're running on Heroku
 ON_HEROKU = 'DATABASE_URL' in os.environ
@@ -357,6 +357,10 @@ DJANGO_VITE = {
     }
 }
 
+# Define default storage backends - these will be used if USE_S3 is True
+DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
 # Use AWS settings if configured
 if env.bool('USE_S3', default=False):
     # Import AWS settings
@@ -367,7 +371,7 @@ if env.bool('USE_S3', default=False):
     print(f"DEBUG: AWS Region: {AWS_S3_REGION_NAME}")
     print(f"DEBUG: AWS CloudFront: {AWS_S3_CUSTOM_DOMAIN}")
 
-    # Use S3 for media and static files
+    # Override storage backends for S3
     DEFAULT_FILE_STORAGE = 'skunkmonkey.custom_storages.MediaStorage'
     STATICFILES_STORAGE = 'skunkmonkey.custom_storages.StaticStorage'
 
@@ -375,30 +379,9 @@ if env.bool('USE_S3', default=False):
     print(f"DEBUG: Media Storage: {DEFAULT_FILE_STORAGE}")
     print(f"DEBUG: Static Storage: {STATICFILES_STORAGE}")
 
-    # Update media URL to use CloudFront if domain is set
-    if AWS_S3_CUSTOM_DOMAIN:
-        if AWS_S3_CUSTOM_DOMAIN.startswith('https://'):
-            MEDIA_URL = f'{AWS_S3_CUSTOM_DOMAIN}/{MEDIAFILES_LOCATION}/'
-            STATIC_URL = f'{AWS_S3_CUSTOM_DOMAIN}/{STATICFILES_LOCATION}/'
-        else:
-            MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{MEDIAFILES_LOCATION}/'
-            STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATICFILES_LOCATION}/'
-        # Log CloudFront configuration for debugging
-        print(f"DEBUG: CloudFront domain: {AWS_S3_CUSTOM_DOMAIN}")
-        print(f"DEBUG: Media URL set to: {MEDIA_URL}")
-        print(f"DEBUG: Static URL set to: {STATIC_URL}")
-
-    # Configure django-vite settings for production with S3
-    if not DEBUG:
-        DJANGO_VITE_ASSETS_PATH = STATIC_ROOT
-        DJANGO_VITE_MANIFEST_PATH = os.path.join(STATIC_ROOT, 'manifest.json')
-        
-        # Ensure we maintain the entry points configuration
-        DJANGO_VITE_CONFIGS = {
-            'default': {
-                'entry_points': ['main'],  # Use just 'main' as the entry point
-            },
-        }
+    # Do not try to force Django to recognize the storage change here
+    # as it can cause NoneType errors
+    # Instead, make sure we load storage properly
 
 # if os.environ.get("SKUNKMONKEY_VPS_HOST", False):
 #   STATIC_URL = 'http://devel.skunkmonkey.co.uk/static/'
