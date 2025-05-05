@@ -52,7 +52,7 @@
     "file": "css/staff/staff.css",
     "src": "_staff.css"
   },
-  "src/common/js/api-client.js": {
+  "apiClient": {
     "file": "js/core/apiClient.js",
     "name": "apiClient",
     "src": "src/common/js/api-client.js",
@@ -63,7 +63,7 @@
       "__commonjsHelpers.js"
     ]
   },
-  "src/common/js/image_cropper.js": {
+  "imageCropper": {
     "file": "js/core/imageCropper.js",
     "name": "imageCropper",
     "src": "src/common/js/image_cropper.js",
@@ -79,7 +79,7 @@
       "css/core/imageCropper.css"
     ]
   },
-  "src/core/js/main.js": {
+  "main": {
     "file": "js/core/main.js",
     "name": "main",
     "src": "src/core/js/main.js",
@@ -97,7 +97,7 @@
       "css/core/main.css"
     ]
   },
-  "src/core/js/messages.js": {
+  "messages": {
     "file": "js/core/messages.js",
     "name": "messages",
     "src": "src/core/js/messages.js",
@@ -106,7 +106,7 @@
       "src/shop/utilities/js/notifications.js"
     ]
   },
-  "src/home/js/home.js": {
+  "home": {
     "file": "js/home/home.js",
     "name": "home",
     "src": "src/home/js/home.js",
