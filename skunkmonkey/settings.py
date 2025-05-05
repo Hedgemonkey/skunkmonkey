@@ -39,7 +39,7 @@ SECRET_KEY = env(
     default='django-insecure-default-key-for-dev')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False # env.bool('DEVELOPMENT', default=False)
+DEBUG = True  # Temporarily enabling for error diagnosis
 
 # Determine if we're running on Heroku
 ON_HEROKU = 'DATABASE_URL' in os.environ
@@ -52,8 +52,13 @@ ALLOWED_HOSTS = [
     'hedgemonkey.ddns.net',
     'skunkmonkey.herokuapp.com',
     '.herokuapp.com',
+    'devel.skunkmonkey.co.uk',
+    'skunkmonkey.co.uk',
+    'www.skunkmonkey.co.uk',
 ]
 
+# Subdirectory configuration
+FORCE_SCRIPT_NAME = '/dev'  # Updated from /devel to /dev
 
 # Application definition
 
@@ -79,30 +84,45 @@ INSTALLED_APPS = [
     'djstripe',
     'django_countries',
     'django_vite',
+    'skunkmonkey',  # Add this to enable our custom templatetags
 ]
 
-DJANGO_VITE_ASSETS_PATH = BASE_DIR / 'static'
+# Django-Vite configuration - SIMPLIFIED AND FIXED
+DJANGO_VITE_ASSETS_PATH = BASE_DIR / 'staticfiles'
+DJANGO_VITE_DEV_MODE = False
+DJANGO_VITE_DEV_SERVER_URL = ""
 
-# Set dev mode based on DEBUG setting
-DJANGO_VITE_DEV_MODE = DEBUG
+# Clean up previous attempts at configuration
+# DJANGO_VITE_MANIFEST_PATH = os.path.join(BASE_DIR, 'staticfiles', 'manifest.json')
+# DJANGO_VITE_STATIC_URL_PREFIX = "/dev/static/"
 
-# Only use dev server URL in development
-DJANGO_VITE_DEV_SERVER_URL = "http://hedgemonkey.ddns.net:5173/" if DEBUG else ""
+# Create a symlink in the exact location django-vite expects
+import os
+import shutil
 
-# Configure django-vite to use the correct entry point (important for production)
+manifest_source = os.path.join(BASE_DIR, 'staticfiles', 'manifest.json')
+dev_static_dir = os.path.join(BASE_DIR, 'dev', 'static')
+manifest_target = os.path.join(dev_static_dir, 'manifest.json')
+
+# Ensure the target directory exists
+os.makedirs(dev_static_dir, exist_ok=True)
+
+# Copy the manifest file to the exact path django-vite is looking for
+if os.path.exists(manifest_source):
+    shutil.copy2(manifest_source, manifest_target)
+
+# Simplified configuration with clean entry points
 DJANGO_VITE_CONFIGS = {
     'default': {
-        'entry_points': ['frontend/src/core/js/main.js'],
+        'entry_points': ['main'],
     },
 }
 
-# Additional dev server configuration
+# Use a single, simplified configuration 
 DJANGO_VITE = {
-    "default": {
-        "dev_mode": DEBUG,
-        "dev_server_port": "5173",
-        "dev_server_host": "hedgemonkey.ddns.net" if DEBUG else "",
-        "static_url_prefix": "",
+    'default': {
+        'dev_mode': False,
+        'static_url_prefix': '/dev/static/',
     }
 }
 
@@ -241,8 +261,8 @@ AUTHENTICATION_BACKENDS = [
 
 # Allauth Configuration
 SITE_ID = 1
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/dev/'  # Updated from /devel/ to /dev/
+LOGOUT_REDIRECT_URL = '/dev/'  # Updated from /devel/ to /dev/
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = True
 ACCOUNT_LOGIN_METHODS = ['email', 'username']
@@ -318,7 +338,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = '/dev/static/'  # Updated from /devel/static/ to /dev/static/
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
@@ -326,7 +346,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_LOCATION = 'static'  # Define static files location for S3
 
 # Media files - local settings that will be overridden if AWS is configured
-MEDIA_URL = '/media/'
+MEDIA_URL = '/dev/media/'  # Updated from /devel/media/ to /dev/media/
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIAFILES_LOCATION = 'media'
 
@@ -335,34 +355,12 @@ INSTALLED_APPS += [
     'storages',
 ]
 
-# Base Vite configuration - may be overridden for production
-DJANGO_VITE_ASSETS_PATH = BASE_DIR / 'static'
-DJANGO_VITE_DEV_MODE = DEBUG
-DJANGO_VITE_DEV_SERVER_URL = "http://hedgemonkey.ddns.net:5173/" if DEBUG else ""
-
-# Configure entry points for django-vite - these need to be preserved in all environments
-DJANGO_VITE_CONFIGS = {
-    'default': {
-        'entry_points': ['main'],  # Use just 'main' as the entry point
-    },
-}
-
-# Dev server configuration
-DJANGO_VITE = {
-    "default": {
-        "dev_mode": DEBUG,
-        "dev_server_port": "5173",
-        "dev_server_host": "hedgemonkey.ddns.net" if DEBUG else "",
-        "static_url_prefix": "",
-    }
-}
-
 # Define default storage backends - these will be used if USE_S3 is True
 DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 # Use AWS settings if configured
-if env.bool('USE_S3', default=False):
+if env.bool('USE_S3', default=False) or os.environ.get('USE_S3') == 'True':
     # Import AWS settings
     from .aws import *
 
@@ -378,10 +376,6 @@ if env.bool('USE_S3', default=False):
     # Now print the storage class after it's defined
     print(f"DEBUG: Media Storage: {DEFAULT_FILE_STORAGE}")
     print(f"DEBUG: Static Storage: {STATICFILES_STORAGE}")
-
-    # Do not try to force Django to recognize the storage change here
-    # as it can cause NoneType errors
-    # Instead, make sure we load storage properly
 
 # if os.environ.get("SKUNKMONKEY_VPS_HOST", False):
 #   STATIC_URL = 'http://devel.skunkmonkey.co.uk/static/'
