@@ -1,3 +1,4 @@
+# noqa
 """
 WSGI config for skunkmonkey project.
 
@@ -24,12 +25,5 @@ load_dotenv()  # Load environment variables from .env file
 logger = logging.getLogger(__name__)  # Get a logger
 
 logger.info("WSGI script has been executed.")
-
-# Apply django-vite patch before application is loaded
-try:
-    import patch_django_vite
-    logger.info("Successfully applied django-vite patch.")
-except Exception as e:
-    logger.error(f"Failed to apply django-vite patch: {str(e)}")
 
 application = get_wsgi_application()
