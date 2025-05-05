@@ -62,3 +62,6 @@ coverage.xml
 assessment.md
 hedge/
 hedge/*
+
+# Generated static files
+/staticfiles/
