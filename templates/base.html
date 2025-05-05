@@ -1,4 +1,5 @@
 {% load django_vite %}
+{% load direct_assets %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -31,8 +32,7 @@
     {% endblock %}
     <title>{% block title %}SkunkMonkey{% endblock %}</title>
     {% block css %}
-            {% vite_hmr_client %}
-            {% vite_asset 'main' %}
+            {% direct_asset 'main' %}
         <script>
             console.log("Debug mode: {{ debug }}");
             console.log("Static URL: {{ STATIC_URL }}");

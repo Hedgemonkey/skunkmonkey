@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 {% load django_vite %}
+{% load direct_assets %}
 
 {% block page_header %}
 <div class="container header-container">
@@ -199,5 +200,5 @@
 
 {% block postloadjs %}
 {{ block.super }}
-{% vite_asset 'home' %}
+{% direct_asset 'home' %}
 {% endblock %}
