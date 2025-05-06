@@ -100,10 +100,6 @@ if not ON_HEROKU:
     DJANGO_VITE_DEV_MODE = False
     DJANGO_VITE_DEV_SERVER_URL = ""
 
-    # Clean up previous attempts at configuration
-    # DJANGO_VITE_MANIFEST_PATH = os.path.join(BASE_DIR, 'staticfiles', 'manifest.json')
-    # DJANGO_VITE_STATIC_URL_PREFIX = "/dev/static/"
-
     # Create a symlink in the exact location django-vite expects
     manifest_source = os.path.join(BASE_DIR, 'staticfiles', 'manifest.json')
     dev_static_dir = os.path.join(BASE_DIR, 'dev', 'static')
@@ -130,6 +126,13 @@ if not ON_HEROKU:
             'static_url_prefix': '/dev/static/',
         }
     }
+else:
+    # On Heroku, make sure django_vite is not installed or used
+    # This prevents any potential django_vite template tag usage
+    import sys
+    if 'django_vite' in sys.modules:
+        print("WARNING: django_vite module is loaded but shouldn't be used on Heroku")
+        del sys.modules['django_vite']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
