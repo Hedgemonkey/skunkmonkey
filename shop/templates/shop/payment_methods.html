@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% load static %}
-{% load crispy_forms_tags %}
+{% load direct_assets %}
+
+{% block extra_title %} - Payment Methods{% endblock %}
 
 {% block extra_css %}
     {{ block.super }}
-    {% load django_vite %}
-    {% vite_asset 'stripeIntegration' %}
 {% endblock %}
 
 {% block page_header %}
@@ -100,51 +100,11 @@
         </div>
     </div>
 
-    <!-- Hidden input for customer ID -->
+    <!-- Hidden fields for Stripe configuration -->
     <input type="hidden" id="customer-id" value="{{ customer.id }}">
     <input type="hidden" id="id_stripe_public_key" value="{{ stripe_publishable_key }}">
 {% endblock %}
 
-{% block postloadjs %}
-    {{ block.super }}
-    <script src="https://js.stripe.com/v3/"></script>
-    {% load django_vite %}
-    {% vite_asset 'stripeIntegration' %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize Stripe
-            const stripePublicKey = document.getElementById('id_stripe_public_key').value;
-            if (stripePublicKey) {
-                const stripe = Stripe(stripePublicKey);
-                const elements = stripe.elements();
-
-                // Initialize card element for adding payment methods
-                const cardElement = elements.create('card', {
-                    style: {
-                        base: {
-                            color: '#32325d',
-                            fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-                            fontSmoothing: 'antialiased',
-                            fontSize: '16px',
-                            '::placeholder': {
-                                color: '#aab7c4'
-                            }
-                        },
-                        invalid: {
-                            color: '#fa755a',
-                            iconColor: '#fa755a'
-                        }
-                    }
-                });
-
-                cardElement.mount('#add-payment-method-card');
-
-                // Load saved payment methods
-                const customerId = document.getElementById('customer-id').value;
-                if (customerId) {
-                    StripeHelpers.loadSavedPaymentMethods();
-                }
-            }
-        });
-    </script>
+{% block extra_js %}
+    {% direct_asset 'stripeIntegration' %}
 {% endblock %}

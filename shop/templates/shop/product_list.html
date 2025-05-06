@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load django_vite %}
+{% load direct_assets %}
 
 {% block title %}
     {% if current_category %}
@@ -13,8 +14,8 @@
 
 {% block extra_css %}
     {{ block.super }}
-    {% vite_asset 'productListManager' %}
-    {% vite_asset 'productGrid' %}
+    {% direct_asset 'productListManager' %}
+    {% direct_asset 'productGrid' %}
 {% endblock %}
 
 {% block header %}
@@ -151,6 +152,6 @@
 
 {% block postloadjs %}
     {{ block.super }}
-    {% vite_asset 'comparisonManager' %}
-    <!-- Other JS is now loaded via vite_asset in the extra_css block -->
+    {% direct_asset 'comparisonManager' %}
+    <!-- Other JS is now loaded via direct_asset in the extra_css block -->
 {% endblock %}

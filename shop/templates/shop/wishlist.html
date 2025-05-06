@@ -1,10 +1,13 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load django_vite %}
+{% load direct_assets %}
 
 {% block title %}Your Wishlist - SkunkMonkey{% endblock %}
 
 {% block extra_css %}
-    {% vite_asset 'shop/wishlist.css' %}
+    {{ block.super }}
+    {% direct_asset 'shop/wishlist.css' %}
 {% endblock %}
 
 {% block header %}
@@ -89,10 +92,10 @@
 
 {% block postloadjs %}
     {{ block.super }}
-    {% vite_asset 'shop/wishlist.js' %}
+    {% direct_asset 'shop/wishlist.js' %}
 {% endblock %}
 
 {% block extra_js %}
-    {% vite_asset 'shop/wishlist.js' %}
-    {% vite_asset 'shop/wishlist-manager.js' %}
+    {% direct_asset 'shop/wishlist.js' %}
+    {% direct_asset 'shop/wishlist-manager.js' %}
 {% endblock %}

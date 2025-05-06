@@ -1,14 +1,15 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load django_vite %}
+{% load direct_assets %}
 {% load staff_filters %}
 
 {% block extra_title %}Staff Portal{% endblock %}
 
 {% block extra_css %}
     {{ block.super }}
-    {% vite_asset 'staff' %}
-    {% vite_asset 'orderManager' %}
+    {% direct_asset 'staff' %}
+    {% direct_asset 'orderManager' %}
 {% endblock %}
 
 {% block header %}

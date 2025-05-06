@@ -32,11 +32,7 @@
     {% endblock %}
     <title>{% block title %}SkunkMonkey{% endblock %}</title>
     {% block css %}
-            {% direct_asset 'main' %}
-        <script>
-            console.log("Debug mode: {{ debug }}");
-            console.log("Static URL: {{ STATIC_URL }}");
-        </script>
+        {% direct_asset 'main' %}
     {% endblock %}
     {% block extra_css %}{% endblock %}
     {% block messages-js %}

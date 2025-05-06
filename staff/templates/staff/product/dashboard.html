@@ -1,11 +1,12 @@
 {% extends 'staff/staff_base.html' %}
 {% load static %}
 {% load django_vite %}
+{% load direct_assets %}
 {% load staff_filters %}
 
 {% block extra_css %}
 {{ block.super }}
-{% vite_asset 'productDashboard' %}
+{% direct_asset 'productDashboard' %}
 {% endblock %}
 
 {% block title %}Product Dashboard{% endblock %}

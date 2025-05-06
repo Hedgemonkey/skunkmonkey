@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load direct_assets %}
 
 {% block title %}Payment - {{ block.super }}{% endblock %}
 
@@ -53,16 +54,14 @@
         </div>
     </div>
 </div>
+
+<!-- Hidden data for the stripeIntegration.js script -->
+<input type="hidden" id="stripe_public_key" value="{{ stripe_publishable_key }}">
+<input type="hidden" id="client_secret" value="{{ client_secret }}">
+<input type="hidden" id="order_complete_url" value="{% url 'shop:order_complete' order_id=order.id %}">
 {% endblock %}
 
 {% block extra_js %}
-{{ block.super }}
-<script src="https://js.stripe.com/v3/"></script>
-<script>
-    const stripePublishableKey = '{{ stripe_publishable_key }}';
-    const clientSecret = '{{ client_secret }}';
-    const orderCompleteUrl = "{% url 'shop:order_complete' order_id=order.id %}";
-</script>
-{% load django_vite %}
-{% vite_asset 'checkout' %}
+{% direct_asset 'checkout' %}
+{% direct_asset 'stripeIntegration' %}
 {% endblock %}

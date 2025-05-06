@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load wishlist_tags %}
+{% load django_vite %}
+{% load direct_assets %}
 
 {% block title %}{{ product.name }} - SkunkMonkey Shop{% endblock %}
 
 {% block extra_css %}
     {{ block.super }}
-    {% load django_vite %}
-    {% vite_asset 'productDetailManager' %}
+    {% direct_asset 'productDetailManager' %}
 {% endblock %}
 
 {% block header %}
@@ -187,5 +187,5 @@
 
 {% block extra_js %}
     {{ block.super }}
-    <!-- JS is now loaded via vite_asset in the extra_css block -->
+    <!-- JS is now loaded via direct_asset in the extra_css block -->
 {% endblock %}

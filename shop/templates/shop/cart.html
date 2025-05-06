@@ -1,12 +1,13 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load django_vite %}
+{% load direct_assets %}
 
 {% block title %}Your Cart - SkunkMonkey Shop{% endblock %}
 
 {% block extra_css %}
     {{ block.super }}
-    {% vite_asset 'cartManager' %}
+    {% direct_asset 'cartManager' %}
 {% endblock %}
 
 {% block header %}

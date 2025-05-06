@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 {% load django_vite %}
+{% load direct_assets %}
 
 {% block extra_css %}
-    {% vite_asset 'products/product-grid.css' %}
+    {% direct_asset 'products/product-grid.css' %}
 {% endblock %}
 
 {% block content %}
@@ -157,5 +158,5 @@
 {% endblock %}
 
 {% block extra_js %}
-    {% vite_asset 'shop/product-grid.js' %}
+    {% direct_asset 'shop/product-grid.js' %}
 {% endblock %}
