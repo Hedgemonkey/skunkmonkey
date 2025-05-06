@@ -1,0 +1,11 @@
+build:
+  packages:
+    - python
+    - nodejs
+  config:
+    NODE_ENV: production
+    PYTHON_VERSION: 3.11.7
+    NODE_VERSION: 20.x
+
+run:
+  web: gunicorn skunkmonkey.wsgi:application
