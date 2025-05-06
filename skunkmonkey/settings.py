@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import os
+import shutil
 from pathlib import Path
 
 from django.urls import reverse
@@ -39,7 +40,7 @@ SECRET_KEY = env(
     default='django-insecure-default-key-for-dev')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True  # Temporarily enabling for error diagnosis
+DEBUG = env.bool('DEBUG', default=False)  # Get DEBUG from environment variable, default to False in production
 
 # Determine if we're running on Heroku
 ON_HEROKU = 'DATABASE_URL' in os.environ
@@ -57,8 +58,11 @@ ALLOWED_HOSTS = [
     'www.skunkmonkey.co.uk',
 ]
 
-# Subdirectory configuration
-FORCE_SCRIPT_NAME = '/dev'  # Updated from /devel to /dev
+# Subdirectory configuration - only use FORCE_SCRIPT_NAME if not on Heroku
+if not 'ON_HEROKU' in os.environ:
+    FORCE_SCRIPT_NAME = '/dev'  # Updated from /devel to /dev
+else:
+    FORCE_SCRIPT_NAME = None  # Don't force script name on Heroku
 
 # Application definition
 
@@ -97,8 +101,7 @@ DJANGO_VITE_DEV_SERVER_URL = ""
 # DJANGO_VITE_STATIC_URL_PREFIX = "/dev/static/"
 
 # Create a symlink in the exact location django-vite expects
-import os
-import shutil
+
 
 manifest_source = os.path.join(BASE_DIR, 'staticfiles', 'manifest.json')
 dev_static_dir = os.path.join(BASE_DIR, 'dev', 'static')
@@ -128,6 +131,7 @@ DJANGO_VITE = {
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add Whitenoise middleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -138,6 +142,7 @@ MIDDLEWARE = [
     'shop.middleware.ComparisonMiddleware',
     'shop.middleware.CartMiddleware',  # Add the shop cart middleware
     'staff.middleware.StaffProfileMiddleware',  # Add middleware to handle staffprofile
+    'staff.debug_middleware.StaffAuthDebugMiddleware',  # Add staff auth debugging middleware
     'csp.middleware.CSPMiddleware',    # Add Content Security Policy middleware
     'skunkmonkey.middleware.SourceMapIgnoreMiddleware',  # Add custom middleware to handle source map requests
 ]
@@ -357,10 +362,15 @@ INSTALLED_APPS += [
 
 # Define default storage backends - these will be used if USE_S3 is True
 DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
-# Use AWS settings if configured
-if env.bool('USE_S3', default=False) or os.environ.get('USE_S3') == 'True':
+# Use Whitenoise for static files on Heroku, otherwise use default storage
+if 'ON_HEROKU' in os.environ:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+else:
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
+# Use AWS settings if configured - force to True in production mode
+if env.bool('USE_S3', default=not DEBUG) or os.environ.get('USE_S3') == 'True':
     # Import AWS settings
     from .aws import *
 
@@ -372,6 +382,11 @@ if env.bool('USE_S3', default=False) or os.environ.get('USE_S3') == 'True':
     # Override storage backends for S3
     DEFAULT_FILE_STORAGE = 'skunkmonkey.custom_storages.MediaStorage'
     STATICFILES_STORAGE = 'skunkmonkey.custom_storages.StaticStorage'
+
+    # If CloudFront is configured, use it for media URLs
+    if AWS_S3_CUSTOM_DOMAIN:
+        MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{MEDIAFILES_LOCATION}/"
+        print(f"DEBUG: Using CloudFront for media: {MEDIA_URL}")
 
     # Now print the storage class after it's defined
     print(f"DEBUG: Media Storage: {DEFAULT_FILE_STORAGE}")
@@ -407,3 +422,75 @@ DJSTRIPE_WEBHOOK_VALIDATION = "verify_signature"
 # STRIPE_PUBLISHABLE_KEY=pk_test_your_key
 # STRIPE_SECRET_KEY=sk_test_your_key
 # STRIPE_WEBHOOK_SECRET=whsec_your_key
+
+# Enhanced logging configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'detailed': {
+            'format': '{levelname} {asctime} {name} {module} - {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'debug.log'),
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'formatter': 'detailed',
+        },
+        'auth_file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'auth_debug.log'),
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'formatter': 'detailed',
+        },
+        'error_file': {
+            'level': 'WARNING',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'error.log'),
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'formatter': 'detailed',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['error_file'],
+            'level': 'WARNING',
+            'propagate': True,
+        },
+        'staff': {
+            'handlers': ['console', 'file', 'auth_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'auth': {
+            'handlers': ['console', 'auth_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}
+
+# Make sure log directories exist
+os.makedirs(os.path.join(BASE_DIR, 'logs'), exist_ok=True)
