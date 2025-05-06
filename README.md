@@ -857,3 +857,279 @@ Detailed test cases, test results, and identified issues are documented in the p
 This project is developed for educational purposes. All product listings, pricing, and company information are fictional and for demonstration purposes only.
 
 [Back to top](#-contents)
+
+---
+
+## 🚀 Deployment
+
+This project can be deployed locally for development or to Heroku for production. Below are the instructions for both deployment methods.
+
+### Local Development
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Hedgemonkey/skunkmonkey.git
+   cd skunkmonkey
+   ```
+
+2. **Set up a virtual environment**
+   ```bash
+   python -m venv venv
+   # On Windows
+   venv\Scripts\activate
+   # On macOS/Linux
+   source venv/bin/activate
+   ```
+
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Set up environment variables**
+   Create a `.env` file in the root directory and add the required variables:
+   ```
+   SECRET_KEY=your_secret_key
+   DEBUG=True
+   DATABASE_URL=your_database_url
+   STRIPE_PUBLIC_KEY=your_stripe_public_key
+   STRIPE_SECRET_KEY=your_stripe_secret_key
+   STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
+   ```
+
+5. **Run migrations**
+   ```bash
+   python manage.py migrate
+   ```
+
+6. **Build frontend assets**
+   ```bash
+   cd frontend
+   npm install
+   npm run build
+   cd ..
+   ```
+
+7. **Run the development server**
+   ```bash
+   python manage.py runserver
+   ```
+
+### Heroku Deployment
+
+Heroku is a platform as a service (PaaS) that enables developers to build, run, and operate applications entirely in the cloud. Follow these steps to deploy the Django application on Heroku:
+
+#### 1. Prerequisites
+
+1. **Create a Heroku account**
+   - Sign up at [heroku.com](https://heroku.com) if you don't already have an account
+
+2. **Install the Heroku CLI**
+   ```bash
+   # For Ubuntu/Debian
+   sudo snap install heroku --classic
+   
+   # For macOS
+   brew tap heroku/brew && brew install heroku
+   
+   # For other systems, see: https://devcenter.heroku.com/articles/heroku-cli
+   ```
+
+3. **Login to Heroku**
+   ```bash
+   heroku login
+   ```
+
+#### 2. Prepare Your Application for Heroku
+
+1. **Create a Procfile**
+   Create a file named `Procfile` (no extension) in the project root:
+   ```
+   web: gunicorn skunkmonkey.wsgi:application
+   release: python manage.py migrate
+   ```
+
+2. **Install required packages**
+   ```bash
+   pip install gunicorn dj-database-url psycopg2-binary whitenoise
+   pip freeze > requirements.txt
+   ```
+
+3. **Update settings.py for Heroku**
+   Ensure these settings are in your `skunkmonkey/settings.py`:
+   ```python
+   import os
+   import dj_database_url
+   
+   # Get the DATABASE_URL environment variable or use SQLite as a fallback
+   DATABASES = {
+       'default': dj_database_url.config(default=os.environ.get('DATABASE_URL', 'sqlite:///db.sqlite3'))
+   }
+   
+   # Add whitenoise for static files
+   MIDDLEWARE = [
+       # ...existing middleware...
+       'whitenoise.middleware.WhiteNoiseMiddleware',
+       # ...other middleware...
+   ]
+   
+   # Static files settings
+   STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+   STATIC_URL = '/static/'
+   STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+   
+   # Allow Heroku domain
+   ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.herokuapp.com']
+   ```
+
+4. **Add a runtime.txt file**
+   ```
+   python-3.11.7
+   ```
+
+5. **Build frontend assets**
+   ```bash
+   cd frontend
+   npm install
+   npm run build
+   cd ..
+   ```
+
+6. **Collect static files**
+   ```bash
+   python manage.py collectstatic --noinput
+   ```
+
+#### 3. Create and Deploy to Heroku
+
+1. **Create a new Heroku application**
+   ```bash
+   heroku create skunkmonkey-app
+   ```
+
+2. **Add PostgreSQL add-on**
+   ```bash
+   heroku addons:create heroku-postgresql:mini
+   ```
+
+3. **Configure environment variables**
+   ```bash
+   heroku config:set SECRET_KEY=your_secret_key
+   heroku config:set DEBUG=False
+   heroku config:set STRIPE_PUBLIC_KEY=your_stripe_public_key
+   heroku config:set STRIPE_SECRET_KEY=your_stripe_secret_key
+   heroku config:set STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
+   ```
+
+4. **Deploy to Heroku**
+   ```bash
+   # Add all files to git
+   git add .
+   git commit -m "Prepare for Heroku deployment"
+   
+   # Deploy to Heroku
+   git push heroku main
+   ```
+
+5. **Create a superuser on Heroku**
+   ```bash
+   heroku run python manage.py createsuperuser
+   ```
+
+#### 4. Configure AWS S3 for Media Files (Optional)
+
+1. **Create an AWS S3 bucket**
+   - Sign up for AWS if you haven't already
+   - Create a new S3 bucket for your media files
+   - Configure bucket permissions for public read access
+
+2. **Install required packages**
+   ```bash
+   pip install boto3 django-storages
+   pip freeze > requirements.txt
+   ```
+
+3. **Update settings.py**
+   ```python
+   # AWS S3 configuration
+   if 'USE_AWS' in os.environ:
+       # Add django-storages to INSTALLED_APPS
+       INSTALLED_APPS += ['storages']
+       
+       # AWS settings
+       AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
+       AWS_S3_REGION_NAME = os.environ.get('AWS_S3_REGION_NAME')
+       AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+       AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+       
+       # S3 URLs
+       AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+       
+       # Media files configuration
+       DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
+       MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
+       MEDIA_ROOT = 'media/'
+   ```
+
+4. **Create custom_storages.py**
+   ```python
+   from django.conf import settings
+   from storages.backends.s3boto3 import S3Boto3Storage
+
+   class MediaStorage(S3Boto3Storage):
+       location = settings.MEDIA_ROOT
+   ```
+
+5. **Set AWS environment variables in Heroku**
+   ```bash
+   heroku config:set USE_AWS=True
+   heroku config:set AWS_STORAGE_BUCKET_NAME=your-bucket-name
+   heroku config:set AWS_S3_REGION_NAME=your-region
+   heroku config:set AWS_ACCESS_KEY_ID=your-key-id
+   heroku config:set AWS_SECRET_ACCESS_KEY=your-secret-key
+   ```
+
+6. **Deploy again with AWS configuration**
+   ```bash
+   git add .
+   git commit -m "Add AWS S3 configuration"
+   git push heroku main
+   ```
+
+#### 5. Ongoing Maintenance
+
+1. **Update your application**
+   Whenever you make changes to your project:
+   ```bash
+   # Build frontend assets if needed
+   cd frontend && npm run build && cd ..
+   
+   # Commit changes
+   git add .
+   git commit -m "Your update message"
+   
+   # Deploy to Heroku
+   git push heroku main
+   ```
+
+2. **Monitor your application**
+   ```bash
+   # View logs
+   heroku logs --tail
+   
+   # Access the Heroku dashboard
+   heroku open
+   ```
+
+3. **Database operations**
+   ```bash
+   # Run migrations
+   heroku run python manage.py migrate
+   
+   # Access the Django shell
+   heroku run python manage.py shell
+   ```
+
+By following these steps, you'll have the SkunkMonkey e-commerce platform properly deployed on Heroku with all necessary configurations for a production environment.
+
+[Back to top](#-contents)
