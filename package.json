@@ -27,7 +27,7 @@
     "dev": "vite --config frontend/vite.config.js",
     "build": "vite build --config frontend/vite.config.js",
     "preview": "vite preview --config frontend/vite.config.js",
-    "heroku-postbuild": "npm install && npm run build && python manage.py collectstatic --noinput"
+    "heroku-postbuild": "cd frontend && npm install && cd .. && npm run build && python manage.py collectstatic --noinput"
   },
   "engines": {
     "node": "20.x",
