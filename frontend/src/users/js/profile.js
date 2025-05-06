@@ -10,19 +10,16 @@ import '../css/profile.css';
 // Import profile image manager styling
 import '../css/profile-image-manager.css';
 
-// Import Bootstrap components
-import 'bootstrap/js/dist/collapse';
-import 'bootstrap/js/dist/dropdown';
-import 'bootstrap/js/dist/tab';
-import 'bootstrap/js/dist/modal';
-
-// Initialize common functionality
+// Initialize common functionality - with a slight delay to ensure main.js has loaded first
 document.addEventListener('DOMContentLoaded', () => {
-  // Add event listeners for any common profile elements
-  initCommonProfileElements();
+  // Small delay to ensure main Bootstrap components are initialized first
+  setTimeout(() => {
+    // Add event listeners for any common profile elements
+    initCommonProfileElements();
 
-  // Format date fields for better user display
-  formatDateFields();
+    // Format date fields for better user display
+    formatDateFields();
+  }, 100);
 });
 
 /**
@@ -110,27 +107,34 @@ function initCommonProfileElements() {
     }
   });
 
-  // Initialize Bootstrap tooltips if present
+  // Initialize Bootstrap tooltips if present and not already initialized
   if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
-    const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]:not(.tooltip-initialized)');
     tooltips.forEach(tooltip => {
       new bootstrap.Tooltip(tooltip);
+      tooltip.classList.add('tooltip-initialized');
     });
   }
 
   // Initialize dismissible messages
   const dismissButtons = document.querySelectorAll('.alert .btn-close');
   dismissButtons.forEach(button => {
-    button.addEventListener('click', function() {
-      const alert = this.closest('.alert');
-      if (alert) {
-        alert.classList.add('fade');
-        setTimeout(() => {
-          alert.remove();
-        }, 150);
-      }
-    });
+    if (!button.hasAttribute('data-listener-attached')) {
+      button.setAttribute('data-listener-attached', 'true');
+      button.addEventListener('click', function() {
+        const alert = this.closest('.alert');
+        if (alert) {
+          alert.classList.add('fade');
+          setTimeout(() => {
+            alert.remove();
+          }, 150);
+        }
+      });
+    }
   });
+
+  // Don't re-initialize Bootstrap dropdowns - let main.js handle this
+  console.log("Profile.js initialized - navigation components managed by main.js");
 }
 
 // Export common functionality for use in other modules if needed

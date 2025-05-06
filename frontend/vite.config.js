@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 
 // Base path when deployed on DirectAdmin
@@ -6,6 +6,17 @@ const basePath = process.env.NODE_ENV === 'production' ? '/dev/static/' : '/';
 
 export default defineConfig({
   base: basePath,
+  resolve: {
+    alias: {
+      '@common': resolve(__dirname, 'src/common'),
+      '@products': resolve(__dirname, 'src/products'),
+      '@shop': resolve(__dirname, 'src/shop'),
+      '@users': resolve(__dirname, 'src/users'),
+      '@staff': resolve(__dirname, 'src/staff'),
+      '@core': resolve(__dirname, 'src/core'),
+      '@image_cropper': resolve(__dirname, 'src/common/js/image_cropper.js')
+    }
+  },
   build: {
     outDir: '../staticfiles',
     assetsDir: '',

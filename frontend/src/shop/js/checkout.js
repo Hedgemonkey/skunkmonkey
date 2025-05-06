@@ -10,14 +10,11 @@ import '../css/checkout.css';
 import '../css/stripe.css';
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM fully loaded - initializing checkout script with Payment Element');
-
     // Get Stripe data from the DOM
     const stripeDataElement = document.getElementById('stripe-data');
 
     // Check if the Stripe data element exists
     if (!stripeDataElement) {
-        console.error('Stripe data element not found');
         showError('Payment system initialization error. Please refresh the page or contact support.');
         return;
     }
@@ -26,20 +23,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const clientSecret = stripeDataElement.dataset.clientSecret;
     const cacheCheckoutUrl = stripeDataElement.dataset.cacheUrl;
 
-    // Debug logging to verify data is available
-    console.log('Stripe publishable key:', stripePublishableKey ? 'Available' : 'Missing');
-    console.log('Client secret available:', !!clientSecret);
-    console.log('Cache checkout URL:', cacheCheckoutUrl);
-
     // Store the client secret in sessionStorage with a timestamp
     if (clientSecret) {
         storeClientSecret(clientSecret);
     } else {
         // Check if we have a stored client secret that might be valid
         const storedSecret = sessionStorage.getItem('client_secret');
-        if (storedSecret) {
-            console.log('Using stored client secret from session storage');
-        }
     }
 
     // Check for expired client secret
@@ -47,14 +36,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Check if required data is present
     if (!stripePublishableKey) {
-        console.error('Stripe publishable key is missing');
         showError('Payment system configuration error. Please contact support.');
         disableSubmitButton();
         return;
     }
 
     if (!clientSecret) {
-        console.error('Client secret is missing');
         showError('Payment session could not be initialized. Please refresh the page or contact support.');
         disableSubmitButton();
         return;
@@ -71,17 +58,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const paymentErrorsElement = document.getElementById('payment-errors');
 
     if (!form) {
-        console.error('Checkout form not found');
         return;
     }
 
     if (!submitButton) {
-        console.error('Submit button not found');
         return;
     }
 
     if (!paymentElement) {
-        console.error('Payment element container not found');
         return;
     }
 
@@ -137,8 +121,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Find the Stripe iframe
         const stripeIframe = document.querySelector('#payment-element iframe');
         if (stripeIframe) {
-            console.log('Found Stripe iframe, applying style fixes');
-
             // Create a style element to add to the head
             const styleEl = document.createElement('style');
             styleEl.textContent = `
@@ -163,10 +145,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             `;
             document.head.appendChild(styleEl);
-
-            console.log('Added Stripe iframe style fixes');
-        } else {
-            console.log('Stripe iframe not found yet, will retry');
         }
     }
 
@@ -190,7 +168,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Also listen for the ready event to adjust the container height and fix styles
     paymentElementInstance.on('ready', function() {
-        console.log('Payment element is ready and fully rendered');
         // Allow a brief delay for the iframe to fully render
         setTimeout(adjustContainerHeight, 100);
         // Fix Stripe iframe styles
@@ -245,7 +222,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // If more than 1 hour old, consider it expired (60 * 60 * 1000 = 3600000 ms)
             if (timeDiff > 3600000) {
-                console.log('Client secret expired, clearing data');
                 clearClientSecretData();
 
                 // Show a message if we're on the checkout page
@@ -303,8 +279,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (newHeight > 300) {
                 containerElement.style.minHeight = `${newHeight}px`;
             }
-
-            console.log('Adjusted payment element container height to:', newHeight + 'px');
         }
     }
 
@@ -332,8 +306,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Only proceed if we got a reasonable height
             if (iframeHeight > 100) {
-                console.log('Propagating iframe height:', iframeHeight);
-
                 // Set explicit height on elements to ensure expansion
                 if (privateElement) privateElement.style.height = (iframeHeight + 5) + 'px';
                 if (paymentElement) paymentElement.style.height = (iframeHeight + 25) + 'px';
@@ -361,8 +333,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Stop checking after 60 seconds (when most interactions should be complete)
         setTimeout(() => clearInterval(heightInterval), 60000);
-
-        console.log('Enhanced container height adjustment enabled');
     }
 
     /**
@@ -384,7 +354,6 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(function() {
                 const newHeight = iframe.style.height || iframe.offsetHeight;
                 if (newHeight !== currentHeight) {
-                    console.log('Iframe height changed from', currentHeight, 'to', newHeight);
                     adjustContainerHeight();
                     enhanceContainerHeightAdjustment();
                 }
@@ -415,8 +384,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, 300);
             });
         }
-
-        console.log('Expansion detection set up');
     }
 
     /**
@@ -444,8 +411,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Only proceed if we got a reasonable height
             if (iframeHeight > 100) {
-                console.log('Propagating iframe height:', iframeHeight);
-
                 // Set explicit height on elements to ensure expansion
                 if (privateElement) privateElement.style.height = (iframeHeight + 5) + 'px';
                 if (paymentElement) paymentElement.style.height = (iframeHeight + 25) + 'px';
@@ -473,8 +438,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Stop checking after 60 seconds (when most interactions should be complete)
         setTimeout(() => clearInterval(heightInterval), 60000);
-
-        console.log('Enhanced container height adjustment enabled');
     }
 
     /**
@@ -537,7 +500,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // If cart total has changed, clear the client secret
             if (storedTotal !== currentTotal) {
-                console.log('Cart total changed, clearing client secret data');
                 clearClientSecretData();
             }
         }
@@ -546,11 +508,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle form submission
     form.addEventListener('submit', async function(event) {
         event.preventDefault();
-        console.log('Form submission started');
 
         // Prevent multiple submissions
         if (isSubmitting) {
-            console.log('Form already submitting, preventing duplicate submission');
             return;
         }
 
@@ -592,8 +552,6 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('client_secret', clientSecret);
             formData.append('save_info', document.getElementById('id_save_payment_info')?.checked || false);
 
-            console.log('Sending data to cache_checkout_data...');
-
             try {
                 // Send the data to your cache_checkout_data view
                 const response = await fetch(cacheCheckoutUrl, {
@@ -614,7 +572,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Check for special payment intent error
                 if (response.status === 409 && responseData.error === 'payment_intent_unexpected_state') {
-                    console.error('Payment intent is in an unexpected state');
                     handlePaymentIntentIssue(responseData.message || 'The payment session has expired. Please refresh the page to continue.');
                     return;
                 }
@@ -630,8 +587,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (loadingOverlay) loadingOverlay.style.display = 'none';
                     return;
                 }
-
-                console.log('Cache checkout data successful');
             } catch (fetchError) {
                 console.error('Error during fetch operation:', fetchError);
                 showError('Network error. Please check your connection and try again.');
@@ -676,9 +631,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Ensure we don't have double slashes in the URL (except after protocol)
                 returnUrl = returnUrl.replace(/([^:])\/\//g, '$1/');
 
-                // Log the constructed URL for debugging
-                console.log('Success return URL:', returnUrl);
-
                 // Ensure the return URL is a valid absolute URL
                 if (!returnUrl.startsWith('http')) {
                     throw new Error('Return URL is not absolute: ' + returnUrl);
@@ -692,7 +644,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Fallback to a simple, reliable approach if there's any error
                 console.error('Error constructing return URL:', urlError);
                 returnUrl = window.location.origin + '/shop/checkout/success/';
-                console.log('Using fallback return URL:', returnUrl);
             }
 
             // Get shipping details to pass to Stripe
@@ -734,8 +685,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (loadingOverlay) loadingOverlay.style.display = 'none';
             } else {
                 // The payment has been processed!
-                console.log('Payment processing completed, form will be submitted');
-
                 // Add payment intent ID to form if available
                 const paymentIntentIdField = document.getElementById('id_payment_intent_id');
                 if (paymentIntentIdField && clientSecret) {

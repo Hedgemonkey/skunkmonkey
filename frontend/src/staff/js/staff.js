@@ -80,6 +80,9 @@ class StaffManager {
                     bsAlert.close();
                 }, 5000);
             });
+
+            // Initialize staff delete modal if present
+            this.initDeleteStaffModal();
         });
     }
 
@@ -92,18 +95,31 @@ class StaffManager {
             const tooltipTriggerList = [].slice.call(
                 document.querySelectorAll('[data-bs-toggle="tooltip"]')
             );
-            tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
-            });
+            tooltipTriggerList.map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 
             // Initialize all popovers
             const popoverTriggerList = [].slice.call(
                 document.querySelectorAll('[data-bs-toggle="popover"]')
             );
-            popoverTriggerList.map(function (popoverTriggerEl) {
-                return new bootstrap.Popover(popoverTriggerEl);
-            });
+            popoverTriggerList.map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
         });
+    }
+
+    /**
+     * Initialize delete staff modal functionality
+     */
+    initDeleteStaffModal() {
+        const deleteStaffModal = document.getElementById('deleteStaffModal');
+        if (deleteStaffModal) {
+            deleteStaffModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const staffId = button.getAttribute('data-staff-id');
+                const staffName = button.getAttribute('data-staff-name');
+
+                document.getElementById('staff-name-to-delete').textContent = staffName;
+                document.getElementById('delete-staff-form').action = `/staff/staff/${staffId}/delete/`;
+            });
+        }
     }
 }
 
