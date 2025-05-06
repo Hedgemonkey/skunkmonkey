@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 {% load static %}
+{% load django_vite %}
+{% load direct_assets %}
+
+{% block title %}Your Profile - SkunkMonkey{% endblock %}
 
 {% block extra_css %}
-    {{ block.super }}
-    <!-- Load profile JS with Vite (CSS will be included automatically) -->
-    {% load django_vite %}
-    {% vite_asset 'profile' %}
+    {% direct_asset 'profile' %}
 {% endblock %}
 
 {% block header %}
