@@ -71,6 +71,24 @@ class MediaStorage(S3Boto3Storage):
         super().__init__(*args, **kwargs)
         self.fallback_storage = FallbackStorage()
 
+        # Debug CloudFront domain setting
+        if hasattr(settings, 'AWS_S3_CUSTOM_DOMAIN') and settings.AWS_S3_CUSTOM_DOMAIN:
+            print(f"DEBUG: Using CloudFront domain: {settings.AWS_S3_CUSTOM_DOMAIN}")
+        else:
+            print("DEBUG: No CloudFront domain configured")
+
+    def url(self, name, parameters=None, expire=None):
+        """
+        Override the URL method to ensure CloudFront domain is used if available
+        """
+        # Use CloudFront URL if available
+        if hasattr(settings, 'AWS_S3_CUSTOM_DOMAIN') and settings.AWS_S3_CUSTOM_DOMAIN:
+            url = f"https://{settings.AWS_S3_CUSTOM_DOMAIN}/{self.location}/{name}"
+            logger.info(f"Generated CloudFront URL: {url}")
+            return url
+        # Fall back to S3 URL
+        return super().url(name, parameters=parameters, expire=expire)
+
     def _save(self, name, content):
         """
         Override _save to enhance error handling and logging when uploading to
@@ -215,6 +233,24 @@ class StaticStorage(S3Boto3Storage):
         super().__init__(*args, **kwargs)
         self.fallback_storage = FileSystemStorage(location=settings.STATIC_ROOT)
         print("DEBUG: StaticStorage initialization complete")
+        
+        # Debug CloudFront domain setting
+        if hasattr(settings, 'AWS_S3_CUSTOM_DOMAIN') and settings.AWS_S3_CUSTOM_DOMAIN:
+            print(f"DEBUG: Using CloudFront domain for static files: {settings.AWS_S3_CUSTOM_DOMAIN}")
+        else:
+            print("DEBUG: No CloudFront domain configured for static files")
+
+    def url(self, name, parameters=None, expire=None):
+        """
+        Override the URL method to ensure CloudFront domain is used if available
+        """
+        # Use CloudFront URL if available
+        if hasattr(settings, 'AWS_S3_CUSTOM_DOMAIN') and settings.AWS_S3_CUSTOM_DOMAIN:
+            url = f"https://{settings.AWS_S3_CUSTOM_DOMAIN}/{self.location}/{name}"
+            logger.info(f"Generated CloudFront static URL: {url}")
+            return url
+        # Fall back to S3 URL
+        return super().url(name, parameters=parameters, expire=expire)
 
     def _save(self, name, content):
         """

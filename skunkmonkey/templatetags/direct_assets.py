@@ -1,5 +1,6 @@
 import json
 import os
+from collections import OrderedDict
 
 from django import template
 from django.conf import settings
@@ -47,53 +48,97 @@ def _render_dev_asset(name, dev_server):
 
 def _render_prod_asset(name):
     """Render asset tags using compiled files in production mode."""
-    # Try to load from manifest if available
-    manifest_path = os.path.join(
-        settings.BASE_DIR, 'staticfiles', 'manifest.json'
-    )
+    # Look for manifest in static directory first, then staticfiles
+    manifest_paths = [
+        os.path.join(settings.BASE_DIR, 'static', 'manifest.json'),
+        os.path.join(settings.BASE_DIR, 'staticfiles', 'manifest.json')
+    ]
+    
+    manifest = None
+    for path in manifest_paths:
+        if os.path.exists(path):
+            try:
+                with open(path, 'r') as f:
+                    manifest = json.load(f)
+                break
+            except Exception:
+                continue
+    
+    if not manifest:
+        # Fallback to hardcoded paths if manifest not available
+        static_url = getattr(settings, 'STATIC_URL', '/static/')
+        
+        # Generate generic paths based on name
+        js_path = f"{static_url}js/core/{name}.js"
+        css_path = f"{static_url}css/core/{name}.css"
+        
+        html = f'<link rel="stylesheet" href="{css_path}" />'
+        html += f'<script type="module" src="{js_path}"></script>'
+        
+        return mark_safe(html)
+        
+    # Try simple direct name match first
+    entry = manifest.get(name)
+    
+    # If no direct match, try to find by simple file name (without path)
+    if not entry:
+        js_file = f"src/core/js/{name}.js"
+        if js_file in manifest:
+            entry = manifest[js_file]
+            
+    # If still no match, look for any entry with matching name
+    if not entry:
+        for key, value in manifest.items():
+            if isinstance(value, dict) and value.get('name') == name:
+                entry = value
+                break
+    
+    # If we have an entry, render it
+    if entry:
+        static_url = getattr(settings, 'STATIC_URL', '/static/')
+        html = []
+        
+        # Add CSS files
+        if 'css' in entry:
+            for css_file in entry['css']:
+                html.append(f'<link rel="stylesheet" href="{static_url}{css_file}" />')
+        
+        # Add JS file 
+        if 'file' in entry:
+            html.append(f'<script type="module" src="{static_url}{entry["file"]}"></script>')
+        
+        return mark_safe('\n'.join(html))
+    
+    # If no entry found, fall back to default pattern
+    static_url = getattr(settings, 'STATIC_URL', '/static/')
+    
+    # Generate generic paths based on name
+    js_path = f"{static_url}js/core/{name}.js"
+    css_path = f"{static_url}css/core/{name}.css"
+    
+    html = [
+        f'<link rel="stylesheet" href="{css_path}" />',
+        f'<script type="module" src="{js_path}"></script>'
+    ]
+    
+    return mark_safe('\n'.join(html))
 
-    if os.path.exists(manifest_path):
-        try:
-            with open(manifest_path, 'r') as f:
-                manifest = json.load(f)
 
-            if name in manifest:
-                entry = manifest[name]
-                static_url = getattr(settings, 'STATIC_URL', '/dev/static/')
-
-                # Handle CSS files
-                html = ''
-                if 'css' in entry:
-                    for css_file in entry['css']:
-                        css_tag = (
-                            f'<link rel="stylesheet" '
-                            f'href="{static_url}{css_file}" />'
-                        )
-                        html += css_tag
-
-                # Handle JS files
-                js_file = entry.get('file', f'js/{name}/{name}.js')
-                html += (
-                    f'<script type="module" '
-                    f'src="{static_url}{js_file}"></script>'
-                )
-                return mark_safe(html)
-        except Exception:
-            # Fall back to hardcoded paths if manifest loading fails
-            pass
-
-    # Fallback to hardcoded paths if manifest not available
-    if name == 'main':
-        css_path = "/dev/static/css/core/main.css"
-        js_path = "/dev/static/js/core/main.js"
-    elif name == 'home':
-        css_path = "/dev/static/css/home/home.css"
-        js_path = "/dev/static/js/home/home.js"
-    else:
-        css_path = f"/dev/static/css/{name}/{name}.css"
-        js_path = f"/dev/static/js/{name}/{name}.js"
-
-    # Include both CSS and JS tags
-    html = f'<link rel="stylesheet" href="{css_path}" />'
-    html += f'<script type="module" src="{js_path}"></script>'
-    return mark_safe(html)
+@register.simple_tag
+def debug_manifest():
+    """Helper tag to debug manifest contents."""
+    manifest_paths = [
+        os.path.join(settings.BASE_DIR, 'static', 'manifest.json'),
+        os.path.join(settings.BASE_DIR, 'staticfiles', 'manifest.json')
+    ]
+    
+    for path in manifest_paths:
+        if os.path.exists(path):
+            try:
+                with open(path, 'r') as f:
+                    manifest = json.load(f)
+                return mark_safe(f"<pre>{json.dumps(manifest, indent=2)}</pre>")
+            except Exception as e:
+                return f"Error loading manifest: {str(e)}"
+    
+    return "Manifest not found"
