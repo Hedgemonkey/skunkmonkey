@@ -1,0 +1,64 @@
+<!-- Responsive navbar-->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'home' %}">SkunkMonkey</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">Home</a></li>
+                <li class="nav-item"><a class="nav-link {% if '/shop/' in request.path %}active{% endif %}" href="{% url 'shop:product_list' %}">Shop</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+                <li class="nav-item"><a class="nav-link {% if '/users/contact/' in request.path %}active{% endif %}" href="{% url 'users_contact' %}">Contact</a></li>
+
+                <!-- Cart icon with item count -->
+                <li class="nav-item">
+                    <a class="nav-link position-relative" href="{% url 'shop:cart' %}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            {{ request.cart.item_count|default:'0' }}
+                        </span>
+                    </a>
+                </li>
+
+                <!-- Comparison icon with count -->
+                <li class="nav-item">
+                    <a class="nav-link position-relative" href="{% url 'shop:comparison' %}">
+                        <i class="fas fa-balance-scale"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary comparison-count">
+                            {{ request.comparison_list.products.count|default:'0' }}
+                        </span>
+                    </a>
+                </li>
+
+                {% if user.is_staff or user.is_superuser %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownManagement" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Management
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownManagement">
+                        <li><a class="dropdown-item" href="{% url 'products:product_management' %}">Product Management</a></li>
+                        <!-- Add other management links here as needed -->
+                    </ul>
+                </li>
+                {% endif %}
+
+                {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            My Account ({{ user.username|default:user.email }})
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="{% url 'users_manage' %}">Account Management</a>
+                            <a class="dropdown-item" href="{% url 'shop:order_history' %}">My Orders</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{% url 'account_logout' %}">Log Out</a>
+                        </div>
+                    </li>
+                {% else %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'account_login' %}">Log In</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'account_signup' %}">Register</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>

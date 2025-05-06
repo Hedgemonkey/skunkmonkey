@@ -87,47 +87,49 @@ INSTALLED_APPS = [
     'staff.apps.StaffConfig',
     'djstripe',
     'django_countries',
-    'django_vite',
+    # Only include django_vite if not on Heroku
     'skunkmonkey',  # Add this to enable our custom templatetags
 ]
 
-# Django-Vite configuration - SIMPLIFIED AND FIXED
-DJANGO_VITE_ASSETS_PATH = BASE_DIR / 'staticfiles'
-DJANGO_VITE_DEV_MODE = False
-DJANGO_VITE_DEV_SERVER_URL = ""
-
-# Clean up previous attempts at configuration
-# DJANGO_VITE_MANIFEST_PATH = os.path.join(BASE_DIR, 'staticfiles', 'manifest.json')
-# DJANGO_VITE_STATIC_URL_PREFIX = "/dev/static/"
-
-# Create a symlink in the exact location django-vite expects
-
-
-manifest_source = os.path.join(BASE_DIR, 'staticfiles', 'manifest.json')
-dev_static_dir = os.path.join(BASE_DIR, 'dev', 'static')
-manifest_target = os.path.join(dev_static_dir, 'manifest.json')
-
-# Ensure the target directory exists
-os.makedirs(dev_static_dir, exist_ok=True)
-
-# Copy the manifest file to the exact path django-vite is looking for
-if os.path.exists(manifest_source):
-    shutil.copy2(manifest_source, manifest_target)
-
-# Simplified configuration with clean entry points
-DJANGO_VITE_CONFIGS = {
-    'default': {
-        'entry_points': ['main'],
-    },
-}
-
-# Use a single, simplified configuration 
-DJANGO_VITE = {
-    'default': {
-        'dev_mode': False,
-        'static_url_prefix': '/dev/static/',
+# Only include django_vite in INSTALLED_APPS if not on Heroku
+if not ON_HEROKU:
+    INSTALLED_APPS.append('django_vite')
+    
+    # Django-Vite configuration - SIMPLIFIED AND FIXED
+    DJANGO_VITE_ASSETS_PATH = BASE_DIR / 'staticfiles'
+    DJANGO_VITE_DEV_MODE = False
+    DJANGO_VITE_DEV_SERVER_URL = ""
+    
+    # Clean up previous attempts at configuration
+    # DJANGO_VITE_MANIFEST_PATH = os.path.join(BASE_DIR, 'staticfiles', 'manifest.json')
+    # DJANGO_VITE_STATIC_URL_PREFIX = "/dev/static/"
+    
+    # Create a symlink in the exact location django-vite expects
+    manifest_source = os.path.join(BASE_DIR, 'staticfiles', 'manifest.json')
+    dev_static_dir = os.path.join(BASE_DIR, 'dev', 'static')
+    manifest_target = os.path.join(dev_static_dir, 'manifest.json')
+    
+    # Ensure the target directory exists
+    os.makedirs(dev_static_dir, exist_ok=True)
+    
+    # Copy the manifest file to the exact path django-vite is looking for
+    if os.path.exists(manifest_source):
+        shutil.copy2(manifest_source, manifest_target)
+    
+    # Simplified configuration with clean entry points
+    DJANGO_VITE_CONFIGS = {
+        'default': {
+            'entry_points': ['main'],
+        },
     }
-}
+    
+    # Use a single, simplified configuration 
+    DJANGO_VITE = {
+        'default': {
+            'dev_mode': False,
+            'static_url_prefix': '/dev/static/',
+        }
+    }
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
