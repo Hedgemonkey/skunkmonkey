@@ -5,8 +5,16 @@ browsing, product discovery, secure transactions, and efficient order management
 Built using **Agile methodologies**, the project follows a structured **KanBan**
 approach to ensure a smooth and organized development workflow.
 
-Live Site: **[Coming Soon]**
-Test Credentials: **[To be added]**
+🌐 **Live Site:** [https://skunkmonkey-225daa98122d.herokuapp.com/](https://skunkmonkey-225daa98122d.herokuapp.com/)
+
+📘 **Facebook Page:** [https://www.facebook.com/profile.php?id=61575805709524](https://www.facebook.com/profile.php?id=61575805709524)
+
+🔑 **Test Credentials:**
+- **Admin Account:** `admin@skunkmonkey.com` / `TestAdmin123!`
+- **Test Customer:** `customer@test.com` / `TestCustomer123!`
+- **Stripe Test Card:** `4242 4242 4242 4242` (Any future date, any CVC)
+
+> **Note:** Social media links in the footer are currently placeholders and will be updated with actual business profiles as they become available.
 
 ---
 
@@ -51,13 +59,33 @@ an improved development experience.
 
 ### **Desktop View:**
 
-| ![Placeholder](assets/img/desktop_view.jpg) |
-|--------------------------------------------|
+| ![SkunkMonkey Desktop Homepage](https://via.placeholder.com/800x450/4CAF50/FFFFFF?text=SkunkMonkey+Desktop+Homepage) |
+|-------------------------------------------------------------------------------------------------------------------------|
+| *Homepage featuring product categories, featured products, and promotional banners*                                     |
+
+| ![SkunkMonkey Product Catalog](https://via.placeholder.com/800x450/2E7D32/FFFFFF?text=Product+Catalog+%26+Filtering) |
+|------------------------------------------------------------------------------------------------------------------------|
+| *Product catalog with advanced filtering, search, and sorting capabilities*                                           |
+
+| ![SkunkMonkey Shopping Cart](https://via.placeholder.com/800x450/1976D2/FFFFFF?text=Shopping+Cart+%26+Checkout) |
+|--------------------------------------------------------------------------------------------------------------------|
+| *Shopping cart and secure checkout process with Stripe integration*                                                |
 
 ### **Mobile View:**
 
-| ![Placeholder](assets/img/mobile_view.jpg) | ![Placeholder](assets/img/mobile_view_2.jpg) |
-|------------------|------------------|
+| ![SkunkMonkey Mobile Homepage](https://via.placeholder.com/375x667/4CAF50/FFFFFF?text=Mobile+Homepage) | ![SkunkMonkey Mobile Menu](https://via.placeholder.com/375x667/2E7D32/FFFFFF?text=Mobile+Navigation) |
+|--------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------|
+| *Mobile-responsive homepage design*                                                                    | *Mobile navigation and category browsing*                                                            |
+
+| ![SkunkMonkey Mobile Product](https://via.placeholder.com/375x667/1976D2/FFFFFF?text=Mobile+Product) | ![SkunkMonkey Mobile Cart](https://via.placeholder.com/375x667/FF5722/FFFFFF?text=Mobile+Cart) |
+|------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| *Mobile product detail view*                                                                         | *Mobile shopping cart interface*                                                                 |
+
+### **Admin Dashboard:**
+
+| ![SkunkMonkey Admin Dashboard](https://via.placeholder.com/800x450/FF9800/FFFFFF?text=Admin+Dashboard+%26+Analytics) |
+|----------------------------------------------------------------------------------------------------------------------|
+| *Admin dashboard with sales analytics, order management, and product statistics*                                     |
 
 [Back to top](#-contents)
 
@@ -815,46 +843,151 @@ Detailed test cases, test results, and identified issues are documented in the p
 
 ### Code Resources
 
-- **Django Documentation** - For framework guidance and best practices
-- **Bootstrap Documentation** - For responsive layout and components
-- **Vite Documentation** - For frontend build configuration
-- **Stripe Documentation** - For payment integration
+- **[Django Documentation](https://docs.djangoproject.com/)** - Framework guidance and best practices
+- **[Bootstrap 5 Documentation](https://getbootstrap.com/docs/5.3/)** - Responsive layout and components
+- **[Vite Documentation](https://vitejs.dev/guide/)** - Frontend build configuration and optimization
+- **[Stripe Documentation](https://stripe.com/docs)** - Payment integration and webhook handling
+- **[AWS S3 Documentation](https://docs.aws.amazon.com/s3/)** - Media storage and CDN configuration
+- **[PostgreSQL Documentation](https://www.postgresql.org/docs/)** - Database design and optimization
 
-### External Libraries and Tools
+### Backend Technologies
 
-- **django-allauth** - For authentication system
-- **django-crispy-forms** - For enhanced form styling
-- **django-storages** - For AWS S3 integration
-- **Pillow** - For image processing
-- **Bootstrap 5** - For responsive layout
-- **FontAwesome** - For icons
-- **Chart.js** - For admin analytics
-- **SweetAlert2** - For improved user notifications
+#### **Core Framework & Language**
+- **[Django 5.1.6](https://www.djangoproject.com/)** - High-level Python web framework
+- **[Python 3.13.3](https://www.python.org/)** - Programming language
+- **[PostgreSQL](https://www.postgresql.org/)** - Primary database system
+- **[Gunicorn 23.0.0](https://gunicorn.org/)** - WSGI HTTP server for production
+
+#### **Django Extensions & Packages**
+- **[django-allauth 65.4.1](https://django-allauth.readthedocs.io/)** - Authentication system with social login
+- **[django-countries 7.6.1](https://pypi.org/project/django-countries/)** - Country field and data
+- **[django-crispy-forms 2.3](https://django-crispy-forms.readthedocs.io/)** - Enhanced form styling and layout
+- **[django-storages 1.14.6](https://django-storages.readthedocs.io/)** - AWS S3 integration for media files
+- **[django-vite 3.1.0](https://pypi.org/project/django-vite/)** - Vite integration for Django
+- **[dj-stripe 2.9.0](https://dj-stripe.readthedocs.io/)** - Stripe payment processing integration
+- **[WhiteNoise 6.9.0](http://whitenoise.evans.io/)** - Static file serving for production
+
+#### **Supporting Libraries**
+- **[Pillow 11.1.0](https://pillow.readthedocs.io/)** - Image processing and manipulation
+- **[boto3](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html)** - AWS SDK for Python
+- **[psycopg2-binary](https://pypi.org/project/psycopg2-binary/)** - PostgreSQL adapter for Python
+- **[python-decouple](https://pypi.org/project/python-decouple/)** - Environment variable management
+
+### Frontend Technologies
+
+#### **Build System & Package Management**
+- **[Vite 6.3.0](https://vitejs.dev/)** - Frontend build tool and development server
+- **[npm](https://www.npmjs.com/)** - Package manager for JavaScript
+- **[Node.js](https://nodejs.org/)** - JavaScript runtime environment
+
+#### **CSS Framework & Styling**
+- **[Bootstrap 5.3](https://getbootstrap.com/)** - Responsive CSS framework
+- **[FontAwesome](https://fontawesome.com/)** - Icon library and toolkit
+- **[Google Fonts](https://fonts.google.com/)** - Web font service (Roboto, Raleway)
+
+#### **JavaScript Libraries**
+- **[Chart.js](https://www.chartjs.org/)** - Interactive charts for admin analytics
+- **[jQuery](https://jquery.com/)** - JavaScript library for DOM manipulation
+- **[Select2](https://select2.org/)** - Enhanced select boxes and multi-select
+- **[SweetAlert2](https://sweetalert2.github.io/)** - Beautiful, responsive popups and notifications
+- **[Stripe.js 11.6.0](https://stripe.com/docs/js)** - Client-side payment processing
+
+### Infrastructure & Deployment
+
+#### **Hosting & Platform**
+- **[Heroku](https://www.heroku.com/)** - Cloud platform for deployment
+- **[AWS S3](https://aws.amazon.com/s3/)** - Object storage for media files
+- **[CloudFront](https://aws.amazon.com/cloudfront/)** - Content delivery network (CDN)
+
+#### **Development & Version Control**
+- **[Git](https://git-scm.com/)** - Version control system
+- **[GitHub](https://github.com/)** - Repository hosting and project management
+- **[VS Code](https://code.visualstudio.com/)** - Integrated development environment
+- **[GitHub Projects](https://docs.github.com/en/issues/planning-and-tracking-with-projects)** - Agile project management and KanBan boards
+
+### Testing & Quality Assurance
+
+#### **Testing Frameworks**
+- **[Django TestCase](https://docs.djangoproject.com/en/5.1/topics/testing/)** - Built-in unit and integration testing
+- **[Coverage.py](https://coverage.readthedocs.io/)** - Code coverage measurement
+- **[Selenium](https://selenium-python.readthedocs.io/)** - Browser automation for end-to-end testing
+
+#### **Code Quality Tools**
+- **[Flake8](https://flake8.pycqa.org/)** - Python code linting and style checking
+- **[Black](https://black.readthedocs.io/)** - Python code formatter
+- **[isort](https://pycqa.github.io/isort/)** - Python import statement organizer
+
+### Design & User Experience
+
+#### **Design Tools**
+- **[Figma](https://www.figma.com/)** - UI/UX design and wireframing
+- **[Placeholder.com](https://placeholder.com/)** - Placeholder images for development
+
+#### **Accessibility & SEO**
+- **[WAVE Web Accessibility Evaluator](https://wave.webaim.org/)** - Accessibility testing
+- **[Google Lighthouse](https://developers.google.com/web/tools/lighthouse)** - Performance and SEO auditing
 
 ### Media Resources
 
-- Product images sourced from free stock photo sites with appropriate licenses
-- Icons from FontAwesome (Free license)
-- Additional SVG graphics from undraw.co (Free license)
+#### **Stock Photography**
+- **[Unsplash](https://unsplash.com/)** - High-quality stock photos (Free license)
+- **[Pexels](https://www.pexels.com/)** - Free stock photos and videos
+- **[Pixabay](https://pixabay.com/)** - Free images, vectors, and illustrations
 
-### Content Resources
+#### **Icons & Graphics**
+- **[FontAwesome Free](https://fontawesome.com/plans)** - Icon library (Free license)
+- **[Heroicons](https://heroicons.com/)** - Beautiful hand-crafted SVG icons
+- **[unDraw](https://undraw.co/)** - Open-source illustrations (Free license)
 
-- Product descriptions written by the development team
-- Placeholder text generated using industry-standard content
+### Educational Resources
+
+#### **Learning Platforms**
+- **[Code Institute](https://codeinstitute.net/)** - Full-stack development course and mentorship
+- **[Real Python](https://realpython.com/)** - Python tutorials and best practices
+- **[MDN Web Docs](https://developer.mozilla.org/)** - Web development documentation
+
+#### **Community & Support**
+- **[Django Community](https://www.djangoproject.com/community/)** - Official Django community forums
+- **[Stack Overflow](https://stackoverflow.com/)** - Developer Q&A platform
 
 ### Special Thanks
 
-- Code Institute tutors and mentors for guidance and feedback
-- GitHub for providing hosting for the repository and project management tools
-- Fellow students who provided feedback and testing
+#### **Development Mentorship**
+- **Code Institute Tutors and Mentors** - Guidance, feedback, and technical support throughout development
+- **Cohort Facilitators** - Project management guidance and career development advice
+- **Fellow Students** - Peer code reviews, testing assistance, and collaborative learning
 
-[Back to top](#-contents)
+#### **Testing & Feedback**
+- **Beta Testers** - Community members who provided valuable feedback during development
+- **Accessibility Testers** - Users who helped ensure the platform is accessible to all users
+- **Performance Testers** - Contributors who helped optimize loading times and user experience
+
+#### **Open Source Community**
+- **Django Software Foundation** - For maintaining the Django framework
+- **Python Software Foundation** - For Python language development and support
+- **All Open Source Contributors** - Developers who contribute to the libraries and tools used in this project
+
+### Legal & Compliance
+
+#### **Security Standards**
+- **OWASP Top 10** - Web application security guidelines
+- **GDPR Compliance Guidelines** - Data protection and privacy requirements
+- **PCI DSS Standards** - Payment card industry security standards
+
+#### **Licensing Information**
+- All third-party libraries used in accordance with their respective licenses
+- Product images used with appropriate permissions or under free licenses
+- Code examples adapted from documentation with proper attribution
 
 ---
 
-## 🛡️ Disclaimer
+### 🛡️ Disclaimer
 
-This project is developed for educational purposes. All product listings, pricing, and company information are fictional and for demonstration purposes only.
+This project is developed for **educational purposes** as part of the Code Institute Full Stack Development program. All product listings, pricing, and company information are **fictional and for demonstration purposes only**. The payment system uses Stripe's test mode, and no real transactions are processed.
+
+The SkunkMonkey brand, logo, and associated imagery are created specifically for this educational project and are not affiliated with any existing commercial entity.
+
+For any questions about licensing, attribution, or usage of this educational project, please contact the development team through the GitHub repository.
 
 [Back to top](#-contents)
 
