@@ -128,49 +128,49 @@
   .chart-container {
     height: 250px;
   }
-  
+
   .table th, .table td {
     white-space: nowrap;
   }
-  
+
   .product-thumbnail {
     width: 30px;
     height: 30px;
   }
-  
+
   .card-hover {
     transition: transform 0.15s ease-in-out;
   }
-  
+
   .card-hover:hover {
     transform: translateY(-5px);
   }
-  
+
   /* Bootstrap enhancement classes */
   .border-left-primary {
     border-left: 4px solid #4e73df;
   }
-  
+
   .border-left-success {
     border-left: 4px solid #1cc88a;
   }
-  
+
   .border-left-info {
     border-left: 4px solid #36b9cc;
   }
-  
+
   .border-left-warning {
     border-left: 4px solid #f6c23e;
   }
-  
+
   .border-left-danger {
     border-left: 4px solid #e74a3b;
   }
-  
+
   .text-gray-800 {
     color: #5a5c69 !important;
   }
-  
+
   .text-gray-300 {
     color: #dddfeb !important;
   }

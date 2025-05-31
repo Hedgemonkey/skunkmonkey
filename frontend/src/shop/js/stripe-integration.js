@@ -14,7 +14,7 @@ class StripePaymentManager {
         this.publishableKey = null;
         this.clientSecret = null;
         this.orderCompleteUrl = null;
-        
+
         // Load Stripe.js dynamically if not already loaded
         this.loadStripeJs().then(() => {
             this.init();
@@ -47,7 +47,7 @@ class StripePaymentManager {
      */
     init() {
         // Get configuration from hidden fields
-        this.publishableKey = document.getElementById('stripe_public_key')?.value || 
+        this.publishableKey = document.getElementById('stripe_public_key')?.value ||
                              document.getElementById('id_stripe_public_key')?.value;
         this.clientSecret = document.getElementById('client_secret')?.value;
         this.orderCompleteUrl = document.getElementById('order_complete_url')?.value;
@@ -243,10 +243,10 @@ class StripePaymentManager {
         // Handle form submission
         paymentMethodForm.addEventListener('submit', async (event) => {
             event.preventDefault();
-            
+
             const cardholderName = document.getElementById('cardholder_name').value;
             const setAsDefault = document.getElementById('set_as_default').checked;
-            
+
             try {
                 const result = await this.stripe.createPaymentMethod({
                     type: 'card',
@@ -255,7 +255,7 @@ class StripePaymentManager {
                         name: cardholderName,
                     }
                 });
-                
+
                 if (result.error) {
                     if (paymentMethodErrors) {
                         paymentMethodErrors.textContent = result.error.message;
@@ -263,11 +263,11 @@ class StripePaymentManager {
                 } else {
                     // Here you would send the payment method ID to your server
                     console.log('Payment method created:', result.paymentMethod.id);
-                    
+
                     // Clear form and show success message
                     paymentMethodForm.reset();
                     card.clear();
-                    
+
                     // In a real implementation, you would reload payment methods
                     if (customerId && this.loadSavedPaymentMethods) {
                         this.loadSavedPaymentMethods();
@@ -291,7 +291,7 @@ class StripePaymentManager {
      */
     loadSavedPaymentMethods(customerId, container) {
         if (!customerId || !container) return;
-        
+
         // This would typically be an API call to your Django backend
         // For now, show a placeholder message
         container.innerHTML = '<p class="text-center">You have no saved payment methods.</p>';
@@ -317,7 +317,7 @@ class StripePaymentManager {
      */
     setLoading(isLoading) {
         if (!this.submitButton) return;
-        
+
         if (isLoading) {
             // Disable the button and show a spinner
             this.submitButton.disabled = true;
@@ -354,7 +354,7 @@ class StripePaymentManager {
 // Initialize the Stripe payment manager when the DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     const stripePaymentManager = new StripePaymentManager();
-    
+
     // Make it available globally for potential direct access
     window.StripePaymentManager = stripePaymentManager;
 });
