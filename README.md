@@ -59,33 +59,47 @@ an improved development experience.
 
 ### **Desktop View:**
 
-| ![SkunkMonkey Desktop Homepage](https://via.placeholder.com/800x450/4CAF50/FFFFFF?text=SkunkMonkey+Desktop+Homepage) |
-|-------------------------------------------------------------------------------------------------------------------------|
+| ![SkunkMonkey Desktop Homepage](readme/assets/skunkmonkey_home.jpg) |
+|----------------------------------------------------------------------|
 | *Homepage featuring product categories, featured products, and promotional banners*                                     |
 
-| ![SkunkMonkey Product Catalog](https://via.placeholder.com/800x450/2E7D32/FFFFFF?text=Product+Catalog+%26+Filtering) |
-|------------------------------------------------------------------------------------------------------------------------|
+| ![SkunkMonkey Product Catalog](readme/assets/skunkmonkey_shop.jpg) |
+|--------------------------------------------------------------------|
 | *Product catalog with advanced filtering, search, and sorting capabilities*                                           |
 
-| ![SkunkMonkey Shopping Cart](https://via.placeholder.com/800x450/1976D2/FFFFFF?text=Shopping+Cart+%26+Checkout) |
-|--------------------------------------------------------------------------------------------------------------------|
+| ![SkunkMonkey Shopping Cart](readme/assets/skunkmonkey_cart.jpg) |
+|-------------------------------------------------------------------|
 | *Shopping cart and secure checkout process with Stripe integration*                                                |
 
 ### **Mobile View:**
 
-| ![SkunkMonkey Mobile Homepage](https://via.placeholder.com/375x667/4CAF50/FFFFFF?text=Mobile+Homepage) | ![SkunkMonkey Mobile Menu](https://via.placeholder.com/375x667/2E7D32/FFFFFF?text=Mobile+Navigation) |
-|--------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------|
+| ![SkunkMonkey Mobile Homepage](readme/assets/skunkmonkey_mobile_home.jpg) | ![SkunkMonkey Mobile Menu](readme/assets/skunkmonkey_mobile_navigation.jpg) |
+|---------------------------------------------------------------------------|-----------------------------------------------------------------------------|
 | *Mobile-responsive homepage design*                                                                    | *Mobile navigation and category browsing*                                                            |
 
-| ![SkunkMonkey Mobile Product](https://via.placeholder.com/375x667/1976D2/FFFFFF?text=Mobile+Product) | ![SkunkMonkey Mobile Cart](https://via.placeholder.com/375x667/FF5722/FFFFFF?text=Mobile+Cart) |
-|------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| ![SkunkMonkey Mobile Product](readme/assets/skunkmonkey_mobile_product_detail.jpg) | ![SkunkMonkey Mobile Cart](readme/assets/skunkmonkey_mobile_cart.jpg) |
+|------------------------------------------------------------------------------------|-----------------------------------------------------------------------|
 | *Mobile product detail view*                                                                         | *Mobile shopping cart interface*                                                                 |
 
 ### **Admin Dashboard:**
 
-| ![SkunkMonkey Admin Dashboard](https://via.placeholder.com/800x450/FF9800/FFFFFF?text=Admin+Dashboard+%26+Analytics) |
-|----------------------------------------------------------------------------------------------------------------------|
-| *Admin dashboard with sales analytics, order management, and product statistics*                                     |
+| ![SkunkMonkey Admin Dashboard](readme/assets/skunkmonkey_admin_dashboard.jpg) |
+|-------------------------------------------------------------------------------|
+| *Main admin dashboard with sales analytics and system overview*                                     |
+
+| ![SkunkMonkey Orders Dashboard](readme/assets/skunkmonkey_orders_dashboard.jpg) |
+|---------------------------------------------------------------------------------|
+| *Orders management dashboard with order processing and status tracking*                                     |
+
+| ![SkunkMonkey Products Dashboard](readme/assets/skunkmonkey_products_dashboard.jpg) |
+|-------------------------------------------------------------------------------------|
+| *Products management dashboard with inventory control and product statistics*                                     |
+
+### **Social Media Presence:**
+
+| ![SkunkMonkey Facebook Page](readme/assets/skunkmonkey_facebook.jpg) |
+|----------------------------------------------------------------------|
+| *Official SkunkMonkey Facebook business page for community engagement and marketing*                                     |
 
 [Back to top](#-contents)
 
