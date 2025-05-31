@@ -15,6 +15,7 @@ from django.views.generic import TemplateView
 from products.models import Product
 
 from ..forms import CartAddProductForm, CartUpdateQuantityForm
+from ..models import CartItem
 from ..utils.error_handling import ErrorHandler
 from .mixins import CartAccessMixin
 
@@ -81,10 +82,28 @@ class CartAddView(CartAccessMixin, View):
 
             # Return appropriate response
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                # Get cart summary for enhanced response
+                cart_items = []
+                for item in cart.items.all():
+                    cart_items.append({
+                        'id': item.product.id,
+                        'name': item.product.name,
+                        'quantity': item.quantity,
+                        'price': str(item.price),
+                        'total_price': str(item.total_price),
+                        'image_url': (item.product.image.url
+                                      if item.product.image else None)
+                    })
+
                 return JsonResponse({
                     'success': True,
                     'item_count': len(cart),
-                    'message': f"{product.name} added to cart."
+                    'cart_total': str(cart.total_price),
+                    'message': f"{product.name} added to cart.",
+                    'product_name': product.name,
+                    'quantity_added': quantity,
+                    'cart_items': cart_items[:5],  # Limit to 5 items
+                    'total_unique_items': len(cart_items)
                 })
 
             messages.success(request, f"{product.name} added to cart.")
@@ -221,13 +240,29 @@ class CartUpdateQuantityView(CartAccessMixin, View):
             ErrorHandler.handle_exception(request, e, "updating cart quantity")
             message = "An error occurred. Please try again."
 
+        # Get the updated item subtotal if successful
+        item_subtotal = None
+        if success and quantity > 0:
+            try:
+                cart_item = cart.items.get(product_id=product_id)
+                item_subtotal = str(cart_item.total_price)
+            except CartItem.DoesNotExist:
+                # If we can't get the item, it might have been removed
+                pass
+
         # Return JSON response
-        return JsonResponse({
+        response_data = {
             'success': success,
             'message': message,
             'item_count': len(cart),
             'cart_total': str(cart.total_price)
-        }, status=200 if success else 400)
+        }
+
+        # Add item_subtotal if available
+        if item_subtotal is not None:
+            response_data['item_subtotal'] = item_subtotal
+
+        return JsonResponse(response_data, status=200 if success else 400)
 
 
 # For backwards compatibility with function-based views

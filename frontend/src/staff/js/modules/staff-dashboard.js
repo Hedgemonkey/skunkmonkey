@@ -2,8 +2,8 @@
  * Staff Dashboard module
  * Handles specific functionality for the staff product dashboard
  */
-// Import bootstrap for modal functionality
-import * as bootstrap from 'bootstrap';
+// Using dynamic import for Bootstrap to avoid chunking issues
+let bootstrapModule = null;
 
 /**
  * StaffDashboard class for managing dashboard-specific functionality
@@ -16,7 +16,14 @@ class StaffDashboard {
     /**
      * Initialize dashboard functionality
      */
-    init() {
+    async init() {
+        // Import Bootstrap dynamically
+        try {
+            bootstrapModule = await import('bootstrap');
+        } catch (error) {
+            console.error('Error loading Bootstrap:', error);
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             this.loadLowStockProducts();
             this.initImportExport();
@@ -105,7 +112,7 @@ class StaffDashboard {
 
         if (!importBtn || !exportBtn || !importModalEl) return;
 
-        const importModal = new bootstrap.Modal(importModalEl);
+        const importModal = new bootstrapModule.Modal(importModalEl);
 
         importBtn.addEventListener('click', (e) => {
             e.preventDefault();

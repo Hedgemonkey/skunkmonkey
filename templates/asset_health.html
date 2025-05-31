@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load direct_assets %}
+
+{% block extra_css %}
+<style>
+.asset-test {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+}
+.status-indicator {
+    font-weight: bold;
+    margin-left: 10px;
+}
+.path-display {
+    font-family: monospace;
+    background-color: #f8f9fa;
+    padding: 8px;
+    border-radius: 4px;
+    margin: 10px 0;
+    word-break: break-all;
+}
+.test-result {
+    margin-top: 10px;
+    font-weight: bold;
+}
+.success {
+    color: #28a745;
+}
+.error {
+    color: #dc3545;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1>Asset System Health Check</h1>
+    <p class="lead">This page helps you diagnose problems with the static asset system.</p>
+
+    <div class="alert alert-info mb-4">
+        <p><strong>Environment Info:</strong></p>
+        <ul>
+            <li>Debug Mode: {{ debug }}</li>
+            <li>Running on Heroku: {{ on_heroku }}</li>
+            <li>Static URL: <code>{{ static_url }}</code></li>
+            {% if static_root %}<li>Static Root: <code>{{ static_root }}</code></li>{% endif %}
+        </ul>
+    </div>
+
+    {% debug_manifest %}
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4>Asset Path Tests</h4>
+            <p class="text-white-50 mb-0"><small>Tests are dynamically generated from manifest.json and standard paths</small></p>
+        </div>
+        <div class="card-body">
+            {% for path in test_paths %}
+            <div class="asset-test" id="test-container-{{ forloop.counter }}">
+                <h5>Test #{{ forloop.counter }}:
+                    <span class="status-indicator" id="status-{{ forloop.counter }}">⏳ Testing...</span>
+                </h5>
+                <div class="path-display">{{ path }}</div>
+                <div class="test-result" id="result-{{ forloop.counter }}"></div>
+                {% if path|slice:"-3:" == ".js" %}
+                <div class="small text-muted mt-1">
+                    Testing via dynamic import (ES modules)
+                </div>
+                {% elif path|slice:"-4:" == ".css" %}
+                <div class="small text-muted mt-1">
+                    Testing via stylesheet injection
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            <h4>Real-time Diagnostics</h4>
+        </div>
+        <div class="card-body">
+            <div id="diagnostics">
+                <p>Running diagnostics...</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block postloadjs %}
+<script>
+    // Function to test if a file can be loaded
+    async function testFile(url, testId) {
+        const statusElement = document.getElementById(`status-${testId}`);
+        const resultElement = document.getElementById(`result-${testId}`);
+        const containerElement = document.getElementById(`test-container-${testId}`);
+
+        try {
+            const start = performance.now();
+
+            // For JS files, try to import dynamically
+            if (url.endsWith('.js')) {
+                try {
+                    await import(url);
+                    const end = performance.now();
+                    statusElement.textContent = '✅ Success';
+                    resultElement.innerHTML = `<span class="success">JS file loaded successfully in ${(end - start).toFixed(2)}ms</span>`;
+                } catch (e) {
+                    statusElement.textContent = '❌ Failed';
+                    resultElement.innerHTML = `<span class="error">Error: ${e.message}</span>`;
+                    throw e;  // Re-throw to mark the test as failed
+                }
+            }
+            // For CSS files, create a link element
+            else if (url.endsWith('.css')) {
+                return new Promise((resolve, reject) => {
+                    const link = document.createElement('link');
+                    link.rel = 'stylesheet';
+                    link.href = url;
+
+                    link.onload = () => {
+                        const end = performance.now();
+                        statusElement.textContent = '✅ Success';
+                        resultElement.innerHTML = `<span class="success">CSS file loaded successfully in ${(end - start).toFixed(2)}ms</span>`;
+                        resolve();
+                    };
+
+                    link.onerror = () => {
+                        statusElement.textContent = '❌ Failed';
+                        resultElement.innerHTML = `<span class="error">CSS file failed to load</span>`;
+                        reject(new Error('CSS file failed to load'));
+                    };
+
+                    // Add to head
+                    document.head.appendChild(link);
+                });
+            }
+            // For other files, use fetch
+            else {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error ${response.status}`);
+                }
+                const end = performance.now();
+                statusElement.textContent = '✅ Success';
+                resultElement.innerHTML = `<span class="success">File loaded successfully in ${(end - start).toFixed(2)}ms</span>`;
+                resultElement.innerHTML += `<br>Content-Type: ${response.headers.get('content-type')}`;
+            }
+
+            containerElement.style.backgroundColor = '#f8fff8';
+        } catch (error) {
+            statusElement.textContent = '❌ Failed';
+            resultElement.innerHTML = `<span class="error">Error: ${error.message}</span>`;
+            containerElement.style.backgroundColor = '#fff8f8';
+            return false;
+        }
+
+        return true;
+    }
+
+    // Function to run all tests
+    async function runAllTests() {
+        const diagnostics = document.getElementById('diagnostics');
+        diagnostics.innerHTML = '<p>Running asset tests...</p>';
+
+        const testResults = [];
+        {% for path in test_paths %}
+        testResults.push(await testFile('{{ path }}', {{ forloop.counter }}));
+        {% endfor %}
+
+        // Update diagnostics
+        const successCount = testResults.filter(r => r).length;
+        const failCount = testResults.length - successCount;
+
+        let diagnosticHTML = `<p>Test Results: ${successCount} passed, ${failCount} failed</p>`;
+
+        if (failCount > 0) {
+            diagnosticHTML += `
+            <div class="alert alert-warning">
+                <h5>Possible Issues:</h5>
+                <ul>
+                    <li>Check that all asset directories exist (js, css, chunks)</li>
+                    <li>Verify manifest.json has correct paths for assets</li>
+                    <li>Check MIME types being served for CSS files</li>
+                    <li>Ensure post-build scripts are running during deployment</li>
+                </ul>
+            </div>`;
+        } else {
+            diagnosticHTML += `
+            <div class="alert alert-success">
+                <p>All assets loaded successfully! The fixes appear to be working.</p>
+            </div>`;
+        }
+
+        diagnostics.innerHTML = diagnosticHTML;
+    }
+
+    // Run tests when page loads
+    document.addEventListener('DOMContentLoaded', runAllTests);
+</script>
+{% endblock %}

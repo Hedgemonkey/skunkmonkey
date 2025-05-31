@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load direct_assets %}
 {% load custom_filters %}
-{% load django_vite %}
-{% load crispy_forms_tags %}
 
 {% block header %}
 {% endblock %}
@@ -10,7 +9,8 @@
 {% block title %}Product Comparison - SkunkMonkey Shop{% endblock %}
 
 {% block extra_css %}
-    {% vite_asset 'comparisonManager' %}
+    {{ block.super }}
+    {% direct_asset 'comparison' %}
 {% endblock %}
 
 {% block content %}
@@ -27,7 +27,7 @@
                             <th>
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <span>{{ product.name }}</span>
-                                    <a href="{% url 'shop:remove_from_comparison' product.id %}" class="remove-product">
+                                    <a href="{% url 'shop:toggle_comparison' product.id %}" class="remove-product toggle-comparison-btn">
                                         <i class="fas fa-times"></i>
                                     </a>
                                 </div>
@@ -36,13 +36,26 @@
                                 {% else %}
                                     <img src="{{ MEDIA_URL }}noimage.png" alt="No image" class="product-image mb-2">
                                 {% endif %}
-                                <div class="product-price mb-2">${{ product.price }}</div>
+                                <div class="product-price mb-2">£{{ product.price }}</div>
                                 <a href="{% url 'shop:product_detail' product.slug %}" class="btn btn-sm btn-outline-primary mb-2">View Details</a>
-                                <form method="post" action="{% url 'shop:cart_add' product.id %}" class="d-inline">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="quantity" value="1">
-                                    <button type="submit" class="btn btn-sm btn-primary">Add to Cart</button>
-                                </form>
+                                {% if product.stock_quantity > 0 %}
+                                    <button type="button"
+                                            class="btn btn-sm btn-primary add-to-cart-modal-btn"
+                                            data-product-id="{{ product.id }}"
+                                            data-product-name="{{ product.name }}"
+                                            data-product-price="{{ product.price }}"
+                                            data-product-image="{% if product.image %}{{ product.image.url }}{% else %}{{ MEDIA_URL }}noimage.png{% endif %}"
+                                            data-stock-quantity="{{ product.stock_quantity }}"
+                                            data-cart-add-url="{% url 'shop:cart_add' product.id %}"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#quantityModal">
+                                        Add to Cart
+                                    </button>
+                                {% else %}
+                                    <button type="button" class="btn btn-sm btn-secondary" disabled>
+                                        Out of Stock
+                                    </button>
+                                {% endif %}
                             </th>
                         {% endfor %}
                     </tr>
@@ -60,7 +73,7 @@
                         {% for product in products %}
                             <td>
                                 {% if product.stock_quantity > 10 %}
-                                    <span class="text-success">In Stock ({{ product.stock_quantity }})</span>
+                                    <span class="text-success">In Stock</span>
                                 {% elif product.stock_quantity > 0 %}
                                     <span class="text-warning">Low Stock ({{ product.stock_quantity }})</span>
                                 {% else %}
@@ -127,15 +140,12 @@
         </div>
     {% endif %}
 </div>
+
+<!-- Include quantity selection modal -->
+{% include 'shop/includes/quantity_modal.html' %}
 {% endblock %}
 
 {% block postloadjs %}
     {{ block.super }}
-    <script>
-        // Custom template filter for accessing dictionary items
-        // This is needed because Django templates don't support dictionary access with variables
-        document.addEventListener('DOMContentLoaded', function() {
-            // Nothing to do here, just a placeholder for any future JS
-        });
-    </script>
+    {% direct_asset 'quantityModalManager' %}
 {% endblock %}

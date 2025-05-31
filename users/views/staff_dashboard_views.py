@@ -551,14 +551,12 @@ def staff_message_response(request, pk):
                     messages.success(
                         request, _("Response sent by email and saved.")
                     )
-                    print("DEBUG: Email sent successfully")
                 except Exception as e:
                     msg = (
                         f"Failed to send email: {str(e)}. "
                         "Response was saved."
                     )
                     messages.error(request, _(msg))
-                    print(f"DEBUG: Email send error: {str(e)}")
             else:
                 print(
                     f"DEBUG: Not sending email. Conditions: "
@@ -688,21 +686,34 @@ def staff_message_assign(request, pk):
 
                 # Add note about reassignment
                 if original_assignee:
+                    user_name = (
+                        request.user.get_full_name()
+                        or request.user.username
+                    )
+                    orig_name = (
+                        original_assignee.get_full_name()
+                        or original_assignee.username
+                    )
+                    staff_name = (
+                        staff_user.get_full_name()
+                        or staff_user.username
+                    )
                     reassign_note = (
-                        f"Message reassigned by "
-                        f"{request.user.get_full_name()
-                           or request.user.username} "
-                        f"from {original_assignee.get_full_name()
-                                or original_assignee.username} "
-                        f"to {staff_user.get_full_name()
-                              or staff_user.username}."
+                        f"Message reassigned by {user_name} "
+                        f"from {orig_name} to {staff_name}."
                     )
                 else:
+                    user_name = (
+                        request.user.get_full_name()
+                        or request.user.username
+                    )
+                    staff_name = (
+                        staff_user.get_full_name()
+                        or staff_user.username
+                    )
                     reassign_note = (
-                        f"Message assigned by {request.user.get_full_name()
-                                               or request.user.username} "
-                        f"to {staff_user.get_full_name()
-                              or staff_user.username}."
+                        f"Message assigned by {user_name} "
+                        f"to {staff_name}."
                     )
 
                 # Update assignment
@@ -722,17 +733,17 @@ def staff_message_assign(request, pk):
         else:
             # Unassign
             if message.assigned_to:
-                unassign_note = (
-                    "Message unassigned by "
-                    (
-                        f"{request.user.get_full_name()
-                           or request.user.username}. "
-                        f"Previously assigned to "
-                        f"{message.assigned_to.get_full_name()
-                           or message.assigned_to.username}."
-                    )
+                user_name = (
+                    request.user.get_full_name() or request.user.username
                 )
-
+                assignee_name = (
+                    message.assigned_to.get_full_name()
+                    or message.assigned_to.username
+                )
+                unassign_note = (
+                    f"Message unassigned by {user_name}. "
+                    f"Previously assigned to {assignee_name}."
+                )
                 message.assigned_to = None
                 message.save(update_fields=['assigned_to'])
                 message.add_note(unassign_note, request.user)

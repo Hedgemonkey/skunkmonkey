@@ -74,8 +74,8 @@ class HomeView(TemplateView):
 
         except Exception as e:
             logger.error(
-                f"Error in HomeView.get_context_data: {
-                    str(e)}", exc_info=True)
+                f"Error in HomeView.get_context_data: {str(e)}", exc_info=True
+            )
             # Return minimal context to avoid breaking the template
             context['categories'] = []
             context['featured_products'] = []
@@ -103,11 +103,12 @@ class HomeView(TemplateView):
                 try:
                     # Try to get the comparison list from the request
                     context['comparison_list'] = (
-                        context['request'].comparison_list.product_ids)
+                        context['request'].comparison_list.product_ids
+                    )
                 except Exception as e:
                     logger.warning(
-                        f"Error accessing comparison_list: {
-                            str(e)}")
+                        f"Error accessing comparison_list: {str(e)}"
+                    )
                     # If it fails, try getting the most recent comparison list
                     from shop.models import ComparisonList
 
@@ -125,8 +126,8 @@ class HomeView(TemplateView):
                 context['comparison_list'] = []
         except Exception as e:
             logger.error(
-                f"Error handling comparison list: {
-                    str(e)}", exc_info=True)
+                f"Error handling comparison list: {str(e)}", exc_info=True
+            )
             context['comparison_list'] = []
 
         logger.info("HomeView.get_context_data completed")

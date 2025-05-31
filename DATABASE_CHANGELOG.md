@@ -18,6 +18,32 @@ Each entry follows this structure:
 
 ## 🔄 Migration History
 
+### **Version: v1.7.0**
+
+📅 **Date**: 2025-04-28
+
+📝 **Description**: Added AWS S3 storage integration and enhanced media file handling.
+
+📂 **Migration File**: No database migrations were required for this change.
+
+🛠 **Impact**:
+
+- Configured AWS S3 as the primary storage backend for media and static files
+- Media files are now stored in S3 with proper security configurations
+- Updated settings to work with CloudFront CDN for improved content delivery
+- No database schema changes were required, as this affects file storage configuration only
+
+🔄 **Rollback Plan**:
+
+```bash
+# No database rollback needed - this change only affects settings.py and storage configuration
+# To revert to local file storage:
+# 1. Update STORAGES settings in settings.py
+# 2. Copy files from S3 back to local storage
+```
+
+---
+
 ### **Version: v1.6.0**
 
 📅 **Date**: 2025-04-24

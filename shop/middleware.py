@@ -45,47 +45,57 @@ class CheckoutDebugMiddleware(MiddlewareMixin):
         if request.path == '/shop/checkout/' and response.status_code == 302:
             # Log detailed information
             logger.error(
-                f"CHECKOUT REDIRECT DETECTED: Redirecting to {
-                    response.url}")
+                f"CHECKOUT REDIRECT DETECTED: Redirecting to {response.url}"
+            )
 
             # Log cart information
             if hasattr(request, 'cart'):
                 cart = request.cart
                 logger.error(
-                    f"Cart info: Items count: {
-                        cart.items.count()}, Total: {
-                        cart.total_price}")
+                    f"Cart info: Items count: {cart.items.count()}, "
+                    f"Total: {cart.total_price}"
+                )
 
                 # Log individual items
                 for item in cart.items.all():
                     logger.error(
-                        f"Cart item: {
-                            item.product.name}, Quantity: {
-                            item.quantity}")
+                        f"Cart item: {item.product.name}, "
+                        f"Quantity: {item.quantity}"
+                    )
             else:
                 logger.error("Cart attribute not found on request")
 
             # Log Stripe configuration
             from django.conf import settings
+            stripe_pub_key_present = (
+                hasattr(settings, 'STRIPE_PUBLISHABLE_KEY')
+                and settings.STRIPE_PUBLISHABLE_KEY
+            )
             logger.error(
-                f"Stripe public key present: {
-                    'Yes' if (
-                        hasattr(settings, 'STRIPE_PUBLISHABLE_KEY')
-                        and settings.STRIPE_PUBLISHABLE_KEY) else 'No'}")
+                f"Stripe public key present: "
+                f"{'Yes' if stripe_pub_key_present else 'No'}"
+            )
+            stripe_secret_key_present = (
+                hasattr(settings, 'STRIPE_SECRET_KEY')
+                and settings.STRIPE_SECRET_KEY
+            )
             logger.error(
-                f"Stripe secret key present: {
-                    'Yes' if (
-                        hasattr(settings, 'STRIPE_SECRET_KEY')
-                        and settings.STRIPE_SECRET_KEY) else 'No'}")
+                f"Stripe secret key present: "
+                f"{'Yes' if stripe_secret_key_present else 'No'}"
+            )
 
             # Log session information
-            logger.error(f"Session ID: {request.session.session_key}")
-            logger.error(f"Session data: {dict(request.session)}")
+            logger.error(
+                f"Session ID: {request.session.session_key}"
+            )
+            logger.error(
+                f"Session data: {dict(request.session)}"
+            )
 
             # Log request information
             logger.error(
-                f"User authenticated: {
-                    request.user.is_authenticated}")
+                f"User authenticated: {request.user.is_authenticated}"
+            )
             if request.user.is_authenticated:
                 logger.error(f"Username: {request.user.username}")
 
@@ -109,8 +119,9 @@ class ComparisonMiddleware:
                 # If there are duplicates, log it
                 if comparison_lists.count() > 1:
                     logger.warning(
-                        f"Multiple comparison lists found for user {
-                            request.user.id}. Using most recent.")
+                        f"Multiple comparison lists found for user "
+                        f"{request.user.id}. Using most recent."
+                    )
             else:
                 # Create a new list if none exists
                 comparison_list = ComparisonList.objects.create(
@@ -138,7 +149,8 @@ class ComparisonMiddleware:
                     if comparison_lists.count() > 1:
                         logger.warning(
                             f"Multiple comparison lists found for session "
-                            f"{session_id}. Using most recent.")
+                            f"{session_id}. Using most recent."
+                        )
                 else:
                     # Create a new list if none exists for this session
                     comparison_list = ComparisonList.objects.create(

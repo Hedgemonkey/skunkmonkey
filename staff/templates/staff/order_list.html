@@ -1,6 +1,6 @@
 {% extends 'staff/staff_base.html' %}
 {% load static %}
-{% load django_vite %}
+{% load direct_assets %}
 {% load staff_filters %}
 
 {% block staff_title %}Orders{% endblock %}
@@ -354,7 +354,7 @@
 {% endblock %}
 
 {% block staff_js %}
-{% vite_asset 'orderManager' %}
+{% direct_asset 'orderManager' %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Select all orders checkbox functionality

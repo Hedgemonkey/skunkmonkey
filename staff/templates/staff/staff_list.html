@@ -1,6 +1,7 @@
 {% extends "staff/staff_base.html" %}
 {% load static %}
 {% load staff_filters %}
+{% load direct_assets %}
 
 {% block staff_title %}Staff Management{% endblock %}
 
@@ -181,32 +182,4 @@
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block staff_js %}
-<script>
-    // Custom template filters
-    function getItem(obj, key) {
-        return obj[key];
-    }
-
-    function getAttribute(obj, attr) {
-        return obj[attr];
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        // Handle delete staff modal
-        const deleteStaffModal = document.getElementById('deleteStaffModal');
-        if (deleteStaffModal) {
-            deleteStaffModal.addEventListener('show.bs.modal', function(event) {
-                const button = event.relatedTarget;
-                const staffId = button.getAttribute('data-staff-id');
-                const staffName = button.getAttribute('data-staff-name');
-
-                document.getElementById('staff-name-to-delete').textContent = staffName;
-                document.getElementById('delete-staff-form').action = `/staff/staff/${staffId}/delete/`;
-            });
-        }
-    });
-</script>
 {% endblock %}

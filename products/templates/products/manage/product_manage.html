@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load direct_assets %}
 {% load cart_filters %}  <!-- Add this line to load our custom filter -->
 
 {% block title %}SkunkMonkey - Product Management{% endblock %}
 
 {% block extra_css %}
     {{ block.super }}
-    {% load django_vite %}
-    {% vite_asset 'products' %}
+    {% direct_asset 'products' %}
 {% endblock %}
 
 {% block header %}
@@ -20,7 +20,9 @@
 </header>
 {% endblock %}
 {% block content %}
-<div class="container mt-4">
+<div class="container mt-4"
+     data-category-cards-url="{% url 'products:get_category_cards' %}"
+     data-product-cards-url="{% url 'products:get_product_cards' %}">
     <div class="row">
         <div class="col-md-12">
 
@@ -86,12 +88,9 @@
 {% endblock %}
 
 {% block postloadjs %}
-<script>
-    const getCategoryCardsUrl = "{% url 'products:get_category_cards' %}";
-    const getProductCardsUrl = "{% url 'products:get_product_cards' %}";
-</script>
-{% load django_vite %}
-{% vite_asset 'imageCropper' %}
-{% vite_asset 'cropperInit' %}
+{% load direct_assets %}
+{% direct_asset 'productManageUrls' %}
+{% direct_asset 'imageCropper' %}
+{% direct_asset 'cropperInit' %}
 <!-- products.js is already loaded via vite_asset in the extra_css block -->
 {% endblock %}

@@ -1,10 +1,14 @@
 {% load static %}
 {% load wishlist_tags %}
+{% load comparison_tags %}
+{% load direct_assets %}
 
 {% get_wishlist_items as wishlist_product_ids %}
+{% get_comparison_items as comparison_product_ids %}
 
-<!-- Add this hidden input to help wishlist-manager.js initialize with current wishlist data -->
-<input type="hidden" id="wishlist-data" value="{{ wishlist_product_ids|stringformat:'s'|slice:'1:-1' }}">
+<!-- Add hidden inputs to help JavaScript initialize with current data -->
+{{ wishlist_product_ids|json_script:"wishlist-data" }}
+{{ comparison_product_ids|json_script:"comparison-data" }}
 
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4 product-grid">
     {% if products %}
@@ -91,22 +95,28 @@
                             <a href="{% url 'shop:product_detail' product.slug %}" class="btn btn-primary">
                                 <i class="fas fa-info-circle me-1"></i> View Details
                             </a>
-                            <form action="{% url 'shop:cart_add' product.id %}" method="post" class="add-to-cart-form">
+                            <form action="{% url 'shop:cart_add' product.id %}" method="post" class="add-to-cart-form" data-product-form>
                                 {% csrf_token %}
                                 <input type="hidden" name="quantity" value="1">
                                 <input type="hidden" name="update" value="False">
                                 <input type="hidden" name="next" value="{{ request.path }}">
-                                <button type="submit" class="btn btn-outline-primary w-100 add-to-cart-btn"
-                                {% if product.stock_quantity == 0 %}disabled{% endif %}>
+                                <button type="button" class="btn btn-outline-primary w-100 add-to-cart-btn"
+                                        data-product-id="{{ product.id }}"
+                                        data-product-name="{{ product.name }}"
+                                        data-product-price="${{ product.price }}"
+                                        data-product-image="{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/no-image-placeholder.png' %}{% endif %}"
+                                        data-stock-quantity="{{ product.stock_quantity }}"
+                                        data-cart-add-url="{% url 'shop:cart_add' product.id %}"
+                                        {% if product.stock_quantity == 0 %}disabled{% endif %}>
                                     <i class="fas fa-shopping-cart me-1"></i>
                                     {% if product.stock_quantity == 0 %}Out of Stock{% else %}Add to Cart{% endif %}
                                 </button>
                             </form>
 
-                            <!-- Compare button -->
-                            {% if product.id in request.comparison_list.product_ids %}
-                                <a href="{% url 'shop:remove_from_comparison' product.id %}?next={{ request.path }}"
-                                   class="btn btn-success w-100 add-to-comparison-btn"
+                            <!-- Compare button - updated to use toggle endpoint -->
+                            {% if product.id in comparison_product_ids %}
+                                <a href="{% url 'shop:toggle_comparison' product.id %}?next={{ request.path }}"
+                                   class="btn btn-success w-100 add-to-comparison-btn toggle-comparison-btn"
                                    data-product-id="{{ product.id }}"
                                    data-product-name="{{ product.name }}"
                                    data-bs-toggle="tooltip"
@@ -114,8 +124,8 @@
                                     <i class="fas fa-check me-1"></i> Compared
                                 </a>
                            {% else %}
-                                <a href="{% url 'shop:add_to_comparison' product.id %}?next={{ request.path }}"
-                                   class="btn btn-outline-secondary w-100 add-to-comparison-btn"
+                                <a href="{% url 'shop:toggle_comparison' product.id %}?next={{ request.path }}"
+                                   class="btn btn-outline-secondary w-100 add-to-comparison-btn toggle-comparison-btn"
                                    data-product-id="{{ product.id }}"
                                    data-product-name="{{ product.name }}"
                                    data-bs-toggle="tooltip"
@@ -136,7 +146,3 @@
         </div>
     {% endif %}
 </div>
-
-{% block extra_js %}
-    <script src="{% static 'bundles/js/shop/wishlist-manager.js' %}"></script>
-{% endblock %}

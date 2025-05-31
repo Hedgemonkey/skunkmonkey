@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load direct_assets %}
+
+{% block content %}
+<div class="container my-5">
+    <h1>Asset Loading Test</h1>
+    <p class="lead">This page tests the loading of various vendor assets and chunks.</p>
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4>Vendor Asset Test</h4>
+                </div>
+                <div class="card-body">
+                    <div id="vendor-test-result">
+                        Testing vendor chunks...
+                    </div>
+                    <div class="mt-3">
+                        <button id="test-fontawesome" class="btn btn-outline-primary">
+                            Test FontAwesome <span id="fa-icon"></span>
+                        </button>
+                        <button id="test-bootstrap" class="btn btn-outline-secondary ms-2">
+                            Test Bootstrap Tooltips
+                        </button>
+                        <button id="test-chartjs" class="btn btn-outline-success ms-2">
+                            Test Chart.js
+                        </button>
+                    </div>
+                    <div class="mt-4">
+                        <canvas id="test-chart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4>Asset Loading Details</h4>
+                </div>
+                <div class="card-body">
+                    <h5>Environment:</h5>
+                    <pre id="environment-info"></pre>
+
+                    <h5>Loaded Scripts:</h5>
+                    <ul id="loaded-scripts" class="list-group"></ul>
+
+                    <h5>Asset Loading Errors:</h5>
+                    <pre id="loading-errors">No errors detected</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% comment %} Load the main JS that will test everything {% endcomment %}
+{% direct_asset 'test-assets' %}
+
+<hr class="my-5">
+
+<div class="card mt-4">
+    <div class="card-header bg-info text-white">
+        <h4>Manifest Debug Information</h4>
+    </div>
+    <div class="card-body">
+        {% debug_manifest %}
+    </div>
+</div>
+
+{% endblock %}

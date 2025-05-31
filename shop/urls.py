@@ -12,6 +12,8 @@ from .views import (  # Cart views; Product views; Checkout and payment views; C
     RemoveFromComparisonView, cache_checkout_data, payment_cancel,
     recover_payment_intent, reset_payment_intent,
 )
+# Import comparison views
+from .views.toggle_comparison_view import ToggleComparisonView
 # Import wishlist views separately for better organization
 from .views.wishlist_views import ToggleWishlistView, WishlistView
 from .webhooks import webhook
@@ -90,6 +92,11 @@ urlpatterns = [
 
     # Comparison
     path('comparison/', ComparisonView.as_view(), name='comparison'),
+    path(
+        'comparison/toggle/<int:product_id>/',
+        ToggleComparisonView.as_view(),
+        name='toggle_comparison'),
+    # Legacy comparison URLs (keep for backward compatibility)
     path(
         'comparison/add/<int:product_id>/',
         AddToComparisonView.as_view(),

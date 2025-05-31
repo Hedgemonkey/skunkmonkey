@@ -1,1 +1,1 @@
-web: gunicorn skunkmonkey.wsgi --log-file -
+web: gunicorn skunkmonkey.wsgi:application

@@ -1,0 +1,1 @@
+function n(){const e=document.getElementById("sidebarToggle");e&&e.addEventListener("click",function(){const t=document.querySelector(".staff-sidebar");t&&t.classList.toggle("show")})}document.addEventListener("DOMContentLoaded",n);

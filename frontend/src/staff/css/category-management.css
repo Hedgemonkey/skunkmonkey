@@ -1,0 +1,88 @@
+/**
+ * Category Dashboard Styles
+ *
+ * Styles for the category management in the staff section
+ */
+
+/* Category cards styles */
+.category-card {
+  margin-bottom: 1.5rem;
+  transition: transform 0.2s ease-in-out;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.category-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+.category-card .card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  padding: 0.75rem 1.25rem;
+}
+
+.category-card .card-body {
+  padding: 1.25rem;
+}
+
+.category-card .category-stats {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #eee;
+}
+
+.category-card .category-tags {
+  margin-top: 0.75rem;
+}
+
+.category-card .badge {
+  margin-right: 0.25rem;
+  font-size: 0.75rem;
+}
+
+/* Category list styles */
+.category-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.category-list-item {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.category-list-item:last-child {
+  border-bottom: none;
+}
+
+.category-list-item:hover {
+  background-color: #f8f9fa;
+}
+
+/* Category actions */
+.category-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Category form styles */
+.category-form .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.category-form label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+/* Category filters */
+.category-filters {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 0.25rem;
+}

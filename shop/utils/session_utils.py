@@ -72,8 +72,10 @@ def is_client_secret_valid(request, cart):
     is_valid = stored_signature == current_signature
 
     if not is_valid:
-        logger.debug(f"Cart signature mismatch: stored={
-                     stored_signature}, current={current_signature}")
+        logger.debug(
+            f"Cart signature mismatch: stored={stored_signature}, "
+            f"current={current_signature}"
+        )
 
     return is_valid
 
@@ -95,8 +97,9 @@ def store_stripe_session_data(request, cart, client_secret):
     request.session['client_secret'] = client_secret
     request.session.modified = True
 
-    logger.debug(f"Stored new client_secret and cart_signature: {
-                 cart_signature}")
+    logger.debug(
+        f"Stored new client_secret and cart_signature: {cart_signature}"
+    )
 
 
 def clear_stripe_session_data(request):

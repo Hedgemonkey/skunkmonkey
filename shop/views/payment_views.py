@@ -88,11 +88,13 @@ class CreatePaymentIntentView(View):
 
             # Store the client secret in the session as a backup
             request.session['client_secret'] = intent.client_secret
+            username = (
+                request.user.username if request.user.is_authenticated
+                else 'AnonymousUser'
+            )
             logger.info(
-                f"Created payment intent {
-                    intent.id} for {
-                    (request.user.username if request.user.is_authenticated
-                     else 'AnonymousUser')}")
+                f"Created payment intent {intent.id} for {username}"
+            )
 
             return JsonResponse({
                 'clientSecret': intent.client_secret,
@@ -349,11 +351,14 @@ def reset_payment_intent(request):
 
         # Store the new client secret in the session
         request.session['client_secret'] = intent.client_secret
+        username = (
+            request.user.username if request.user.is_authenticated
+            else 'AnonymousUser'
+        )
         logger.info(
-            f"Created new payment intent {
-                intent.id} after reset for {
-                (request.user.username if request.user.is_authenticated
-                 else 'AnonymousUser')}")
+            f"Created new payment intent {intent.id} after reset for "
+            f"{username}"
+        )
 
         messages.success(
             request,
@@ -436,10 +441,13 @@ def create_new_payment_intent(request):
 
         # Store the new client secret in the session
         request.session['client_secret'] = intent.client_secret
+        username = (
+            request.user.username if request.user.is_authenticated
+            else 'AnonymousUser'
+        )
         logger.info(
-            f"Created new payment intent {intent.id} for "
-            f"{(request.user.username if request.user.is_authenticated
-                else 'AnonymousUser')}")
+            f"Created new payment intent {intent.id} for {username}"
+        )
 
         return intent.client_secret, None
 

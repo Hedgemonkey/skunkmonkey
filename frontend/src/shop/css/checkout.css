@@ -93,7 +93,7 @@
 .payment-element-container {
     position: relative !important;
     width: 100% !important;
-    min-height: 350px !important;
+    min-height: 400px !important; /* Further increased to ensure adequate space for 360px iframe */
     z-index: 1 !important;
     margin: 1.5rem 0 !important;
     padding: 0 !important;
@@ -109,7 +109,7 @@
     position: relative !important;
     width: 100% !important;
     height: auto !important; /* Allow auto height expansion */
-    min-height: 300px !important; /* Fallback minimum */
+    min-height: 360px !important; /* Increased to accommodate Stripe's requirements */
     padding: 0 !important;
     margin: 0 !important;
     transform: translateZ(0) !important;
@@ -120,7 +120,7 @@
     position: relative !important;
     width: 100% !important;
     height: auto !important; /* Allow auto height expansion */
-    min-height: 280px !important; /* Fallback minimum */
+    min-height: 320px !important; /* Increased to accommodate Stripe's requirements */
     margin: 0 !important;
     padding: 10px !important;
     border-radius: 0.375rem !important;
@@ -139,7 +139,7 @@
     position: relative !important;
     width: 100% !important;
     height: auto !important; /* Allow auto height expansion */
-    min-height: 250px !important; /* Fallback minimum */
+    min-height: 300px !important; /* Increased to accommodate Stripe's requirements */
     margin: 0 !important;
     padding: 0 !important;
     border: none !important;
@@ -150,12 +150,13 @@
 
 /* Force iframe to behave properly */
 #payment-element iframe,
-#payment-element .__PrivateStripeElement iframe {
+#payment-element .__PrivateStripeElement iframe,
+iframe[name*="__privateStripeFrame"] {
     display: block !important;
     position: static !important; /* Force static position */
     width: 100% !important; /* Override calc(100% + 8px) */
     height: auto !important; /* Enable height expansion */
-    min-height: 250px !important; /* Fallback minimum */
+    min-height: 360px !important; /* Set to 360px to accommodate Stripe's 356.906px requirement */
     margin: 0 !important; /* Override -4px margin */
     padding: 0 !important;
     border: none !important;
@@ -182,11 +183,45 @@
     z-index: 10 !important;
 }
 
+/* Fix save payment info checkbox styling */
+.checkout-form .form-check {
+    display: flex !important;
+    align-items: center !important;
+    max-width: fit-content !important;
+    margin: 0.75rem 0 !important;
+}
+
+.checkout-form .form-check-input {
+    width: 1rem !important;
+    height: 1rem !important;
+    margin-right: 0.5rem !important;
+    margin-top: 0 !important;
+    flex-shrink: 0 !important;
+}
+
+.checkout-form .form-check-label {
+    margin-bottom: 0 !important;
+    font-size: 0.9rem !important;
+    color: #6c757d !important;
+    cursor: pointer !important;
+}
+
 /* Make sure errors display correctly */
 #payment-errors {
     margin-top: 0.5rem !important;
     position: relative !important;
     z-index: 10 !important;
+}
+
+/* Specific override for the exact Stripe iframe pattern observed in DevTools */
+iframe[name*="__privateStripeFrame"][title="Secure payment input frame"] {
+    min-height: 360px !important;
+    height: auto !important;
+    width: 100% !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
 }
 
 /* Create a clean slate area after the payment element */
@@ -206,9 +241,11 @@
 
 /* Target Stripe's CSS with higher specificity */
 #payment-element iframe[title="Secure payment input frame"],
+iframe[name*="__privateStripeFrame"][title="Secure payment input frame"],
 body #payment-element .__PrivateStripeElement iframe {
     width: 100% !important;
     min-width: 100% !important;
+    min-height: 360px !important; /* Specific override for Stripe iframe height */
     margin: 0 !important;
     transform: none !important;
 }
@@ -397,7 +434,7 @@ body #payment-element .__PrivateStripeElement iframe {
 
     /* Adjust payment element container on small screens */
     .payment-element-container {
-        min-height: 350px !important; /* More space on mobile */
+        min-height: 380px !important; /* Increased for Stripe's requirements */
     }
 }
 
@@ -431,7 +468,7 @@ body #payment-element .__PrivateStripeElement iframe {
 
     /* Make sure payment element container doesn't get too large on mobile */
     .payment-element-container {
-        min-height: 300px !important;
+        min-height: 360px !important; /* Still need adequate space for Stripe elements */
     }
 
     /* Add spacing below checkout form */
@@ -516,4 +553,24 @@ body #payment-element .__PrivateStripeElement iframe {
     max-height: 1000px;
     opacity: 1;
     margin-top: 1rem;
+}
+
+/* Mobile-specific payment element adjustments for better field visibility */
+.payment-element-container {
+    min-height: 600px !important; /* Increased significantly for all payment fields */
+    padding: 20px 10px !important;
+    margin: 20px 0 !important;
+}
+
+/* Ensure iframe has enough space on mobile */
+#payment-element iframe,
+#payment-element .__PrivateStripeElement {
+    min-height: 580px !important; /* Give iframe maximum space */
+}
+
+/* Override any fixed heights that might constrain the form */
+#payment-element,
+.stripe-element-wrapper {
+    height: auto !important;
+    min-height: 580px !important;
 }

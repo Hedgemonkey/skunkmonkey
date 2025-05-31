@@ -3,8 +3,9 @@
  * For use with django-vite integration
  */
 
-// Import common styles to ensure they're bundled
+// Import styles to ensure they're bundled
 import '../css/staff.css';
+import '../css/order-manager.css';
 
 /**
  * OrderManager class for handling staff order-related functionality

@@ -1,0 +1,99 @@
+{% load static %}
+
+<!-- Quantity Selection Modal -->
+<div class="modal fade" id="quantityModal" tabindex="-1" aria-labelledby="quantityModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="quantityModalLabel">
+                    <i class="fas fa-shopping-cart me-2"></i>
+                    Add to Cart
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row align-items-start">
+                    <div class="col-4">
+                        <img id="modal-product-image" src="" alt="" class="img-fluid rounded shadow-sm">
+                    </div>
+                    <div class="col-8">
+                        <h6 id="modal-product-name" class="mb-2 fw-bold"></h6>
+                        <p class="mb-2">
+                            <span class="text-muted">Price:</span>
+                            <span id="modal-product-price" class="text-success fw-bold fs-5">£</span>
+                        </p>
+                        <div class="mb-3">
+                            <span class="text-muted">Stock:</span>
+                            <small id="modal-stock-info" class="ms-1"></small>
+                        </div>
+
+                        <form id="quantity-selection-form">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="modal-quantity" class="form-label fw-bold">Select Quantity</label>
+                                <div class="input-group quantity-selector">
+                                    <button class="btn btn-outline-secondary" type="button" id="modal-decrease-quantity">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <input type="number" id="modal-quantity" name="quantity" class="form-control text-center fw-bold"
+                                           value="1" min="1" max="1">
+                                    <button class="btn btn-outline-secondary" type="button" id="modal-increase-quantity">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                                <div class="form-text">Use the buttons or type the quantity directly</div>
+                            </div>
+                            <input type="hidden" id="modal-product-id" name="product_id" value="">
+                            <input type="hidden" name="update" value="False">
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-primary" id="confirm-add-to-cart">
+                    <i class="fas fa-shopping-cart me-1"></i>
+                    Add to Cart
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.quantity-selector {
+    max-width: 160px;
+}
+
+.quantity-selector .form-control {
+    border-left: 0;
+    border-right: 0;
+}
+
+.quantity-selector .btn {
+    border-color: #dee2e6;
+}
+
+.modal-body img {
+    max-height: 120px;
+    object-fit: cover;
+}
+
+#quantityModal .modal-content {
+    border: none;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+#quantityModal .modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+#quantityModal .modal-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+</style>

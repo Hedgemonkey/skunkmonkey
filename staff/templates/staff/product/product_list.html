@@ -1,10 +1,10 @@
 {% extends 'staff/staff_base.html' %}
 {% load static %}
-{% load django_vite %}
+{% load direct_assets %}
 
 {% block extra_css %}
 {{ block.super }}
-{% vite_asset 'productManager' %}
+{% direct_asset 'productManager' %}
 {% endblock %}
 
 {% block title %}Product Management{% endblock %}
@@ -332,5 +332,5 @@
 
 {% block extra_js %}
 {{ block.super }}
-{% vite_asset 'productManager' %}
+{% direct_asset 'productManager' %}
 {% endblock %}

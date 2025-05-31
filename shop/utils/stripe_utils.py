@@ -163,11 +163,11 @@ def create_payment_intent(request):
 
         # Store the new client secret in the session
         request.session['client_secret'] = intent.client_secret
-        logger.info(
-            f"Created new payment intent {
-                intent.id} for {
-                (request.user.username if request.user.is_authenticated
-                 else 'AnonymousUser')}")
+        user_type = (
+            request.user.username if request.user.is_authenticated
+            else 'AnonymousUser'
+        )
+        logger.info(f"Created new payment intent {intent.id} for {user_type}")
 
         return intent.client_secret, None
 

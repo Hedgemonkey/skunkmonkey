@@ -155,15 +155,14 @@ class OrderDetailView(DepartmentAccessMixin, DetailView):
         context = super().get_context_data(**kwargs)
         order = self.get_object()
 
-        # Get order items with correct template variable name
-        context['order_items'] = OrderItem.objects.filter(order=order)
+        # Use the existing relationship through related_name='items'
+        context['order_items'] = order.items.all()
 
         # Add product_variant attribute to each order item
         for item in context['order_items']:
             item.product_variant = getattr(item, 'product_variant', None)
 
-        # Add this for template compatibility
-        context['items'] = context['order_items']
+        # No need to reassign items as it's already accessible via order.items
 
         # Get order notes with correct template variable name
         context['staff_notes'] = OrderNote.objects.filter(order=order)
@@ -200,9 +199,20 @@ class OrderDetailView(DepartmentAccessMixin, DetailView):
 
     def get_country_name(self, country_code):
         """Convert country code to name"""
+        if not country_code:
+            return ''
+
         country_names = {
             'GB': 'United Kingdom',
             'US': 'United States',
+            'CA': 'Canada',
+            'AU': 'Australia',
+            'DE': 'Germany',
+            'FR': 'France',
+            'ES': 'Spain',
+            'IT': 'Italy',
+            'JP': 'Japan',
+            'CN': 'China',
             # Add more mappings as needed
         }
         return country_names.get(country_code, country_code)

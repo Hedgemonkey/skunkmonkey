@@ -13,7 +13,7 @@
                         {% if profile.profile_image %}
                             <div class="text-center image-option" data-image-type="current">
                                 <div class="image-container mb-1">
-                                    <img src="{{ profile.profile_image.url }}" alt="Current Profile Image" class="img-thumbnail clickable-image profile-image-size">
+                                    <img src="{{ profile.profile_image.url }}?v={% now 'U' %}_{{ profile.pk }}" alt="Current Profile Image" class="img-thumbnail clickable-image profile-image-size">
                                 </div>
                                 <div class="d-flex flex-column">
                                     <span class="text-muted small">Current</span>

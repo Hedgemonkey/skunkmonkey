@@ -1,6 +1,7 @@
-{% extends "staff/staff_base.html" %}
+{% extends 'staff/staff_base.html' %}
 {% load static %}
-{% load django_vite %}
+{% load direct_assets %}
+{% load staff_filters %}
 
 {% block staff_title %}Order #{{ order.order_number }}{% endblock %}
 
@@ -9,7 +10,7 @@
     <a href="{% url 'staff:order_list' %}" class="btn btn-secondary mb-3">
         <i class="fa fa-arrow-left me-1"></i> Back to Orders
     </a>
-    <a href="{% url 'staff:order_edit' order.id %}" class="btn btn-primary mb-3">
+    <a href="{% url 'staff:order_update' order.id %}" class="btn btn-primary mb-3">
         <i class="fa fa-edit me-1"></i> Edit Order
     </a>
 </div>
@@ -270,7 +271,7 @@
                                 <h5 class="mb-0">Update Shipping</h5>
                             </div>
                             <div class="card-body">
-                                <form method="post" action="{% url 'staff:shipping_update' order.id %}">
+                                <form method="post" action="{% url 'staff:order_shipping' order.id %}">
                                     {% csrf_token %}
                                     <div class="mb-3">
                                         <label for="id_tracking_number" class="form-label">Tracking Number</label>
@@ -303,7 +304,7 @@
                                 <h5 class="mb-0">Contact Customer</h5>
                             </div>
                             <div class="card-body">
-                                <form method="post" action="{% url 'staff:contact_customer' order.id %}">
+                                <form method="post" action="{% url 'staff:customer_contact' order.id %}">
                                     {% csrf_token %}
                                     <div class="mb-3">
                                         <label for="id_subject" class="form-label">Subject</label>
@@ -342,7 +343,7 @@
             <!-- Notes tab -->
             <div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes-tab">
                 <div class="mb-4">
-                    <form method="post" action="{% url 'staff:add_note' order.id %}">
+                    <form method="post" action="{% url 'staff:order_note_create' order.id %}">
                         {% csrf_token %}
                         <div class="mb-3">
                             <label for="id_content" class="form-label">Add Internal Note</label>
@@ -419,5 +420,8 @@
 {% endblock %}
 
 {% block staff_js %}
-{% vite_asset 'orderManager' %}
+{% direct_asset 'orderManager' %}
+<script>
+    // ...existing code...
+</script>
 {% endblock %}

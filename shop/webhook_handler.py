@@ -33,7 +33,8 @@ class StripeWH_Handler:
         """Send the user a confirmation email"""
         # This would be implemented to send an actual email
         logger.info(
-            f"Confirmation email would be sent for order {order.order_number}")
+            f"Confirmation email would be sent for order "
+            f"{order.order_number}")
 
     def handle_event(self, event):
         """
@@ -81,14 +82,16 @@ class StripeWH_Handler:
                 #    }
                 # )
                 logger.debug(
-                    f"Could set payment method {payment_method.id} as default "
-                    f"for customer {customer_id}")
+                    f"Could set payment method {payment_method.id} as "
+                    f"default for customer {customer_id}")
             except Exception as e:
                 logger.error(f"Error setting default payment method: {e}")
 
         return HttpResponse(
-            content=f'Webhook received: {event.type} | '
-                    f'SUCCESS: Payment method attached',
+            content=(
+                f'Webhook received: {event.type} | '
+                f'SUCCESS: Payment method attached'
+            ),
             status=200)
 
     @transaction.atomic
@@ -100,18 +103,17 @@ class StripeWH_Handler:
         """
         intent = event.data.object
         pid = intent.id
-        logger.info(f"Payment intent succeeded webhook received for {pid}")
+        logger.info(
+            f"Payment intent succeeded webhook received for {pid}")
         logger.debug(
             f"Intent amount: {intent.amount}, currency: {intent.currency}, "
             f"status: {intent.status}")
 
         # Extract metadata
         metadata = intent.metadata
-        logger.debug(
-            f"Intent metadata: "
-            f"{json.dumps(metadata, indent=2) if isinstance(metadata, dict)
-               else str(metadata)}"
-        )
+        metadata_str = (json.dumps(metadata, indent=2)
+                        if isinstance(metadata, dict) else str(metadata))
+        logger.debug(f"Intent metadata: {metadata_str}")
 
         # Get username from metadata
         username = metadata.get('username', 'AnonymousUser')
@@ -133,8 +135,8 @@ class StripeWH_Handler:
 
             if order:
                 logger.info(
-                    f"Found existing order {
-                        order.order_number} for payment intent {pid}")
+                    f"Found existing order {order.order_number} for "
+                    f"payment intent {pid}")
 
                 # Ensure order is marked as paid if not already
                 if not order.is_paid:
@@ -154,30 +156,31 @@ class StripeWH_Handler:
 
                     order.save()
                     logger.debug(
-                        f"Order {
-                            order.order_number} updated to paid status")
+                        f"Order {order.order_number} updated to paid status")
 
                 # Send confirmation email
                 self._send_confirmation_email(order)
 
                 logger.info(
-                    f"Order {
-                        order.order_number} marked as paid via webhook")
+                    f"Order {order.order_number} marked as paid via webhook")
 
                 return HttpResponse(
-                    content=f"Webhook received: {
-                        event.type} | SUCCESS: Order {
-                        order.order_number} marked as paid via webhook",
+                    content=(
+                        f"Webhook received: {event.type} | SUCCESS: "
+                        f"Order {order.order_number} marked as paid "
+                        f"via webhook"
+                    ),
                     status=200)
             else:
                 # No existing order found, continue with creation
-                logger.info(f"No order found for payment intent {
-                            pid}, creating from webhook data")
+                logger.info(
+                    f"No order found for payment intent {pid}, creating "
+                    f"from webhook data")
 
         except Exception as e:
             logger.error(
-                f"Error checking for existing order: {
-                    str(e)}", exc_info=True)
+                f"Error checking for existing order: {str(e)}",
+                exc_info=True)
             return HttpResponse(
                 content=f"Webhook received: {event.type} | ERROR: {str(e)}",
                 status=500
@@ -194,7 +197,8 @@ class StripeWH_Handler:
                     cart_data = json.loads(cart_data_str)
                     logger.debug(f"Parsed cart data: {cart_data}")
                 except json.JSONDecodeError:
-                    logger.error(f"Failed to parse cart data: {cart_data_str}")
+                    logger.error(
+                        f"Failed to parse cart data: {cart_data_str}")
                     cart_data = {}
             else:
                 logger.warning("No cart data found in metadata")
@@ -207,7 +211,8 @@ class StripeWH_Handler:
                     user = User.objects.get(username=username)
                     logger.debug(f"Found user for order: {username}")
                 except User.DoesNotExist:
-                    logger.warning(f"User {username} not found in database")
+                    logger.warning(
+                        f"User {username} not found in database")
 
             # Try to get payment details from Stripe
             try:
@@ -216,11 +221,13 @@ class StripeWH_Handler:
 
                 if not stripe_api_key:
                     logger.error(
-                        "Cannot retrieve payment details - no Stripe API key \
-                            available")
+                        "Cannot retrieve payment details - no Stripe API "
+                        "key available")
                     return HttpResponse(
-                        content=f"Webhook received: {
-                            event.type} | ERROR: No Stripe API key available",
+                        content=(
+                            f"Webhook received: {event.type} | ERROR: "
+                            f"No Stripe API key available"
+                        ),
                         status=500)
 
                 stripe.api_key = stripe_api_key
@@ -230,19 +237,16 @@ class StripeWH_Handler:
 
                 # Get payment method details if available
                 payment_method = None
-                if hasattr(
-                        payment_intent,
-                        'payment_method') and payment_intent.payment_method:
+                if (hasattr(payment_intent, 'payment_method')
+                        and payment_intent.payment_method):
                     try:
                         payment_method = stripe.PaymentMethod.retrieve(
                             payment_intent.payment_method)
                         logger.debug(
-                            f"Retrieved payment method: {
-                                payment_method.id}")
+                            f"Retrieved payment method: {payment_method.id}")
                     except Exception as e:
                         logger.error(
-                            f"Error retrieving payment method: {
-                                str(e)}")
+                            f"Error retrieving payment method: {str(e)}")
 
                 # Default address information
                 default_address = {
@@ -263,21 +267,20 @@ class StripeWH_Handler:
                 }
 
                 # Try multiple ways to get billing details
-                if payment_method and hasattr(
-                        payment_method, 'billing_details'):
+                if (payment_method
+                        and hasattr(payment_method, 'billing_details')):
                     billing_details = payment_method.billing_details
                     logger.debug("Got billing details from payment method")
-                elif hasattr(payment_intent, 'charges') and (
-                        payment_intent.charges.data):
+                elif (hasattr(payment_intent, 'charges')
+                        and payment_intent.charges.data):
                     # If charges are available, use them
                     charge = payment_intent.charges.data[0]
                     if hasattr(charge, 'billing_details'):
                         billing_details = charge.billing_details
                         logger.debug(
-                            f"Got billing details from charge: {
-                                charge.id}")
-                elif hasattr(payment_intent, 'customer') and (
-                        payment_intent.customer):
+                            f"Got billing details from charge: {charge.id}")
+                elif (hasattr(payment_intent, 'customer')
+                        and payment_intent.customer):
                     # Try to get from customer
                     try:
                         customer = stripe.Customer.retrieve(
@@ -297,28 +300,45 @@ class StripeWH_Handler:
                 # Get shipping details from intent if available
                 shipping_details = getattr(payment_intent, 'shipping', None)
                 if not shipping_details:
-                    # If no shipping details in intent, use billing details as
-                    # fallback
+                    # If no shipping details in intent, use billing details
+                    # as fallback
                     shipping_details = billing_details
 
                 # Use safe access to get address components
                 def get_address_component(details, component, default=''):
-                    if isinstance(
-                            details,
-                            dict) and 'address' in details and component in (
-                                details['address']):
-                        return details['address'][component]
-                    elif hasattr(details, 'address') and (
-                            hasattr(details.address, component)):
-                        return getattr(details.address, component)
+                    """
+                    Safely extract address component from billing/shipping
+                    details. Returns empty string by default, never None
+                    """
+                    try:
+                        if (isinstance(details, dict)
+                                and 'address' in details
+                                and details['address']):
+                            address = details['address']
+                            if (isinstance(address, dict)
+                                    and component in address):
+                                value = address[component]
+                                return (str(value) if value is not None
+                                        else default)
+                        elif (hasattr(details, 'address')
+                                and details.address):
+                            if hasattr(details.address, component):
+                                value = getattr(details.address, component)
+                                return (str(value) if value is not None
+                                        else default)
+                    except (AttributeError, TypeError, KeyError) as e:
+                        logger.warning(
+                            f"Error extracting {component} from address "
+                            f"details: {e}")
                     return default
 
                 # Double-check for existing orders to prevent duplicates
                 existing_order = Order.objects.filter(stripe_pid=pid).first()
                 if existing_order:
                     logger.warning(
-                        f"Order with pid {pid} already exists (order number: {
-                            existing_order.order_number}), skipping creation")
+                        f"Order with pid {pid} already exists (order "
+                        f"number: {existing_order.order_number}), "
+                        f"skipping creation")
                     # Update the existing order if needed
                     if not existing_order.is_paid:
                         existing_order.status = 'paid'
@@ -341,51 +361,50 @@ class StripeWH_Handler:
 
                         existing_order.save()
                         logger.debug(
-                            f"Existing order {existing_order.order_number} \
-                                    updated to paid status")
+                            f"Existing order {existing_order.order_number} "
+                            f"updated to paid status")
 
                     # Send confirmation email
                     self._send_confirmation_email(existing_order)
 
                     return HttpResponse(
-                        content=f"Webhook received: {
-                            event.type} | SUCCESS: Order {
-                            existing_order.order_number} already exists",
+                        content=(
+                            f"Webhook received: {event.type} | SUCCESS: "
+                            f"Order {existing_order.order_number} "
+                            f"already exists"
+                        ),
                         status=200)
 
                 # Get name from billing or shipping details
                 full_name = ''
-                if isinstance(
-                        shipping_details,
-                        dict) and 'name' in shipping_details:
+                if (isinstance(shipping_details, dict)
+                        and 'name' in shipping_details):
                     full_name = shipping_details['name']
                 elif hasattr(shipping_details, 'name'):
                     full_name = shipping_details.name
-                elif isinstance(billing_details, dict) and (
-                        'name' in billing_details):
+                elif (isinstance(billing_details, dict)
+                        and 'name' in billing_details):
                     full_name = billing_details['name']
                 elif hasattr(billing_details, 'name'):
                     full_name = billing_details.name
 
                 # Get email from billing details
                 email = ''
-                if isinstance(
-                        billing_details,
-                        dict) and 'email' in billing_details:
+                if (isinstance(billing_details, dict)
+                        and 'email' in billing_details):
                     email = billing_details['email']
                 elif hasattr(billing_details, 'email'):
                     email = billing_details.email
 
                 # Get phone from billing or shipping details
                 phone = ''
-                if isinstance(
-                        shipping_details,
-                        dict) and 'phone' in shipping_details:
+                if (isinstance(shipping_details, dict)
+                        and 'phone' in shipping_details):
                     phone = shipping_details['phone']
                 elif hasattr(shipping_details, 'phone'):
                     phone = shipping_details.phone
-                elif isinstance(billing_details, dict) and (
-                        'phone' in billing_details):
+                elif (isinstance(billing_details, dict)
+                        and 'phone' in billing_details):
                     phone = billing_details['phone']
                 elif hasattr(billing_details, 'phone'):
                     phone = billing_details.phone
@@ -400,42 +419,83 @@ class StripeWH_Handler:
                 payment_method_type = self.get_payment_method_type(
                     payment_intent)
 
+                # Extract shipping and billing address components
+                shipping_line1 = get_address_component(
+                    shipping_details, 'line1')
+                shipping_line2 = get_address_component(
+                    shipping_details, 'line2')
+                shipping_city = get_address_component(
+                    shipping_details, 'city')
+                shipping_state = get_address_component(
+                    shipping_details, 'state')
+                shipping_zipcode = get_address_component(
+                    shipping_details, 'postal_code')
+                shipping_country = get_address_component(
+                    shipping_details, 'country')
+
+                # Get billing address components
+                billing_name = get_billing_name(billing_details) or full_name
+                billing_line1 = get_address_component(
+                    billing_details, 'line1')
+                billing_line2 = get_address_component(
+                    billing_details, 'line2')
+                billing_city = get_address_component(
+                    billing_details, 'city')
+                billing_state = get_address_component(
+                    billing_details, 'state')
+                billing_zipcode = get_address_component(
+                    billing_details, 'postal_code')
+                billing_country = get_address_component(
+                    billing_details, 'country')
+
+                # Use shipping address as fallback for billing if empty
+                if not billing_line1 and shipping_line1:
+                    logger.info(
+                        "Using shipping address as billing address fallback")
+                    billing_line1 = shipping_line1
+                    billing_line2 = shipping_line2
+                    billing_city = shipping_city
+                    billing_state = shipping_state
+                    billing_zipcode = shipping_zipcode
+                    billing_country = shipping_country
+
+                # Ensure required billing fields have values
+                billing_line1 = billing_line1 or 'Address not provided'
+                billing_city = billing_city or 'City not provided'
+                billing_state = billing_state or 'State not provided'
+                billing_zipcode = billing_zipcode or '00000'
+                billing_country = billing_country or 'Country not provided'
+
+                # Log billing and shipping data for debugging
+                logger.info(
+                    f"Creating order with billing address: "
+                    f"{billing_line1}, {billing_city}, {billing_state}, "
+                    f"{billing_zipcode}, {billing_country}")
+                logger.info(
+                    f"Creating order with shipping address: "
+                    f"{shipping_line1}, {shipping_city}, {shipping_state}, "
+                    f"{shipping_zipcode}, {shipping_country}")
+
                 # Create new order with enhanced billing information
                 order = Order.objects.create(
                     user=user,
-                    first_name=first_name,
-                    last_name=last_name,
                     full_name=full_name,
                     email=email or (
                         user.email if user else 'customer@example.com'),
                     phone_number=phone or '',
-                    shipping_first_name=first_name,
-                    shipping_last_name=last_name,
-                    shipping_address1=get_address_component(
-                        shipping_details, 'line1'),
-                    shipping_address2=get_address_component(
-                        shipping_details, 'line2'),
-                    shipping_city=get_address_component(
-                        shipping_details, 'city'),
-                    shipping_state=get_address_component(
-                        shipping_details, 'state'),
-                    shipping_zipcode=get_address_component(
-                        shipping_details, 'postal_code'),
-                    shipping_country=get_address_component(
-                        shipping_details, 'country'),
-                    billing_name=get_billing_name(billing_details),
-                    billing_address1=get_address_component(
-                        billing_details, 'line1'),
-                    billing_address2=get_address_component(
-                        billing_details, 'line2'),
-                    billing_city=get_address_component(
-                        billing_details, 'city'),
-                    billing_state=get_address_component(
-                        billing_details, 'state'),
-                    billing_zipcode=get_address_component(
-                        billing_details, 'postal_code'),
-                    billing_country=get_address_component(
-                        billing_details, 'country'),
+                    shipping_address1=shipping_line1,
+                    shipping_address2=shipping_line2,
+                    shipping_city=shipping_city,
+                    shipping_state=shipping_state,
+                    shipping_zipcode=shipping_zipcode,
+                    shipping_country=shipping_country,
+                    billing_name=billing_name,
+                    billing_address1=billing_line1,
+                    billing_address2=billing_line2,
+                    billing_city=billing_city,
+                    billing_state=billing_state,
+                    billing_zipcode=billing_zipcode,
+                    billing_country=billing_country,
                     total_price=round(payment_intent.amount / 100, 2),
                     grand_total=round(payment_intent.amount / 100, 2),
                     status='paid',
@@ -445,11 +505,10 @@ class StripeWH_Handler:
                     stripe_pid=pid,
                     stripe_client_secret=payment_intent.client_secret,
                     payment_method_type=payment_method_type,
-                    original_cart=cart_data_str,
+                    original_cart=cart_data_str or '',
                 )
                 logger.debug(
-                    f"Order created with order number: {
-                        order.order_number}")
+                    f"Order created with order number: {order.order_number}")
 
                 # Create order items from cart data
                 items_count = 0
@@ -457,16 +516,16 @@ class StripeWH_Handler:
 
                 # Handle different cart data formats
                 if isinstance(cart_data, dict):
-                    if 'items' in cart_data and isinstance(
-                            cart_data['items'], dict):
+                    if ('items' in cart_data
+                            and isinstance(cart_data['items'], dict)):
                         # Format: {'items': {id: {quantity: x}}}
                         for item_id, item_data in cart_data['items'].items():
                             try:
                                 product = Product.objects.get(id=item_id)
                                 quantity = item_data.get('quantity', 1)
                                 logger.debug(
-                                    f"Adding order item: {
-                                        product.name} x {quantity}")
+                                    f"Adding order item: {product.name} "
+                                    f"x {quantity}")
 
                                 # Create the order item
                                 OrderItem.objects.create(
@@ -480,18 +539,19 @@ class StripeWH_Handler:
                                 # Decrease product stock
                                 if hasattr(product, 'stock_quantity'):
                                     product.stock_quantity = max(
-                                        0, product.stock_quantity - quantity)
+                                        0,
+                                        product.stock_quantity - quantity)
                                     product.save()
                                     logger.debug(
-                                        f"Updated stock for {
-                                            product.name}: new stock = {
-                                            product.stock_quantity}")
+                                        f"Updated stock for {product.name}: "
+                                        f"new stock = "
+                                        f"{product.stock_quantity}")
                             except Product.DoesNotExist:
                                 logger.error(
                                     f"Product with ID {item_id} not found")
                                 items_failed += 1
-                    elif 'items' in cart_data and (
-                            isinstance(cart_data['items'], list)):
+                    elif ('items' in cart_data
+                            and isinstance(cart_data['items'], list)):
                         # Format: {'items': [{product_id: x, quantity: y}]}
                         for item_data in cart_data['items']:
                             try:
@@ -504,8 +564,8 @@ class StripeWH_Handler:
                                         id=product_id)
                                     quantity = item_data.get('quantity', 1)
                                     logger.debug(
-                                        f"Adding order item: {
-                                            product.name} x {quantity}")
+                                        f"Adding order item: {product.name} "
+                                        f"x {quantity}")
 
                                     # Create the order item
                                     OrderItem.objects.create(
@@ -520,30 +580,31 @@ class StripeWH_Handler:
                                     if hasattr(product, 'stock_quantity'):
                                         product.stock_quantity = max(
                                             0,
-                                            product.stock_quantity - quantity)
+                                            (product.stock_quantity
+                                             - quantity))
                                         product.save()
                                         logger.debug(
-                                            f"Updated stock for {
-                                                product.name}: new stock = {
-                                                product.stock_quantity}")
+                                            f"Updated stock for "
+                                            f"{product.name}: new stock = "
+                                            f"{product.stock_quantity}")
                             except Product.DoesNotExist:
                                 logger.error(
                                     f"Product with ID {product_id} not found")
                                 items_failed += 1
 
-                logger.info(f"Added {items_count} items to order, {
-                            items_failed} items failed")
+                logger.info(
+                    f"Added {items_count} items to order, "
+                    f"{items_failed} items failed")
 
                 # Save payment method for future use if requested
-                if save_info and user and payment_method and hasattr(
-                        payment_intent, 'customer'):
+                if (save_info and user and payment_method
+                        and hasattr(payment_intent, 'customer')):
                     try:
-                        # This would be implemented to save the payment method
-                        # to the user's profile
+                        # This would be implemented to save the payment
+                        # method to the user's profile
                         logger.info(
-                            f"Would save payment method {
-                                payment_method.id} for user {
-                                user.username}")
+                            f"Would save payment method {payment_method.id} "
+                            f"for user {user.username}")
                     except Exception as e:
                         logger.error(f"Error saving payment info: {e}")
 
@@ -553,26 +614,28 @@ class StripeWH_Handler:
                 logger.info(f"Order {order.order_number} created via webhook")
 
                 return HttpResponse(
-                    content=f"Webhook received: {
-                        event.type} | SUCCESS: Created order {
-                        order.order_number} in webhook",
-                    status=200)
+                    content=(
+                        f"Webhook received: {event.type} | SUCCESS: "
+                        f"Created order {order.order_number} in webhook"
+                    ),
+                    status=200
+                )
 
             except Exception as e:
                 logger.error(
-                    f"Error processing payment intent {pid} from webhook: {
-                        str(e)}", exc_info=True)
+                    f"Error processing payment intent {pid} from webhook: "
+                    f"{str(e)}", exc_info=True)
                 return HttpResponse(
-                    content=f"Webhook received: {
-                        event.type} | ERROR: {
-                        str(e)}",
-                    status=500)
+                    content=(
+                        f"Webhook received: {event.type} | "
+                        f"ERROR: {str(e)}"
+                    ),
+                    status=500
+                )
 
         except Exception as e:
             logger.error(
-                f"Webhook received: {
-                    event.type} | ERROR: {
-                    str(e)}",
+                f"Webhook received: {event.type} | ERROR: {str(e)}",
                 exc_info=True)
             return HttpResponse(
                 content=f"Webhook received: {event.type} | ERROR: {str(e)}",
@@ -584,10 +647,10 @@ class StripeWH_Handler:
         Handle the payment_intent.payment_failed webhook from Stripe
         """
         intent = event.data.object
-        error = intent.last_payment_error if hasattr(
-            intent, 'last_payment_error') else None
-        error_message = error.message if hasattr(
-            error, 'message') else 'Unknown error'
+        error = (intent.last_payment_error if
+                 hasattr(intent, 'last_payment_error') else None)
+        error_message = (error.message if hasattr(error, 'message')
+                         else 'Unknown error')
 
         logger.warning(
             f"Payment failed for intent {intent.id}: {error_message}")
@@ -597,13 +660,16 @@ class StripeWH_Handler:
 
         if error:
             logger.debug(
-                f"Payment error details: type="
-                f"{getattr(error, 'type', 'unknown')}, "
-                f"code={getattr(error, 'code', 'unknown')}")
+                f"Payment error details: "
+                f"type={getattr(error, 'type', 'unknown')}, "
+                f"code={getattr(error, 'code', 'unknown')}"
+            )
 
         return HttpResponse(
-            content=(f'Webhook received: {event.type} | '
-                     f'Payment Failed: {error_message}'),
+            content=(
+                f'Webhook received: {event.type} | '
+                f'Payment Failed: {error_message}'
+            ),
             status=200)
 
     def get_payment_method_type(self, payment_intent):
@@ -617,26 +683,25 @@ class StripeWH_Handler:
             The payment method type as a string (e.g., 'card', 'sepa_debit')
         """
         # Check if payment method is directly available on the intent
-        if hasattr(
-                payment_intent,
-                'payment_method_types') and (
-                    payment_intent.payment_method_types):
+        if (hasattr(payment_intent, 'payment_method_types')
+                and payment_intent.payment_method_types):
             return payment_intent.payment_method_types[0]
 
         # Try to get from the payment method
-        if hasattr(
-                payment_intent,
-                'payment_method') and payment_intent.payment_method:
+        if (hasattr(payment_intent, 'payment_method')
+                and payment_intent.payment_method):
             try:
                 payment_method = stripe.PaymentMethod.retrieve(
                     payment_intent.payment_method)
                 if hasattr(payment_method, 'type'):
                     return payment_method.type
             except Exception as e:
-                logger.error(f"Error retrieving payment method for type: {e}")
+                logger.error(
+                    f"Error retrieving payment method for type: {e}")
 
         # Try to get from charges
-        if hasattr(payment_intent, 'charges') and payment_intent.charges.data:
+        if (hasattr(payment_intent, 'charges')
+                and payment_intent.charges.data):
             charge = payment_intent.charges.data[0]
             if hasattr(charge, 'payment_method_details'):
                 details = charge.payment_method_details
@@ -699,9 +764,8 @@ class StripeWH_Handler:
 
         # Otherwise, try to get billing details from payment intent
         payment_method = None
-        if hasattr(
-                payment_intent,
-                'payment_method') and payment_intent.payment_method:
+        if (hasattr(payment_intent, 'payment_method')
+                and payment_intent.payment_method):
             try:
                 payment_method = stripe.PaymentMethod.retrieve(
                     payment_intent.payment_method)
@@ -709,7 +773,8 @@ class StripeWH_Handler:
                 logger.error(f"Error retrieving payment method: {e}")
 
         # Get billing details from payment method
-        if payment_method and hasattr(payment_method, 'billing_details'):
+        if (payment_method
+                and hasattr(payment_method, 'billing_details')):
             billing_details = payment_method.billing_details
 
             # Name
@@ -747,10 +812,16 @@ def get_billing_name(billing_details):
         billing_details: The billing details from Stripe
 
     Returns:
-        The billing name as a string
+        The billing name as a string, never None
     """
-    if isinstance(billing_details, dict) and 'name' in billing_details:
-        return billing_details['name']
-    elif hasattr(billing_details, 'name'):
-        return billing_details.name
+    try:
+        if (isinstance(billing_details, dict)
+                and 'name' in billing_details):
+            name = billing_details['name']
+            return str(name) if name is not None else ''
+        elif hasattr(billing_details, 'name'):
+            name = billing_details.name
+            return str(name) if name is not None else ''
+    except (AttributeError, TypeError, KeyError) as e:
+        logger.warning(f"Error extracting name from billing details: {e}")
     return ''

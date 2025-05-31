@@ -1,4 +1,3 @@
-<!-- filepath: /home/hedgemonkey/Documents/Work/code_institute/API_boilerplate/skunkmonkey/README.md -->
 # SkunkMonkey E-Commerce Platform
 
 SkunkMonkey is a **Django-based e-commerce platform** designed for seamless
@@ -24,11 +23,11 @@ Test Credentials: **[To be added]**
   - [Design Choices](#-design-choices)
 - [Agile Project Management](#-agile-project-management)
 - [Marketing Strategy](#-marketing-strategy)
-- [Features](#features)
-- [Testing](#testing)
+- [Features](#-features)
+- [Testing](#-testing)
 - [Validations](#-validations)
 - [Deployment](#-deployment)
-- [Credits](#credits)
+- [Credits](#-credits)
 
 ---
 
@@ -681,14 +680,181 @@ You can view the **KanBan board here**:
 
 ---
 
-## ✅ Validations
+## 🔍 Features
 
-All code is **linted and validated** using:
+### Current Features
 
-- **Pylint** for Python
-- **W3C Validator** for HTML & CSS
-- **ESLint** for JavaScript
-- **Vite** for build-time optimizations and asset validation
+#### 1. User Authentication System
+- User registration with email verification
+- Login/logout functionality
+- Password reset capabilities
+- Social authentication (Google, Facebook)
+- User profile management
+
+#### 2. Product Catalog
+- Hierarchical product categories with image support
+- Product listings with search, sort, and filter options
+- Detailed product pages with comprehensive information
+- Product attribute system for filtering by specifications
+- Sale pricing with original price comparison
+
+#### 3. Shopping Experience
+- Shopping cart functionality (for both logged-in and anonymous users)
+- Wishlist for saving products for later
+- Product comparison tool (up to 4 products)
+- Recently viewed products tracking
+- Quick-view product modals
+
+#### 4. Checkout Process
+- Multi-step checkout with progress indicators
+- Address management with default delivery address option
+- Secure payment processing via Stripe
+- Order confirmation emails
+- Guest checkout option
+
+#### 5. User Dashboard
+- Order history and status tracking
+- Saved addresses management
+- Personal information management
+- Communication preferences
+- Theme preference selection (light/dark mode)
+
+#### 6. Admin Features
+- Comprehensive product management
+- Order processing and fulfillment
+- Customer management
+- Sales and inventory reports
+- Contact message management workflow
+
+#### 7. Marketing Tools
+- SEO-optimized product pages
+- Product ratings and reviews
+- Related products recommendations
+- Newsletter subscription
+- Promotional banner system
+
+### Planned Features
+
+#### 1. Enhanced Product Discovery
+- AI-powered product recommendations
+- Advanced filtering by multiple attributes
+- "Shop the look" functionality
+- Virtual try-on technology
+
+#### 2. Improved Customer Experience
+- Live chat support
+- Loyalty points program
+- Subscription services
+- Back-in-stock notifications
+
+#### 3. Advanced Analytics
+- Enhanced sales dashboards
+- Customer behavior analysis
+- Marketing campaign performance metrics
+- A/B testing framework
+
+[Back to top](#-contents)
+
+---
+
+## 🧪 Testing
+
+### Manual Testing
+
+The application has been thoroughly tested manually across different browsers, devices, and screen sizes to ensure functionality and responsiveness. The testing process included:
+
+- User registration, login, and account management
+- Product browsing, filtering, and search functionality
+- Shopping cart operations and checkout process
+- Order placement and payment processing
+- Admin panel operations and content management
+- Form validations and error handling
+
+### Automated Testing
+
+A suite of automated tests has been implemented using Django's testing framework:
+
+#### Unit Tests
+- Testing individual models, views, and forms
+- Validating business logic and calculations
+- Testing database operations and constraints
+
+#### Integration Tests
+- Testing the flow between components
+- Validating user journeys and workflows
+- Testing third-party integrations (Stripe, AWS S3)
+
+#### Performance Testing
+- Testing application response times
+- Database query optimization
+- Static asset loading performance
+
+### Browser and Device Testing
+
+The application has been tested on the following browsers:
+- Chrome (versions 90+)
+- Firefox (versions 85+)
+- Safari (versions 14+)
+- Edge (versions 90+)
+- Mobile browsers (iOS Safari, Chrome for Android)
+
+The application has been tested on the following devices:
+- Desktop (various screen resolutions)
+- Tablets (iPad, Samsung Galaxy Tab)
+- Mobile phones (iPhone 12/13/14, Samsung Galaxy S21/S22)
+
+### Test Documentation
+
+Detailed test cases, test results, and identified issues are documented in the project's testing documentation.
+
+[Back to top](#-contents)
+
+---
+
+## 🏆 Credits
+
+### Code Resources
+
+- **Django Documentation** - For framework guidance and best practices
+- **Bootstrap Documentation** - For responsive layout and components
+- **Vite Documentation** - For frontend build configuration
+- **Stripe Documentation** - For payment integration
+
+### External Libraries and Tools
+
+- **django-allauth** - For authentication system
+- **django-crispy-forms** - For enhanced form styling
+- **django-storages** - For AWS S3 integration
+- **Pillow** - For image processing
+- **Bootstrap 5** - For responsive layout
+- **FontAwesome** - For icons
+- **Chart.js** - For admin analytics
+- **SweetAlert2** - For improved user notifications
+
+### Media Resources
+
+- Product images sourced from free stock photo sites with appropriate licenses
+- Icons from FontAwesome (Free license)
+- Additional SVG graphics from undraw.co (Free license)
+
+### Content Resources
+
+- Product descriptions written by the development team
+- Placeholder text generated using industry-standard content
+
+### Special Thanks
+
+- Code Institute tutors and mentors for guidance and feedback
+- GitHub for providing hosting for the repository and project management tools
+- Fellow students who provided feedback and testing
+
+[Back to top](#-contents)
+
+---
+
+## 🛡️ Disclaimer
+
+This project is developed for educational purposes. All product listings, pricing, and company information are fictional and for demonstration purposes only.
 
 [Back to top](#-contents)
 
@@ -696,99 +862,274 @@ All code is **linted and validated** using:
 
 ## 🚀 Deployment
 
-### **Local Setup**
+This project can be deployed locally for development or to production servers. Below are the instructions for deployment.
 
-To set up the project locally, follow these steps:
+### Local Development
 
-1. **Clone the repository**:
-
+1. **Clone the repository**
    ```bash
    git clone https://github.com/Hedgemonkey/skunkmonkey.git
-   ```
-
-2. **Navigate into the project directory**:
-
-   ```bash
    cd skunkmonkey
    ```
 
-3. **Create a virtual environment and activate it**:
-
+2. **Set up a virtual environment**
    ```bash
    python -m venv venv
-   source venv/bin/activate  # On macOS/Linux
-   venv\Scripts\activate     # On Windows
+   # On Windows
+   venv\Scripts\activate
+   # On macOS/Linux
+   source venv/bin/activate
    ```
 
-4. **Install dependencies**:
-
+3. **Install dependencies**
    ```bash
    pip install -r requirements.txt
-   npm install  # Install JavaScript dependencies for Vite
    ```
 
-5. **Set up the `.env` file** (Create a `.env` file and configure necessary
-   environment variables such as `SECRET_KEY`, `DATABASE_URL`, etc.).
+4. **Set up environment variables**
+   Create a `.env` file in the root directory and add the required variables:
+   ```
+   SECRET_KEY=your_secret_key
+   DEBUG=True
+   DATABASE_URL=your_database_url
+   STRIPE_PUBLIC_KEY=your_stripe_public_key
+   STRIPE_SECRET_KEY=your_stripe_secret_key
+   STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
+   ```
 
-6. **Run database migrations**:
-
+5. **Run migrations**
    ```bash
    python manage.py migrate
    ```
 
-7. **Create a superuser for admin access**:
-
+6. **Build frontend assets**
    ```bash
-   python manage.py createsuperuser
+   cd frontend
+   npm install
+   npm run build
+   cd ..
    ```
 
-8. **Start the development server and Vite server**:
-
+7. **Run the development server**
    ```bash
-   # In one terminal
    python manage.py runserver
-
-   # In another terminal
-   npm run dev  # Starts the Vite development server
    ```
 
-9. **Access the site** in your browser at:
+### Heroku Deployment
 
-   ```text
-   http://127.0.0.1:8000/
+Heroku is a platform as a service (PaaS) that enables developers to build, run, and operate applications entirely in the cloud. Follow these steps to deploy the Django application on Heroku:
+
+#### 1. Prerequisites
+
+1. **Create a Heroku account**
+   - Sign up at [heroku.com](https://heroku.com) if you don't already have an account
+
+2. **Install the Heroku CLI**
+   ```bash
+   # For Ubuntu/Debian
+   sudo snap install heroku --classic
+
+   # For macOS
+   brew tap heroku/brew && brew install heroku
+
+   # For other systems, see: https://devcenter.heroku.com/articles/heroku-cli
    ```
 
----
+3. **Login to Heroku**
+   ```bash
+   heroku login
+   ```
 
-### **Production Deployment**
+#### 2. Prepare Your Application for Heroku
 
-This project will be deployed to a **production server** using **one of the
-following platforms**:
+1. **Create a Procfile**
+   Create a file named `Procfile` (no extension) in the project root:
+   ```
+   web: gunicorn skunkmonkey.wsgi:application
+   release: python manage.py migrate
+   ```
 
-- **Heroku**
-- **AWS EC2**
-- **DigitalOcean**
-- **Railway.app**
+2. **Install required packages**
+   ```bash
+   pip install gunicorn dj-database-url psycopg2-binary whitenoise
+   pip freeze > requirements.txt
+   ```
 
-#### **Planned Deployment Process**
+3. **Update settings.py for Heroku**
+   Ensure these settings are in your `skunkmonkey/settings.py`:
+   ```python
+   import os
+   import dj_database_url
 
-1. **Build Frontend Assets**:
-   - Run `npm run build` to compile and optimize static assets with Vite.
-   - The built assets will be placed in the `static` directory for Django to
-     serve.
+   # Get the DATABASE_URL environment variable or use SQLite as a fallback
+   DATABASES = {
+       'default': dj_database_url.config(default=os.environ.get('DATABASE_URL', 'sqlite:///db.sqlite3'))
+   }
 
-2. **Containerization (Optional)**:
-   - A `Dockerfile` and `docker-compose.yml` may be used for easy deployment.
+   # Add whitenoise for static files
+   MIDDLEWARE = [
+       # ...existing middleware...
+       'whitenoise.middleware.WhiteNoiseMiddleware',
+       # ...other middleware...
+   ]
 
-3. **CI/CD Pipeline**:
-   - GitHub Actions will be set up for automated testing and deployment.
-   - Frontend assets will be built as part of the CI/CD pipeline.
+   # Static files settings
+   STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+   STATIC_URL = '/static/'
+   STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-4. **Environment Variables**:
-   - Sensitive settings (e.g., `SECRET_KEY`, database credentials) will be
-     stored in the **Heroku Config Vars** or an `.env` file in the server.
-   - Frontend environment variables will be handled through Vite's env
-     configuration.
+   # Allow Heroku domain
+   ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.herokuapp.com']
+   ```
 
-5. **PostgreSQL Database**:
-   - A managed **PostgreSQL database** will be used for scalability.
+4. **Add a runtime.txt file**
+   ```
+   python-3.11.7
+   ```
+
+5. **Build frontend assets**
+   ```bash
+   cd frontend
+   npm install
+   npm run build
+   cd ..
+   ```
+
+6. **Collect static files**
+   ```bash
+   python manage.py collectstatic --noinput
+   ```
+
+#### 3. Create and Deploy to Heroku
+
+1. **Create a new Heroku application**
+   ```bash
+   heroku create skunkmonkey-app
+   ```
+
+2. **Add PostgreSQL add-on**
+   ```bash
+   heroku addons:create heroku-postgresql:mini
+   ```
+
+3. **Configure environment variables**
+   ```bash
+   heroku config:set SECRET_KEY=your_secret_key
+   heroku config:set DEBUG=False
+   heroku config:set STRIPE_PUBLIC_KEY=your_stripe_public_key
+   heroku config:set STRIPE_SECRET_KEY=your_stripe_secret_key
+   heroku config:set STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
+   ```
+
+4. **Deploy to Heroku**
+   ```bash
+   # Add all files to git
+   git add .
+   git commit -m "Prepare for Heroku deployment"
+
+   # Deploy to Heroku
+   git push heroku main
+   ```
+
+5. **Create a superuser on Heroku**
+   ```bash
+   heroku run python manage.py createsuperuser
+   ```
+
+#### 4. Configure AWS S3 for Media Files (Optional)
+
+1. **Create an AWS S3 bucket**
+   - Sign up for AWS if you haven't already
+   - Create a new S3 bucket for your media files
+   - Configure bucket permissions for public read access
+
+2. **Install required packages**
+   ```bash
+   pip install boto3 django-storages
+   pip freeze > requirements.txt
+   ```
+
+3. **Update settings.py**
+   ```python
+   # AWS S3 configuration
+   if 'USE_AWS' in os.environ:
+       # Add django-storages to INSTALLED_APPS
+       INSTALLED_APPS += ['storages']
+
+       # AWS settings
+       AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
+       AWS_S3_REGION_NAME = os.environ.get('AWS_S3_REGION_NAME')
+       AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+       AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+
+       # S3 URLs
+       AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+
+       # Media files configuration
+       DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
+       MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
+       MEDIA_ROOT = 'media/'
+   ```
+
+4. **Create custom_storages.py**
+   ```python
+   from django.conf import settings
+   from storages.backends.s3boto3 import S3Boto3Storage
+
+   class MediaStorage(S3Boto3Storage):
+       location = settings.MEDIA_ROOT
+   ```
+
+5. **Set AWS environment variables in Heroku**
+   ```bash
+   heroku config:set USE_AWS=True
+   heroku config:set AWS_STORAGE_BUCKET_NAME=your-bucket-name
+   heroku config:set AWS_S3_REGION_NAME=your-region
+   heroku config:set AWS_ACCESS_KEY_ID=your-key-id
+   heroku config:set AWS_SECRET_ACCESS_KEY=your-secret-key
+   ```
+
+6. **Deploy again with AWS configuration**
+   ```bash
+   git add .
+   git commit -m "Add AWS S3 configuration"
+   git push heroku main
+   ```
+
+#### 5. Ongoing Maintenance
+
+1. **Update your application**
+   Whenever you make changes to your project:
+   ```bash
+   # Build frontend assets if needed
+   cd frontend && npm run build && cd ..
+
+   # Commit changes
+   git add .
+   git commit -m "Your update message"
+
+   # Deploy to Heroku
+   git push heroku main
+   ```
+
+2. **Monitor your application**
+   ```bash
+   # View logs
+   heroku logs --tail
+
+   # Access the Heroku dashboard
+   heroku open
+   ```
+
+3. **Database operations**
+   ```bash
+   # Run migrations
+   heroku run python manage.py migrate
+
+   # Access the Django shell
+   heroku run python manage.py shell
+   ```
+
+By following these steps, you'll have the SkunkMonkey e-commerce platform properly deployed on Heroku with all necessary configurations for a production environment.
+
+[Back to top](#-contents)

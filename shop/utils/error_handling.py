@@ -28,8 +28,10 @@ class ErrorHandler:
                 else:
                     error_message = str(error)
 
-                logger.warning(f"Form validation error in {
-                               form_name}: {field} - {error_message}")
+                logger.warning(
+                    f"Form validation error in {form_name}: "
+                    f"{field} - {error_message}"
+                )
 
                 # Format field name for display
                 field_display = field
@@ -57,8 +59,9 @@ class ErrorHandler:
                 for message in messages_list:
                     field_display = field.replace('_', ' ').title()
                     error_message = f"{field_display}: {message}"
-                    logger.error(f"Validation error during {
-                                 context}: {error_message}")
+                    logger.error(
+                        f"Validation error during {context}: {error_message}"
+                    )
                     messages.error(request, error_message)
         else:
             # Handle single validation error

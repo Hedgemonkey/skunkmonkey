@@ -22,7 +22,7 @@ def webhook(request):
     Enhanced for Payment Element integration
     """
     # Setup
-    wh_secret = settings.STRIPE_WEBHOOK_SECRET
+    wh_secret = settings.DJSTRIPE_WEBHOOK_SECRET
     logger.info("Webhook received - Starting processing")
 
     # Get the Stripe API key
@@ -44,15 +44,14 @@ def webhook(request):
         return HttpResponse(status=400)
 
     try:
-        logger.debug(f"Constructing event with signature: {
-                     sig_header[:10]}...")
+        logger.debug(
+            f"Constructing event with signature: {sig_header[:10]}..."
+        )
         event = stripe.Webhook.construct_event(
             payload, sig_header, wh_secret
         )
         logger.info(
-            f"Event constructed successfully: {
-                event.id}, type: {
-                event.type}")
+            f"Event constructed successfully: {event.id}, type: {event.type}")
     except ValueError as e:
         # Invalid payload
         logger.error(f"Webhook error (Invalid payload): {str(e)}")
@@ -115,13 +114,16 @@ def webhook(request):
     try:
         response = event_handler(event)
         logger.info(
-            f"Webhook {event_type} handled successfully - Response: \
-                {response.status_code}")
+            f"Webhook {event_type} handled successfully - "
+            f"Response: {response.status_code}"
+        )
         return response
     except Exception as e:
         logger.error(
-            f"Error during webhook handler execution: {
-                str(e)}", exc_info=True)
+            f"Error during webhook handler execution: {str(e)}",
+            exc_info=True
+        )
         return HttpResponse(
-            content=f"Webhook handler error: {
-                str(e)}", status=500)
+            content=f"Webhook handler error: {str(e)}",
+            status=500
+        )

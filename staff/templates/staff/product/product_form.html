@@ -1,6 +1,6 @@
 {% extends 'staff/staff_base.html' %}
 {% load static %}
-{% load django_vite %}
+{% load direct_assets %}
 {% load crispy_forms_tags %}
 
 {% block staff_title %}
@@ -9,7 +9,7 @@
 
 {% block extra_css %}
     {{ block.super }}
-    {% vite_asset 'productEditor' %}
+    {% direct_asset 'productEdit' %}
 {% endblock %}
 
 {% block staff_actions %}
@@ -213,14 +213,6 @@
 
 {% block staff_js %}
     {{ block.super }}
-    <script type="module">
-        // Import productEditor module which should be defined in your Vite setup
-        document.addEventListener('DOMContentLoaded', () => {
-            if (window.ProductEditor) {
-                window.ProductEditor.initImageCropper();
-            } else {
-                console.error('ProductEditor module not found');
-            }
-        });
-    </script>
+    {% load direct_assets %}
+    {% direct_asset 'productFormInit' %}
 {% endblock %}

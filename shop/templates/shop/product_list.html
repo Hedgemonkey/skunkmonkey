@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
-{% load django_vite %}
+{% load static %}
+{% load direct_assets %}
 
 {% block title %}
     {% if current_category %}
@@ -13,8 +14,14 @@
 
 {% block extra_css %}
     {{ block.super }}
-    {% vite_asset 'productListManager' %}
-    {% vite_asset 'productGrid' %}
+    {% direct_asset 'productList' %}
+    {% direct_asset 'productGrid' %}
+    {% direct_asset 'WishlistManager' %}
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+    {% direct_asset 'wishlistInitializer' %}
 {% endblock %}
 
 {% block header %}
@@ -147,10 +154,13 @@
         </div>
     </div>
 </div>
+
+<!-- Include quantity selection modal -->
+{% include 'shop/includes/quantity_modal.html' %}
 {% endblock %}
 
 {% block postloadjs %}
     {{ block.super }}
-    {% vite_asset 'comparisonManager' %}
-    <!-- Other JS is now loaded via vite_asset in the extra_css block -->
+    {% direct_asset 'comparison' %}
+    <!-- Other JS is now loaded via direct_asset in the extra_css block -->
 {% endblock %}

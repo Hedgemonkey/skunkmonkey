@@ -215,3 +215,126 @@
         padding: 10px;
     }
 }
+
+/* Critical Fix: Responsive Stripe iframe styling for mobile devices */
+@media (max-width: 767.98px) {
+    /* CRITICAL: Override Stripe's dynamic height and force 600px min-height */
+    #payment-element iframe[name*="__privateStripeFrame"] {
+        height: 600px !important;
+        min-height: 600px !important;
+        max-height: none !important;
+        overflow: visible !important;
+        border: none !important;
+        background: transparent !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    /* Fallback selector for any Stripe iframe */
+    #payment-element iframe {
+        height: 600px !important;
+        min-height: 600px !important;
+        max-height: none !important;
+        overflow: visible !important;
+        border: none !important;
+        background: transparent !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    /* Ensure other elements accommodate the iframe height */
+    #payment-element,
+    #payment-element .__PrivateStripeElement {
+        max-height: none !important;
+        height: auto !important;
+        min-height: 620px !important;
+        overflow: visible !important;
+    }
+
+    /* Allow container to expand as needed */
+    .payment-element-container {
+        min-height: 620px !important;
+        max-height: none !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    /* Ensure wrapper doesn't constrain iframe */
+    .stripe-element-wrapper {
+        height: auto !important;
+        min-height: 620px !important;
+        overflow: visible !important;
+    }
+
+    /* Make sure payment form container is scrollable */
+    .payment-form-container {
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 15px 10px;
+    }
+
+    /* Force Stripe iframe to have internal scrolling capability */
+    #payment-element iframe {
+        border: none !important;
+        background: transparent !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    /* Ensure payment element has adequate internal spacing */
+    #payment-element {
+        padding: 15px !important;
+        margin-bottom: 20px !important;
+    }
+
+    /* Add extra space around the entire payment container */
+    .payment-element-container {
+        padding: 20px 15px !important;
+        margin-bottom: 30px !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    /* Extra small devices - iframe needs even more height */
+    #payment-element iframe {
+        min-height: 650px !important;
+    }
+
+    #payment-element,
+    #payment-element .__PrivateStripeElement {
+        min-height: 670px !important;
+    }
+
+    .payment-element-container {
+        min-height: 670px !important;
+    }
+
+    .stripe-element-wrapper {
+        min-height: 670px !important;
+    }
+}
+
+@media (max-width: 375px) {
+    /* Very small devices - maximum iframe height for all fields */
+    #payment-element iframe {
+        min-height: 700px !important;
+    }
+
+    #payment-element,
+    #payment-element .__PrivateStripeElement {
+        min-height: 720px !important;
+    }
+
+    .payment-element-container {
+        min-height: 720px !important;
+    }
+
+    .stripe-element-wrapper {
+        min-height: 720px !important;
+    }
+
+    /* Reduce padding to maximize available space */
+    .payment-form-container {
+        padding: 10px 5px;
+    }
+}

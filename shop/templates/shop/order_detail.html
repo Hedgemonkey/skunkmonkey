@@ -1,6 +1,9 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+{% load static %}
+{% load direct_assets %}
+
 {% block extra_css %}
-    {% vite_asset 'shop/checkout.css' %}
+    {% direct_asset 'shop/checkout.css' %}
 {% endblock %}
 
 {% block title %}Order #{{ order.order_number }}{% endblock %}

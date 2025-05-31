@@ -25,6 +25,7 @@ docutils==0.19
 filelock==3.18.0
 flake8==6.1.0
 flake8-django==1.4
+gunicorn==23.0.0
 identify==2.6.9
 idna==3.10
 isort==5.13.2
@@ -53,4 +54,5 @@ stripe==11.6.0
 typing_extensions==4.12.2
 urllib3==2.3.0
 virtualenv==20.30.0
+whitenoise==6.9.0
 wrapt==1.17.2

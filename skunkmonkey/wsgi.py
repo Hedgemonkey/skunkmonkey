@@ -1,3 +1,4 @@
+# noqa
 """
 WSGI config for skunkmonkey project.
 
@@ -9,10 +10,16 @@ https://docs.djangoproject.com/en/5.1/howto/deployment/wsgi/
 
 
 import logging
+import os
+import sys
 
 from django.core.wsgi import get_wsgi_application
 
 from dotenv import load_dotenv
+
+# Set up path to allow importing from project root
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(BASE_DIR)
 
 load_dotenv()  # Load environment variables from .env file
 logger = logging.getLogger(__name__)  # Get a logger

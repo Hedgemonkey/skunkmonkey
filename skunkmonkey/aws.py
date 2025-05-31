@@ -10,7 +10,9 @@ USE_S3 = os.environ.get('USE_S3', 'False') == 'True'
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
-AWS_DEFAULT_ACL = 'public-read'
+# Set ACL to empty string for buckets with Object Ownership set to
+# "Bucket owner enforced". This fixes "AccessControlListNotSupported" errors
+AWS_DEFAULT_ACL = ''
 
 # Clean the region name in case it has comments
 raw_region = os.environ.get('AWS_S3_REGION_NAME', 'eu-west-2')
@@ -36,3 +38,9 @@ AWS_MAX_SIZE_MB = int(os.environ.get('AWS_MAX_SIZE_MB', 10))  # Default to 10MB
 
 # Media location
 MEDIAFILES_LOCATION = 'media'
+
+# Static files location
+STATICFILES_LOCATION = 'static'
+
+# Configure Django to use S3 for static files
+STATICFILES_STORAGE = 'skunkmonkey.custom_storages.StaticStorage'

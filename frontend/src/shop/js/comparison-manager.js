@@ -1,8 +1,10 @@
 /**
  * Comparison Manager
  * Manages product comparison functionality for the shop
+ * Updated to use unified toggle approach similar to wishlist system
  */
 import '../css/components/product-images.css';
+import apiClient from '@common/js/api-client.js';
 
 /**
  * ComparisonManager class for handling product comparison functionality
@@ -12,6 +14,7 @@ class ComparisonManager {
      * Initialize the ComparisonManager
      */
     constructor() {
+        this.comparisonItems = new Set(); // Store comparison item IDs
         this.initialize();
     }
 
@@ -20,153 +23,226 @@ class ComparisonManager {
      */
     initialize() {
         try {
+            this.initializeComparisonItems();
             this.bindEvents();
-            this.updateComparisonCount();
         } catch (error) {
             console.error('Error initializing Comparison Manager:', error);
         }
     }
 
     /**
+     * Initialize the comparison items set from the DOM
+     */
+    initializeComparisonItems() {
+        // Try to get comparison count from the DOM
+        const comparisonCountElements = document.querySelectorAll('.comparison-count');
+        if (comparisonCountElements.length > 0) {
+            const count = parseInt(comparisonCountElements[0].textContent, 10);
+            console.log('Initial comparison count:', count);
+        }
+
+        // Try to collect comparison product IDs from data attributes or classes
+        document.querySelectorAll('.btn-success.add-to-comparison-btn, .toggle-comparison-btn.btn-success').forEach(btn => {
+            const productId = btn.dataset.productId;
+            if (productId) {
+                this.comparisonItems.add(productId);
+                console.log('Added product to initial comparison set:', productId);
+            }
+        });
+
+        // Look for comparison product IDs in a JSON script tag
+        const comparisonDataElement = document.getElementById('comparison-data');
+        if (comparisonDataElement && comparisonDataElement.textContent && comparisonDataElement.textContent.trim() !== '') {
+            try {
+                const comparisonData = JSON.parse(comparisonDataElement.textContent);
+                if (Array.isArray(comparisonData)) {
+                    comparisonData.forEach(id => this.comparisonItems.add(id.toString()));
+                    console.log('Initialized comparison items from data element:', comparisonData);
+                }
+            } catch (e) {
+                console.error('Error parsing comparison data:', e);
+                // Initialize with empty array if parsing fails
+                console.log('Falling back to empty comparison due to parsing error');
+            }
+        } else {
+            console.log('No comparison data element found or data is empty');
+        }
+
+        console.log('Initialized comparison items:', [...this.comparisonItems]);
+    }
+
+    /**
      * Bind event listeners to DOM elements
      */
     bindEvents() {
-        // Add to comparison buttons
+        // Handle all comparison buttons with a single event listener
         document.addEventListener('click', (event) => {
-            const compareBtn = event.target.closest('.add-to-comparison-btn');
+            // Handle both old-style and new-style comparison buttons
+            const compareBtn = event.target.closest('.add-to-comparison-btn, .remove-from-comparison, .comparison-btn, .toggle-comparison-btn');
             if (compareBtn) {
                 event.preventDefault();
-                this.handleAddToComparison(compareBtn);
-            }
-        });
-
-        // Remove from comparison buttons
-        document.addEventListener('click', (event) => {
-            const removeBtn = event.target.closest('.remove-from-comparison');
-            if (removeBtn) {
-                event.preventDefault();
-                this.handleRemoveFromComparison(removeBtn);
+                this.handleComparisonButtonClick(compareBtn);
             }
         });
     }
 
     /**
-     * Handle adding a product to the comparison list
+     * Handle comparison button click with robust state management
      * @param {HTMLElement} button - The button that was clicked
      */
-    handleAddToComparison(button) {
+    handleComparisonButtonClick(button) {
         const productId = button.dataset.productId;
         const productName = button.dataset.productName || 'Product';
-        const url = button.href;
-        const isCurrentlyCompared = button.classList.contains('btn-success');
 
-        // Update button state immediately for better UX
-        this.updateButtonState(button, !isCurrentlyCompared);
+        if (!productId) {
+            console.error('ComparisonManager: No product ID found on button');
+            this.showToast('Error', 'Product information missing', 'error');
+            return;
+        }
 
-        // Make API request
-        apiClient.get(url)
-            .then(data => {
-                if (data.success) {
-                    // Show appropriate success message based on action
-                    if (isCurrentlyCompared) {
-                        // If removing from comparison
-                        this.showToast('Removed from Comparison',
-                            data.message || `${productName} removed from comparison list.`,
-                            'info');
-                    } else {
-                        // If adding to comparison
-                        this.showToast('Added to Comparison',
-                            data.message || `${productName} added to comparison list.`,
-                            'success');
-                    }
+        // Determine if this is currently in comparison based on URL or classes
+        const isCurrentlyInComparison = this.isProductInComparison(button);
 
-                    this.updateComparisonCount(data.comparison_count);
-                } else {
-                    // Revert button state on failure
-                    this.updateButtonState(button, isCurrentlyCompared);
+        // Store original state for rollback on error
+        const originalState = this.captureButtonState(button);
 
-                    // Show error message
-                    this.showToast('Notice', data.message || 'Failed to update comparison list', 'warning');
+        // Show loading state
+        this.setLoadingState(button);
+
+        // Make API request to toggle endpoint
+        const toggleUrl = `/shop/comparison/toggle/${productId}/`;
+
+        apiClient.post(toggleUrl, {}, {
+            'X-Requested-With': 'XMLHttpRequest'
+        })
+        .then(data => {
+            if (data.success) {
+                // Update button state based on response
+                this.updateButtonState(button, data.isInComparison, productId);
+
+                // Update comparison counter
+                this.updateComparisonCounter(data.comparison_count);
+
+                // Show success message
+                const action = data.added ? 'Added to' : 'Removed from';
+                this.showToast(`${action} Comparison`, data.message, data.added ? 'success' : 'info');
+
+                // If we're on the comparison page and removed an item, reload to update the UI
+                if (data.removed && window.location.pathname.includes('/comparison/')) {
+                    setTimeout(() => window.location.reload(), 1000);
                 }
-            })
-            .catch(error => {
-                // Revert button state on error
-                this.updateButtonState(button, isCurrentlyCompared);
-
-                // Show error message
-                console.error('Error updating comparison:', error);
-                this.showToast('Error', 'Failed to update comparison list', 'error');
-            });
+            } else {
+                // Revert to original state on failure
+                this.restoreButtonState(button, originalState);
+                this.showToast('Notice', data.message || 'Failed to update comparison list', 'warning');
+            }
+        })
+        .catch(error => {
+            console.error('Error updating comparison:', error);
+            // Revert to original state on error
+            this.restoreButtonState(button, originalState);
+            this.showToast('Error', 'Failed to update comparison list', 'error');
+        });
     }
 
     /**
-     * Update the button state based on comparison status
-     * @param {HTMLElement} button - The button to update
-     * @param {boolean} isCompared - Whether the product is in the comparison list
+     * Determine if product is currently in comparison based on button state
+     * @param {HTMLElement} button - The button element
+     * @returns {boolean} Whether the product is in comparison
      */
-    updateButtonState(button, isCompared) {
-        if (isCompared) {
-            // Add to comparison list styling
-            button.classList.remove('btn-outline-secondary');
+    isProductInComparison(button) {
+        // Check button classes for state
+        if (button.classList.contains('btn-success') || button.classList.contains('active')) {
+            return true;
+        }
+
+        // Check href for remove_from_comparison URL
+        const href = button.getAttribute('href') || '';
+        if (href.includes('remove_from_comparison')) {
+            return true;
+        }
+
+        // Default to not in comparison
+        return false;
+    }
+
+    /**
+     * Capture current button state for potential rollback
+     * @param {HTMLElement} button - The button element
+     * @returns {Object} Button state object
+     */
+    captureButtonState(button) {
+        return {
+            innerHTML: button.innerHTML,
+            className: button.className,
+            href: button.getAttribute('href'),
+            title: button.getAttribute('title')
+        };
+    }
+
+    /**
+     * Set button to loading state
+     * @param {HTMLElement} button - The button element
+     */
+    setLoadingState(button) {
+        const originalIcon = button.querySelector('i');
+        const iconClasses = originalIcon ? originalIcon.className : 'fas fa-balance-scale';
+
+        button.innerHTML = `<div class="spinner-border spinner-border-sm me-1" role="status"></div>`;
+        button.disabled = true;
+
+        // Store original icon classes for restoration
+        button.dataset.originalIcon = iconClasses;
+    }
+
+    /**
+     * Update button state based on comparison status
+     * @param {HTMLElement} button - The button element
+     * @param {boolean} isInComparison - Whether product is in comparison
+     * @param {string} productId - The product ID
+     */
+    updateButtonState(button, isInComparison, productId) {
+        // Remove loading and state classes
+        button.disabled = false;
+        button.classList.remove('btn-outline-secondary', 'btn-success', 'active');
+
+        if (isInComparison) {
+            // Product is in comparison list
             button.classList.add('btn-success');
             button.innerHTML = '<i class="fas fa-check me-1"></i> Compared';
             button.setAttribute('title', 'Remove from comparison');
-
-            // Update href to remove action
-            const newUrl = button.getAttribute('href').replace('add_to_comparison', 'remove_from_comparison');
-            button.setAttribute('href', newUrl);
+            button.setAttribute('href', `/comparison/remove/${productId}/`);
         } else {
-            // Remove from comparison list styling
-            button.classList.remove('btn-success');
+            // Product is not in comparison list
             button.classList.add('btn-outline-secondary');
             button.innerHTML = '<i class="fas fa-balance-scale me-1"></i> Compare';
             button.setAttribute('title', 'Add to comparison');
-
-            // Update href to add action
-            const newUrl = button.getAttribute('href').replace('remove_from_comparison', 'add_to_comparison');
-            button.setAttribute('href', newUrl);
+            button.setAttribute('href', `/comparison/add/${productId}/`);
         }
     }
 
     /**
-     * Handle removing a product from the comparison list
-     * @param {HTMLElement} button - The button that was clicked
+     * Restore button to original state
+     * @param {HTMLElement} button - The button element
+     * @param {Object} originalState - The original button state
      */
-    handleRemoveFromComparison(button) {
-        const url = button.href;
-        const productName = button.dataset.productName || 'Product';
-
-        // Make API request
-        apiClient.get(url)
-            .then(data => {
-                if (data.success) {
-                    // If we're on the comparison page, reload to update the UI
-                    if (window.location.pathname.includes('/comparison/')) {
-                        window.location.reload();
-                    } else {
-                        // Just update the count
-                        this.updateComparisonCount(data.comparison_count);
-                        this.showToast('Removed from Comparison',
-                            data.message || `${productName} removed from comparison list.`,
-                            'info');
-                    }
-                } else {
-                    // Show error message
-                    this.showToast('Error', data.message || 'Failed to remove product', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error removing from comparison:', error);
-                this.showToast('Error', 'Failed to remove product from comparison', 'error');
-            });
+    restoreButtonState(button, originalState) {
+        button.disabled = false;
+        button.innerHTML = originalState.innerHTML;
+        button.className = originalState.className;
+        if (originalState.href) {
+            button.setAttribute('href', originalState.href);
+        }
+        if (originalState.title) {
+            button.setAttribute('title', originalState.title);
+        }
     }
 
     /**
-     * Update the comparison count in the UI
+     * Update the comparison counter in the navigation
      * @param {number} count - The new comparison count
      */
-    updateComparisonCount(count) {
-        // Update comparison count in the UI
+    updateComparisonCounter(count) {
         const countElements = document.querySelectorAll('.comparison-count');
         if (countElements.length > 0 && count !== undefined) {
             countElements.forEach(el => {

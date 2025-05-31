@@ -270,14 +270,6 @@ class CheckoutForm(forms.ModelForm):
 
                 css_class='payment-form-section mb-4'
             ),
-
-            # Hidden fields for Stripe
-            HTML(
-                '<div id="stripe-data" '
-                'data-publishable-key="{{ stripe_public_key }}" '
-                'data-client-secret="{{ client_secret }}" '
-                'data-cache-url="{% url \'shop:cache_checkout_data\' %}">\
-                    </div>'),
         )
 
         # Set autofocus on first field

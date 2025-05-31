@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load custom_filters %}
+{% load direct_assets %}
 
 {% block title %}Order History - SkunkMonkey Shop{% endblock %}
 
 {% block extra_css %}
-    {% vite_asset 'shop/order-history.css' %}
+    {% direct_asset 'shop/order-history.css' %}
 {% endblock %}
 
 {% block header %}

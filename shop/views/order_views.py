@@ -94,9 +94,9 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
 
         except Http404:
             logger.warning(
-                f"Order not found: {
-                    self.kwargs.get('order_id')} for user {
-                    self.request.user.id}")
+                f"Order not found: {self.kwargs.get('order_id')} for user "
+                f"{self.request.user.id}"
+            )
             raise
         except Exception as e:
             ErrorHandler.handle_exception(
@@ -167,14 +167,16 @@ class OrderCompleteView(DetailView):
 
             # No permission, raise 404
             logger.warning(
-                f"Unauthorized access attempt to order {
-                    order.order_number}")
+                f"Unauthorized access attempt to order "
+                f"{order.order_number}"
+            )
             raise Http404("Order not found")
 
         except Http404:
             logger.warning(
-                f"Order not found or unauthorized access: {
-                    self.kwargs.get('order_id')}")
+                f"Order not found or unauthorized access: "
+                f"{self.kwargs.get('order_id')}"
+            )
             raise
         except Exception as e:
             ErrorHandler.handle_exception(self.request, e, "retrieving order")

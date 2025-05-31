@@ -45,8 +45,9 @@ def safe_attr(obj, attr):
 
     # Special handling for URLResolver objects
     if isinstance(obj, URLResolver):
-        logger.warning(f"Attempted to access '{
-                       attr}' on URLResolver object: {obj}")
+        logger.warning(
+            f"Attempted to access '{attr}' on URLResolver object: {obj}"
+        )
         if attr == 'id':
             return ""
         if attr == 'name':

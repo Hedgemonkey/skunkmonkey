@@ -1,0 +1,580 @@
+{
+  "_WishlistManager.BexFhMjX.js": {
+    "file": "js/chunks/WishlistManager.BexFhMjX.js",
+    "name": "WishlistManager",
+    "css": [
+      "css/common/WishlistManager.css"
+    ]
+  },
+  "_WishlistManager.css": {
+    "file": "css/common/WishlistManager.css",
+    "src": "_WishlistManager.css"
+  },
+  "_ajax_helper.EulIYOr7.js": {
+    "file": "js/chunks/ajax_helper.EulIYOr7.js",
+    "name": "ajax_helper",
+    "imports": [
+      "_common.Dz0GDR6V.js"
+    ]
+  },
+  "_bootstrap.DA4YfA_0.js": {
+    "file": "js/chunks/chunks/vendor/bootstrap.DA4YfA_0.js",
+    "name": "chunks/vendor/bootstrap",
+    "isDynamicEntry": true,
+    "imports": [
+      "_common.Dz0GDR6V.js"
+    ],
+    "css": [
+      "css/common/chunks/vendor/bootstrap.css"
+    ]
+  },
+  "_bootstrap.css": {
+    "file": "css/common/chunks/vendor/bootstrap.css",
+    "src": "_bootstrap.css"
+  },
+  "_chartjs.u2tQ0ujn.js": {
+    "file": "js/chunks/chunks/vendor/chartjs.u2tQ0ujn.js",
+    "name": "chunks/vendor/chartjs",
+    "imports": [
+      "_common.Dz0GDR6V.js"
+    ]
+  },
+  "_common.Dz0GDR6V.js": {
+    "file": "js/chunks/chunks/vendor/common.Dz0GDR6V.js",
+    "name": "chunks/vendor/common",
+    "css": [
+      "css/common/chunks/vendor/common.css"
+    ]
+  },
+  "_common.css": {
+    "file": "css/common/chunks/vendor/common.css",
+    "src": "_common.css"
+  },
+  "_fontawesome.z_C5Drto.js": {
+    "file": "js/chunks/chunks/vendor/fontawesome.z_C5Drto.js",
+    "name": "chunks/vendor/fontawesome"
+  },
+  "_product-images.css": {
+    "file": "css/common/product-images.css",
+    "src": "_product-images.css"
+  },
+  "_product-list.css": {
+    "file": "css/common/product-list.css",
+    "src": "_product-list.css"
+  },
+  "_product-manager.css": {
+    "file": "css/common/product-manager.css",
+    "src": "_product-manager.css"
+  },
+  "_staff.css": {
+    "file": "css/staff/staff.css",
+    "src": "_staff.css"
+  },
+  "src/common/js/api-client.js": {
+    "file": "js/common/apiClient.js",
+    "name": "apiClient",
+    "src": "src/common/js/api-client.js",
+    "isEntry": true,
+    "imports": [
+      "_ajax_helper.EulIYOr7.js",
+      "_common.Dz0GDR6V.js"
+    ]
+  },
+  "src/common/js/image_cropper.js": {
+    "file": "js/common/imageCropper.js",
+    "name": "imageCropper",
+    "src": "src/common/js/image_cropper.js",
+    "isEntry": true,
+    "imports": [
+      "_common.Dz0GDR6V.js",
+      "_bootstrap.DA4YfA_0.js"
+    ]
+  },
+  "src/core/js/asset-health.js": {
+    "file": "js/core/assetHealth.js",
+    "name": "assetHealth",
+    "src": "src/core/js/asset-health.js",
+    "isEntry": true
+  },
+  "src/core/js/django-messages.js": {
+    "file": "js/core/djangoMessages.js",
+    "name": "djangoMessages",
+    "src": "src/core/js/django-messages.js",
+    "isEntry": true
+  },
+  "src/core/js/main.js": {
+    "file": "js/core/main.js",
+    "name": "main",
+    "src": "src/core/js/main.js",
+    "isEntry": true,
+    "imports": [
+      "_bootstrap.DA4YfA_0.js",
+      "_common.Dz0GDR6V.js",
+      "_fontawesome.z_C5Drto.js"
+    ],
+    "css": [
+      "css/core/main.css"
+    ]
+  },
+  "src/core/js/test-assets.js": {
+    "file": "js/core/test-assets.js",
+    "name": "test-assets",
+    "src": "src/core/js/test-assets.js",
+    "isEntry": true,
+    "imports": [
+      "_fontawesome.z_C5Drto.js",
+      "_bootstrap.DA4YfA_0.js",
+      "_chartjs.u2tQ0ujn.js",
+      "_common.Dz0GDR6V.js"
+    ]
+  },
+  "src/home/js/home.js": {
+    "file": "js/home/home.js",
+    "name": "home",
+    "src": "src/home/js/home.js",
+    "isEntry": true,
+    "css": [
+      "css/home/home.css"
+    ]
+  },
+  "src/products/filters/js/category-filter-manager.js": {
+    "file": "js/products/categoryFilterManager.js",
+    "name": "categoryFilterManager",
+    "src": "src/products/filters/js/category-filter-manager.js",
+    "isEntry": true,
+    "imports": [
+      "src/products/utilities/js/form-utils.js",
+      "src/products/utilities/js/array-utils.js",
+      "_common.Dz0GDR6V.js"
+    ]
+  },
+  "src/products/filters/js/filter-ui-manager.js": {
+    "file": "js/products/filterUiManager.js",
+    "name": "filterUiManager",
+    "src": "src/products/filters/js/filter-ui-manager.js",
+    "isEntry": true,
+    "imports": [
+      "src/products/utilities/js/form-utils.js",
+      "src/common/js/api-client.js",
+      "_common.Dz0GDR6V.js",
+      "_ajax_helper.EulIYOr7.js"
+    ]
+  },
+  "src/products/js/category-manager.js": {
+    "file": "js/products/categoryManager.js",
+    "name": "categoryManager",
+    "src": "src/products/js/category-manager.js",
+    "isEntry": true,
+    "imports": [
+      "src/common/js/api-client.js",
+      "src/products/js/filters.js",
+      "src/products/utilities/js/base-manager.js",
+      "_common.Dz0GDR6V.js",
+      "_ajax_helper.EulIYOr7.js",
+      "src/products/utilities/js/notifications.js",
+      "src/products/utilities/js/form-utils.js",
+      "src/products/filters/js/category-filter-manager.js",
+      "src/products/utilities/js/array-utils.js",
+      "src/products/filters/js/filter-ui-manager.js"
+    ]
+  },
+  "src/products/js/cropper_init.js": {
+    "file": "js/products/cropperInit.js",
+    "name": "cropperInit",
+    "src": "src/products/js/cropper_init.js",
+    "isEntry": true,
+    "imports": [
+      "_common.Dz0GDR6V.js",
+      "_bootstrap.DA4YfA_0.js",
+      "src/common/js/image_cropper.js"
+    ]
+  },
+  "src/products/js/filters.js": {
+    "file": "js/products/filters.js",
+    "name": "filters",
+    "src": "src/products/js/filters.js",
+    "isEntry": true,
+    "imports": [
+      "_common.Dz0GDR6V.js",
+      "src/common/js/api-client.js",
+      "src/products/utilities/js/notifications.js",
+      "src/products/utilities/js/form-utils.js",
+      "src/products/filters/js/category-filter-manager.js",
+      "src/products/filters/js/filter-ui-manager.js",
+      "_ajax_helper.EulIYOr7.js",
+      "src/products/utilities/js/array-utils.js"
+    ]
+  },
+  "src/products/js/product-manage-urls.js": {
+    "file": "js/products/productManageUrls.js",
+    "name": "productManageUrls",
+    "src": "src/products/js/product-manage-urls.js",
+    "isEntry": true
+  },
+  "src/products/js/product-manager.js": {
+    "file": "js/products/productsManager.js",
+    "name": "productsManager",
+    "src": "src/products/js/product-manager.js",
+    "isEntry": true,
+    "imports": [
+      "_ajax_helper.EulIYOr7.js",
+      "src/products/js/filters.js",
+      "src/products/utilities/js/base-manager.js",
+      "_common.Dz0GDR6V.js",
+      "src/common/js/api-client.js",
+      "src/products/utilities/js/notifications.js",
+      "src/products/utilities/js/form-utils.js",
+      "src/products/filters/js/category-filter-manager.js",
+      "src/products/utilities/js/array-utils.js",
+      "src/products/filters/js/filter-ui-manager.js"
+    ]
+  },
+  "src/products/js/products.js": {
+    "file": "js/products/products.js",
+    "name": "products",
+    "src": "src/products/js/products.js",
+    "isEntry": true,
+    "imports": [
+      "_common.Dz0GDR6V.js",
+      "_bootstrap.DA4YfA_0.js",
+      "src/products/js/product-manager.js",
+      "src/products/js/category-manager.js",
+      "src/products/utilities/js/notifications.js",
+      "src/common/js/api-client.js",
+      "_ajax_helper.EulIYOr7.js",
+      "src/products/js/filters.js",
+      "src/products/utilities/js/form-utils.js",
+      "src/products/filters/js/category-filter-manager.js",
+      "src/products/utilities/js/array-utils.js",
+      "src/products/filters/js/filter-ui-manager.js",
+      "src/products/utilities/js/base-manager.js"
+    ],
+    "css": [
+      "css/products/products.css"
+    ]
+  },
+  "src/products/utilities/js/array-utils.js": {
+    "file": "js/products/arrayUtils.js",
+    "name": "arrayUtils",
+    "src": "src/products/utilities/js/array-utils.js",
+    "isEntry": true
+  },
+  "src/products/utilities/js/base-manager.js": {
+    "file": "js/products/baseManager.js",
+    "name": "baseManager",
+    "src": "src/products/utilities/js/base-manager.js",
+    "isEntry": true,
+    "imports": [
+      "_ajax_helper.EulIYOr7.js",
+      "_common.Dz0GDR6V.js"
+    ]
+  },
+  "src/products/utilities/js/form-utils.js": {
+    "file": "js/products/formUtils.js",
+    "name": "formUtils",
+    "src": "src/products/utilities/js/form-utils.js",
+    "isEntry": true,
+    "imports": [
+      "_common.Dz0GDR6V.js"
+    ]
+  },
+  "src/products/utilities/js/notifications.js": {
+    "file": "js/products/notifications.js",
+    "name": "notifications",
+    "src": "src/products/utilities/js/notifications.js",
+    "isEntry": true,
+    "imports": [
+      "_common.Dz0GDR6V.js"
+    ]
+  },
+  "src/shop/js/cart-manager.js": {
+    "file": "js/shop/cartManager.js",
+    "name": "cartManager",
+    "src": "src/shop/js/cart-manager.js",
+    "isEntry": true,
+    "imports": [
+      "src/common/js/api-client.js",
+      "_ajax_helper.EulIYOr7.js",
+      "_common.Dz0GDR6V.js"
+    ],
+    "css": [
+      "css/shop/cartManager.css",
+      "css/common/product-images.css"
+    ]
+  },
+  "src/shop/js/catalog-manager.js": {
+    "file": "js/shop/catalogManager.js",
+    "name": "catalogManager",
+    "src": "src/shop/js/catalog-manager.js",
+    "isEntry": true,
+    "imports": [
+      "src/common/js/api-client.js",
+      "src/products/utilities/js/base-manager.js",
+      "_common.Dz0GDR6V.js",
+      "_ajax_helper.EulIYOr7.js"
+    ]
+  },
+  "src/shop/js/checkout-manager.js": {
+    "file": "js/shop/checkoutManager.js",
+    "name": "checkoutManager",
+    "src": "src/shop/js/checkout-manager.js",
+    "isEntry": true,
+    "imports": [
+      "src/common/js/api-client.js",
+      "src/products/utilities/js/base-manager.js",
+      "_common.Dz0GDR6V.js",
+      "_ajax_helper.EulIYOr7.js"
+    ],
+    "css": [
+      "css/common/product-images.css"
+    ]
+  },
+  "src/shop/js/checkout-success.js": {
+    "file": "js/shop/checkoutSuccess.js",
+    "name": "checkoutSuccess",
+    "src": "src/shop/js/checkout-success.js",
+    "isEntry": true
+  },
+  "src/shop/js/checkout.js": {
+    "file": "js/shop/checkout.js",
+    "name": "checkout",
+    "src": "src/shop/js/checkout.js",
+    "isEntry": true,
+    "css": [
+      "css/shop/checkout.css"
+    ]
+  },
+  "src/shop/js/comparison-manager.js": {
+    "file": "js/shop/comparison.js",
+    "name": "comparison",
+    "src": "src/shop/js/comparison-manager.js",
+    "isEntry": true,
+    "imports": [
+      "src/common/js/api-client.js",
+      "_ajax_helper.EulIYOr7.js",
+      "_common.Dz0GDR6V.js"
+    ],
+    "css": [
+      "css/common/product-images.css"
+    ]
+  },
+  "src/shop/js/product-detail-manager.js": {
+    "file": "js/shop/productDetail.js",
+    "name": "productDetail",
+    "src": "src/shop/js/product-detail-manager.js",
+    "isEntry": true,
+    "css": [
+      "css/shop/productDetail.css",
+      "css/common/product-images.css"
+    ]
+  },
+  "src/shop/js/product-filters.js": {
+    "file": "js/shop/productFilters.js",
+    "name": "productFilters",
+    "src": "src/shop/js/product-filters.js",
+    "isEntry": true,
+    "imports": [
+      "_common.Dz0GDR6V.js"
+    ]
+  },
+  "src/shop/js/product-grid.js": {
+    "file": "js/shop/productGrid.js",
+    "name": "productGrid",
+    "src": "src/shop/js/product-grid.js",
+    "isEntry": true,
+    "imports": [
+      "_bootstrap.DA4YfA_0.js",
+      "src/shop/js/quantity-modal-manager.js",
+      "_common.Dz0GDR6V.js",
+      "src/common/js/api-client.js",
+      "_ajax_helper.EulIYOr7.js"
+    ],
+    "css": [
+      "css/common/product-list.css",
+      "css/common/product-images.css"
+    ]
+  },
+  "src/shop/js/product-list-manager.js": {
+    "file": "js/shop/productList.js",
+    "name": "productList",
+    "src": "src/shop/js/product-list-manager.js",
+    "isEntry": true,
+    "imports": [
+      "_WishlistManager.BexFhMjX.js",
+      "_common.Dz0GDR6V.js"
+    ],
+    "css": [
+      "css/common/product-list.css"
+    ]
+  },
+  "src/shop/js/quantity-modal-manager.js": {
+    "file": "js/shop/quantityModalManager.js",
+    "name": "quantityModalManager",
+    "src": "src/shop/js/quantity-modal-manager.js",
+    "isEntry": true,
+    "imports": [
+      "src/common/js/api-client.js",
+      "_ajax_helper.EulIYOr7.js",
+      "_common.Dz0GDR6V.js"
+    ]
+  },
+  "src/shop/js/stripe-integration.js": {
+    "file": "js/shop/stripeIntegration.js",
+    "name": "stripeIntegration",
+    "src": "src/shop/js/stripe-integration.js",
+    "isEntry": true
+  },
+  "src/shop/js/wishlist-initializer.js": {
+    "file": "js/shop/wishlistInitializer.js",
+    "name": "wishlistInitializer",
+    "src": "src/shop/js/wishlist-initializer.js",
+    "isEntry": true,
+    "imports": [
+      "_WishlistManager.BexFhMjX.js"
+    ]
+  },
+  "src/shop/utilities/js/notifications.js": {
+    "file": "js/shop/shopNotifications.js",
+    "name": "shopNotifications",
+    "src": "src/shop/utilities/js/notifications.js",
+    "isEntry": true,
+    "imports": [
+      "_common.Dz0GDR6V.js"
+    ]
+  },
+  "src/staff/js/entry/category-management.js": {
+    "file": "js/staff/categoryManagement.js",
+    "name": "categoryManagement",
+    "src": "src/staff/js/entry/category-management.js",
+    "isEntry": true,
+    "css": [
+      "css/staff/categoryManagement.css",
+      "css/common/product-manager.css"
+    ]
+  },
+  "src/staff/js/order-manager.js": {
+    "file": "js/staff/orderManager.js",
+    "name": "orderManager",
+    "src": "src/staff/js/order-manager.js",
+    "isEntry": true,
+    "css": [
+      "css/staff/orderManager.css",
+      "css/staff/staff.css"
+    ]
+  },
+  "src/staff/js/product-dashboard-charts.js": {
+    "file": "js/staff/productDashboardCharts.js",
+    "name": "productDashboardCharts",
+    "src": "src/staff/js/product-dashboard-charts.js",
+    "isEntry": true,
+    "imports": [
+      "_chartjs.u2tQ0ujn.js",
+      "_common.Dz0GDR6V.js"
+    ]
+  },
+  "src/staff/js/product-dashboard.js": {
+    "file": "js/staff/productDashboard.js",
+    "name": "productDashboard",
+    "src": "src/staff/js/product-dashboard.js",
+    "isEntry": true,
+    "css": [
+      "css/staff/productDashboard.css",
+      "css/common/product-manager.css"
+    ]
+  },
+  "src/staff/js/product-editor.js": {
+    "file": "js/staff/productEdit.js",
+    "name": "productEdit",
+    "src": "src/staff/js/product-editor.js",
+    "isEntry": true,
+    "imports": [
+      "_common.Dz0GDR6V.js",
+      "_bootstrap.DA4YfA_0.js"
+    ],
+    "css": [
+      "css/staff/productEdit.css"
+    ]
+  },
+  "src/staff/js/product-form-init.js": {
+    "file": "js/staff/productFormInit.js",
+    "name": "productFormInit",
+    "src": "src/staff/js/product-form-init.js",
+    "isEntry": true
+  },
+  "src/staff/js/product-manager.js": {
+    "file": "js/staff/productManager.js",
+    "name": "productManager",
+    "src": "src/staff/js/product-manager.js",
+    "isEntry": true,
+    "imports": [
+      "_fontawesome.z_C5Drto.js",
+      "src/staff/js/product-manager.js"
+    ],
+    "css": [
+      "css/common/product-manager.css"
+    ]
+  },
+  "src/staff/js/staff-sidebar.js": {
+    "file": "js/staff/staffSidebar.js",
+    "name": "staffSidebar",
+    "src": "src/staff/js/staff-sidebar.js",
+    "isEntry": true
+  },
+  "src/staff/js/staff.js": {
+    "file": "js/staff/staff.js",
+    "name": "staff",
+    "src": "src/staff/js/staff.js",
+    "isEntry": true,
+    "imports": [
+      "_fontawesome.z_C5Drto.js"
+    ],
+    "dynamicImports": [
+      "_bootstrap.DA4YfA_0.js"
+    ],
+    "css": [
+      "css/staff/staff.css"
+    ]
+  },
+  "src/users/js/account_actions.js": {
+    "file": "js/users/accountActions.js",
+    "name": "accountActions",
+    "src": "src/users/js/account_actions.js",
+    "isEntry": true,
+    "imports": [
+      "_common.Dz0GDR6V.js",
+      "_bootstrap.DA4YfA_0.js"
+    ]
+  },
+  "src/users/js/address-management.js": {
+    "file": "js/users/addressManagement.js",
+    "name": "addressManagement",
+    "src": "src/users/js/address-management.js",
+    "isEntry": true
+  },
+  "src/users/js/profile.js": {
+    "file": "js/users/profile.js",
+    "name": "profile",
+    "src": "src/users/js/profile.js",
+    "isEntry": true,
+    "css": [
+      "css/users/profile.css"
+    ]
+  },
+  "src/users/js/profile_cropper.js": {
+    "file": "js/users/profileCropper.js",
+    "name": "profileCropper",
+    "src": "src/users/js/profile_cropper.js",
+    "isEntry": true,
+    "imports": [
+      "_common.Dz0GDR6V.js",
+      "_bootstrap.DA4YfA_0.js",
+      "src/common/js/image_cropper.js"
+    ]
+  },
+  "src/users/js/profile_image_manager.js": {
+    "file": "js/users/profileImageManager.js",
+    "name": "profileImageManager",
+    "src": "src/users/js/profile_image_manager.js",
+    "isEntry": true
+  }
+}

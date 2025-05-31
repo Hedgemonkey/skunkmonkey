@@ -16,7 +16,9 @@ from ..utils.session_utils import (
     clear_stripe_session_data, is_client_secret_valid,
     store_stripe_session_data,
 )
-from ..utils.stripe_utils import create_payment_intent, get_stripe_key
+from ..utils.stripe_utils import (
+    create_payment_intent, get_stripe_publishable_key, get_stripe_secret_key,
+)
 from .mixins import CartAccessMixin
 
 logger = logging.getLogger(__name__)
@@ -47,7 +49,12 @@ class CheckoutView(CartAccessMixin, View):
                 items with total price {cart.total_price}")
 
         # Get Stripe publishable key from utils
-        stripe_public_key = get_stripe_key('publishable')
+        stripe_publishable_key = get_stripe_publishable_key()
+        logger.debug(
+            f"Retrieved stripe_publishable_key in GET: "
+            f"'{stripe_publishable_key}' "
+            f"(type: {type(stripe_publishable_key)})"
+        )
 
         # Check if we have a valid client secret for the current cart
         has_valid_client_secret = is_client_secret_valid(request, cart)
@@ -65,11 +72,23 @@ class CheckoutView(CartAccessMixin, View):
 
             if error:
                 logger.error(f"Error creating payment intent: {error}")
-                messages.error(request, f"Payment error: {
-                               error}. Please try again.")
+                messages.error(
+                    request,
+                    f"Payment error: {error}. Please try again.")
+                # Redirect back to cart since we can't continue without a
+                # payment intent
+                return redirect('shop:cart')
             else:
                 # Store the new client secret and cart signature
                 store_stripe_session_data(request, cart, client_secret)
+
+        # Additional safety check before rendering
+        if not client_secret:
+            logger.error("No client_secret available for checkout rendering")
+            messages.error(
+                request,
+                "Payment system error. Please try again or contact support.")
+            return redirect('shop:cart')
 
         # Initialize form with default values if the user has a default address
         initial_data = {}
@@ -172,14 +191,26 @@ class CheckoutView(CartAccessMixin, View):
         # Initialize the form, either empty or with pre-filled data
         form = CheckoutForm(initial=initial_data)
 
+        # Debug logging for context variables
+        logger.debug(
+            f"Context creation - stripe_publishable_key: "
+            f"'{stripe_publishable_key}' "
+            f"(type: {type(stripe_publishable_key)})"
+        )
+        logger.debug(
+            f"Context creation - client_secret: "
+            f"'{client_secret}' (type: {type(client_secret)})"
+        )
+
         context = {
             'cart': cart,
             'form': form,
-            'stripe_public_key': stripe_public_key,
+            'stripe_publishable_key': stripe_publishable_key,
             'client_secret': client_secret,
             'djstripe_webhook_url': '/stripe/webhook/'
         }
 
+        logger.debug(f"Final context keys: {list(context.keys())}")
         return render(request, self.template_name, context)
 
     def post(self, request):
@@ -196,10 +227,10 @@ class CheckoutView(CartAccessMixin, View):
             return redirect('shop:cart')
 
         # Get Stripe API key from utils
-        stripe_public_key = get_stripe_key('publishable')
-        logger.debug(f"Using stripe_public_key: {stripe_public_key}")
+        stripe_publishable_key = get_stripe_publishable_key()
+        logger.debug(f"Using stripe_publishable_key: {stripe_publishable_key}")
 
-        if not stripe_public_key:
+        if not stripe_publishable_key:
             logger.error(
                 "Stripe publishable key not found during form submission")
             messages.error(
@@ -293,7 +324,7 @@ class CheckoutView(CartAccessMixin, View):
                 # Verify the payment intent is valid
                 try:
                     # Get the API key from utils
-                    stripe_api_key = get_stripe_key('secret')
+                    stripe_api_key = get_stripe_secret_key()
                     if stripe_api_key:
                         stripe.api_key = stripe_api_key
 
@@ -379,15 +410,16 @@ class CheckoutView(CartAccessMixin, View):
                 # If user is authenticated, associate order with user
                 if request.user.is_authenticated:
                     logger.debug(
-                        f"Associating order with user: {
-                            request.user.username}")
+                        f"Associating order with user: "
+                        f"{request.user.username}")
                     order.user = request.user
 
                 # Save the order to generate order number
                 order.save()
-                logger.info(f"Order created with number: {order.order_number}")
-                logger.debug(f"Billing same as shipping: {
-                             billing_same_as_shipping}")
+                logger.info(
+                    f"Order created with number: {order.order_number}")
+                logger.debug(
+                    f"Billing same as shipping: {billing_same_as_shipping}")
 
                 # Populate order with items from cart
                 logger.debug("Adding cart items to order")
@@ -401,8 +433,9 @@ class CheckoutView(CartAccessMixin, View):
                         )
                     except Exception as item_creation_exception:
                         logger.error(
-                            f"Error creating order item for product {
-                                item.product.name}: {item_creation_exception}")
+                            f"Error creating order item for product "
+                            f"{item.product.name}: {item_creation_exception}"
+                        )
                         order.delete()  # Remove incomplete order
                         messages.error(
                             request,
@@ -417,8 +450,9 @@ class CheckoutView(CartAccessMixin, View):
                 # Store order ID in session for payment success page
                 request.session['order_id'] = order.id
                 logger.info(
-                    f"Order processing completed successfully for order {
-                        order.order_number}")
+                    f"Order processing completed successfully for order "
+                    f"{order.order_number}"
+                )
 
                 return redirect('shop:checkout_success', order_id=order.id)
 
@@ -437,7 +471,7 @@ class CheckoutView(CartAccessMixin, View):
             context = {
                 'cart': cart,
                 'form': form,
-                'stripe_public_key': stripe_public_key,
+                'stripe_publishable_key': stripe_publishable_key,
                 'client_secret': client_secret,
                 'djstripe_webhook_url': '/stripe/webhook/'
             }
@@ -468,12 +502,14 @@ class CheckoutSuccessView(TemplateView):
                 clear_stripe_session_data(self.request)
 
                 logger.info(
-                    f"Displaying checkout success page for order {
-                        order.order_number}")
+                    f"Displaying checkout success page for order "
+                    f"{order.order_number}"
+                )
             except Order.DoesNotExist:
                 logger.warning(
-                    f"Order with ID {order_id} \
-                        not found for checkout success page")
+                    f"Order with ID {order_id} not found for checkout "
+                    f"success page"
+                )
                 messages.error(self.request,
                                "The requested order could not be found.")
         else:

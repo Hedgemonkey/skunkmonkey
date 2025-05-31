@@ -1,140 +1,170 @@
+// main.js - Core site functionality
 import '../css/main.css';
-import '../css/style.css'; // Custom styles - loads after main.css to override defaults
-/*!
-* Start Bootstrap - Full Width Pics v5.0.6 (https://startbootstrap.com/template/full-width-pics)
-* Copyright 2013-2023 Start Bootstrap
-* Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-full-width-pics/blob/master/LICENSE)
-*/
-import $ from 'jquery'; // Import jQuery
-import 'bootstrap'; // Import Bootstrap JS Bundle (automatically finds proper entry point)
-import { displayMessages } from './messages'; // Assuming messages.js contains displayMessages
-import Swal from 'sweetalert2'; // Import SweetAlert2
-import './fontawesome'; // Import FontAwesome setup
 
-// Make SweetAlert2 globally available
+// Import Bootstrap JS and CSS
+import 'bootstrap/dist/css/bootstrap.min.css';
+import * as bootstrap from 'bootstrap';
+
+// Import SweetAlert2
+import Swal from 'sweetalert2';
+
+// Expose Bootstrap and Swal to window
+window.bootstrap = bootstrap;
 window.Swal = Swal;
 
-// Main application object
-const main = {
-    init: function() {
-        console.log('Main module initialized');
-        this.initSweetAlert();
-        this.initBootstrapComponents();
+// Import FontAwesome with full icon sets
+import { library, dom } from '@fortawesome/fontawesome-svg-core';
+import { fas } from '@fortawesome/free-solid-svg-icons';
+import { far } from '@fortawesome/free-regular-svg-icons';
+import { fab } from '@fortawesome/free-brands-svg-icons';
 
-        // Display initial messages on page load if any exist
-        displayMessages(window.messages || []);
-    },
+// Add all icons to the library
+library.add(fas, far, fab);
 
-    initSweetAlert: function() {
-        console.log('Initializing SweetAlert2');
+// Replace any existing <i> tags with <svg> and watch for future changes
+dom.watch();
 
-        // Initialize SweetAlert2 with default options
-        const swalDefaults = Swal.mixin({
-            confirmButtonColor: '#0d6efd',
-            cancelButtonColor: '#6c757d'
+/**
+ * Global toast notification function
+ * @param {string} title - Toast title
+ * @param {string} message - Toast message content
+ * @param {string} type - Toast type (success, error, warning, info)
+ */
+window.showToast = function(title, message, type = 'info') {
+    // Check if Bootstrap is available
+    if (typeof bootstrap !== 'undefined') {
+        const toastContainer = document.getElementById('toast-container');
+        if (!toastContainer) {
+            return;
+        }
+
+        // Create toast element
+        const toastElement = document.createElement('div');
+        toastElement.className = 'toast';
+        toastElement.setAttribute('role', 'alert');
+        toastElement.setAttribute('aria-live', 'assertive');
+        toastElement.setAttribute('aria-atomic', 'true');
+
+        // Add appropriate color class based on type
+        toastElement.classList.add(`toast-${type}`);
+
+        // Set toast content
+        toastElement.innerHTML = `
+            <div class="toast-header">
+                <strong class="me-auto">${title}</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                ${message}
+            </div>
+        `;
+
+        // Add to container
+        toastContainer.appendChild(toastElement);
+
+        // Initialize and show toast
+        const toast = new bootstrap.Toast(toastElement, {
+            autohide: true,
+            delay: 5000
         });
 
-        // Make the mixin available globally
-        window.SwalDefault = swalDefaults;
+        toast.show();
 
-        // Test SweetAlert2 is working
-        console.log('SweetAlert2 version:', Swal.version);
-
-        // Global function to show toast notifications
-        window.showToast = function(title, message, type = 'info') {
-            console.log('Global showToast called:', title, message, type);
-            const iconType = type === 'danger' ? 'error' : type;
-
-            // Ensure the toast is visible by setting important z-index and opacity
-            const toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    // Apply additional styling to ensure visibility
-                    toast.style.zIndex = '9999';
-                    toast.style.opacity = '1';
-                    toast.style.visibility = 'visible';
-
-                    // Add event listeners
-                    toast.addEventListener('mouseenter', Swal.stopTimer);
-                    toast.addEventListener('mouseleave', Swal.resumeTimer);
-
-                    // Log that toast was opened
-                    console.log('Toast opened successfully');
-                }
-            });
-
-            // Fire the toast with a small delay to ensure DOM is ready
-            setTimeout(() => {
-                toast.fire({
-                    title: title,
-                    text: message,
-                    icon: iconType
-                }).then(() => {
-                    console.log('Toast closed');
-                }).catch(err => {
-                    console.error('Error showing toast:', err);
-                });
-            }, 100);
-        };
-
-        // Dispatch an event to notify other scripts that SweetAlert2 is initialized
-        document.dispatchEvent(new Event('swal2-initialized'));
-    },
-
-    initBootstrapComponents: function() {
-        console.log('Initializing Bootstrap components');
-
-        // Function to initialize Bootstrap dropdowns
-        const initDropdowns = () => {
-            try {
-                // For Bootstrap 5's native JS
-                if (typeof bootstrap !== 'undefined' && bootstrap.Dropdown) {
-                    const dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
-                    const dropdownList = dropdownElementList.map(function(dropdownToggleEl) {
-                        return new bootstrap.Dropdown(dropdownToggleEl);
-                    });
-                    console.log('Bootstrap dropdowns initialized with native API');
-                    return true;
-                }
-
-                // For jQuery-based Bootstrap (fallback)
-                else if (typeof $ !== 'undefined' && typeof $.fn !== 'undefined' && typeof $.fn.dropdown === 'function') {
-                    $('.dropdown-toggle').dropdown();
-                    console.log('Bootstrap dropdowns initialized with jQuery');
-                    return true;
-                }
-
-                return false;
-            } catch (error) {
-                console.error('Error initializing Bootstrap dropdowns:', error);
-                return false;
-            }
-        };
-
-        // Attempt to initialize immediately
-        if (!initDropdowns()) {
-            // If initial attempt fails, try again after window load event
-            window.addEventListener('load', () => {
-                // Wait a short delay to ensure everything is fully loaded
-                setTimeout(() => {
-                    if (!initDropdowns()) {
-                        console.warn('Could not initialize Bootstrap dropdowns - bootstrap library not properly loaded');
-                    }
-                }, 300);
-            });
-        }
+        // Clean up when toast is hidden
+        toastElement.addEventListener('hidden.bs.toast', function() {
+            toastElement.remove();
+        });
     }
 };
 
-// Initialize when DOM is loaded
-$(function() {
-    console.log('Initializing main.js');
-    main.init();
+/**
+ * Initialize Bootstrap components
+ */
+function initBootstrapComponents() {
+    // Initialize all Bootstrap dropdowns using data-bs-toggle attribute
+    // This is the recommended way to initialize Bootstrap components
+    const dropdownElementList = [].slice.call(document.querySelectorAll('[data-bs-toggle="dropdown"]'));
+    if (dropdownElementList.length > 0) {
+        dropdownElementList.forEach(function(dropdownToggleEl) {
+            new bootstrap.Dropdown(dropdownToggleEl);
+        });
+        console.log(`Initialized ${dropdownElementList.length} dropdown components via data-bs-toggle`);
+    }
+
+    // Also initialize all elements with dropdown-toggle class as a fallback
+    const dropdownToggleList = [].slice.call(document.querySelectorAll('.dropdown-toggle:not([data-bs-toggle="dropdown"])'));
+    if (dropdownToggleList.length > 0) {
+        dropdownToggleList.forEach(function(dropdownToggleEl) {
+            // Add the data attribute dynamically
+            dropdownToggleEl.setAttribute('data-bs-toggle', 'dropdown');
+            new bootstrap.Dropdown(dropdownToggleEl);
+        });
+        console.log(`Initialized ${dropdownToggleList.length} additional dropdown components via class`);
+    }
+
+    // Initialize tooltips
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    if (tooltipTriggerList.length > 0) {
+        tooltipTriggerList.map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+        console.log(`Initialized ${tooltipTriggerList.length} tooltip components`);
+    }
+
+    // Initialize popovers
+    const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+    if (popoverTriggerList.length > 0) {
+        popoverTriggerList.map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
+        console.log(`Initialized ${popoverTriggerList.length} popover components`);
+    }
+}
+
+/**
+ * Initialize navbar dropdown functionality specifically
+ */
+function initNavbarDropdowns() {
+    // Get all navbar dropdown elements
+    const navbarDropdowns = document.querySelectorAll('.navbar .dropdown-toggle');
+
+    // Ensure they have the proper attributes for Bootstrap 5
+    navbarDropdowns.forEach(dropdown => {
+        // Make sure these attributes are set correctly
+        dropdown.setAttribute('data-bs-toggle', 'dropdown');
+        dropdown.setAttribute('role', 'button');
+        dropdown.setAttribute('aria-expanded', 'false');
+
+        // Optional: Ensure the dropdown menu has the correct classes and attributes
+        const menu = dropdown.nextElementSibling;
+        if (menu && menu.classList.contains('dropdown-menu')) {
+            menu.setAttribute('aria-labelledby', dropdown.id || 'navbarDropdown');
+        }
+
+        console.log('Navbar dropdown prepared for Bootstrap 5:', dropdown.textContent.trim());
+    });
+}
+
+// Initialize when DOM is fully loaded, using the "DOMContentLoaded" event
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize all Bootstrap components
+    initBootstrapComponents();
+
+    // Special handling for navbar dropdowns (prep them properly)
+    initNavbarDropdowns();
+
+    console.log('All Bootstrap components initialized');
 });
 
-// Export the main object as default
-export default main;
+// Also listen for window load event as a fallback
+window.addEventListener('load', function() {
+    // Check if any dropdowns were missed
+    const uninitializedDropdowns = document.querySelectorAll('.dropdown-toggle:not([data-bs-initialized])');
+    if (uninitializedDropdowns.length > 0) {
+        console.log(`Initializing ${uninitializedDropdowns.length} dropdowns that were missed`);
+        uninitializedDropdowns.forEach(dropdown => {
+            dropdown.setAttribute('data-bs-toggle', 'dropdown');
+            dropdown.setAttribute('data-bs-initialized', 'true');
+            new bootstrap.Dropdown(dropdown);
+        });
+    }
+});
+
+// Export any components that might be needed elsewhere
+export { initBootstrapComponents };

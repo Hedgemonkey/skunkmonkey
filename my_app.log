@@ -1,8 +1,0 @@
-INFO 2025-02-16 01:07:14,473 autoreload 769943 140043936936000 Watching for file changes with StatReloader
-INFO 2025-02-16 01:07:28,975 autoreload 769943 140043936936000 /home/skunkmonkey/public_html/devel/skunkmonkey/skunkmonkey/settings.py changed, reloading.
-INFO 2025-02-16 01:07:29,295 autoreload 770033 139988380627008 Watching for file changes with StatReloader
-INFO 2025-02-16 01:07:32,604 autoreload 770033 139988380627008 /home/skunkmonkey/public_html/devel/skunkmonkey/skunkmonkey/settings.py changed, reloading.
-INFO 2025-02-16 01:07:32,925 autoreload 770070 139960621400128 Watching for file changes with StatReloader
-INFO 2025-02-16 01:07:35,124 autoreload 770070 139960621400128 /home/skunkmonkey/public_html/devel/skunkmonkey/skunkmonkey/settings.py changed, reloading.
-INFO 2025-02-16 01:07:35,460 autoreload 770084 140406525235264 Watching for file changes with StatReloader
-INFO 2025-02-16 01:08:01,267 autoreload 770084 140406525235264 /home/skunkmonkey/public_html/devel/skunkmonkey/skunkmonkey/settings.py changed, reloading.

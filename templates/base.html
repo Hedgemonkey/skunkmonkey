@@ -1,4 +1,5 @@
-{% load django_vite %}
+{% load static %}
+{% load direct_assets %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,32 +27,18 @@
         <!-- Canonical link -->
         <link rel="canonical" href="{{ request.build_absolute_uri }}">
 
-        <!-- This meta tag helps control iframe content -->
-        <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'self' https://js.stripe.com">
+        <!-- Note: frame-ancestors are enforced via HTTP headers instead of meta tag -->
     {% endblock %}
     <title>{% block title %}SkunkMonkey{% endblock %}</title>
     {% block css %}
-        {% vite_hmr_client %}
-        {% vite_asset 'main' %}
-        <script>
-            console.log("Vite HMR Client URL:", document.querySelector('script[src*="vite/client"]')?.src);
-        </script>
+        {% direct_asset 'main' %}
     {% endblock %}
     {% block extra_css %}{% endblock %}
     {% block messages-js %}
-    <script>
-        // Store Django messages for processing by SweetAlert2 toasts
-        window.messages = [];
-        {% for django_message in messages %}
-            window.messages.push({
-                message: "{{ django_message|escapejs }}",
-                tags: "{{ django_message.tags|default:''|escapejs }}"
-            });
-        {% endfor %}
-    </script>
+    <!-- Messages data passed via data attribute for external JS processing -->
     {% endblock %}
 </head>
-<body>
+<body data-django-messages='[{% for django_message in messages %}{"message": "{{ django_message|escapejs }}", "tags": "{{ django_message.tags|default:''|escapejs }}"}{% if not forloop.last %},{% endif %}{% endfor %}]'>
     {% block navbar %}{% include 'includes/navbar.html' %}{% endblock %}
 
     {% block header %}
@@ -66,7 +53,10 @@
         </footer>
     {% endblock %}
     {% block js %}{% endblock %}
-    {% block postloadjs %}{% endblock %}
+    {% block postloadjs %}
+        {% load direct_assets %}
+        {% direct_asset 'djangoMessages' %}
+    {% endblock %}
     {% block extra_js %}{% endblock %}
 </body>
 </html>

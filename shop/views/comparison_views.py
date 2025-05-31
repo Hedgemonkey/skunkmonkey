@@ -10,7 +10,7 @@ from django.views.generic import ListView, View
 
 from products.models import ProductAttributeType
 
-from ..models import Product
+from ..models import ComparisonList, Product
 
 logger = logging.getLogger(__name__)
 
@@ -26,14 +26,30 @@ class ComparisonView(ListView):
         """
         Get list of products in comparison
         """
-        comparison_list = self.request.session.get('comparison', [])
-        if not comparison_list:
-            return Product.objects.none()
+        if self.request.user.is_authenticated:
+            # For authenticated users, get from database
+            try:
+                comparison_list = ComparisonList.objects.get(
+                    user=self.request.user)
+                products = comparison_list.products.all()
+                logger.debug(f"Retrieved {products.count()} products for "
+                             f"authenticated user comparison")
+                return products
+            except ComparisonList.DoesNotExist:
+                logger.debug("No comparison list found for authenticated user")
+                return Product.objects.none()
+        else:
+            # For anonymous users, get from session
+            comparison_list = self.request.session.get('comparison', [])
+            if not comparison_list:
+                logger.debug("No comparison list found in session")
+                return Product.objects.none()
 
-        # Get products from ids in comparison list
-        products = Product.objects.filter(id__in=comparison_list)
-        logger.debug(f"Retrieved {products.count()} products for comparison")
-        return products
+            # Get products from ids in comparison list
+            products = Product.objects.filter(id__in=comparison_list)
+            logger.debug(f"Retrieved {products.count()} products for "
+                         f"anonymous user comparison")
+            return products
 
     def get_context_data(self, **kwargs):
         """
@@ -105,15 +121,18 @@ class AddToComparisonView(View):
             request.session['comparison'] = comparison
             request.session.modified = True
             messages.success(
-                request, f"{
-                    product.name} has been added to your comparison list.")
+                request,
+                f"{product.name} has been added to your comparison list."
+            )
             logger.info(
-                f"Product {
-                    product.name} (ID: {product_id}) added to comparison")
+                f"Product {product.name} (ID: {product_id}) added to "
+                f"comparison"
+            )
         else:
             messages.info(
-                request, f"{
-                    product.name} is already in your comparison list.")
+                request,
+                f"{product.name} is already in your comparison list."
+            )
 
         # Check if AJAX request
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -159,11 +178,13 @@ class RemoveFromComparisonView(View):
             request.session['comparison'] = comparison
             request.session.modified = True
             messages.success(
-                request, f"{
-                    product.name} has been removed from your comparison list.")
+                request,
+                f"{product.name} has been removed from your comparison list."
+            )
             logger.info(
-                f"Product {
-                    product.name} (ID: {product_id}) removed from comparison")
+                f"Product {product.name} (ID: {product_id}) removed from "
+                f"comparison"
+            )
 
         # Check if AJAX request
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':

@@ -1,0 +1,8 @@
+build:
+  packages:
+    - python
+  config:
+    PYTHON_VERSION: 3.11.7
+
+run:
+  web: gunicorn skunkmonkey.wsgi:application

@@ -1,0 +1,123 @@
+/**
+ * Order Manager Styles
+ *
+ * Styles for the order management interface in the staff section
+ */
+
+/* Order list styles */
+.order-section {
+  margin-bottom: 2rem;
+}
+
+.order-header {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.order-card {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  transition: all 0.3s ease;
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+.order-card:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+.order-meta {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.order-total {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.order-actions {
+  text-align: right;
+}
+
+/* Order status colors */
+.status-pending {
+  color: #fd7e14;
+}
+
+.status-processing {
+  color: #0d6efd;
+}
+
+.status-completed {
+  color: #198754;
+}
+
+.status-cancelled {
+  color: #dc3545;
+}
+
+/* Filter section */
+.filter-section {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 0.25rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Order detail styles */
+.order-detail {
+  background-color: #fff;
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.order-detail .section-title {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.order-product-item {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.order-product-item img {
+  max-width: 50px;
+  max-height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.order-product-item:last-child {
+  border-bottom: none;
+}
+
+.order-summary {
+  background-color: #f8f9fa;
+  border-radius: 0.25rem;
+  padding: 1rem;
+}
+
+.order-summary .row {
+  margin-bottom: 0.5rem;
+}
+
+/* Status update section */
+.status-update-form {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border: 1px solid #eee;
+  border-radius: 0.25rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .order-actions {
+    text-align: left;
+    margin-top: 1rem;
+  }
+}

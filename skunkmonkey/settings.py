@@ -11,22 +11,25 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import os
+import shutil
 from pathlib import Path
 
 from django.urls import reverse
 
 import dj_database_url
-import environ
+# Fix import to use environ instead of django_environ
+from environ import Env  # noqa
 
 # Initialize environment variables
-env = environ.Env()
+env = Env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Load environment variables from .env file
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
-
+# Only load .env file if not on Heroku (determined by checking for DATABASE_URL)
+if 'DATABASE_URL' not in os.environ:
+    # Load environment variables from .env file
+    env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -37,17 +40,29 @@ SECRET_KEY = env(
     default='django-insecure-default-key-for-dev')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool('DEVELOPMENT', default=False)
+DEBUG = env.bool('DEBUG', default=False)  # Get DEBUG from environment variable, default to False in production
 
+# Determine if we're running on Heroku
+ON_HEROKU = 'DATABASE_URL' in os.environ
 
 ALLOWED_HOSTS = [
     'skunk.devel.hedge-monkey.co.uk',
     'localhost',
     '127.0.0.1',
     'hedgemonkey.ddns.net:8000',
-    'hedgemonkey.ddns.net'
+    'hedgemonkey.ddns.net',
+    'skunkmonkey.herokuapp.com',
+    '.herokuapp.com',
+    'devel.skunkmonkey.co.uk',
+    'skunkmonkey.co.uk',
+    'www.skunkmonkey.co.uk',
 ]
 
+# Subdirectory configuration - only use FORCE_SCRIPT_NAME if not on Heroku
+if not ON_HEROKU:
+    FORCE_SCRIPT_NAME = '/dev'  # Updated from /devel to /dev
+else:
+    FORCE_SCRIPT_NAME = None  # Don't force script name on Heroku
 
 # Application definition
 
@@ -72,23 +87,56 @@ INSTALLED_APPS = [
     'staff.apps.StaffConfig',
     'djstripe',
     'django_countries',
-    'django_vite',
+    # Only include django_vite if not on Heroku
+    'skunkmonkey',  # Add this to enable our custom templatetags
 ]
 
-DJANGO_VITE_ASSETS_PATH = BASE_DIR / 'static'
-DJANGO_VITE_DEV_MODE = True
-DJANGO_VITE_DEV_SERVER_URL = "http://hedgemonkey.ddns.net:5173/"
-DJANGO_VITE = {
-    "default": {
-        "dev_mode": True,
-        "dev_server_port": "5173",
-        "dev_server_host": "hedgemonkey.ddns.net",
-        "static_url_prefix": "",
+# Only include django_vite in INSTALLED_APPS if not on Heroku
+if not ON_HEROKU:
+    INSTALLED_APPS.append('django_vite')
+
+    # Django-Vite configuration - SIMPLIFIED AND FIXED
+    DJANGO_VITE_ASSETS_PATH = BASE_DIR / 'staticfiles'
+    DJANGO_VITE_DEV_MODE = False
+    DJANGO_VITE_DEV_SERVER_URL = ""
+
+    # Create a symlink in the exact location django-vite expects
+    manifest_source = os.path.join(BASE_DIR, 'staticfiles', 'manifest.json')
+    dev_static_dir = os.path.join(BASE_DIR, 'dev', 'static')
+    manifest_target = os.path.join(dev_static_dir, 'manifest.json')
+
+    # Ensure the target directory exists
+    os.makedirs(dev_static_dir, exist_ok=True)
+
+    # Copy the manifest file to the exact path django-vite is looking for
+    if os.path.exists(manifest_source):
+        shutil.copy2(manifest_source, manifest_target)
+
+    # Simplified configuration with clean entry points
+    DJANGO_VITE_CONFIGS = {
+        'default': {
+            'entry_points': ['main'],
+        },
     }
-}
+
+    # Use a single, simplified configuration
+    DJANGO_VITE = {
+        'default': {
+            'dev_mode': False,
+            'static_url_prefix': '/dev/static/',
+        }
+    }
+else:
+    # On Heroku, make sure django_vite is not installed or used
+    # This prevents any potential django_vite template tag usage
+    import sys
+    if 'django_vite' in sys.modules:
+        print("WARNING: django_vite module is loaded but shouldn't be used on Heroku")
+        del sys.modules['django_vite']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add Whitenoise middleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -100,8 +148,11 @@ MIDDLEWARE = [
     'shop.middleware.CartMiddleware',  # Add the shop cart middleware
     'staff.middleware.StaffProfileMiddleware',  # Add middleware to handle staffprofile
     'csp.middleware.CSPMiddleware',    # Add Content Security Policy middleware
-    'skunkmonkey.middleware.SourceMapIgnoreMiddleware',  # Add custom middleware to handle source map requests
+    'skunkmonkey.middleware.SourceMapIgnoreMiddleware'  # Add custom middleware to handle source map requests
 ]
+
+# Only include debug middleware in development mode
+
 
 # Content Security Policy settings
 SECURE_CONTENT_TYPE_NOSNIFF = True
@@ -109,15 +160,16 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 SECURE_BROWSER_XSS_FILTER = True
 # Configure CSP settings
 CSP_DEFAULT_SRC = ("'self'",)
-CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", "https://fonts.googleapis.com")
-CSP_IMG_SRC = ("'self'", "data:", "https://*.stripe.com", "https://source.unsplash.com", "https://*.cloudfront.net")
-CSP_FONT_SRC = ("'self'", "data:", "https://fonts.gstatic.com", "https://use.fontawesome.com", "blob:")
-CSP_CONNECT_SRC = ("'self'", "https://*.stripe.com", "http://hedgemonkey.ddns.net:5173", "https://*.amazonaws.com")
-CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'", "https://js.stripe.com", "http://hedgemonkey.ddns.net:5173")
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://*.cloudfront.net")
+CSP_IMG_SRC = ("'self'", "data:", "https://*.stripe.com", "https://source.unsplash.com", "https://*.cloudfront.net", "https://*.amazonaws.com")
+CSP_FONT_SRC = ("'self'", "data:", "https://fonts.gstatic.com", "https://use.fontawesome.com", "blob:", "https://*.cloudfront.net")
+CSP_CONNECT_SRC = ("'self'", "https://*.stripe.com", "http://hedgemonkey.ddns.net:5173", "https://*.amazonaws.com", "https://*.cloudfront.net")
+CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'", "https://js.stripe.com", "http://hedgemonkey.ddns.net:5173", "https://*.cloudfront.net")
 CSP_FRAME_SRC = ("'self'", "https://*.stripe.com")
+# Add frame-ancestors directive (only works with HTTP headers, not meta tags)
+CSP_FRAME_ANCESTORS = ("'self'",)
 
 # Crispy Forms settings
-CSP_FRAME_ANCESTORS = ("'self'",)
 
 ROOT_URLCONF = 'skunkmonkey.urls'
 
@@ -137,6 +189,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.media',
                 'shop.context_processors.wishlist_processor',
+                'shop.context_processors.comparison_processor',
                 'staff.context_processors.unread_notifications',  # Add staff context processor
             ],
         },
@@ -222,8 +275,14 @@ AUTHENTICATION_BACKENDS = [
 
 # Allauth Configuration
 SITE_ID = 1
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
+# Set login/logout redirect URLs based on environment
+if ON_HEROKU:
+    LOGIN_REDIRECT_URL = '/'
+    LOGOUT_REDIRECT_URL = '/'
+else:
+    LOGIN_REDIRECT_URL = '/dev/'
+    LOGOUT_REDIRECT_URL = '/dev/'
+
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = True
 ACCOUNT_LOGIN_METHODS = ['email', 'username']
@@ -261,9 +320,7 @@ ACCOUNT_FORMS = {
 
 # Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-print(f"DEBUG: EMAIL_HOST in os.environ: {'EMAIL_HOST' in os.environ}")
 if 'EMAIL_HOST' in os.environ:
-    print(f"DEBUG: Setting up SMTP backend with host: {os.environ['EMAIL_HOST']}")
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_HOST = os.environ['EMAIL_HOST']
     EMAIL_PORT = int(os.environ['EMAIL_PORT'])
@@ -271,8 +328,6 @@ if 'EMAIL_HOST' in os.environ:
     EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
     EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
     DEFAULT_FROM_EMAIL = os.environ['DEFAULT_FROM_EMAIL']
-else:
-    print("DEBUG: EMAIL_HOST not found in environment, using console backend")
     # Add additional console backend settings if needed
 
 # Configure Django to log all email-related actions
@@ -299,14 +354,21 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = '/static/'
+# Set static and media URLs based on environment
+if ON_HEROKU:
+    STATIC_URL = '/static/'
+    MEDIA_URL = '/media/'
+else:
+    STATIC_URL = '/dev/static/'  # Development URL with /dev prefix
+    MEDIA_URL = '/dev/media/'    # Development URL with /dev prefix
+
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_LOCATION = 'static'  # Define static files location for S3
 
 # Media files - local settings that will be overridden if AWS is configured
-MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIAFILES_LOCATION = 'media'
 
@@ -315,31 +377,70 @@ INSTALLED_APPS += [
     'storages',
 ]
 
-# Use AWS settings if configured
-if env.bool('USE_S3', default=False):
+# Define default storage backends - these will be used if USE_S3 is True
+DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+
+# Use Whitenoise for static files on Heroku, otherwise use default storage
+if ON_HEROKU:
+    # Use StaticFilesStorage instead of CompressedStaticFilesStorage to avoid MIME type issues
+    # This helps prevent issues with file naming conflicts and MIME types in Vite-generated assets
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+
+    # Add MIME type hints for WhiteNoise to properly serve CSS and JS files
+    WHITENOISE_MIMETYPES = {
+        '.css': 'text/css',
+        '.js': 'application/javascript',
+        '.json': 'application/json',
+        '.html': 'text/html',
+        '.txt': 'text/plain',
+        '.png': 'image/png',
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.gif': 'image/gif',
+        '.svg': 'image/svg+xml',
+    }
+else:
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
+    # Django 4.2+ STORAGES setting for local storage
+    STORAGES = {
+        'default': {
+            'BACKEND': 'django.core.files.storage.FileSystemStorage',
+        },
+        'staticfiles': {
+            'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
+        },
+    }
+
+# Use AWS settings if configured - but keep static files local for direct asset system
+# Check both USE_S3_FOR_MEDIA (new) and USE_S3 (legacy) for backward compatibility
+use_s3_for_media = (
+    env.bool('USE_S3_FOR_MEDIA', default=False)
+    or os.environ.get('USE_S3_FOR_MEDIA') == 'True'
+    or os.environ.get('USE_S3') == 'True'  # Backward compatibility
+)
+
+if use_s3_for_media:
     # Import AWS settings
     from .aws import *
 
-    # Add debug output to confirm AWS settings are loaded
-    print(f"DEBUG: AWS S3 enabled - using bucket {AWS_STORAGE_BUCKET_NAME}")
-    print(f"DEBUG: AWS Region: {AWS_S3_REGION_NAME}")
-    print(f"DEBUG: AWS CloudFront: {AWS_S3_CUSTOM_DOMAIN}")
-
-    # Use S3 for media
+    # Override storage backends for MEDIA files only (legacy settings)
     DEFAULT_FILE_STORAGE = 'skunkmonkey.custom_storages.MediaStorage'
+    # Keep STATICFILES_STORAGE as Whitenoise for direct asset system to work
 
-    # Now print the storage class after it's defined
-    print(f"DEBUG: Media Storage: {DEFAULT_FILE_STORAGE}")
+    # Django 4.2+ STORAGES setting - only use S3 for media files
+    STORAGES = {
+        'default': {
+            'BACKEND': 'skunkmonkey.custom_storages.MediaStorage',
+        },
+        'staticfiles': {
+            'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage' if ON_HEROKU else 'django.contrib.staticfiles.storage.StaticFilesStorage',
+        },
+    }
 
-    # Update media URL to use CloudFront if domain is set
+    # If CloudFront is configured, use it for media URLs
     if AWS_S3_CUSTOM_DOMAIN:
-        if AWS_S3_CUSTOM_DOMAIN.startswith('https://'):
-            MEDIA_URL = f'{AWS_S3_CUSTOM_DOMAIN}/{MEDIAFILES_LOCATION}/'
-        else:
-            MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{MEDIAFILES_LOCATION}/'
-        # Log CloudFront configuration for debugging
-        print(f"DEBUG: CloudFront domain: {AWS_S3_CUSTOM_DOMAIN}")
-        print(f"DEBUG: Media URL set to: {MEDIA_URL}")
+        MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{MEDIAFILES_LOCATION}/"
 
 # if os.environ.get("SKUNKMONKEY_VPS_HOST", False):
 #   STATIC_URL = 'http://devel.skunkmonkey.co.uk/static/'
@@ -350,67 +451,30 @@ if env.bool('USE_S3', default=False):
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Stripe settings
+# dj-stripe configuration - Modern approach using database-managed API keys
+# API keys are managed through Django admin interface, not environment variables
 STRIPE_LIVE_MODE = env.bool('STRIPE_LIVE_MODE', default=False)
-
-# Define these for your application's use
-STRIPE_CURRENCY = 'gbp'  # British Pound as default currency
-
-# These are here only as a reference for your application
-# dj-stripe will manage the actual API keys through the admin
-STRIPE_PUBLISHABLE_KEY = env('STRIPE_PUBLISHABLE_KEY', default='')
-STRIPE_WEBHOOK_SECRET = env('STRIPE_WEBHOOK_SECRET', default='')
-
-# dj-stripe settings - must be compliant with their recommendations
-DJSTRIPE_WEBHOOK_SECRET = STRIPE_WEBHOOK_SECRET
-DJSTRIPE_USE_NATIVE_JSONFIELD = True
+DJSTRIPE_WEBHOOK_SECRET = env('DJSTRIPE_WEBHOOK_SECRET', default='')
 DJSTRIPE_FOREIGN_KEY_TO_FIELD = "id"
-
-# This is critical - tells dj-stripe to only use the secret key when syncing
-# The empty string for TEST_API_KEY forces dj-stripe to use only keys from
-# the admin
-DJSTRIPE_TEST_API_KEY = ""
-DJSTRIPE_LIVE_API_KEY = ""
-
-# Use a stable API version
-STRIPE_API_VERSION = "2023-10-16"
-
-# Enable dj-stripe webhooks - important for proper webhook handling
+DJSTRIPE_USE_NATIVE_JSONFIELD = True
 DJSTRIPE_WEBHOOK_VALIDATION = "verify_signature"
 
-# Make sure these environment variables are set in your .env file:
-# STRIPE_PUBLISHABLE_KEY=pk_test_your_key
-# STRIPE_SECRET_KEY=sk_test_your_key
-# STRIPE_WEBHOOK_SECRET=whsec_your_key
+# Application-specific Stripe settings
+STRIPE_CURRENCY = 'gbp'  # British Pound as default currency
+STRIPE_API_VERSION = "2023-10-16"
 
-# Logging Configuration
-LOGS_DIR = os.path.join(BASE_DIR, 'logs')
-os.makedirs(LOGS_DIR, exist_ok=True)
-
+# Enhanced logging configuration
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '{levelname} {asctime} {module} {message}',
-            'style': '{',
-        },
-        'simple': {
-            'format': '{levelname} {message}',
-            'style': '{',
-        },
-        'detailed': {
             'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
             'style': '{',
         },
-        'stripe': {
-            'format': 'STRIPE: {levelname} {asctime} {message}',
+        'detailed': {
+            'format': '{levelname} {asctime} {name} {module} - {message}',
             'style': '{',
-        },
-    },
-    'filters': {
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
         },
     },
     'handlers': {
@@ -421,115 +485,52 @@ LOGGING = {
         },
         'file': {
             'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(LOGS_DIR, 'django.log'),
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'debug.log'),
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
             'formatter': 'detailed',
-            'mode': 'a',  # Append mode
         },
-        'stripe_file': {
+        'auth_file': {
             'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(LOGS_DIR, 'stripe.log'),
-            'formatter': 'stripe',
-            'mode': 'a',  # Append mode
-        },
-        'webhook_file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(LOGS_DIR, 'webhooks.log'),
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'auth_debug.log'),
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
             'formatter': 'detailed',
-            'mode': 'a',  # Append mode
         },
         'error_file': {
-            'level': 'ERROR',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(LOGS_DIR, 'error.log'),
+            'level': 'WARNING',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'error.log'),
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
             'formatter': 'detailed',
-            'mode': 'a',  # Append mode
-        },
-        'mail_file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(LOGS_DIR, 'mail.log'),
-            'formatter': 'detailed',
-            'mode': 'a',  # Append mode
         },
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'file', 'error_file'],
+            'handlers': ['console', 'file'],
             'level': 'INFO',
             'propagate': True,
         },
         'django.request': {
-            'handlers': ['console', 'file', 'error_file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'django.server': {
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'django.template': {
-            'handlers': ['console', 'file', 'error_file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'django.db.backends': {
-            'handlers': ['console', 'file'],
-            'level': 'INFO',  # Set to DEBUG to log all SQL queries
-            'propagate': False,
-        },
-        'shop': {
-            'handlers': ['console', 'file', 'stripe_file', 'error_file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'home': {  # Add specific logger for home app
-            'handlers': ['console', 'file', 'error_file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'products': {  # Add specific logger for products app
-            'handlers': ['console', 'file', 'error_file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'users': {  # Add specific logger for users app
-            'handlers': ['console', 'file', 'error_file', 'mail_file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'staff': {  # Add specific logger for staff app
-            'handlers': ['console', 'file', 'error_file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'djstripe': {
-            'handlers': ['console', 'stripe_file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'shop.webhooks': {
-            'handlers': ['console', 'webhook_file', 'stripe_file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'django.core.mail': {
-            'handlers': ['console', 'mail_file', 'error_file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        '': {  # Root logger
-            'handlers': ['console', 'file', 'error_file'],
-            'level': 'DEBUG',
+            'handlers': ['error_file'],
+            'level': 'WARNING',
             'propagate': True,
         },
-        'skunkmonkey.custom_storages': {
-            'handlers': ['console', 'file', 'error_file'],
+        'staff': {
+            'handlers': ['console', 'file', 'auth_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'auth': {
+            'handlers': ['console', 'auth_file'],
             'level': 'DEBUG',
             'propagate': False,
         },
     },
 }
+
+# Make sure log directories exist
+os.makedirs(os.path.join(BASE_DIR, 'logs'), exist_ok=True)

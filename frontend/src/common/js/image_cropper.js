@@ -321,9 +321,25 @@ const ImageCropper = {
                 reader.readAsDataURL(blob);
 
                 reader.onloadend = () => {
-                    const base64data = reader.result;
+                    // Get the base64 data
+                    let base64data = reader.result;
 
-                    // Store the cropped image data
+                    // Sanitize the base64 data by removing any parameters (charset, encoding, etc.)
+                    // This ensures consistency between test environment and web interface
+                    if (base64data && base64data.includes(';base64,')) {
+                        // Split the data URL into format and data parts
+                        const [formatPart, dataPart] = base64data.split(';base64,');
+
+                        // Keep only the media type (e.g., "data:image/jpeg")
+                        // and remove all other parameters
+                        const baseFormat = formatPart.split(';')[0];
+
+                        // Reconstruct the data URL with only the media type and base64 data
+                        base64data = `${baseFormat};base64,${dataPart}`;
+                        console.log('Parameters removed from base64 data');
+                    }
+
+                    // Store the sanitized cropped image data
                     this.elements.croppedImageData.value = base64data;
                     console.log('Cropped image data stored');
 

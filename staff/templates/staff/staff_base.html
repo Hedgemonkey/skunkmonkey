@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load django_vite %}
+{% load direct_assets %}
 {% load staff_filters %}
 
 {% block extra_title %}Staff Portal{% endblock %}
 
 {% block extra_css %}
     {{ block.super }}
-    {% vite_asset 'staff' %}
-    {% vite_asset 'orderManager' %}
+    {% direct_asset 'staff' %}
+    {% direct_asset 'orderManager' %}
 {% endblock %}
 
 {% block header %}
@@ -33,7 +33,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if 'product_' in request.resolver_match.url_name or request.resolver_match.url_name == 'product_management' %}active{% endif %}" href="{% url 'staff:product_management' %}">
+                        <a class="nav-link {% if 'product_' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'staff:product_dashboard' %}">
                             <i class="fas fa-box"></i> Products
                         </a>
                     </li>
@@ -124,16 +124,7 @@
 
 {% block extra_js %}
 {{ block.super }}
-<script>
-    // Toggle sidebar on mobile
-    document.addEventListener('DOMContentLoaded', function() {
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        if (sidebarToggle) {
-            sidebarToggle.addEventListener('click', function() {
-                document.querySelector('.staff-sidebar').classList.toggle('show');
-            });
-        }
-    });
-</script>
+{% load direct_assets %}
+{% direct_asset 'staffSidebar' %}
 {% block staff_js %}{% endblock %}
 {% endblock %}

@@ -24,8 +24,8 @@ class CartManager {
      * Sets up event handlers for adding, updating and removing cart items
      */
     initEventListeners() {
-        // Handle add to cart form submissions
-        document.querySelectorAll('.add-to-cart-form').forEach(form => {
+        // Handle add to cart form submissions (only for direct submissions, not modal)
+        document.querySelectorAll('.add-to-cart-form[data-direct-submit="true"]').forEach(form => {
             form.addEventListener('submit', this.handleAddToCart.bind(this));
         });
 
@@ -162,7 +162,7 @@ class CartManager {
                     const row = form.closest('tr');
                     const subtotalCell = row.querySelector('.item-subtotal');
                     if (subtotalCell) {
-                        subtotalCell.textContent = `$${response.item_subtotal}`;
+                        subtotalCell.textContent = `£${response.item_subtotal}`;
                         subtotalCell.classList.add('highlight-update');
                         setTimeout(() => {
                             subtotalCell.classList.remove('highlight-update');
@@ -171,7 +171,7 @@ class CartManager {
 
                     // Update cart total
                     if (this.cartTotal) {
-                        this.cartTotal.textContent = `$${response.cart_total}`;
+                        this.cartTotal.textContent = `£${response.cart_total}`;
                         this.cartTotal.classList.add('highlight-update');
                         setTimeout(() => {
                             this.cartTotal.classList.remove('highlight-update');
@@ -180,7 +180,7 @@ class CartManager {
 
                     // Update cart count badge if it exists
                     if (this.cartCountBadge) {
-                        this.cartCountBadge.textContent = response.cart_count;
+                        this.cartCountBadge.textContent = response.item_count;
                     }
 
                     // Update item quantity (in case the server modified it)
@@ -264,7 +264,7 @@ class CartManager {
 
                     // Update cart count
                     if (this.cartCount) {
-                        this.cartCount.textContent = response.cart_count;
+                        this.cartCount.textContent = response.item_count;
                         this.cartCount.classList.add('cart-count-updated');
                         setTimeout(() => {
                             this.cartCount.classList.remove('cart-count-updated');
@@ -273,20 +273,55 @@ class CartManager {
 
                     // Update cart badge in navbar if it exists
                     if (this.cartCountBadge) {
-                        this.cartCountBadge.textContent = response.cart_count;
+                        this.cartCountBadge.textContent = response.item_count;
                         this.cartCountBadge.classList.remove('d-none');
                     }
 
-                    this.showNotification('Added to Cart!', `${productName} has been added to your cart.`, 'success', true, {
-                        showDenyButton: true,
-                        denyButtonText: 'View Cart',
-                        denyButtonColor: '#198754',
-                        confirmButtonText: 'Continue Shopping'
-                    }).then((result) => {
-                        if (result.isDenied) {
-                            window.location.href = '/shop/cart/';
-                        }
-                    });
+                    // Show enhanced cart summary toast (similar to modal manager)
+                    this.showCartSummaryToast(response);
+                }
+            });
+    }
+
+    /**
+     * Show enhanced cart summary toast notification
+     * @param {Object} response - The server response
+     */
+    showCartSummaryToast(response) {
+        let cartItemsHtml = '';
+        if (response.cart_items && response.cart_items.length > 0) {
+            cartItemsHtml = response.cart_items.map(item =>
+                `<div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="text-truncate me-2">${item.name} × ${item.quantity}</span>
+                    <span class="text-muted">£${item.total_price}</span>
+                </div>`
+            ).join('');
+
+            if (response.total_unique_items > response.cart_items.length) {
+                cartItemsHtml += `<div class="text-muted small">... and ${response.total_unique_items - response.cart_items.length} more items</div>`;
+            }
+        }
+
+        // Use SweetAlert2 for enhanced notification
+        this.showNotification('🛒 Added to Cart!',
+            `<div class="text-start">
+                <p class="mb-3"><strong>${response.quantity_added} × ${response.product_name}</strong> added to your cart</p>
+                <hr>
+                <h6>Cart Summary (${response.item_count} items)</h6>
+                <div class="mb-3">${cartItemsHtml}</div>
+                <div class="d-flex justify-content-between fw-bold">
+                    <span>Total:</span>
+                    <span>£${response.cart_total}</span>
+                </div>
+            </div>`,
+            'success', true, {
+                showDenyButton: true,
+                denyButtonText: '<i class="fas fa-credit-card me-1"></i> Go to Checkout',
+                denyButtonColor: '#198754',
+                confirmButtonText: '<i class="fas fa-shopping-bag me-1"></i> Continue Shopping'
+            }).then((result) => {
+                if (result.isDenied) {
+                    window.location.href = '/shop/cart/';
                 }
             });
     }
@@ -333,20 +368,20 @@ class CartManager {
 
                             // Update cart total
                             if (this.cartTotal) {
-                                this.cartTotal.textContent = `$${response.cart_total}`;
+                                this.cartTotal.textContent = `£${response.cart_total}`;
                             }
 
                             // Update cart count badge in navbar if it exists
                             if (this.cartCountBadge) {
-                                if (response.cart_count > 0) {
-                                    this.cartCountBadge.textContent = response.cart_count;
+                                if (response.item_count > 0) {
+                                    this.cartCountBadge.textContent = response.item_count;
                                 } else {
                                     this.cartCountBadge.classList.add('d-none');
                                 }
                             }
 
                             // If cart is empty, refresh the page to show empty state
-                            if (response.cart_count === 0) {
+                            if (response.item_count === 0) {
                                 window.location.reload();
                             }
                         }, 300);

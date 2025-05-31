@@ -93,7 +93,7 @@
                     <h6 class="m-0 fw-bold">Group Memberships</h6>
                 </div>
                 <div class="card-body">
-                    <form method="post" action="{% url 'staff:user_groups' user_obj.id %}">
+                    <form method="post" action="{% url 'staff:user_update' user_obj.id %}">
                         {% csrf_token %}
                         <div class="mb-3">
                             {% for group in all_groups %}

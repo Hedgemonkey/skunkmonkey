@@ -1,6 +1,6 @@
 {% extends "allauth/layouts/manage.html" %}
 {% load i18n %}
-{% load django_vite %}
+{% load direct_assets %}
 
 {% block title %}{% trans "SkunkMonkey - Account Management" %}{% endblock %}
 
@@ -46,7 +46,6 @@
 </div>
 {% endblock %}
 
-{% block postloadjs %}
-    {{ block.super }}
-    {% vite_asset 'profile.js' %}
-{% endblock postloadjs %}
+{% block extra_js %}
+{% direct_asset 'profile.js' %}
+{% endblock %}

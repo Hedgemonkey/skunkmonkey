@@ -21,20 +21,17 @@ extensions.txt
 *.sqlite
 *.sqlite3
 
-# Generated webpack bundles
-static/bundles/
-staticfiles/bundles/
-dist/
 
-# Vite generated files
-static/js/
-static/css/
-static/assets/
-static/vite.svg
-static/webfonts/
-static/fonts/
-static/images/
-.vite/
+# Vite generated files (commenting out to include build files for Heroku)
+# static/js/
+# static/css/
+# static/assets/
+# static/vite.svg
+# static/webfonts/
+# static/fonts/
+# static/images/
+# static/manifest.json  # Ensure manifest.json is tracked for Heroku
+# .vite/
 
 # Media files (user uploads)
 media/profile_images/
@@ -62,3 +59,6 @@ coverage.xml
 assessment.md
 hedge/
 hedge/*
+
+# Generated static files
+/staticfiles/

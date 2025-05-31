@@ -1,11 +1,11 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load static %}
+{% load direct_assets %}
+
+{% block title %}Your Profile - SkunkMonkey{% endblock %}
 
 {% block extra_css %}
-    {{ block.super }}
-    <!-- Load profile JS with Vite (CSS will be included automatically) -->
-    {% load django_vite %}
-    {% vite_asset 'profile' %}
+    {% direct_asset 'profile' %}
 {% endblock %}
 
 {% block header %}
@@ -30,7 +30,7 @@
                 <div class="d-flex align-items-center">
                     <div class="profile-avatar me-4">
                         {% if user.userprofile.profile_image %}
-                            <img src="{{ user.userprofile.profile_image.url }}" alt="{{ user.username }}" class="rounded-circle">
+                            <img src="{{ user.userprofile.profile_image.url }}?v={% now 'U' %}_{{ user.pk }}" alt="{{ user.username }}" class="rounded-circle">
                         {% else %}
                             {% with social_accounts=user.socialaccount_set.all %}
                                 {% if social_accounts and social_accounts.0.get_avatar_url %}

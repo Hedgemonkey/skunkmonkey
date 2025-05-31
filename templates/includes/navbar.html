@@ -29,13 +29,59 @@
                     </a>
                 </li>
 
+                <!-- Favourites/Wishlist icon -->
+                <li class="nav-item">
+                    <a class="nav-link position-relative" href="{% url 'shop:wishlist' %}" title="My Wishlist">
+                        <i class="fas fa-heart"></i>
+                        {% if user.is_authenticated %}
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ request.wishlist.count|default:'0' }}
+                            </span>
+                        {% endif %}
+                    </a>
+                </li>
+
+                <!-- Socials dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownSocials" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="Follow Us">
+                        <i class="fas fa-share-alt"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownSocials">
+                        <li>
+                            <a class="dropdown-item" href="https://www.facebook.com/profile.php?id=61575805709524" target="_blank" rel="noopener">
+                                <i class="fab fa-facebook-f me-2"></i>Facebook
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="https://twitter.com" target="_blank" rel="noopener">
+                                <i class="fab fa-twitter me-2"></i>Twitter
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="https://instagram.com" target="_blank" rel="noopener">
+                                <i class="fab fa-instagram me-2"></i>Instagram
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="https://linkedin.com" target="_blank" rel="noopener">
+                                <i class="fab fa-linkedin-in me-2"></i>LinkedIn
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="https://youtube.com" target="_blank" rel="noopener">
+                                <i class="fab fa-youtube me-2"></i>YouTube
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
                 {% if user.is_staff or user.is_superuser %}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownManagement" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Management
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownManagement">
-                        <li><a class="dropdown-item" href="{% url 'staff:product_management' %}">Product Management</a></li>
+                        <li><a class="dropdown-item" href="{% url 'staff:product_dashboard' %}">Product Management</a></li>
                         <li><a class="dropdown-item" href="{% url 'staff:dashboard' %}">Staff Dashboard</a></li>
                         <li><a class="dropdown-item" href="{% url 'staff:order_list' %}">Order Management</a></li>
                         {% if user.staff_profile.is_manager or user.is_superuser %}

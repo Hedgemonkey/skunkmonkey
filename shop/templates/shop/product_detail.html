@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load direct_assets %}
 {% load wishlist_tags %}
 
 {% block title %}{{ product.name }} - SkunkMonkey Shop{% endblock %}
 
 {% block extra_css %}
     {{ block.super }}
-    {% load django_vite %}
-    {% vite_asset 'productDetailManager' %}
+    {% direct_asset 'productDetail' %}
 {% endblock %}
 
 {% block header %}
@@ -44,28 +44,19 @@
                     <h1 class="mb-0">{{ product.name }}</h1>
 
                     <div class="d-flex">
-                        <!-- Compare button -->
-                        <a href="{% url 'shop:add_to_comparison' product.id %}"
-                           class="btn btn-outline-primary me-2 add-to-comparison-btn rounded-circle"
+                        <!-- Compare button - updated to use toggle endpoint -->
+                        <a href="{% url 'shop:toggle_comparison' product.id %}"
+                           class="btn btn-outline-primary me-2 add-to-comparison-btn toggle-comparison-btn rounded-circle"
                            data-product-id="{{ product.id }}"
+                           data-product-name="{{ product.name }}"
                            data-bs-toggle="tooltip"
                            title="Add to comparison">
                             <i class="fas fa-balance-scale"></i>
                         </a>
-
-                        <!-- Wishlist button -->
-                        {% if user.is_authenticated %}
-                        <a href="{% url 'shop:toggle_wishlist' product.id %}"
-                           class="btn wishlist-btn {% if product.id in wishlist_product_ids %}remove-wishlist-btn btn-danger{% else %}add-to-wishlist-btn btn-outline-danger{% endif %}"
-                           data-product-id="{{ product.id }}"
-                           data-product-name="{{ product.name }}">
-                            <i class="{% if product.id in wishlist_product_ids %}fas{% else %}far{% endif %} fa-heart"></i>
-                        </a>
-                        {% endif %}
                     </div>
                 </div>
 
-                <p class="product-price mb-3">${{ product.price }}</p>
+                <p class="product-price mb-3">£{{ product.price }}</p>
 
                 <div class="mb-4">
                     <p class="lead">{{ product.description }}</p>
@@ -85,23 +76,23 @@
                     </p>
                 </div>
 
-                <!-- Add to Cart Form -->
+                <!-- Add to Cart Button -->
                 {% if product.stock_quantity > 0 %}
                     <div class="product-actions d-flex gap-2 my-4">
-                        <form method="post" action="{% url 'shop:cart_add' product.id %}" class="add-to-cart-form flex-grow-1">
-                            {% csrf_token %}
-                            <div class="mb-3">
-                                <label for="quantity" class="form-label">Quantity</label>
-                                <div class="input-group quantity-selector">
-                                    <button class="btn btn-outline-secondary" type="button" id="decrease-quantity">-</button>
-                                    <input type="number" name="quantity" id="quantity" class="form-control text-center" value="1" min="1" max="{{ product.stock_quantity }}">
-                                    <button class="btn btn-outline-secondary" type="button" id="increase-quantity">+</button>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-primary btn-lg">
+                        <div class="flex-grow-1">
+                            <button type="button"
+                                    class="btn btn-primary btn-lg add-to-cart-modal-btn"
+                                    data-product-id="{{ product.id }}"
+                                    data-product-name="{{ product.name }}"
+                                    data-product-price="{{ product.price }}"
+                                    data-product-image="{% if product.image %}{{ product.image.url }}{% else %}{{ MEDIA_URL }}noimage.png{% endif %}"
+                                    data-stock-quantity="{{ product.stock_quantity }}"
+                                    data-cart-add-url="{% url 'shop:cart_add' product.id %}"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#quantityModal">
                                 <i class="fas fa-shopping-cart me-2"></i> Add to Cart
                             </button>
-                        </form>
+                        </div>
 
                         <!-- Wishlist button -->
                         {% if user.is_authenticated %}
@@ -145,7 +136,7 @@
                     {% endif %}
                     <div class="card-body">
                         <h5 class="card-title">{{ related.name }}</h5>
-                        <p class="card-text text-success fw-bold">${{ related.price }}</p>
+                        <p class="card-text text-success fw-bold">£{{ related.price }}</p>
                     </div>
                     <div class="card-footer bg-transparent border-top-0">
                         <a href="{% url 'shop:product_detail' related.slug %}" class="btn btn-outline-primary btn-sm d-block">View Details</a>
@@ -171,7 +162,7 @@
                     {% endif %}
                     <div class="card-body">
                         <h5 class="card-title">{{ viewed_product.name }}</h5>
-                        <p class="card-text text-success fw-bold">${{ viewed_product.price }}</p>
+                        <p class="card-text text-success fw-bold">£{{ viewed_product.price }}</p>
                     </div>
                     <div class="card-footer bg-transparent border-top-0">
                         <a href="{% url 'shop:product_detail' viewed_product.slug %}" class="btn btn-outline-primary btn-sm d-block">View Details</a>
@@ -183,9 +174,14 @@
     </div>
     {% endif %}
 </div>
+
+<!-- Include quantity selection modal -->
+{% include 'shop/includes/quantity_modal.html' %}
 {% endblock %}
 
 {% block extra_js %}
     {{ block.super }}
-    <!-- JS is now loaded via vite_asset in the extra_css block -->
+    {% direct_asset 'productDetail' %}
+    {% direct_asset 'quantityModalManager' %}
+    {% direct_asset 'wishlistInitializer' %}
 {% endblock %}

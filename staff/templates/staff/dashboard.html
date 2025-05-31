@@ -1,7 +1,11 @@
 {% extends 'staff/staff_base.html' %}
-{% load django_vite %}
+{% load direct_assets %}
 
 {% block staff_title %}Dashboard{% endblock %}
+
+{% block staff_js %}
+{% direct_asset 'productDashboard' %}
+{% endblock %}
 
 {% block staff_content %}
 <div class="container-fluid px-4">

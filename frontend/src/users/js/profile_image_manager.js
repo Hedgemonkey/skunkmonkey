@@ -498,13 +498,35 @@ class ProfileImageManager {
      */
     updateWithCroppedImage(dataUrl, originalFile) {
         console.log('updateWithCroppedImage called');
+
+        // Sanitize the base64 data by removing any parameters (charset, encoding, etc.)
+        if (dataUrl && dataUrl.includes(';base64,')) {
+            // Split the data URL into format and data parts
+            const [formatPart, dataPart] = dataUrl.split(';base64,');
+
+            // Keep only the media type (e.g., "data:image/jpeg")
+            // and remove all other parameters
+            const baseFormat = formatPart.split(';')[0];
+
+            // Reconstruct the data URL with only the media type and base64 data
+            dataUrl = `${baseFormat};base64,${dataPart}`;
+            console.log('Parameters removed from base64 data in ProfileImageManager');
+        }
+
+        // Log details about the format for debugging
+        if (dataUrl) {
+            const formatInfo = dataUrl.split(';base64,')[0];
+            console.log(`Image format info after sanitization: ${formatInfo}`);
+            console.log(`Contains charset? ${formatInfo.includes('charset=')}`);
+        }
+
         this.state.hasNewImage = true;
         this.state.newImagePreview = dataUrl;
 
-        // Update the cropped image data input with the data URL
-        if (this.elements.croppedImageData) {
-            this.elements.croppedImageData.value = dataUrl;
-            console.log('Updated cropped image data input');
+        // Update the cropped image data input with the sanitized data URL
+        if (this.elements.croppedDataInput) {
+            this.elements.croppedDataInput.value = dataUrl;
+            console.log('Updated cropped image data input with sanitized data');
         }
 
         // Select the new image

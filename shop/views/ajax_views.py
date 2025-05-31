@@ -64,8 +64,9 @@ class AjaxProductListView(View):
             # If we only want the count, return it immediately without
             # rendering HTML
             if count_only:
-                logger.debug(f"Count only request: {
-                             product_count} products found")
+                logger.debug(
+                    f"Count only request: {product_count} products found"
+                )
                 return JsonResponse({
                     'success': True,
                     'count': product_count,

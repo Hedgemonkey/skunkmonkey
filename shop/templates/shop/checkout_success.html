@@ -1,10 +1,9 @@
 {% extends "base.html" %}
 {% load static %}
+{% load direct_assets %}
 
-{% block extra_css %}
-    {{ block.super }}
-    {% load django_vite %}
-    {% vite_asset 'checkout' %}
+{% block extra_js %}
+{% direct_asset 'checkoutSuccess' %}
 {% endblock %}
 
 {% block page_header %}
@@ -18,7 +17,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container mb-5">
+    <div class="container mb-5" data-payment-pending="{% if not payment_confirmed and not order.is_paid %}true{% else %}false{% endif %}">>
         <div class="row">
             <div class="col-12 col-lg-7">
                 <!-- Order Success Message -->
@@ -183,29 +182,4 @@
             </div>
         </div>
     </div>
-{% endblock %}
-
-{% block postloadjs %}
-    {{ block.super }}
-    <!-- Clear the cart to avoid duplicate orders -->
-    <script>
-        $(document).ready(function() {
-            // Clear any saved payment info in session
-            if (window.sessionStorage.getItem('save_info')) {
-                window.sessionStorage.removeItem('save_info');
-            }
-
-            // Clear any client_secret from session
-            if (window.sessionStorage.getItem('client_secret')) {
-                window.sessionStorage.removeItem('client_secret');
-            }
-
-            // If payment is not confirmed, refresh the page every 5 seconds
-            {% if not payment_confirmed and not order.is_paid %}
-            setTimeout(function() {
-                location.reload();
-            }, 5000);
-            {% endif %}
-        });
-    </script>
 {% endblock %}

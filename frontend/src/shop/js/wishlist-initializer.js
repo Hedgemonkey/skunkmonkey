@@ -3,24 +3,58 @@
  * Bootstraps the wishlist functionality when the page loads
  */
 
-import wishlistManager from './wishlist-manager.js';
+// Import the wishlist CSS
+import '../css/wishlist.css';
+
+// Import the WishlistManager for handling button functionality
+import { WishlistManager } from './managers/WishlistManager.js';
+
+// Global wishlist manager instance
+let wishlistManager = null;
 
 /**
  * Initialize wishlist functionality
  */
 function initWishlist() {
-    // The wishlist manager is automatically initialized on import,
-    // but we can perform additional initialization here if needed
+    try {
+        // Initialize the WishlistManager (pass null since we don't have ProductListManager)
+        wishlistManager = new WishlistManager(null);
 
-    // Check if we're on the wishlist page
-    const isWishlistPage = window.location.pathname.includes('/wishlist/');
+        // Make it globally accessible for detection by other modules
+        window.wishlistManager = wishlistManager;
 
-    if (isWishlistPage) {
-        // Initialize special wishlist page functionality
-        initWishlistPage();
+        // Set up event delegation for wishlist buttons
+        initWishlistButtonHandlers();
+
+        // Check if we're on the wishlist page
+        const isWishlistPage = window.location.pathname.includes('/wishlist/');
+
+        if (isWishlistPage) {
+            // Initialize special wishlist page functionality
+            initWishlistPage();
+        }
+
+        console.log('[WishlistInitializer] Wishlist functionality initialized successfully');
+    } catch (error) {
+        console.error('[WishlistInitializer] Error initializing wishlist functionality:', error);
     }
+}
 
-    console.log('[WishlistInitializer] Wishlist functionality initialized');
+/**
+ * Initialize event handlers for wishlist buttons
+ */
+function initWishlistButtonHandlers() {
+    // Use event delegation to handle both existing and dynamically added wishlist buttons
+    document.addEventListener('click', (event) => {
+        const wishlistBtn = event.target.closest('.add-to-wishlist-btn, .remove-wishlist-btn, .wishlist-btn');
+
+        if (wishlistBtn && wishlistManager) {
+            console.log('[WishlistInitializer] Wishlist button clicked:', wishlistBtn);
+            wishlistManager.handleWishlistButtonClick(event, wishlistBtn);
+        }
+    });
+
+    console.log('[WishlistInitializer] Wishlist button event handlers initialized');
 }
 
 /**
@@ -52,6 +86,9 @@ function initWishlistPage() {
 // Initialize when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', initWishlist);
 
+// Make initWishlist globally accessible for detection by other modules
+window.initWishlist = initWishlist;
+
 // Export both as named export and default export for compatibility
 export { initWishlist };
-export default { initWishlist, wishlistManager };
+export default { initWishlist };

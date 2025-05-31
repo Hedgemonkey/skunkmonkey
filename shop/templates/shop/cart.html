@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load django_vite %}
+{% load direct_assets %}
 
 {% block title %}Your Cart - SkunkMonkey Shop{% endblock %}
 
 {% block extra_css %}
     {{ block.super }}
-    {% vite_asset 'cartManager' %}
+    {% direct_asset 'cartManager' %}
 {% endblock %}
 
 {% block header %}
@@ -56,7 +56,7 @@
                                             </a>
                                             <div class="small text-muted">{{ item.product.category.name }}</div>
                                         </td>
-                                        <td>${{ item.product.price|floatformat:2 }}</td>
+                                        <td>£{{ item.product.price|floatformat:2 }}</td>
                                         <td class="text-center">
                                             <form method="post" action="{% url 'shop:cart_update' item.product.id %}" class="update-cart-form" data-product-id="{{ item.product.id }}">
                                                 {% csrf_token %}
@@ -75,7 +75,7 @@
                                                 </div>
                                             </form>
                                         </td>
-                                        <td class="item-subtotal text-end fw-bold">${{ item.subtotal|floatformat:2 }}</td>
+                                        <td class="item-subtotal text-end fw-bold">£{{ item.total_price|floatformat:2 }}</td>
                                         <td class="text-end">
                                             <a href="{% url 'shop:cart_remove' item.product.id %}"
                                                class="remove-cart-item btn btn-sm btn-outline-danger"
@@ -100,7 +100,7 @@
 
                     <div class="d-flex justify-content-between mb-2">
                         <span>Items ({{ cart.item_count }}):</span>
-                        <span>${{ cart.total_price|floatformat:2 }}</span>
+                        <span>£{{ cart.total_price|floatformat:2 }}</span>
                     </div>
 
                     <div class="d-flex justify-content-between mb-2">
@@ -112,7 +112,7 @@
 
                     <div class="d-flex justify-content-between mb-4">
                         <span class="fw-bold">Total:</span>
-                        <span class="cart-total fw-bold fs-5" id="cart-total">${{ cart.total_price|floatformat:2 }}</span>
+                        <span class="cart-total fw-bold fs-5" id="cart-total">£{{ cart.total_price|floatformat:2 }}</span>
                     </div>
 
                     <div class="cart-actions">

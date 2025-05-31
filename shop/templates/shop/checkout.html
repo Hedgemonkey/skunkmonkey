@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
-{% load django_vite %}
+{% load static %}
+{% load direct_assets %}
 {% load crispy_forms_tags %}
 
 {% block title %}Checkout - SkunkMonkey Shop{% endblock %}
 
 {% block extra_css %}
-    {% vite_asset 'checkout' %}
-    {% vite_asset 'checkoutManager' %}
-    {% vite_asset 'stripeIntegration' %}
+    {{ block.super }}
+    {% direct_asset 'checkout' %}
 {% endblock %}
 
 {% block header %}
@@ -40,19 +40,6 @@
                                 I agree to the <a href="#" id="terms-link">terms and conditions</a>
                             </label>
                         </div>
-
-                        <!-- Display form errors -->
-                        <!-- <div id="payment-errors" class="alert alert-danger d-none"></div> -->
-
-                        <!-- Stripe Data Element -->
-                        <!-- <div id="stripe-data"
-                             data-publishable-key="{{ stripe_public_key }}"
-                             data-client-secret="{{ client_secret }}"
-                             data-cache-url="{% url 'shop:cache_checkout_data' %}">
-                        </div> -->
-
-                        <!-- Stripe Payment Element will be mounted here -->
-                        <!-- <div id="payment-element" class="mb-3"></div> -->
 
                         <div class="d-grid mt-4">
                             <button id="submit-button" type="submit" class="btn btn-primary btn-lg">
@@ -126,20 +113,22 @@
             </div>
         </div>
     </div>
-</div>
 
-<!-- Loading Overlay -->
-<div id="loading-overlay">
-    <div class="loading-spinner">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-        <p class="mt-2">Processing your payment...</p>
-    </div>
+    <!-- Hidden Stripe configuration data -->
+    <!-- DEBUG: stripe_publishable_key = "{{ stripe_publishable_key }}" -->
+    <!-- DEBUG: client_secret = "{{ client_secret }}" -->
+    <div id="stripe-data"
+         data-publishable-key="{{ stripe_publishable_key }}"
+         data-client-secret="{{ client_secret }}"
+         data-cache-url="{% url 'shop:cache_checkout_data' %}"
+         style="display: none;"></div>
 </div>
 {% endblock %}
 
 {% block postloadjs %}
     {{ block.super }}
+    <!-- Stripe JavaScript library -->
     <script src="https://js.stripe.com/v3/"></script>
+    <!-- Checkout JavaScript assets -->
+    {% direct_asset 'checkout' %}
 {% endblock %}

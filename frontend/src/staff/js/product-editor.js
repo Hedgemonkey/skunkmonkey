@@ -4,8 +4,7 @@
  * Provides product form functionality including image cropping.
  * This module uses Cropper.js for image cropping functionality.
  */
-import '@staff/css/product-manager.css';
-import 'cropperjs/dist/cropper.css';
+import '@staff/css/product-edit.css';
 import Cropper from 'cropperjs';
 import { Modal } from 'bootstrap';
 
@@ -47,7 +46,9 @@ class ProductEditor {
         }
 
         // Initialize Bootstrap modal
+        console.log('Initializing Bootstrap modal for image cropper');
         const modal = new Modal(cropperModal);
+        console.log('Bootstrap modal initialized:', modal);
 
         // Handle image input change
         imageInput.addEventListener('change', (e) => {
@@ -59,9 +60,16 @@ class ProductEditor {
             reader.onload = (event) => {
                 // Set the image source to prepare for cropping
                 imageToCrop.src = event.target.result;
+                console.log('Image loaded into cropper:', imageToCrop.src.substring(0, 30) + '...');
 
                 // Show the cropper modal
-                modal.show();
+                console.log('Showing modal...');
+                try {
+                    modal.show();
+                    console.log('Modal shown successfully');
+                } catch (err) {
+                    console.error('Error showing modal:', err);
+                }
 
                 // Initialize cropper after modal is shown
                 cropperModal.addEventListener('shown.bs.modal', () => {

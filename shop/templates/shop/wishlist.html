@@ -1,10 +1,16 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load direct_assets %}
 
 {% block title %}Your Wishlist - SkunkMonkey{% endblock %}
 
 {% block extra_css %}
-    {% vite_asset 'shop/wishlist.css' %}
+    {{ block.super }}
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+    {% direct_asset 'wishlistInitializer' %}
 {% endblock %}
 
 {% block header %}
@@ -27,8 +33,8 @@
                     <div class="col">
                         <div class="card h-100 product-card">
                             <!-- Product image -->
-                            {% if product.image %}
-                                <img src="{{ product.image.url }}" class="card-img-top product-image" alt="{{ product.name }}">
+                            {% if item.product.image %}
+                                <img src="{{ item.product.image.url }}" class="card-img-top product-image" alt="{{ item.product.name }}">
                             {% else %}
                                 <img src="{{ MEDIA_URL }}noimage.png" class="card-img-top product-image" alt="No image available">
                             {% endif %}
@@ -43,10 +49,10 @@
                                 <!-- Price display with possible sale price -->
                                 <div class="price-display">
                                     {% if item.product.is_sale %}
-                                        <span class="text-danger me-2">${{ item.product.price }}</span>
-                                        <span class="text-muted text-decoration-line-through">${{ item.product.compare_at_price }}</span>
+                                        <span class="text-danger me-2">£{{ item.product.price }}</span>
+                                        <span class="text-muted text-decoration-line-through">£{{ item.product.compare_at_price }}</span>
                                     {% else %}
-                                        <span>${{ item.product.price }}</span>
+                                        <span>£{{ item.product.price }}</span>
                                     {% endif %}
                                 </div>
                             </div>
@@ -54,11 +60,24 @@
                             <!-- Action buttons -->
                             <div class="card-footer bg-transparent">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <form method="post" action="{% url 'shop:cart_add' item.product.id %}" class="d-inline">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="quantity" value="1">
-                                        <button type="submit" class="btn btn-sm btn-primary">Add to Cart</button>
-                                    </form>
+                                    {% if item.product.stock_quantity > 0 %}
+                                        <button type="button"
+                                                class="btn btn-sm btn-primary add-to-cart-modal-btn"
+                                                data-product-id="{{ item.product.id }}"
+                                                data-product-name="{{ item.product.name }}"
+                                                data-product-price="{{ item.product.price }}"
+                                                data-product-image="{% if item.product.image %}{{ item.product.image.url }}{% else %}{{ MEDIA_URL }}noimage.png{% endif %}"
+                                                data-stock-quantity="{{ item.product.stock_quantity }}"
+                                                data-cart-add-url="{% url 'shop:cart_add' item.product.id %}"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#quantityModal">
+                                            Add to Cart
+                                        </button>
+                                    {% else %}
+                                        <button type="button" class="btn btn-sm btn-secondary" disabled>
+                                            Out of Stock
+                                        </button>
+                                    {% endif %}
 
                                     <!-- Updated to use toggle_wishlist instead of remove_from_wishlist -->
                                     <a href="{% url 'shop:toggle_wishlist' item.product.id %}"
@@ -85,14 +104,13 @@
         </div>
     {% endif %}
 </div>
+
+<!-- Include quantity selection modal -->
+{% include 'shop/includes/quantity_modal.html' %}
 {% endblock %}
 
 {% block postloadjs %}
     {{ block.super }}
-    {% vite_asset 'shop/wishlist.js' %}
-{% endblock %}
-
-{% block extra_js %}
-    {% vite_asset 'shop/wishlist.js' %}
-    {% vite_asset 'shop/wishlist-manager.js' %}
+    {% direct_asset 'shop/wishlist.js' %}
+    {% direct_asset 'quantityModalManager' %}
 {% endblock %}

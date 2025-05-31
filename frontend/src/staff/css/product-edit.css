@@ -1,0 +1,18 @@
+/* Product Edit CSS - Includes Cropper.js CSS and styling fixes */
+@import 'cropperjs/dist/cropper.css';
+@import './product-manager.css';
+@import './product-editor-fixes.css';
+
+/* Additional styling for the image cropper */
+.img-container {
+  max-height: 500px;
+}
+
+.cropper-container {
+  margin: 0 auto;
+}
+
+.cropper-view-box,
+.cropper-face {
+  border-radius: 50%;
+}

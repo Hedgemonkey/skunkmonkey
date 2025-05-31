@@ -26,6 +26,7 @@ from django.views.static import serve
 from shop.webhooks import webhook  # Import the webhook function
 from users import views as user_views
 
+from .asset_debug import check_asset_health, static_directory_info
 from .sitemaps import CategorySitemap, ProductSitemap, StaticViewSitemap
 
 # Define the sitemaps dictionary
@@ -59,6 +60,14 @@ urlpatterns = [
     # Sitemap
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps},
          name='django.contrib.sitemaps.views.sitemap'),
+
+    # Asset testing route
+    path('test-assets/', TemplateView.as_view(template_name='test_assets.html'),
+         name='test_assets'),
+
+    # Asset debugging views
+    path('asset-health/', check_asset_health, name='asset_health'),
+    path('static-info/', static_directory_info, name='static_info'),
 
     # Robots.txt - serve as a static file
     path(

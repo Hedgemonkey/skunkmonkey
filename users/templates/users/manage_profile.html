@@ -1,18 +1,18 @@
-{% extends "users/profile_base.html" %}
-{% load django_vite %}
+{% extends 'users/profile_base.html' %}
 {% load static %}
+{% load direct_assets %}
 {% load crispy_forms_tags %}
 
 {% block extra_css %}
     {{ block.super }}
-    {% vite_asset 'profile' %}
+    {% direct_asset 'profile' %}
 {% endblock %}
 
 {% block extra_js %}
     {{ block.super }}
-    {% vite_asset 'profileCropper' %}
-    {% vite_asset 'imageCropper' %}
-    {% vite_asset 'profileImageManager' %}
+    {% direct_asset 'profileCropper' %}
+    {% direct_asset 'imageCropper' %}
+    {% direct_asset 'profileImageManager' %}
 {% endblock %}
 
 {% block profile_content %}
