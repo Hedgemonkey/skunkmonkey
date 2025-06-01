@@ -1,12 +1,13 @@
 """
 Custom security middleware for additional security headers
 """
+import os
 
 
 class SecurityHeadersMiddleware:
     """
     Middleware to add additional security headers that aren't covered
-    by django-csp
+    by django-csp, and ensure proper cookie security
     """
 
     def __init__(self, get_response):
@@ -44,4 +45,80 @@ class SecurityHeadersMiddleware:
         if 'X-Content-Type-Options' not in response:
             response['X-Content-Type-Options'] = 'nosniff'
 
+        # Add Content-Security-Policy if not already set by django-csp
+        if 'Content-Security-Policy' not in response:
+            self._add_csp_header(response)
+
+        # Secure cookies by adding HttpOnly and Secure flags
+        self._secure_cookies(response)
+
         return response
+
+    def _add_csp_header(self, response):
+        """Add Content-Security-Policy header manually if django-csp fails"""
+        on_heroku = 'DATABASE_URL' in os.environ
+
+        if on_heroku:
+            # Production CSP
+            csp_policy = (
+                "default-src 'self'; "
+                "style-src 'self' 'unsafe-inline' "
+                "https://fonts.googleapis.com "
+                "https://*.cloudfront.net https://cdn.jsdelivr.net; "
+                "img-src 'self' data: https://*.stripe.com "
+                "https://source.unsplash.com https://*.cloudfront.net "
+                "https://*.amazonaws.com; "
+                "font-src 'self' data: https://fonts.gstatic.com "
+                "https://use.fontawesome.com https://cdn.jsdelivr.net "
+                "https://*.cloudfront.net; "
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval' "
+                "https://js.stripe.com https://cdn.jsdelivr.net "
+                "https://*.cloudfront.net; "
+                "connect-src 'self' https://*.stripe.com "
+                "https://*.amazonaws.com https://*.cloudfront.net; "
+                "frame-src 'self' https://*.stripe.com; "
+                "frame-ancestors 'self';"
+            )
+        else:
+            # Development CSP
+            csp_policy = (
+                "default-src 'self'; "
+                "style-src 'self' 'unsafe-inline' "
+                "https://fonts.googleapis.com "
+                "https://*.cloudfront.net https://cdn.jsdelivr.net; "
+                "img-src 'self' data: https://*.stripe.com "
+                "https://source.unsplash.com https://*.cloudfront.net "
+                "https://*.amazonaws.com; "
+                "font-src 'self' data: https://fonts.gstatic.com "
+                "https://use.fontawesome.com https://cdn.jsdelivr.net "
+                "https://*.cloudfront.net; "
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval' "
+                "https://js.stripe.com https://cdn.jsdelivr.net "
+                "https://*.cloudfront.net http://hedgemonkey.ddns.net:5173; "
+                "connect-src 'self' https://*.stripe.com "
+                "https://*.amazonaws.com https://*.cloudfront.net "
+                "http://hedgemonkey.ddns.net:5173; "
+                "frame-src 'self' https://*.stripe.com; "
+                "frame-ancestors 'self';"
+            )
+
+        response['Content-Security-Policy'] = csp_policy
+
+    def _secure_cookies(self, response):
+        """Add security flags to cookies"""
+        # Check if we're in production (Heroku)
+        on_heroku = 'DATABASE_URL' in os.environ
+
+        if hasattr(response, 'cookies'):
+            for cookie in response.cookies.values():
+                # Add HttpOnly flag to prevent XSS attacks
+                if not cookie.get('httponly'):
+                    cookie['httponly'] = True
+
+                # Add Secure flag in production
+                if on_heroku and not cookie.get('secure'):
+                    cookie['secure'] = True
+
+                # Add SameSite attribute for CSRF protection
+                if not cookie.get('samesite'):
+                    cookie['samesite'] = 'Lax'
