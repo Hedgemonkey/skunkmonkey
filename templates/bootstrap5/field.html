@@ -9,25 +9,51 @@
     {% endif %}
 
     <div class="{{ field_class }}">
-        {% if field.errors %}
-            {% if field.help_text %}
-                {% with 'hint_'|add:field.auto_id as hint_id %}
-                {% with field.auto_id|add:'_error '|add:hint_id as aria_desc %}
-                {% crispy_field field 'class' 'form-control is-invalid' 'aria-invalid' 'true' 'aria-describedby' aria_desc %}
-                {% endwith %}
-                {% endwith %}
+        {% if field.field.widget.input_type == 'checkbox' %}
+            {# Handle checkbox fields differently #}
+            {% if field.errors %}
+                {% if field.help_text %}
+                    {% with 'hint_'|add:field.auto_id as hint_id %}
+                    {% with field.auto_id|add:'_error '|add:hint_id as aria_desc %}
+                    {% crispy_field field 'class' 'form-check-input is-invalid' 'aria-invalid' 'true' 'aria-describedby' aria_desc %}
+                    {% endwith %}
+                    {% endwith %}
+                {% else %}
+                    {% with field.auto_id|add:'_error' as error_id %}
+                    {% crispy_field field 'class' 'form-check-input is-invalid' 'aria-invalid' 'true' 'aria-describedby' error_id %}
+                    {% endwith %}
+                {% endif %}
             {% else %}
-                {% with field.auto_id|add:'_error' as error_id %}
-                {% crispy_field field 'class' 'form-control is-invalid' 'aria-invalid' 'true' 'aria-describedby' error_id %}
-                {% endwith %}
+                {% if field.help_text %}
+                    {% with 'hint_'|add:field.auto_id as hint_id %}
+                    {% crispy_field field 'class' 'form-check-input' 'aria-describedby' hint_id %}
+                    {% endwith %}
+                {% else %}
+                    {% crispy_field field 'class' 'form-check-input' %}
+                {% endif %}
             {% endif %}
         {% else %}
-            {% if field.help_text %}
-                {% with 'hint_'|add:field.auto_id as hint_id %}
-                {% crispy_field field 'class' 'form-control' 'aria-describedby' hint_id %}
-                {% endwith %}
+            {# Handle non-checkbox fields #}
+            {% if field.errors %}
+                {% if field.help_text %}
+                    {% with 'hint_'|add:field.auto_id as hint_id %}
+                    {% with field.auto_id|add:'_error '|add:hint_id as aria_desc %}
+                    {% crispy_field field 'class' 'form-control is-invalid' 'aria-invalid' 'true' 'aria-describedby' aria_desc %}
+                    {% endwith %}
+                    {% endwith %}
+                {% else %}
+                    {% with field.auto_id|add:'_error' as error_id %}
+                    {% crispy_field field 'class' 'form-control is-invalid' 'aria-invalid' 'true' 'aria-describedby' error_id %}
+                    {% endwith %}
+                {% endif %}
             {% else %}
-                {% crispy_field field 'class' 'form-control' %}
+                {% if field.help_text %}
+                    {% with 'hint_'|add:field.auto_id as hint_id %}
+                    {% crispy_field field 'class' 'form-control' 'aria-describedby' hint_id %}
+                    {% endwith %}
+                {% else %}
+                    {% crispy_field field 'class' 'form-control' %}
+                {% endif %}
             {% endif %}
         {% endif %}
 
