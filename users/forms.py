@@ -182,13 +182,8 @@ class CustomLoginForm(LoginForm):
         )
 
         self.helper = FormHelper()
-        self.helper.layout = Layout(
-            'login',
-            'password',
-            Field('remember', wrapper_class='form-check'),
-            Submit('submit', 'Log In', css_class='btn btn-primary'),
-        )
-        self.helper.form_tag = False
+        self.helper.form_tag = False  # Let the template handle the form tag
+        # Remove problematic layout - let crispy forms auto-generate
 
     def get_user(self):
         """Return authenticated user after successful login."""
