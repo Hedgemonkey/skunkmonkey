@@ -78,4 +78,161 @@
         </div>
     </div>
 </div>
+
+<!-- Account Action Modal -->
+<div class="modal fade" id="accountActionModal" tabindex="-1" aria-labelledby="accountActionModalLabel" aria-hidden="true" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h3 class="modal-title h5" id="accountActionModalLabel">Account Actions</h3>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close account actions modal">
+                </button>
+            </header>
+            <div class="modal-body">
+                <div class="alert alert-warning" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2" aria-hidden="true"></i>
+                    Please select what you'd like to do with your account:
+                </div>
+                <div class="d-grid gap-3" role="group" aria-label="Account action options">
+                    <button id="deactivateAccount"
+                            class="btn btn-warning"
+                            aria-describedby="deactivate-help">
+                        <i class="fas fa-user-slash me-2" aria-hidden="true"></i>Deactivate Account
+                        <small class="d-block mt-1" id="deactivate-help">(You can reactivate later)</small>
+                    </button>
+                    <button id="deleteAccount"
+                            class="btn btn-danger"
+                            aria-describedby="delete-help">
+                        <i class="fas fa-trash-alt me-2" aria-hidden="true"></i>Delete Account Permanently
+                        <small class="d-block mt-1" id="delete-help">(This cannot be undone)</small>
+                    </button>
+                </div>
+            </div>
+            <footer class="modal-footer">
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                        aria-label="Cancel account actions">
+                    Cancel
+                </button>
+            </footer>
+        </div>
+    </div>
+</div>
+
+<!-- Deactivate Account Confirmation Modal -->
+<div class="modal fade" id="deactivateConfirmModal" tabindex="-1" aria-labelledby="deactivateConfirmModalLabel" aria-hidden="true" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <header class="modal-header bg-warning text-dark">
+                <h3 class="modal-title h5" id="deactivateConfirmModalLabel">
+                    <i class="fas fa-user-slash me-2" aria-hidden="true"></i>Confirm Account Deactivation
+                </h3>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close deactivation confirmation">
+                </button>
+            </header>
+            <div class="modal-body">
+                <div class="alert alert-warning" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2" aria-hidden="true"></i>
+                    <strong>Are you sure you want to deactivate your account?</strong>
+                </div>
+                <p>This will:</p>
+                <ul>
+                    <li>Prevent you from logging in</li>
+                    <li>Hide your account from the system</li>
+                    <li>Preserve all your data</li>
+                </ul>
+                <p class="text-success">
+                    <i class="fas fa-info-circle me-1" aria-hidden="true"></i>
+                    You can reactivate your account by logging in again.
+                </p>
+            </div>
+            <footer class="modal-footer">
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Cancel
+                </button>
+                <button type="button"
+                        id="confirmDeactivate"
+                        class="btn btn-warning">
+                    <i class="fas fa-user-slash me-2" aria-hidden="true"></i>Deactivate Account
+                </button>
+            </footer>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Account Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <header class="modal-header bg-danger text-white">
+                <h3 class="modal-title h5" id="deleteConfirmModalLabel">
+                    <i class="fas fa-trash-alt me-2" aria-hidden="true"></i>Permanently Delete Account
+                </h3>
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"
+                        aria-label="Close deletion confirmation">
+                </button>
+            </header>
+            <div class="modal-body">
+                <div class="alert alert-danger" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2" aria-hidden="true"></i>
+                    <strong>WARNING: This action cannot be undone!</strong>
+                </div>
+                <p>Permanently deleting your account will:</p>
+                <ul class="text-danger">
+                    <li>Remove all your personal data</li>
+                    <li>Remove all saved addresses</li>
+                    <li>Delete your profile information</li>
+                </ul>
+                <div class="alert alert-info" role="alert">
+                    <i class="fas fa-info-circle me-2" aria-hidden="true"></i>
+                    <strong>Note:</strong> Your order history will be preserved for business and legal purposes, but will no longer be associated with your account.
+                </div>
+                <div class="alert alert-info" role="alert">
+                    <p class="mb-2">
+                        <strong>To confirm account deletion, type <code>DELETE</code> in the box below:</strong>
+                    </p>
+                    <div class="mb-3">
+                        <input type="text"
+                               class="form-control"
+                               id="deleteConfirmationInput"
+                               placeholder="Type DELETE to confirm"
+                               autocomplete="off"
+                               aria-describedby="delete-input-help">
+                        <div id="delete-input-help" class="form-text">
+                            You must type exactly "DELETE" (without quotes) to enable the delete button.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="modal-footer">
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Cancel
+                </button>
+                <button type="button"
+                        id="confirmDelete"
+                        class="btn btn-danger"
+                        disabled
+                        aria-describedby="delete-button-help">
+                    <i class="fas fa-trash-alt me-2" aria-hidden="true"></i>Delete Account Forever
+                </button>
+                <div id="delete-button-help" class="visually-hidden">
+                    This button is disabled until you type DELETE in the confirmation box.
+                </div>
+            </footer>
+        </div>
+    </div>
+</div>
 </div>
