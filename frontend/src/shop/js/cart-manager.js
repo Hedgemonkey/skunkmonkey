@@ -57,7 +57,7 @@ class CartManager {
 
         // Set up decrease buttons
         decreaseButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
+            button.addEventListener('click', () => {
                 console.log('Decrease button clicked');
                 const form = button.closest('.update-cart-form');
                 if (!form) {
@@ -78,7 +78,7 @@ class CartManager {
 
         // Set up increase buttons
         increaseButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
+            button.addEventListener('click', () => {
                 console.log('Increase button clicked');
                 const form = button.closest('.update-cart-form');
                 if (!form) {
@@ -102,7 +102,7 @@ class CartManager {
 
         // Handle direct input changes
         document.querySelectorAll('.quantity-input').forEach(input => {
-            input.addEventListener('change', (e) => {
+            input.addEventListener('change', () => {
                 console.log('Quantity input changed');
                 const form = input.closest('.update-cart-form');
                 if (!form) {
@@ -246,7 +246,6 @@ class CartManager {
         const form = event.target;
         const url = form.action;
         const formData = new FormData(form);
-        const productName = form.closest('.product-info')?.querySelector('h1')?.textContent || 'Product';
         const button = form.querySelector('button[type="submit"]');
 
         this.showNotification('Adding to Cart...', 'Please wait...', 'info', false);
@@ -437,7 +436,7 @@ class CartManager {
      * @param {Object} options - Additional SweetAlert options
      * @returns {Promise} SweetAlert promise or resolved promise for alert fallback
      */
-    showNotification(title, message, type, autoClose = true, options = {}) {
+    showNotification(title, message, type, options = {}) {
         if (typeof Swal !== 'undefined') {
             return Swal.fire({
                 title: title,

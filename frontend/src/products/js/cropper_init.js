@@ -4,7 +4,6 @@
  * This script initializes the image cropper for product images.
  */
 
-import $ from 'jquery';
 import 'bootstrap';
 // Import ImageCropper from the common module using alias
 import ImageCropper from '@image_cropper';

@@ -148,6 +148,7 @@ MIDDLEWARE = [
     'shop.middleware.CartMiddleware',  # Add the shop cart middleware
     'staff.middleware.StaffProfileMiddleware',  # Add middleware to handle staffprofile
     'csp.middleware.CSPMiddleware',    # Add Content Security Policy middleware
+    'skunkmonkey.security_middleware.SecurityHeadersMiddleware',  # Add custom security headers
     'skunkmonkey.middleware.SourceMapIgnoreMiddleware'  # Add custom middleware to handle source map requests
 ]
 
@@ -163,19 +164,36 @@ SECURE_BROWSER_XSS_FILTER = True
 SECURE_HSTS_SECONDS = 31536000  # 1 year
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-# Configure CSP settings
+
+# Only enforce HTTPS redirection in production
+if ON_HEROKU:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+else:
+    SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+
+# Configure CSP settings with proper production/development separation
 CSP_DEFAULT_SRC = ("'self'",)
-CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://*.cloudfront.net")
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://*.cloudfront.net", "https://cdn.jsdelivr.net")
 CSP_IMG_SRC = ("'self'", "data:", "https://*.stripe.com", "https://source.unsplash.com", "https://*.cloudfront.net", "https://*.amazonaws.com")
-CSP_FONT_SRC = ("'self'", "data:", "https://fonts.gstatic.com", "https://use.fontawesome.com", "blob:", "https://*.cloudfront.net")
-CSP_CONNECT_SRC = ("'self'", "https://*.stripe.com", "http://hedgemonkey.ddns.net:5173", "https://*.amazonaws.com", "https://*.cloudfront.net")
-CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'", "https://js.stripe.com", "http://hedgemonkey.ddns.net:5173", "https://*.cloudfront.net")
+CSP_FONT_SRC = ("'self'", "data:", "https://fonts.gstatic.com", "https://use.fontawesome.com", "https://cdn.jsdelivr.net", "https://*.cloudfront.net")
+CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'", "https://js.stripe.com", "https://cdn.jsdelivr.net", "https://*.cloudfront.net")
 CSP_FRAME_SRC = ("'self'", "https://*.stripe.com")
-# Add frame-ancestors directive (only works with HTTP headers, not meta tags)
 CSP_FRAME_ANCESTORS = ("'self'",)
+
+# Add development-specific CSP sources
+if not ON_HEROKU:
+    CSP_CONNECT_SRC = ("'self'", "https://*.stripe.com", "http://hedgemonkey.ddns.net:5173", "https://*.amazonaws.com", "https://*.cloudfront.net")
+    CSP_SCRIPT_SRC += ("http://hedgemonkey.ddns.net:5173",)
+else:
+    CSP_CONNECT_SRC = ("'self'", "https://*.stripe.com", "https://*.amazonaws.com", "https://*.cloudfront.net")
+
+# Ensure CSP is reported and enforced
+CSP_REPORT_ONLY = False
+CSP_INCLUDE_NONCE_IN = ['script-src', 'style-src']
 
 # Crispy Forms settings
 

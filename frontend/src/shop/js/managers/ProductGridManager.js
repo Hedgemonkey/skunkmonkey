@@ -135,7 +135,7 @@ export class ProductGridManager {
         try {
             new URL(urlString);
             return true;
-        } catch (err) {
+        } catch {
             return false;
         }
     }

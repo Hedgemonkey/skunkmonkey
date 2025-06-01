@@ -150,9 +150,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Store the client secret in sessionStorage with a timestamp
     if (clientSecret) {
         storeClientSecret(clientSecret);
-    } else {
-        // Check if we have a stored client secret that might be valid
-        const storedSecret = sessionStorage.getItem('client_secret');
     }
 
     // Check for expired client secret
@@ -179,7 +176,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const submitButton = document.getElementById('submit-button');
     const loadingOverlay = document.getElementById('loading-overlay');
     const paymentElement = document.getElementById('payment-element');
-    const paymentErrorsElement = document.getElementById('payment-errors');
 
     if (!form) {
         return;
@@ -354,108 +350,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     /**
-     * Enhanced function to adjust heights of all containers based on iframe content
-     */
-    function enhanceContainerHeightAdjustment() {
-        // Find all the relevant elements
-        const iframeElement = document.querySelector('#payment-element iframe');
-        const containerElement = document.querySelector('.payment-element-container');
-        const wrapperElement = document.querySelector('.stripe-element-wrapper');
-        const paymentElement = document.getElementById('payment-element');
-        const privateElement = document.querySelector('#payment-element .__PrivateStripeElement');
-
-        if (!iframeElement) return;
-
-        // Check if we're on a mobile device
-        const isMobile = window.innerWidth <= 767.98;
-        const isSmallMobile = window.innerWidth <= 575.98;
-        const isVerySmallMobile = window.innerWidth <= 375;
-
-        // Function to check and update heights
-        function updateHeights() {
-            // Get actual height of iframe (try multiple methods)
-            const iframeHeight = iframeElement.scrollHeight ||
-                                iframeElement.offsetHeight ||
-                                iframeElement.clientHeight ||
-                                parseInt(iframeElement.style.height, 10) ||
-                                280; // Fallback
-
-            // Only proceed if we got a reasonable height
-            if (iframeHeight > 100) {
-                if (isMobile) {
-                    // CRITICAL: Set iframe height directly for mobile field visibility
-                    let iframeMinHeight, containerMinHeight;
-                    if (isVerySmallMobile) {
-                        iframeMinHeight = '700px';
-                        containerMinHeight = '720px';
-                    } else if (isSmallMobile) {
-                        iframeMinHeight = '650px';
-                        containerMinHeight = '670px';
-                    } else {
-                        iframeMinHeight = '600px';
-                        containerMinHeight = '620px';
-                    }
-
-                    // Set iframe height directly
-                    if (iframeElement) {
-                        iframeElement.style.minHeight = iframeMinHeight;
-                        iframeElement.style.height = 'auto';
-                        iframeElement.style.overflow = 'visible';
-                    }
-
-                    // On mobile, ensure elements have enough space and can scroll
-                    if (privateElement) {
-                        privateElement.style.height = 'auto';
-                        privateElement.style.minHeight = containerMinHeight;
-                        privateElement.style.overflow = 'visible';
-                    }
-                    if (paymentElement) {
-                        paymentElement.style.height = 'auto';
-                        paymentElement.style.minHeight = containerMinHeight;
-                        paymentElement.style.overflow = 'visible';
-                    }
-                    if (wrapperElement) {
-                        wrapperElement.style.height = 'auto';
-                        wrapperElement.style.minHeight = containerMinHeight;
-                        wrapperElement.style.overflow = 'visible';
-                    }
-                    if (containerElement) {
-                        containerElement.style.height = 'auto';
-                        containerElement.style.minHeight = containerMinHeight;
-                        containerElement.style.overflow = 'visible';
-                    }
-                } else {
-                    // Desktop: use calculated heights as before
-                    if (privateElement) privateElement.style.height = (iframeHeight + 5) + 'px';
-                    if (paymentElement) paymentElement.style.height = (iframeHeight + 25) + 'px';
-                    if (wrapperElement) wrapperElement.style.height = (iframeHeight + 35) + 'px';
-                    if (containerElement) containerElement.style.height = (iframeHeight + 50) + 'px';
-                }
-            }
-        }
-
-        // Call immediately
-        updateHeights();
-
-        // Set up mutation observer to detect iframe height changes
-        const observer = new MutationObserver(function(mutations) {
-            updateHeights();
-        });
-
-        // Start observing iframe for style changes that could affect height
-        observer.observe(iframeElement, {
-            attributes: true,
-            attributeFilter: ['style', 'height', 'class']
-        });
-
-        // Also check periodically (as a fallback)
-        const heightInterval = setInterval(updateHeights, 1000);
-
-        // Stop checking after 60 seconds (when most interactions should be complete)
-        setTimeout(() => clearInterval(heightInterval), 60000);
-    }
-
-    /**
      * Sets up expansion detection for Stripe iframe
      */
     function setupExpansionDetection() {
@@ -543,7 +437,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateHeights();
 
         // Set up mutation observer to detect iframe height changes
-        const observer = new MutationObserver(function(mutations) {
+        const observer = new MutationObserver(function() {
             updateHeights();
         });
 

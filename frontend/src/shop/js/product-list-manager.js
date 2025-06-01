@@ -12,7 +12,6 @@
  */
 import '../css/product-list.css';
 import '../css/wishlist.css';
-import $ from 'jquery';
 
 // Import the specialized managers
 import { FilterManager } from './managers/FilterManager.js';

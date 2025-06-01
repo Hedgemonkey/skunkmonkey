@@ -245,7 +245,6 @@ class StripePaymentManager {
             event.preventDefault();
 
             const cardholderName = document.getElementById('cardholder_name').value;
-            const setAsDefault = document.getElementById('set_as_default').checked;
 
             try {
                 const result = await this.stripe.createPaymentMethod({

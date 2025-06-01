@@ -72,7 +72,7 @@ function formatDateFields() {
         const year = date.getFullYear();
 
         return `${day}/${month}/${year}`;
-      } catch (e) {
+      } catch {
         return dateStr;
       }
     };

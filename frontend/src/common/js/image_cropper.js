@@ -7,7 +7,6 @@
 
 import Cropper from 'cropperjs';
 import 'cropperjs/dist/cropper.min.css';
-import $ from 'jquery';
 import 'bootstrap';
 
 // Log when this module is loaded

@@ -51,7 +51,7 @@ export class URLManager {
     bindNavigationEvents() {
         try {
             // Handle browser back/forward navigation
-            window.addEventListener('popstate', (event) => {
+            window.addEventListener('popstate', () => {
                 console.log('Browser navigation detected, updating filters from URL');
                 this.plm.filterManager.initializeFilterStateFromUrl();
                 this.plm.uiManager.updateFilterUI();

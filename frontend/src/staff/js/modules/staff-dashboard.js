@@ -128,7 +128,6 @@ class StaffDashboard {
         if (submitImportBtn) {
             submitImportBtn.addEventListener('click', () => {
                 const form = document.getElementById('importProductsForm');
-                const formData = new FormData(form);
 
                 // Submit the form
                 form.submit();

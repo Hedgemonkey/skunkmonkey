@@ -151,7 +151,7 @@ class ProductEditor {
 
         // Handle form submission
         if (productForm) {
-            productForm.addEventListener('submit', (e) => {
+            productForm.addEventListener('submit', () => {
                 // Custom validation could be added here if needed
                 console.log('Product form submitted');
             });

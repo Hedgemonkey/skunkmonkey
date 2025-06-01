@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Lazy load testimonial images
     const testimonialImages = document.querySelectorAll('.testimonial-img[data-src]');
     if ('IntersectionObserver' in window) {
-        const imageObserver = new IntersectionObserver((entries, observer) => {
+        const imageObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const img = entry.target;

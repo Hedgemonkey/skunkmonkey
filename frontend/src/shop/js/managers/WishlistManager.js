@@ -15,7 +15,6 @@ export class WishlistManager {
         // Prevent default to handle via AJAX instead of full page reload
         event.preventDefault();
 
-        const productId = button.dataset.productId;
         const url = button.getAttribute('href');
 
         // Find heart icon - support both Font Awesome and SVG elements

@@ -94,7 +94,6 @@ function initCategoryActionButtons() {
     // Edit category buttons
     document.querySelectorAll('.edit-category-btn').forEach(btn => {
         btn.addEventListener('click', function() {
-            const categoryId = this.dataset.categoryId;
             const categoryName = this.dataset.categoryName;
 
             // Populate edit form

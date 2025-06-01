@@ -3,7 +3,6 @@
  *
  * Designed with future Stripe integration in mind
  */
-import { ApiClient } from '@common/js/api-client.js';
 import { BaseManager } from '@products/utilities/js/base-manager.js';
 import Swal from 'sweetalert2';
 import '../css/components/product-images.css';

@@ -218,9 +218,8 @@ class ProfileImageManager {
 
     /**
      * Handle file selection
-     * @param {Event} e - Change event
      */
-    handleFileSelection(e) {
+    handleFileSelection() {
         const files = this.elements.fileInput.files;
 
         if (files && files[0]) {
@@ -494,9 +493,8 @@ class ProfileImageManager {
     /**
      * Update the preview with a cropped image
      * @param {String} dataUrl - The data URL of the cropped image
-     * @param {File} originalFile - The original file that was cropped
      */
-    updateWithCroppedImage(dataUrl, originalFile) {
+    updateWithCroppedImage(dataUrl) {
         console.log('updateWithCroppedImage called');
 
         // Sanitize the base64 data by removing any parameters (charset, encoding, etc.)

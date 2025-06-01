@@ -92,16 +92,12 @@ class ComparisonManager {
      */
     handleComparisonButtonClick(button) {
         const productId = button.dataset.productId;
-        const productName = button.dataset.productName || 'Product';
 
         if (!productId) {
             console.error('ComparisonManager: No product ID found on button');
             this.showToast('Error', 'Product information missing', 'error');
             return;
         }
-
-        // Determine if this is currently in comparison based on URL or classes
-        const isCurrentlyInComparison = this.isProductInComparison(button);
 
         // Store original state for rollback on error
         const originalState = this.captureButtonState(button);
