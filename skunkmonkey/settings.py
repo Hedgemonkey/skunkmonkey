@@ -175,6 +175,16 @@ else:
     SESSION_COOKIE_SECURE = False
     CSRF_COOKIE_SECURE = False
 
+# Cookie security settings - apply in all environments
+SESSION_COOKIE_HTTPONLY = True  # Prevent XSS attacks on session cookies
+CSRF_COOKIE_HTTPONLY = False  # CSRF token needs to be accessible to JavaScript
+SESSION_COOKIE_SAMESITE = 'Strict'  # Strict same-site policy for session cookies
+CSRF_COOKIE_SAMESITE = 'Lax'  # Lax policy for CSRF (allows some cross-site requests)
+
+# Additional cookie security
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Keep sessions across browser sessions
+SESSION_COOKIE_AGE = 1209600  # 2 weeks in seconds
+
 # Configure CSP settings with proper production/development separation
 CSP_DEFAULT_SRC = ("'self'",)
 CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://*.cloudfront.net", "https://cdn.jsdelivr.net")

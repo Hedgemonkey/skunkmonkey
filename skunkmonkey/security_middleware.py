@@ -59,7 +59,7 @@ class SecurityHeadersMiddleware:
         on_heroku = 'DATABASE_URL' in os.environ
 
         if on_heroku:
-            # Production CSP
+            # Production CSP - More restrictive, remove unsafe directives
             csp_policy = (
                 "default-src 'self'; "
                 "style-src 'self' 'unsafe-inline' "
@@ -71,16 +71,19 @@ class SecurityHeadersMiddleware:
                 "font-src 'self' data: https://fonts.gstatic.com "
                 "https://use.fontawesome.com https://cdn.jsdelivr.net "
                 "https://*.cloudfront.net; "
-                "script-src 'self' 'unsafe-inline' 'unsafe-eval' "
+                "script-src 'self' 'unsafe-inline' "
                 "https://js.stripe.com https://cdn.jsdelivr.net "
                 "https://*.cloudfront.net; "
                 "connect-src 'self' https://*.stripe.com "
                 "https://*.amazonaws.com https://*.cloudfront.net; "
                 "frame-src 'self' https://*.stripe.com; "
-                "frame-ancestors 'self';"
+                "frame-ancestors 'self'; "
+                "base-uri 'self'; "
+                "form-action 'self'; "
+                "upgrade-insecure-requests;"
             )
         else:
-            # Development CSP
+            # Development CSP - Still restrictive but allows dev tools
             csp_policy = (
                 "default-src 'self'; "
                 "style-src 'self' 'unsafe-inline' "
@@ -94,31 +97,42 @@ class SecurityHeadersMiddleware:
                 "https://*.cloudfront.net; "
                 "script-src 'self' 'unsafe-inline' 'unsafe-eval' "
                 "https://js.stripe.com https://cdn.jsdelivr.net "
-                "https://*.cloudfront.net http://hedgemonkey.ddns.net:5173; "
+                "https://*.cloudfront.net "
+                "http://hedgemonkey.ddns.net:5173; "
                 "connect-src 'self' https://*.stripe.com "
                 "https://*.amazonaws.com https://*.cloudfront.net "
-                "http://hedgemonkey.ddns.net:5173; "
+                "http://hedgemonkey.ddns.net:5173 "
+                "ws://hedgemonkey.ddns.net:5173; "
                 "frame-src 'self' https://*.stripe.com; "
-                "frame-ancestors 'self';"
+                "frame-ancestors 'self'; "
+                "base-uri 'self'; "
+                "form-action 'self';"
             )
 
         response['Content-Security-Policy'] = csp_policy
 
     def _secure_cookies(self, response):
-        """Add security flags to cookies"""
+        """Add security flags to cookies with improved enforcement"""
         # Check if we're in production (Heroku)
         on_heroku = 'DATABASE_URL' in os.environ
 
         if hasattr(response, 'cookies'):
-            for cookie in response.cookies.values():
-                # Add HttpOnly flag to prevent XSS attacks
-                if not cookie.get('httponly'):
+            for cookie_name, cookie in response.cookies.items():
+                # Always add HttpOnly flag for all cookies except CSRF token
+                # CSRF token needs to be accessible to JavaScript for AJAX
+                if cookie_name != 'csrftoken':
                     cookie['httponly'] = True
 
-                # Add Secure flag in production
-                if on_heroku and not cookie.get('secure'):
+                # Add Secure flag in production for all cookies
+                if on_heroku:
                     cookie['secure'] = True
 
                 # Add SameSite attribute for CSRF protection
                 if not cookie.get('samesite'):
-                    cookie['samesite'] = 'Lax'
+                    # Use 'Strict' for session cookies, 'Lax' for others
+                    if cookie_name == 'sessionid':
+                        cookie['samesite'] = 'Strict'
+                    else:
+                        cookie['samesite'] = 'Lax'
+
+        return response
