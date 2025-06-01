@@ -15,7 +15,17 @@ class AccountManager {
         this.modal = document.getElementById('accountActionModal');
         this.deactivateBtn = document.getElementById('deactivateAccount');
         this.deleteBtn = document.getElementById('deleteAccount');
+
+        // Confirmation modals
+        this.deactivateConfirmModal = document.getElementById('deactivateConfirmModal');
+        this.deleteConfirmModal = document.getElementById('deleteConfirmModal');
+        this.confirmDeactivateBtn = document.getElementById('confirmDeactivate');
+        this.confirmDeleteBtn = document.getElementById('confirmDelete');
+        this.deleteConfirmationInput = document.getElementById('deleteConfirmationInput');
+
         this.modalInstance = null;
+        this.deactivateConfirmModalInstance = null;
+        this.deleteConfirmModalInstance = null;
 
         // Initialize the manager
         this.init();
@@ -27,9 +37,15 @@ class AccountManager {
             return;
         }
 
-        // Initialize Bootstrap modal
+        // Initialize Bootstrap modals
         if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
             this.modalInstance = new bootstrap.Modal(this.modal);
+            if (this.deactivateConfirmModal) {
+                this.deactivateConfirmModalInstance = new bootstrap.Modal(this.deactivateConfirmModal);
+            }
+            if (this.deleteConfirmModal) {
+                this.deleteConfirmModalInstance = new bootstrap.Modal(this.deleteConfirmModal);
+            }
         }
 
         // Bind events
@@ -45,20 +61,49 @@ class AccountManager {
             this.openModal();
         });
 
-        // Handle deactivation action
+        // Handle deactivation action - show confirmation modal
         if (this.deactivateBtn) {
             this.deactivateBtn.addEventListener('click', (e) => {
                 e.preventDefault();
+                this.showDeactivateConfirmation();
+            });
+        }
+
+        // Handle deletion action - show confirmation modal
+        if (this.deleteBtn) {
+            this.deleteBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.showDeleteConfirmation();
+            });
+        }
+
+        // Handle final deactivation confirmation
+        if (this.confirmDeactivateBtn) {
+            this.confirmDeactivateBtn.addEventListener('click', () => {
                 this.deactivateAccount();
             });
         }
 
-        // Handle deletion action
-        if (this.deleteBtn) {
-            this.deleteBtn.addEventListener('click', (e) => {
-                e.preventDefault();
+        // Handle final deletion confirmation
+        if (this.confirmDeleteBtn) {
+            this.confirmDeleteBtn.addEventListener('click', () => {
                 this.deleteAccount();
             });
+        }
+
+        // Handle delete confirmation input
+        if (this.deleteConfirmationInput) {
+            this.deleteConfirmationInput.addEventListener('input', () => {
+                this.validateDeleteConfirmation();
+            });
+
+            // Clear input when modal is hidden
+            if (this.deleteConfirmModal) {
+                this.deleteConfirmModal.addEventListener('hidden.bs.modal', () => {
+                    this.deleteConfirmationInput.value = '';
+                    this.validateDeleteConfirmation();
+                });
+            }
         }
     }
 
@@ -73,6 +118,58 @@ class AccountManager {
         }
     }
 
+    showDeactivateConfirmation() {
+        // Hide the main modal first
+        if (this.modalInstance) {
+            this.modalInstance.hide();
+        }
+
+        // Show deactivate confirmation modal
+        if (this.deactivateConfirmModalInstance) {
+            this.deactivateConfirmModalInstance.show();
+        } else if (typeof $ !== 'undefined') {
+            $(this.deactivateConfirmModal).modal('show');
+        } else {
+            this.deactivateConfirmModal.style.display = 'block';
+            this.deactivateConfirmModal.classList.add('show');
+        }
+    }
+
+    showDeleteConfirmation() {
+        // Hide the main modal first
+        if (this.modalInstance) {
+            this.modalInstance.hide();
+        }
+
+        // Show delete confirmation modal
+        if (this.deleteConfirmModalInstance) {
+            this.deleteConfirmModalInstance.show();
+        } else if (typeof $ !== 'undefined') {
+            $(this.deleteConfirmModal).modal('show');
+        } else {
+            this.deleteConfirmModal.style.display = 'block';
+            this.deleteConfirmModal.classList.add('show');
+        }
+    }
+
+    validateDeleteConfirmation() {
+        if (!this.deleteConfirmationInput || !this.confirmDeleteBtn) return;
+
+        const inputValue = this.deleteConfirmationInput.value.trim();
+        const isValid = inputValue === 'DELETE';
+
+        this.confirmDeleteBtn.disabled = !isValid;
+
+        // Update button appearance based on validation
+        if (isValid) {
+            this.confirmDeleteBtn.classList.remove('disabled');
+            this.confirmDeleteBtn.setAttribute('aria-describedby', 'delete-button-enabled-help');
+        } else {
+            this.confirmDeleteBtn.classList.add('disabled');
+            this.confirmDeleteBtn.setAttribute('aria-describedby', 'delete-button-help');
+        }
+    }
+
     deactivateAccount() {
         const url = this.actionButton.dataset.deactivateUrl;
         const redirectUrl = this.actionButton.dataset.deactivateRedirectUrl;
@@ -82,10 +179,13 @@ class AccountManager {
             return;
         }
 
-        if (confirm('Are you sure you want to deactivate your account? You can reactivate it later by logging in.')) {
-            // Send POST request to deactivate account
-            this.sendAccountAction(url, redirectUrl);
+        // Hide the confirmation modal
+        if (this.deactivateConfirmModalInstance) {
+            this.deactivateConfirmModalInstance.hide();
         }
+
+        // Send POST request to deactivate account
+        this.sendAccountAction(url, redirectUrl);
     }
 
     deleteAccount() {
@@ -97,16 +197,23 @@ class AccountManager {
             return;
         }
 
-        if (confirm('WARNING: This will permanently delete all your account data. This action cannot be undone. Are you absolutely sure?')) {
-            // Send second confirmation
-            if (confirm('Please confirm once more that you want to delete your account permanently.')) {
-                // Send POST request to delete account
-                this.sendAccountAction(url, redirectUrl);
-            }
+        // Validate that the user typed DELETE
+        const inputValue = this.deleteConfirmationInput ? this.deleteConfirmationInput.value.trim() : '';
+        if (inputValue !== 'DELETE') {
+            console.error('Delete confirmation not properly entered');
+            return;
         }
+
+        // Hide the confirmation modal
+        if (this.deleteConfirmModalInstance) {
+            this.deleteConfirmModalInstance.hide();
+        }
+
+        // Send DELETE request to delete account
+        this.sendAccountAction(url, redirectUrl, 'DELETE');
     }
 
-    sendAccountAction(url, redirectUrl) {
+    sendAccountAction(url, redirectUrl, method = 'POST') {
         // Get CSRF token
         const csrfToken = this.getCsrfToken();
 
@@ -115,9 +222,9 @@ class AccountManager {
             return;
         }
 
-        // Send POST request
+        // Send request
         fetch(url, {
-            method: 'POST',
+            method: method,
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': csrfToken
