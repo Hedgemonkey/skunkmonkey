@@ -178,7 +178,9 @@ class CustomLoginForm(LoginForm):
         self.request = kwargs.get('request', None)
         super().__init__(*args, **kwargs)
         self.fields['remember'] = forms.BooleanField(
-            required=False, label='Remember Me'
+            required=False,
+            label='Remember Me',
+            widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
         )
 
         self.helper = FormHelper()

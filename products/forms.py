@@ -67,7 +67,11 @@ class ProductForm(forms.ModelForm):
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
             field.label_suffix = ""
-            if field_name == 'category':
+
+            # Special handling for checkbox fields
+            if field_name == 'is_active':
+                field.widget.attrs['class'] = 'form-check-input'
+            elif field_name == 'category':
                 field.queryset = Category.objects.all().order_by('name')
 
     @property
@@ -101,3 +105,7 @@ class CategoryForm(forms.ModelForm):
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
             field.label_suffix = ""
+
+            # Special handling for checkbox fields
+            if field_name == 'is_active':
+                field.widget.attrs['class'] = 'form-check-input'
