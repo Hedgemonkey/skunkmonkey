@@ -92,9 +92,11 @@ html5validator --root templates/ --also-check-css
 # Navigate to frontend directory
 cd frontend
 
-# Check CSS syntax with stylelint (install if needed)
-npm install -g stylelint stylelint-config-standard
-stylelint "src/**/*.css"
+# Check CSS syntax with stylelint (already installed locally)
+npx stylelint "src/**/*.css"
+
+# To automatically fix fixable issues
+npx stylelint "src/**/*.css" --fix
 ```
 
 ---

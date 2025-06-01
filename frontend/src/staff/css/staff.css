@@ -29,24 +29,24 @@
 }
 
 .staff-sidebar .nav-link {
-    color: rgba(255, 255, 255, .55);
+    color: rgb(255 255 255 / 55%);
     padding: 0.5rem 1rem;
     border-radius: 0.25rem;
     margin-bottom: 0.25rem;
 }
 
 .staff-sidebar .nav-link:hover {
-    color: rgba(255, 255, 255, .75);
-    background-color: rgba(255, 255, 255, .1);
+    color: rgb(255 255 255 / 75%);
+    background-color: rgb(255 255 255 / 10%);
 }
 
 .staff-sidebar .nav-link.active {
     color: #fff;
-    background-color: rgba(255, 255, 255, .2);
+    background-color: rgb(255 255 255 / 20%);
 }
 
 .sidebar-heading {
-    color: rgba(255, 255, 255, .55);
+    color: rgb(255 255 255 / 55%);
     font-size: 0.8rem;
     text-transform: uppercase;
     padding: 0.5rem 1rem;
@@ -54,7 +54,7 @@
 }
 
 .staff-sidebar hr {
-    border-color: rgba(255, 255, 255, .1);
+    border-color: rgb(255 255 255 / 10%);
 }
 
 /* Mobile sidebar toggle button */
@@ -67,7 +67,7 @@
 }
 
 /* Responsive styles */
-@media (max-width: 767.98px) {
+@media (width <= 767.98px) {
     .staff-sidebar {
         position: fixed;
         top: 56px;
@@ -75,8 +75,7 @@
         left: 0;
         z-index: 1000;
         padding: 0;
-        overflow-x: hidden;
-        overflow-y: auto;
+        overflow: hidden auto;
         width: 80%;
         max-width: 250px;
         transform: translateX(-100%);
@@ -110,7 +109,7 @@
 }
 
 .staff-nav .nav-link {
-    color: rgba(255, 255, 255, 0.75);
+    color: rgb(255 255 255 / 75%);
     padding: 0.75rem 1rem;
     display: flex;
     align-items: center;
@@ -119,7 +118,7 @@
 
 .staff-nav .nav-link:hover {
     color: #fff;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgb(255 255 255 / 10%);
 }
 
 .staff-nav .nav-link.active {
@@ -138,7 +137,7 @@
 
 .card-hover:hover {
     transform: translateY(-5px);
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 15%);
 }
 
 /* Border accents on dashboard cards */
@@ -208,7 +207,7 @@
 /* Notification styling */
 .unread {
     position: relative;
-    background-color: rgba(13, 110, 253, 0.05);
+    background-color: rgb(13 110 253 / 5%);
     border-left: 3px solid var(--staff-primary);
 }
 
@@ -225,7 +224,7 @@
 }
 
 .important-note {
-    background-color: rgba(220, 53, 69, 0.05);
+    background-color: rgb(220 53 69 / 5%);
     border-left: 3px solid var(--staff-danger);
 }
 

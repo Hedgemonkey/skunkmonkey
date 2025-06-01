@@ -9,7 +9,7 @@
     overflow: hidden;
     border-radius: 0.375rem;
     height: 400px;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    box-shadow: 0 0.125rem 0.25rem rgb(0 0 0 / 7.5%);
 }
 
 .product-gallery img {
@@ -17,7 +17,7 @@
     height: 100%;
     object-fit: cover;
     border-radius: 0.5rem;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgb(0 0 0 / 10%);
     transition: transform 0.3s ease;
 }
 
@@ -29,7 +29,7 @@
 .product-info {
     background-color: #fff;
     border-radius: 0.375rem;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    box-shadow: 0 0.125rem 0.25rem rgb(0 0 0 / 7.5%);
     padding: 2rem;
 }
 
@@ -49,7 +49,7 @@
 .product-meta {
     padding-top: 1.5rem;
     margin-top: 1.5rem;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-top: 1px solid rgb(0 0 0 / 10%);
 }
 
 /* Quantity selector styling */
@@ -77,17 +77,17 @@
 }
 
 .stock-status.in-stock {
-    background-color: rgba(25, 135, 84, 0.1);
+    background-color: rgb(25 135 84 / 10%);
     color: #198754;
 }
 
 .stock-status.low-stock {
-    background-color: rgba(255, 193, 7, 0.1);
+    background-color: rgb(255 193 7 / 10%);
     color: #e6a800;
 }
 
 .stock-status.out-of-stock {
-    background-color: rgba(220, 53, 69, 0.1);
+    background-color: rgb(220 53 69 / 10%);
     color: #dc3545;
 }
 
@@ -104,7 +104,7 @@
 
 .product-actions .btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
 }
 
 /* Breadcrumb styling */
@@ -147,13 +147,13 @@
 /* Related products styling */
 .related-product-card {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid rgba(0,0,0,.125);
+    border: 1px solid rgb(0 0 0 / 12.5%);
     height: 100%;
 }
 
 .related-product-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 20px rgb(0 0 0 / 10%);
 }
 
 .related-product-card .card-img-top {
@@ -175,13 +175,13 @@
 }
 
 /* Responsive adjustments */
-@media (max-width: 991.98px) {
+@media (width <= 991.98px) {
     .product-gallery {
         margin-bottom: 2rem;
     }
 }
 
-@media (max-width: 767.98px) {
+@media (width <= 767.98px) {
     .product-gallery {
         height: 350px;
         margin-bottom: 1.5rem;
@@ -208,7 +208,7 @@
     }
 }
 
-@media (max-width: 575.98px) {
+@media (width <= 575.98px) {
     .product-gallery {
         height: 300px;
     }

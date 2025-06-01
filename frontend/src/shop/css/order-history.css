@@ -1,7 +1,7 @@
 /* Order history page styles */
 .card {
     border-radius: 0.5rem;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 10px rgb(0 0 0 / 5%);
     overflow: hidden;
 }
 
@@ -44,7 +44,7 @@
 }
 
 .btn-outline-primary:hover {
-    background-color: rgba(13, 110, 253, 0.1);
+    background-color: rgb(13 110 253 / 10%);
     color: #0d6efd;
     border-color: #0d6efd;
 }
@@ -76,7 +76,7 @@
 
 .text-center.py-5 .btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
 }
 
 /* Pagination styling */
@@ -102,7 +102,7 @@
 }
 
 /* Responsive adjustments */
-@media (max-width: 767.98px) {
+@media (width <= 767.98px) {
     .table-responsive {
         border: 0;
     }

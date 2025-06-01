@@ -13,7 +13,7 @@
 }
 
 /* Responsive adjustments for address management */
-@media (max-width: 767.98px) {
+@media (width <= 767.98px) {
     .address-actions .btn {
         margin-bottom: 0.5rem; /* Stack buttons nicely on small screens */
         display: block; /* Make buttons take full width if desired */

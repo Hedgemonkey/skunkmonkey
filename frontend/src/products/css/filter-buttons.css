@@ -7,14 +7,19 @@
 .filter-controls .btn-sm {
     /* Ensure consistent padding for single-line height */
     padding: 0.25rem 0.5rem;
+
     /* Set a consistent line height */
     line-height: 1.2;
+
     /* Control vertical alignment */
     vertical-align: middle;
+
     /* Prevent text wrapping */
     white-space: nowrap;
+
     /* Ensure consistent font size */
     font-size: 0.875rem;
+
     /* Add rounded corners */
     border-radius: 0.25rem;
 }
@@ -24,6 +29,7 @@
 .filter-controls .reset-all-filters {
     /* Control height directly if needed */
     height: auto;
+
     /* Ensure icons align properly */
     display: inline-flex;
     align-items: center;
@@ -70,7 +76,7 @@
 }
 
 /* Add some responsive adjustments if needed */
-@media (max-width: 576px) {
+@media (width <= 576px) {
     .filter-controls .btn-sm {
         /* Slightly more compact on very small screens */
         padding: 0.2rem 0.4rem;
@@ -98,7 +104,7 @@
 }
 
 /* Enhanced responsive styles for filter summary */
-@media (max-width: 576px) {
+@media (width <= 576px) {
     .filter-summary {
         flex-direction: column;
         align-items: flex-start !important;

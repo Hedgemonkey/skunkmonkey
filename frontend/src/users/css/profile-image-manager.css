@@ -57,13 +57,13 @@
   height: 100px;
   object-fit: cover;
   border-radius: 50%;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
   transition: all 0.3s ease;
 }
 
 .profile-image-thumbnail:hover {
   transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
 }
 
 /* Ensure consistent profile image sizes */
@@ -222,12 +222,9 @@
 .image-removal::after {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(220, 53, 69, 0.2);
-    border: 2px solid rgba(220, 53, 69, 0.5);
+    inset: 0;
+    background-color: rgb(220 53 69 / 20%);
+    border: 2px solid rgb(220 53 69 / 50%);
 }
 
 /* Container for images and controls */

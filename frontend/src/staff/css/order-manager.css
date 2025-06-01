@@ -16,15 +16,15 @@
 }
 
 .order-card {
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  box-shadow: 0 0.125rem 0.25rem rgb(0 0 0 / 7.5%);
   transition: all 0.3s ease;
   margin-bottom: 1rem;
   border-radius: 0.5rem;
-  border: 1px solid rgba(0,0,0,0.08);
+  border: 1px solid rgb(0 0 0 / 8%);
 }
 
 .order-card:hover {
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 10%);
 }
 
 .order-meta {
@@ -71,7 +71,7 @@
   background-color: #fff;
   border-radius: 0.5rem;
   padding: 1.25rem;
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  box-shadow: 0 0.125rem 0.25rem rgb(0 0 0 / 7.5%);
 }
 
 .order-detail .section-title {
@@ -115,7 +115,7 @@
 }
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .order-actions {
     text-align: left;
     margin-top: 1rem;

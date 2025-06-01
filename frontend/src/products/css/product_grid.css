@@ -20,7 +20,7 @@
 
 .product-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 5px 15px rgb(0 0 0 / 10%);
 }
 
 /* Product Image Container */
@@ -56,7 +56,7 @@
 
 /* Wishlist Button */
 .wishlist-btn {
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: rgb(255 255 255 / 80%);
     border-radius: 50%;
     width: 35px;
     height: 35px;
@@ -70,7 +70,7 @@
 }
 
 .wishlist-btn:hover {
-    background-color: rgba(255, 255, 255, 1);
+    background-color: rgb(255 255 255 / 100%);
     transform: scale(1.1);
 }
 
@@ -127,7 +127,6 @@
 .product-name a {
     color: #333;
     text-decoration: none;
-    display: block;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
@@ -236,13 +235,13 @@
 }
 
 /* Responsive Adjustments */
-@media (max-width: 992px) {
+@media (width <= 992px) {
     .product-grid {
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     }
 }
 
-@media (max-width: 767.98px) {
+@media (width <= 767.98px) {
     .product-grid {
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     }
@@ -262,7 +261,7 @@
     }
 }
 
-@media (max-width: 575.98px) {
+@media (width <= 575.98px) {
     .product-grid {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         gap: 15px;

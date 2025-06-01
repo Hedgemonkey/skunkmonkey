@@ -1,7 +1,7 @@
 /* Product Edit CSS - Includes Cropper.js CSS and styling fixes */
-@import 'cropperjs/dist/cropper.css';
-@import './product-manager.css';
-@import './product-editor-fixes.css';
+@import url('cropperjs/dist/cropper.css');
+@import url('./product-manager.css');
+@import url('./product-editor-fixes.css');
 
 /* Additional styling for the image cropper */
 .img-container {

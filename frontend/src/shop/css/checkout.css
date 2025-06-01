@@ -4,12 +4,12 @@
 .card {
     border-radius: 0.5rem;
     border: none;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    box-shadow: 0 0.125rem 0.25rem rgb(0 0 0 / 7.5%);
 }
 
 .card-header {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    background: linear-gradient(to right, #f8f9fa, #ffffff);
+    border-bottom: 1px solid rgb(0 0 0 / 10%);
+    background: linear-gradient(to right, #f8f9fa, #fff);
 }
 
 /* Item Images with improved size control */
@@ -18,7 +18,7 @@
     height: 60px;
     object-fit: cover;
     border-radius: 0.25rem;
-    border: 1px solid #eeeeee;
+    border: 1px solid #eee;
     max-width: 100%; /* Ensure images don't exceed container */
     display: block; /* Fix alignment issues */
 }
@@ -67,7 +67,7 @@
     background-color: #f8f9fa;
     border-radius: 0.5rem;
     padding: 1.5rem;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 10px rgb(0 0 0 / 5%);
 }
 
 .checkout-total {
@@ -80,7 +80,7 @@
 .form-control:focus,
 .custom-select:focus {
     border-color: #80bdff;
-    box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+    box-shadow: 0 0 0 0.25rem rgb(0 123 255 / 25%);
 }
 
 .form-label {
@@ -257,8 +257,8 @@ body #payment-element .__PrivateStripeElement iframe {
 }
 
 #payment-element.StripeElement--focus {
-    background-color: #ffffff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    background-color: #fff;
+    box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 25%);
 }
 
 #payment-element.StripeElement--invalid {
@@ -298,7 +298,7 @@ body #payment-element .__PrivateStripeElement iframe {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgb(0 0 0 / 50%);
     z-index: 9999;
     display: none;
     justify-content: center;
@@ -310,7 +310,7 @@ body #payment-element .__PrivateStripeElement iframe {
     padding: 2rem;
     border-radius: 0.5rem;
     text-align: center;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 15%);
 }
 
 /* Stripe Test Mode Banner */
@@ -342,13 +342,13 @@ body #payment-element .__PrivateStripeElement iframe {
 
 #submit-button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
 }
 
 /* ===== RESPONSIVE ADJUSTMENTS ===== */
 
 /* Medium devices (tablets) */
-@media (max-width: 991.98px) {
+@media (width <= 991.98px) {
     /* Make the form and summary full width on tablets */
     .col-lg-8, .col-lg-4 {
         width: 100%;
@@ -374,7 +374,7 @@ body #payment-element .__PrivateStripeElement iframe {
 }
 
 /* Small devices (landscape phones) */
-@media (max-width: 767.98px) {
+@media (width <= 767.98px) {
     /* Adjustments for product images */
     .checkout-item-img {
         width: 50px;
@@ -399,7 +399,7 @@ body #payment-element .__PrivateStripeElement iframe {
 
     /* Make card shadows less pronounced */
     .shadow-sm {
-        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05) !important;
+        box-shadow: 0 0.125rem 0.25rem rgb(0 0 0 / 5%) !important;
     }
 
     /* Adjust header spacing */
@@ -439,7 +439,7 @@ body #payment-element .__PrivateStripeElement iframe {
 }
 
 /* Extra small devices (phones) */
-@media (max-width: 575.98px) {
+@media (width <= 575.98px) {
     /* Further reduce padding */
     .card-body {
         padding: 1rem;
@@ -483,7 +483,7 @@ body #payment-element .__PrivateStripeElement iframe {
 }
 
 /* Very small devices */
-@media (max-width: 375px) {
+@media (width <= 375px) {
     .checkout-item-img {
         width: 45px;
         height: 45px;
@@ -506,7 +506,7 @@ body #payment-element .__PrivateStripeElement iframe {
 }
 
 /* Ensure buttons stay visible and usable on small screens */
-@media (max-width: 360px) {
+@media (width <= 360px) {
     /* Make text and buttons more compact */
     .btn {
         font-size: 0.9rem;
@@ -526,9 +526,9 @@ body #payment-element .__PrivateStripeElement iframe {
 
 /* Animation for Payment Element */
 @keyframes highlightField {
-    0% { background-color: #ffffff; }
+    0% { background-color: #fff; }
     50% { background-color: #e3f2fd; }
-    100% { background-color: #ffffff; }
+    100% { background-color: #fff; }
 }
 
 .field-highlight {

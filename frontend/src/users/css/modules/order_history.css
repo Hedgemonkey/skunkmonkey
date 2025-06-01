@@ -24,7 +24,7 @@
 }
 
 /* Responsive adjustments for order pages */
-@media (max-width: 767.98px) {
+@media (width <= 767.98px) {
     .order-history-table {
         font-size: 0.9rem;
     }

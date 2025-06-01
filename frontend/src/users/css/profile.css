@@ -5,7 +5,7 @@
     background-color: #f8f9fa;
     border-radius: 8px;
     padding: 2rem;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    box-shadow: 0 0.125rem 0.25rem rgb(0 0 0 / 7.5%);
 }
 
 .profile-avatar img {
@@ -13,7 +13,7 @@
     height: 80px;
     object-fit: cover;
     border: 3px solid #fff;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    box-shadow: 0 0.125rem 0.25rem rgb(0 0 0 / 7.5%);
 }
 
 .profile-avatar-placeholder {
@@ -28,7 +28,7 @@
     align-items: center;
     justify-content: center;
     border: 3px solid #fff;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    box-shadow: 0 0.125rem 0.25rem rgb(0 0 0 / 7.5%);
 }
 
 .profile-title {
@@ -105,7 +105,7 @@ input[type="checkbox"].form-control {
 }
 
 /* Common responsive adjustments */
-@media (max-width: 767.98px) {
+@media (width <= 767.98px) {
     .profile-header {
         padding: 1.5rem;
     }

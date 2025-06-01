@@ -92,7 +92,7 @@
     text-align: left;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
     .selected-categories-tags {
         margin-bottom: 0.75rem;
     }

@@ -1,7 +1,7 @@
 /* manage_profile.css - Styles specific to profile editing/management */
 
 /* Import the consolidated profile image manager styles */
-@import '../profile-image-manager.css';
+@import url('../profile-image-manager.css');
 
 /* Cropper Modal Styles */
 #cropperModal .modal-content {
@@ -70,7 +70,7 @@
 }
 
 /* Responsive adjustments for profile management */
-@media (max-width: 767.98px) {
+@media (width <= 767.98px) {
     .action-buttons {
         flex-direction: column;
         align-items: center;

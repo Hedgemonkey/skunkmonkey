@@ -10,12 +10,12 @@
   padding: 1.5rem;
   background-color: #fff;
   border-radius: 0.5rem;
-  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0.25rem 0.5rem rgb(0 0 0 / 10%);
   transition: box-shadow 0.3s ease;
 }
 
 .dashboard-section:hover {
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 15%);
 }
 
 .dashboard-section h3 {
@@ -32,7 +32,7 @@
   height: 240px;
   margin-bottom: 1rem;
   padding: 0.5rem;
-  background-color: rgba(248, 249, 252, 0.7);
+  background-color: rgb(248 249 252 / 70%);
   border-radius: 0.5rem;
 }
 
@@ -52,7 +52,7 @@
   min-width: 200px;
   border-left: 4px solid #4e73df;
   padding: 1.25rem;
-  box-shadow: 0 0.15rem 0.5rem rgba(0, 0, 0, 0.075);
+  box-shadow: 0 0.15rem 0.5rem rgb(0 0 0 / 7.5%);
   transition: transform 0.2s ease;
 }
 
@@ -78,7 +78,7 @@
 
 .stat-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 10%);
 }
 
 .stat-card .stat-icon {
@@ -124,7 +124,7 @@
 }
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .chart-container {
     height: 250px;
   }
