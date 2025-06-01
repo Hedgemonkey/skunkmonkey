@@ -10,8 +10,8 @@ approach to ensure a smooth and organized development workflow.
 📘 **Facebook Page:** [https://www.facebook.com/profile.php?id=61575805709524](https://www.facebook.com/profile.php?id=61575805709524)
 
 🔑 **Test Credentials:**
-- **Admin Account:** `admin@skunkmonkey.com` / `TestAdmin123!`
-- **Test Customer:** `customer@test.com` / `TestCustomer123!`
+- **Admin Account:** `admin` / `admin@skunkmonkey.com` / `TestAdmin123!`
+- **Test Customer:** `customer` / `customer@test.com` / `TestCustomer123!`
 - **Stripe Test Card:** `4242 4242 4242 4242` (Any future date, any CVC)
 
 > **Note:** Social media links in the footer are currently placeholders and will be updated with actual business profiles as they become available.
