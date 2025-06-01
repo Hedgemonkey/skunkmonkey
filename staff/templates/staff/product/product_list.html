@@ -115,13 +115,6 @@
                     </select>
                     <div id="category-help" class="visually-hidden">Filter products by category</div>
                 </div>
-                        <option value="{{ category.id }}"
-                                {% if selected_category|slugify == category.id|slugify %}selected{% endif %}>
-                            {{ category.name }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
                 <div class="col-md-2">
                     <label for="stock_status" class="form-label">Stock Status</label>
                     <select class="form-select" id="stock_status" name="stock_status" aria-describedby="stock-status-help">
