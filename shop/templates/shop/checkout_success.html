@@ -17,7 +17,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container mb-5" data-payment-pending="{% if not payment_confirmed and not order.is_paid %}true{% else %}false{% endif %}">>
+    <div class="container mb-5" data-payment-pending="{% if not payment_confirmed and not order.is_paid %}true{% else %}false{% endif %}">
         <div class="row">
             <div class="col-12 col-lg-7">
                 <!-- Order Success Message -->

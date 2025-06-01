@@ -74,10 +74,10 @@
                         <!-- Product price -->
                         <div class="product-price mb-3">
                             {% if product.compare_at_price and product.compare_at_price > product.price %}
-                                <span class="text-decoration-line-through text-muted me-2">${{ product.compare_at_price }}</span>
-                                <span class="fw-bold text-danger">${{ product.price }}</span>
+                                <span class="text-decoration-line-through text-muted me-2">£{{ product.compare_at_price }}</span>
+                                <span class="fw-bold text-danger">£{{ product.price }}</span>
                             {% else %}
-                                <span class="fw-bold">${{ product.price }}</span>
+                                <span class="fw-bold">£{{ product.price }}</span>
                             {% endif %}
                         </div>
 
@@ -103,7 +103,7 @@
                                 <button type="button" class="btn btn-outline-primary w-100 add-to-cart-btn"
                                         data-product-id="{{ product.id }}"
                                         data-product-name="{{ product.name }}"
-                                        data-product-price="${{ product.price }}"
+                                        data-product-price="£{{ product.price }}"
                                         data-product-image="{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/no-image-placeholder.png' %}{% endif %}"
                                         data-stock-quantity="{{ product.stock_quantity }}"
                                         data-cart-add-url="{% url 'shop:cart_add' product.id %}"
