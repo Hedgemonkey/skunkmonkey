@@ -201,7 +201,7 @@
                                aria-label="Order items details"
                                aria-describedby="order-items-desc">
                             <caption id="order-items-desc" class="visually-hidden">
-                                Table showing {{ items|length }} item{% if items|length != 1 %}s{% endif %} in order {{ order.order_number }} with product details, quantities, prices and totals
+                                Table showing {{ order_items|length }} item{% if order_items|length != 1 %}s{% endif %} in order {{ order.order_number }} with product details, quantities, prices and totals
                             </caption>
                             <thead>
                                 <tr role="row">
@@ -213,7 +213,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for item in items %}
+                                {% for item in order_items %}
                                 <tr role="row">
                                     <td>
                                         {% if item.product.image %}
