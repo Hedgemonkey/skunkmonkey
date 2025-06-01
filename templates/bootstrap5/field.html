@@ -10,7 +10,7 @@
 
     <div class="{{ field_class }}">
         {% if field.errors %}
-            {% crispy_field field 'class' 'form-control is-invalid' 'aria-invalid' 'true' 'aria-describedby' field.auto_id|add:'_error'|add:' hint_'|add:field.auto_id %}
+            {% crispy_field field 'class' 'form-control is-invalid' 'aria-invalid' 'true' 'aria-describedby' field.auto_id|add:'_error hint_'|add:field.auto_id %}
         {% else %}
             {% crispy_field field 'class' 'form-control' 'aria-describedby' 'hint_'|add:field.auto_id %}
         {% endif %}
