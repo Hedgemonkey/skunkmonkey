@@ -37,7 +37,7 @@ if 'DATABASE_URL' not in os.environ:
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env(
     'DJANGO_SECRET_KEY',
-    default='django-insecure-default-key-for-dev')
+    default='f40naw8ut8j19m#ubbr3gzw^=uu0xlz%pl-+%ifjgq#is%96o87mb9!rsb^6+1^-z-v=6^-zr@l!du#f@zkhxk5ha1cb')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('DEBUG', default=False)  # Get DEBUG from environment variable, default to False in production
@@ -156,8 +156,16 @@ MIDDLEWARE = [
 
 # Content Security Policy settings
 SECURE_CONTENT_TYPE_NOSNIFF = True
-X_FRAME_OPTIONS = 'SAMEORIGIN'
+X_FRAME_OPTIONS = 'DENY'
 SECURE_BROWSER_XSS_FILTER = True
+
+# Security settings for production
+SECURE_HSTS_SECONDS = 31536000  # 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 # Configure CSP settings
 CSP_DEFAULT_SRC = ("'self'",)
 CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://*.cloudfront.net")
