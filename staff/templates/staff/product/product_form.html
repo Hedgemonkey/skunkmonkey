@@ -13,19 +13,21 @@
 {% endblock %}
 
 {% block staff_actions %}
-<div class="btn-group">
+<nav aria-label="Product form actions" class="btn-group" role="group">
     {% if form.instance.pk %}
     <a href="{% url 'staff:product_detail' form.instance.pk %}"
-       class="btn btn-sm btn-outline-secondary">
-        <i class="fa fa-arrow-left"></i> Back to Product
+       class="btn btn-sm btn-outline-secondary"
+       aria-label="Back to {{ form.instance.name }} details">
+        <i class="fa fa-arrow-left" aria-hidden="true"></i> Back to Product
     </a>
     {% else %}
     <a href="{% url 'staff:product_list' %}"
-       class="btn btn-sm btn-outline-secondary">
-        <i class="fa fa-arrow-left"></i> Back to Products
+       class="btn btn-sm btn-outline-secondary"
+       aria-label="Back to product list">
+        <i class="fa fa-arrow-left" aria-hidden="true"></i> Back to Products
     </a>
     {% endif %}
-</div>
+</nav>
 {% endblock %}
 
 {% block staff_content %}
@@ -34,21 +36,23 @@
         <div class="col-xl-8 col-lg-10 mx-auto">
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 fw-bold">
+                    <h1 class="m-0 fw-bold h6">
                         {% if form.instance.pk %}
                         Edit Product: {{ form.instance.name }}
                         {% else %}
                         Add New Product
                         {% endif %}
-                    </h6>
+                    </h1>
                 </div>
                 <div class="card-body">
                     <form method="post" enctype="multipart/form-data"
-                          id="product-form">
+                          id="product-form"
+                          aria-label="{% if form.instance.pk %}Edit product form for {{ form.instance.name }}{% else %}Create new product form{% endif %}"
+                          novalidate>
                         {% csrf_token %}
 
                         {% if form.non_field_errors %}
-                        <div class="alert alert-danger">
+                        <div class="alert alert-danger" role="alert" aria-live="polite">
                             {% for error in form.non_field_errors %}
                                 {{ error }}
                             {% endfor %}
@@ -191,7 +195,7 @@
             </div>
             <div class="modal-body">
                 <div class="img-container">
-                    <img id="image-to-crop" src="" style="max-width: 100%;">
+                    <img id="image-to-crop" src="" alt="Product image for cropping" style="max-width: 100%;">
                 </div>
             </div>
             <div class="modal-footer">

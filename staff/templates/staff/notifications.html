@@ -5,168 +5,235 @@
 
 {% block staff_content %}
 <div class="container-fluid px-4">
-    <div class="card shadow mb-4">
-        <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 fw-bold">Your Notifications</h6>
-            <div>
-                {% if unread_count %}
-                <form method="post" action="{% url 'staff:mark_all_read' %}" class="d-inline">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-outline-primary">
-                        <i class="fa fa-check-double"></i> Mark All as Read
-                    </button>
-                </form>
+    <!-- Live region for notification updates -->
+    <div id="notification-status" aria-live="polite" class="visually-hidden"></div>
+
+    <section aria-labelledby="notifications-heading">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h2 id="notifications-heading" class="h6 m-0 fw-bold">Your Notifications</h2>
+                <div>
+                    {% if unread_count %}
+                    <form method="post" action="{% url 'staff:mark_all_read' %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="btn btn-sm btn-outline-primary"
+                                aria-describedby="mark-all-desc">
+                            <i class="fa fa-check-double" aria-hidden="true"></i> Mark All as Read
+                            <span id="mark-all-desc" class="visually-hidden">Mark all {{ unread_count }} unread notifications as read</span>
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <!-- Status filters -->
+                    <div class="col-lg-8">
+                        <div class="btn-group" role="group" aria-label="Notification status filters">
+                            <a href="{% url 'staff:notifications' %}"
+                               class="btn btn-outline-primary {% if not unread_only %}active{% endif %}"
+                               aria-current="{% if not unread_only %}page{% else %}false{% endif %}"
+                               aria-describedby="all-notifications-desc">
+                                All Notifications
+                                <span id="all-notifications-desc" class="visually-hidden">Show both read and unread notifications</span>
+                            </a>
+                            <a href="{% url 'staff:notifications' %}?unread_only=true"
+                               class="btn btn-outline-primary {% if unread_only %}active{% endif %}"
+                               aria-current="{% if unread_only %}page{% else %}false{% endif %}"
+                               aria-describedby="unread-only-desc">
+                                Unread Only
+                                {% if unread_count %}
+                                <span class="badge bg-danger ms-1" aria-label="{{ unread_count }} unread notifications">
+                                    {{ unread_count }}
+                                </span>
+                                {% endif %}
+                                <span id="unread-only-desc" class="visually-hidden">Show only unread notifications</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Priority filter -->
+                    <div class="col-lg-4">
+                        <form method="get" class="d-flex" role="search" aria-label="Filter notifications by priority">
+                            {% if unread_only %}
+                            <input type="hidden" name="unread_only" value="true">
+                            {% endif %}
+                            <label for="priority-filter" class="visually-hidden">Filter by priority level</label>
+                            <select name="priority"
+                                    id="priority-filter"
+                                    class="form-select form-select-sm me-2"
+                                    onchange="this.form.submit()"
+                                    aria-describedby="priority-filter-help">
+                                <option value="">All Priorities</option>
+                                <option value="urgent" {% if priority == 'urgent' %}selected{% endif %}>Urgent Only</option>
+                                <option value="high" {% if priority == 'high' %}selected{% endif %}>High & Urgent</option>
+                                <option value="medium" {% if priority == 'medium' %}selected{% endif %}>Medium & Above</option>
+                                <option value="low" {% if priority == 'low' %}selected{% endif %}>Low & Above</option>
+                            </select>
+                            <div id="priority-filter-help" class="visually-hidden">Filter notifications by priority level</div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="list-group" role="list" aria-label="Notifications list">
+                    {% for notification in notifications %}
+                    <div class="list-group-item {% if not notification.read %}list-group-item-action unread{% endif %} {% if notification.priority == 'urgent' %}priority-urgent{% elif notification.priority == 'high' %}priority-high{% elif notification.priority == 'medium' %}priority-medium{% endif %}"
+                         role="listitem"
+                         aria-labelledby="notification-{{ forloop.counter }}-title"
+                         aria-describedby="notification-{{ forloop.counter }}-details">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="d-flex align-items-center mb-2">
+                                    {% if notification.priority == 'urgent' %}
+                                    <span class="notification-icon bg-danger"
+                                          aria-label="Urgent priority"
+                                          role="img">
+                                        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                                    </span>
+                                    {% elif notification.priority == 'high' %}
+                                    <span class="notification-icon bg-warning"
+                                          aria-label="High priority"
+                                          role="img">
+                                        <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+                                    </span>
+                                    {% elif notification.priority == 'medium' %}
+                                    <span class="notification-icon bg-info"
+                                          aria-label="Medium priority"
+                                          role="img">
+                                        <i class="fa fa-info-circle" aria-hidden="true"></i>
+                                    </span>
+                                    {% else %}
+                                    <span class="notification-icon bg-secondary"
+                                          aria-label="Low priority"
+                                          role="img">
+                                        <i class="fa fa-bell" aria-hidden="true"></i>
+                                    </span>
+                                    {% endif %}
+                                    <h3 id="notification-{{ forloop.counter }}-title" class="h6 fw-bold ms-2 mb-0">
+                                        {{ notification.title }}
+                                    </h3>
+                                    {% if not notification.read %}
+                                    <span class="badge bg-danger ms-2" aria-label="Unread notification">New</span>
+                                    {% endif %}
+                                </div>
+                                <div class="ms-4 ps-2">
+                                    <p class="mb-2">{{ notification.message }}</p>
+                                    <div class="small text-muted" id="notification-{{ forloop.counter }}-details">
+                                        <span>
+                                            <i class="fa fa-clock me-1" aria-hidden="true"></i>
+                                            <time datetime="{{ notification.created_at|date:'c' }}">
+                                                {{ notification.created_at|timesince }} ago
+                                            </time>
+                                        </span>
+
+                                        {% if notification.related_order %}
+                                        <span class="ms-3">
+                                            <i class="fa fa-box me-1" aria-hidden="true"></i>
+                                            <a href="{% url 'staff:order_detail' notification.related_order.id %}"
+                                               aria-label="View order details for order {{ notification.related_order.order_number }}">
+                                                Order #{{ notification.related_order.order_number }}
+                                            </a>
+                                        </span>
+                                        {% endif %}
+
+                                        {% if notification.category %}
+                                        <span class="ms-3">
+                                            <i class="fa fa-tag me-1" aria-hidden="true"></i>
+                                            <span aria-label="Category: {{ notification.get_category_display }}">
+                                                {{ notification.get_category_display }}
+                                            </span>
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center" role="group" aria-label="Notification actions">
+                                {% if not notification.read %}
+                                <form method="post" action="{% url 'staff:mark_notification_read' notification.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-primary me-2"
+                                            aria-label="Mark notification '{{ notification.title }}' as read">
+                                        <i class="fa fa-check" aria-hidden="true"></i>
+                                        <span class="visually-hidden">Mark as Read</span>
+                                    </button>
+                                </form>
+                                {% endif %}
+                                <form method="post"
+                                      action="{% url 'staff:delete_notification' notification.id %}"
+                                      onsubmit="return confirm('Are you sure you want to delete this notification?');">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-danger"
+                                            aria-label="Delete notification '{{ notification.title }}'">
+                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                        <span class="visually-hidden">Delete notification</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-5" role="status" aria-live="polite">
+                        <div class="display-1 text-muted" aria-hidden="true">
+                            <i class="fa fa-inbox"></i>
+                        </div>
+                        <h3 class="h5 mt-3">No Notifications</h3>
+                        <p class="text-muted">You're all caught up! There are no notifications to display.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                {% if is_paginated %}
+                <nav aria-label="Notification pagination" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link"
+                               href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+                               aria-label="Go to first page">
+                                <span aria-hidden="true">First</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link"
+                               href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+                               aria-label="Go to previous page">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="visually-hidden">Previous</span>
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        <li class="page-item active" aria-current="page">
+                            <span class="page-link" aria-label="Current page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}">
+                                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                            </span>
+                        </li>
+
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link"
+                               href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+                               aria-label="Go to next page">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="visually-hidden">Next</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link"
+                               href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+                               aria-label="Go to last page">
+                                <span aria-hidden="true">Last</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
                 {% endif %}
             </div>
         </div>
-        <div class="card-body">
-            <div class="row mb-4">
-                <!-- Status filters -->
-                <div class="col-lg-8">
-                    <div class="btn-group">
-                        <a href="{% url 'staff:notifications' %}" class="btn btn-outline-primary {% if not unread_only %}active{% endif %}">
-                            All Notifications
-                        </a>
-                        <a href="{% url 'staff:notifications' %}?unread_only=true" class="btn btn-outline-primary {% if unread_only %}active{% endif %}">
-                            Unread Only {% if unread_count %}<span class="badge bg-danger ms-1">{{ unread_count }}</span>{% endif %}
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Priority filter -->
-                <div class="col-lg-4">
-                    <form method="get" class="d-flex">
-                        {% if unread_only %}
-                        <input type="hidden" name="unread_only" value="true">
-                        {% endif %}
-                        <select name="priority" class="form-select form-select-sm me-2" onchange="this.form.submit()">
-                            <option value="">All Priorities</option>
-                            <option value="urgent" {% if priority == 'urgent' %}selected{% endif %}>Urgent Only</option>
-                            <option value="high" {% if priority == 'high' %}selected{% endif %}>High & Urgent</option>
-                            <option value="medium" {% if priority == 'medium' %}selected{% endif %}>Medium & Above</option>
-                            <option value="low" {% if priority == 'low' %}selected{% endif %}>Low & Above</option>
-                        </select>
-                    </form>
-                </div>
-            </div>
-
-            <div class="list-group">
-                {% for notification in notifications %}
-                <div class="list-group-item {% if not notification.read %}list-group-item-action unread{% endif %} {% if notification.priority == 'urgent' %}priority-urgent{% elif notification.priority == 'high' %}priority-high{% elif notification.priority == 'medium' %}priority-medium{% endif %}">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <div class="d-flex align-items-center mb-2">
-                                {% if notification.priority == 'urgent' %}
-                                <span class="notification-icon bg-danger">
-                                    <i class="fa fa-exclamation-triangle"></i>
-                                </span>
-                                {% elif notification.priority == 'high' %}
-                                <span class="notification-icon bg-warning">
-                                    <i class="fa fa-exclamation-circle"></i>
-                                </span>
-                                {% elif notification.priority == 'medium' %}
-                                <span class="notification-icon bg-info">
-                                    <i class="fa fa-info-circle"></i>
-                                </span>
-                                {% else %}
-                                <span class="notification-icon bg-secondary">
-                                    <i class="fa fa-bell"></i>
-                                </span>
-                                {% endif %}
-                                <h6 class="fw-bold ms-2 mb-0">{{ notification.title }}</h6>
-                                {% if not notification.read %}
-                                <span class="badge bg-danger ms-2">New</span>
-                                {% endif %}
-                            </div>
-                            <div class="ms-4 ps-2">
-                                <p class="mb-2">{{ notification.message }}</p>
-                                <div class="small text-muted">
-                                    <span><i class="fa fa-clock me-1"></i> {{ notification.created_at|timesince }} ago</span>
-
-                                    {% if notification.related_order %}
-                                    <span class="ms-3">
-                                        <i class="fa fa-box me-1"></i>
-                                        <a href="{% url 'staff:order_detail' notification.related_order.id %}">
-                                            Order #{{ notification.related_order.order_number }}
-                                        </a>
-                                    </span>
-                                    {% endif %}
-
-                                    {% if notification.category %}
-                                    <span class="ms-3">
-                                        <i class="fa fa-tag me-1"></i> {{ notification.get_category_display }}
-                                    </span>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            {% if not notification.read %}
-                            <form method="post" action="{% url 'staff:mark_notification_read' notification.id %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-outline-primary me-2">
-                                    <i class="fa fa-check"></i> Mark as Read
-                                </button>
-                            </form>
-                            {% endif %}
-                            <form method="post" action="{% url 'staff:delete_notification' notification.id %}" onsubmit="return confirm('Are you sure you want to delete this notification?');">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-outline-danger">
-                                    <i class="fa fa-trash"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                {% empty %}
-                <div class="text-center py-5">
-                    <div class="display-1 text-muted">
-                        <i class="fa fa-inbox"></i>
-                    </div>
-                    <h5 class="mt-3">No Notifications</h5>
-                    <p class="text-muted">You're all caught up! There are no notifications to display.</p>
-                </div>
-                {% endfor %}
-            </div>
-
-            {% if is_paginated %}
-            <nav aria-label="Notification pagination" class="mt-4">
-                <ul class="pagination justify-content-center">
-                    {% if page_obj.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="First">
-                            <span aria-hidden="true">First</span>
-                        </a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                    {% endif %}
-
-                    <li class="page-item active">
-                        <span class="page-link">
-                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-                        </span>
-                    </li>
-
-                    {% if page_obj.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Last">
-                            <span aria-hidden="true">Last</span>
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </nav>
-            {% endif %}
-        </div>
-    </div>
+    </section>
 </div>
 {% endblock %}

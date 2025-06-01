@@ -10,34 +10,39 @@
 {% endblock %}
 
 {% block header %}
-<div class="py-4 bg-primary text-white">
+<header class="py-4 bg-primary text-white" role="banner">
     <div class="container">
-        <h1 class="mb-0">Shopping Cart</h1>
+        <h1 id="page-title" class="mb-0">Shopping Cart</h1>
     </div>
-</div>
+</header>
 {% endblock %}
 
 {% block content %}
-<div class="container my-5" id="cart-container">
+<main class="container my-5" id="cart-container" role="main">
     {% if cart.items.count %}
         <div class="row">
             <!-- Cart Items -->
-            <div class="col-lg-8">
+            <section class="col-lg-8" aria-labelledby="cart-items-heading">
                 <div class="card mb-4">
                     <div class="card-header bg-transparent">
-                        <h5 class="mb-0">Cart Items ({{ cart.item_count }})</h5>
+                        <h2 id="cart-items-heading" class="h5 mb-0">Cart Items ({{ cart.item_count }})</h2>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle">
+                            <table class="table table-hover align-middle"
+                                   role="table"
+                                   aria-label="Shopping cart items">
+                                <caption class="visually-hidden">
+                                    Shopping cart containing {{ cart.item_count }} items with product details, quantities, and prices
+                                </caption>
                                 <thead>
                                     <tr>
-                                        <th scope="col" width="80"></th>
+                                        <th scope="col" width="80">Image</th>
                                         <th scope="col">Product</th>
                                         <th scope="col">Price</th>
                                         <th scope="col" class="text-center">Quantity</th>
                                         <th scope="col" class="text-end">Subtotal</th>
-                                        <th scope="col"></th>
+                                        <th scope="col"><span class="visually-hidden">Actions</span></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -45,43 +50,78 @@
                                     <tr>
                                         <td>
                                             {% if item.product.image %}
-                                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="cart-item-img rounded">
+                                                <img src="{{ item.product.image.url }}"
+                                                     alt="{{ item.product.name }} product image"
+                                                     class="cart-item-img rounded">
                                             {% else %}
-                                                <img src="{{ MEDIA_URL }}noimage.png" alt="No image" class="cart-item-img rounded">
+                                                <img src="{{ MEDIA_URL }}noimage.png"
+                                                     alt="No image available for {{ item.product.name }}"
+                                                     class="cart-item-img rounded">
                                             {% endif %}
                                         </td>
                                         <td>
-                                            <a href="{% url 'shop:product_detail' item.product.slug %}" class="product-name text-decoration-none">
+                                            <a href="{% url 'shop:product_detail' item.product.slug %}"
+                                               class="product-name text-decoration-none"
+                                               aria-label="View {{ item.product.name }} details">
                                                 {{ item.product.name }}
                                             </a>
                                             <div class="small text-muted">{{ item.product.category.name }}</div>
                                         </td>
-                                        <td>£{{ item.product.price|floatformat:2 }}</td>
+                                        <td>
+                                            <span aria-label="Price: £{{ item.product.price|floatformat:2 }}">
+                                                £{{ item.product.price|floatformat:2 }}
+                                            </span>
+                                        </td>
                                         <td class="text-center">
-                                            <form method="post" action="{% url 'shop:cart_update' item.product.id %}" class="update-cart-form" data-product-id="{{ item.product.id }}">
+                                            <form method="post"
+                                                  action="{% url 'shop:cart_update' item.product.id %}"
+                                                  class="update-cart-form"
+                                                  data-product-id="{{ item.product.id }}"
+                                                  aria-label="Update quantity for {{ item.product.name }}">
                                                 {% csrf_token %}
-                                                <div class="quantity-control">
-                                                    <button type="button" class="quantity-btn quantity-decrease rounded-start" data-action="decrease" aria-label="Decrease quantity">
-                                                        <i class="fas fa-minus small"></i>
+                                                <div class="quantity-control" role="group" aria-label="Quantity controls for {{ item.product.name }}">
+                                                    <button type="button"
+                                                            class="quantity-btn quantity-decrease rounded-start"
+                                                            data-action="decrease"
+                                                            aria-label="Decrease quantity of {{ item.product.name }}">
+                                                        <i class="fas fa-minus small" aria-hidden="true"></i>
                                                     </button>
-                                                    <input type="number" name="quantity" value="{{ item.quantity }}"
-                                                           min="1" max="{{ item.product.stock_quantity }}"
+                                                    <label for="quantity-{{ item.product.id }}" class="visually-hidden">
+                                                        Quantity for {{ item.product.name }}
+                                                    </label>
+                                                    <input type="number"
+                                                           id="quantity-{{ item.product.id }}"
+                                                           name="quantity"
+                                                           value="{{ item.quantity }}"
+                                                           min="1"
+                                                           max="{{ item.product.stock_quantity }}"
                                                            class="form-control quantity-input"
                                                            data-max-stock="{{ item.product.stock_quantity }}"
-                                                           aria-label="Quantity">
-                                                    <button type="button" class="quantity-btn quantity-increase rounded-end" data-action="increase" aria-label="Increase quantity">
-                                                        <i class="fas fa-plus small"></i>
+                                                           aria-describedby="stock-info-{{ item.product.id }}">
+                                                    <button type="button"
+                                                            class="quantity-btn quantity-increase rounded-end"
+                                                            data-action="increase"
+                                                            aria-label="Increase quantity of {{ item.product.name }}">
+                                                        <i class="fas fa-plus small" aria-hidden="true"></i>
                                                     </button>
                                                 </div>
+                                                <small id="stock-info-{{ item.product.id }}" class="visually-hidden">
+                                                    Maximum available: {{ item.product.stock_quantity }}
+                                                </small>
                                             </form>
                                         </td>
-                                        <td class="item-subtotal text-end fw-bold">£{{ item.total_price|floatformat:2 }}</td>
+                                        <td class="item-subtotal text-end fw-bold">
+                                            <span aria-label="Subtotal: £{{ item.total_price|floatformat:2 }}">
+                                                £{{ item.total_price|floatformat:2 }}
+                                            </span>
+                                        </td>
                                         <td class="text-end">
                                             <a href="{% url 'shop:cart_remove' item.product.id %}"
                                                class="remove-cart-item btn btn-sm btn-outline-danger"
                                                data-product-name="{{ item.product.name }}"
-                                               aria-label="Remove item">
-                                                <i class="fas fa-trash-alt"></i>
+                                               aria-label="Remove {{ item.product.name }} from cart">
+                                                <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                                                <span class="visually-hidden">Remove</span>
                                             </a>
                                         </td>
                                     </tr>
@@ -91,53 +131,72 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
 
             <!-- Cart Summary -->
-            <div class="col-lg-4">
-                <div class="cart-summary">
-                    <h5 class="mb-4">Order Summary</h5>
+            <aside class="col-lg-4" aria-labelledby="order-summary-heading">
+                <section class="cart-summary">
+                    <h2 id="order-summary-heading" class="h5 mb-4">Order Summary</h2>
 
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Items ({{ cart.item_count }}):</span>
-                        <span>£{{ cart.total_price|floatformat:2 }}</span>
-                    </div>
+                    <dl class="row mb-3">
+                        <dt class="col-8">Items ({{ cart.item_count }}):</dt>
+                        <dd class="col-4 text-end" aria-label="Subtotal: £{{ cart.total_price|floatformat:2 }}">
+                            £{{ cart.total_price|floatformat:2 }}
+                        </dd>
 
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Shipping:</span>
-                        <span>Free</span>
-                    </div>
+                        <dt class="col-8">Shipping:</dt>
+                        <dd class="col-4 text-end">Free</dd>
+                    </dl>
 
                     <hr>
 
-                    <div class="d-flex justify-content-between mb-4">
-                        <span class="fw-bold">Total:</span>
-                        <span class="cart-total fw-bold fs-5" id="cart-total">£{{ cart.total_price|floatformat:2 }}</span>
-                    </div>
+                    <dl class="row mb-4">
+                        <dt class="col-8 fw-bold">Total:</dt>
+                        <dd class="col-4 text-end">
+                            <span class="cart-total fw-bold fs-5"
+                                  id="cart-total"
+                                  aria-label="Total amount: £{{ cart.total_price|floatformat:2 }}">
+                                £{{ cart.total_price|floatformat:2 }}
+                            </span>
+                        </dd>
+                    </dl>
 
                     <div class="cart-actions">
                         <form method="post" action="{% url 'shop:checkout' %}">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-primary w-100 mb-2 py-2">
-                                <i class="fas fa-credit-card me-2"></i>Proceed to Checkout
+                            <button type="submit"
+                                    class="btn btn-primary w-100 mb-2 py-2"
+                                    aria-describedby="checkout-help">
+                                <i class="fas fa-credit-card me-2" aria-hidden="true"></i>Proceed to Checkout
                             </button>
+                            <small id="checkout-help" class="visually-hidden">
+                                Continue to secure checkout to complete your purchase
+                            </small>
                         </form>
-                        <a href="{% url 'shop:product_list' %}" class="btn btn-outline-secondary w-100">
-                            <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
+                        <a href="{% url 'shop:product_list' %}"
+                           class="btn btn-outline-secondary w-100"
+                           aria-label="Return to product catalog">
+                            <i class="fas fa-shopping-bag me-2" aria-hidden="true"></i>Continue Shopping
                         </a>
                     </div>
-                </div>
-            </div>
+                </section>
+            </aside>
         </div>
     {% else %}
-        <div class="empty-cart">
-            <i class="fas fa-shopping-cart"></i>
-            <h3>Your cart is empty</h3>
+        <section class="empty-cart text-center"
+                 role="region"
+                 aria-labelledby="empty-cart-heading">
+            <i class="fas fa-shopping-cart mb-3"
+               aria-hidden="true"
+               style="font-size: 4rem; opacity: 0.3;"></i>
+            <h2 id="empty-cart-heading" class="h3">Your cart is empty</h2>
             <p class="mb-4">Looks like you haven't added any products to your cart yet.</p>
-            <a href="{% url 'shop:product_list' %}" class="btn btn-primary">
-                <i class="fas fa-shopping-bag me-2"></i>Start Shopping
+            <a href="{% url 'shop:product_list' %}"
+               class="btn btn-primary"
+               aria-label="Browse products to add to your cart">
+                <i class="fas fa-shopping-bag me-2" aria-hidden="true"></i>Start Shopping
             </a>
-        </div>
+        </section>
     {% endif %}
-</div>
+</main>
 {% endblock %}

@@ -39,11 +39,17 @@
     {% endblock %}
 </head>
 <body data-django-messages='[{% for django_message in messages %}{"message": "{{ django_message|escapejs }}", "tags": "{{ django_message.tags|default:''|escapejs }}"}{% if not forloop.last %},{% endif %}{% endfor %}]'>
+    <!-- Skip Links for Accessibility -->
+    <a href="#main-content" class="skip-link sr-only sr-only-focusable">Skip to main content</a>
+    <a href="#navbar" class="skip-link sr-only sr-only-focusable">Skip to navigation</a>
+
     {% block navbar %}{% include 'includes/navbar.html' %}{% endblock %}
 
     {% block header %}
     {% endblock %}
-    {% block content %}{% endblock %}
+    <main id="main-content">
+        {% block content %}{% endblock %}
+    </main>
     <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1050;"></div>
     {% block footer %}
         <footer class="footer">
@@ -56,6 +62,7 @@
     {% block postloadjs %}
         {% load direct_assets %}
         {% direct_asset 'djangoMessages' %}
+        {% direct_asset 'accessibility' %}
     {% endblock %}
     {% block extra_js %}{% endblock %}
 </body>

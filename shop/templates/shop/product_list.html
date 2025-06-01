@@ -25,9 +25,9 @@
 {% endblock %}
 
 {% block header %}
-<div class="shop-header text-center">
+<header class="shop-header text-center" role="banner">
     <div class="container">
-        <h1 class="text-white display-4">
+        <h1 id="page-title" class="text-white display-4">
             {% if current_category %}
                 {{ current_category.name }}
             {% elif search_query %}
@@ -38,82 +38,123 @@
         </h1>
         <p class="text-white-50 lead">Quality products for all your CBD needs</p>
     </div>
-</div>
+</header>
 {% endblock %}
 
 {% block content %}
-<div class="container my-4">
+<main class="container my-4" role="main">
     <div class="row">
         <!-- Filter sidebar - replaced with dynamic filter controls -->
-        <div class="col-lg-3 mb-4">
-            <div class="wishlist-panel mb-4">
-                <h5>Your Wishlist</h5>
+        <aside class="col-lg-3 mb-4" role="complementary" aria-labelledby="sidebar-heading">
+            <h2 id="sidebar-heading" class="visually-hidden">Product Filters and Options</h2>
+
+            <section class="wishlist-panel mb-4" aria-labelledby="wishlist-heading">
+                <h3 id="wishlist-heading" class="h5">Your Wishlist</h3>
                 {% if user.is_authenticated %}
                     <div class="wishlist-summary">
-                        <a href="{% url 'shop:wishlist' %}" class="btn btn-outline-primary w-100">
-                            <i class="fas fa-heart me-2"></i>View Your Wishlist
-                            <span class="badge bg-secondary ms-2 wishlist-count">
+                        <a href="{% url 'shop:wishlist' %}"
+                           class="btn btn-outline-primary w-100"
+                           aria-describedby="wishlist-count">
+                            <i class="fas fa-heart me-2" aria-hidden="true"></i>View Your Wishlist
+                            <span class="badge bg-secondary ms-2 wishlist-count"
+                                  id="wishlist-count"
+                                  aria-label="{{ wishlist_product_ids|length }} items in wishlist">
                                 {# Fixed: Use wishlist_product_ids which is now provided by our context processor #}
                                 {{ wishlist_product_ids|length }}
                             </span>
                         </a>
                     </div>
                 {% else %}
-                    <div class="alert alert-info small">
+                    <div class="alert alert-info small" role="alert">
                         <a href="{% url 'account_login' %}">Log in</a> to manage your wishlist.
                     </div>
                 {% endif %}
-            </div>
+            </section>
 
-            <div class="filter-section mb-4">
-                <h5>Categories</h5>
-                <div class="list-group">
-                    <a href="{% url 'shop:product_list' %}" class="list-group-item list-group-item-action {% if not current_category %}active{% endif %}">
-                        All Products
-                    </a>
-                    {% for category in categories %}
-                        {% if category %}
-                            <a href="{% url 'shop:product_list_by_category' category.slug %}"
-                               class="list-group-item list-group-item-action {% if current_category and category and current_category.id == category.id %}active{% endif %}">
-                                {{ category.name }}
-                            </a>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            </div>
+            <section class="filter-section mb-4" aria-labelledby="categories-heading">
+                <h3 id="categories-heading" class="h5">Categories</h3>
+                <nav aria-label="Product categories">
+                    <div class="list-group" role="list">
+                        <a href="{% url 'shop:product_list' %}"
+                           class="list-group-item list-group-item-action {% if not current_category %}active{% endif %}"
+                           {% if not current_category %}aria-current="page"{% endif %}
+                           aria-label="View all products">
+                            All Products
+                        </a>
+                        {% for category in categories %}
+                            {% if category %}
+                                <a href="{% url 'shop:product_list_by_category' category.slug %}"
+                                   class="list-group-item list-group-item-action {% if current_category and category and current_category.id == category.id %}active{% endif %}"
+                                   {% if current_category and category and current_category.id == category.id %}aria-current="page"{% endif %}
+                                   aria-label="View {{ category.name }} products">
+                                    {{ category.name }}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </nav>
+            </section>
 
-            <div class="filter-section">
-                <h5>Search</h5>
-                <form method="get" action="{% url 'shop:product_list' %}" id="product-search-form">
+            <section class="filter-section" aria-labelledby="search-heading">
+                <h3 id="search-heading" class="h5">Search</h3>
+                <form method="get"
+                      action="{% url 'shop:product_list' %}"
+                      id="product-search-form"
+                      aria-label="Search products">
                     <div class="input-group">
-                        <input type="text" name="q" class="form-control" placeholder="Search products..." value="{{ search_query|default:'' }}">
-                        <button class="btn btn-outline-secondary" type="submit">
-                            <i class="fas fa-search"></i>
+                        <label for="search-input" class="visually-hidden">Search products</label>
+                        <input type="text"
+                               id="search-input"
+                               name="q"
+                               class="form-control"
+                               placeholder="Search products..."
+                               value="{{ search_query|default:'' }}"
+                               autocomplete="off"
+                               aria-describedby="search-help">
+                        <button class="btn btn-outline-secondary"
+                                type="submit"
+                                aria-label="Submit search">
+                            <i class="fas fa-search" aria-hidden="true"></i>
                         </button>
                     </div>
+                    <small id="search-help" class="form-text text-muted">Enter keywords to search for products</small>
                 </form>
-            </div>
-        </div>
+            </section>
+        </aside>
 
         <!-- Product grid -->
-        <div class="col-lg-9">
+        <section class="col-lg-9" aria-labelledby="products-heading">
+            <h2 id="products-heading" class="visually-hidden">
+                {% if current_category %}
+                    {{ current_category.name }} Products
+                {% elif search_query %}
+                    Search Results for {{ search_query }}
+                {% else %}
+                    All Products
+                {% endif %}
+            </h2>
+
             <!-- Dynamic filter controls -->
             <div id="dynamic-filter-container"
                  data-product-list-url="{% url 'shop:product_list_ajax' %}"
                  data-current-category="{% if current_category and current_category.id %}{{ current_category.id }}{% endif %}"
-                 data-search-query="{{ search_query|default:'' }}">
+                 data-search-query="{{ search_query|default:'' }}"
+                 role="region"
+                 aria-label="Product filters and sorting">
                 {% include 'includes/filter_controls.html' with sort_options=sort_options|default:'' categories=categories current_sort=current_sort|default:'name-asc' search=search_query item_type='products' show_category_filter=True selected_categories=selected_categories|default:'' %}
             </div>
 
             <!-- Results Count Display -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <span class="text-muted">Showing <span id="product-count">{{ products.count }}</span> products</span>
+                    <span class="text-muted" role="status" aria-live="polite">
+                        Showing <span id="product-count">{{ products.count }}</span> products
+                    </span>
                 </div>
             </div>
 
             <!-- Product Grid Container -->
-            <div id="product-grid-container">
+            <div id="product-grid-container" role="region" aria-label="Product listings">
                 {% if products %}
                     {% include 'shop/includes/product_grid.html' with products=products wishlist_product_ids=wishlist_product_ids|default:'' %}
 
@@ -123,37 +164,63 @@
                         <ul class="pagination justify-content-center">
                             {% if page_obj.has_previous %}
                                 <li class="page-item">
-                                    <a class="page-link" href="?page=1{% if search_query %}&q={{ search_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}">First</a>
+                                    <a class="page-link"
+                                       href="?page=1{% if search_query %}&q={{ search_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}"
+                                       aria-label="Go to first page">
+                                        First
+                                    </a>
                                 </li>
                                 <li class="page-item">
-                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}">Previous</a>
+                                    <a class="page-link"
+                                       href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}"
+                                       aria-label="Go to previous page">
+                                        Previous
+                                    </a>
                                 </li>
                             {% endif %}
 
                             <li class="page-item active">
-                                <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                                <span class="page-link" aria-current="page">
+                                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                                </span>
                             </li>
 
                             {% if page_obj.has_next %}
                                 <li class="page-item">
-                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}">Next</a>
+                                    <a class="page-link"
+                                       href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}"
+                                       aria-label="Go to next page">
+                                        Next
+                                    </a>
                                 </li>
                                 <li class="page-item">
-                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&q={{ search_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}">Last</a>
+                                    <a class="page-link"
+                                       href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&q={{ search_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}"
+                                       aria-label="Go to last page">
+                                        Last
+                                    </a>
                                 </li>
                             {% endif %}
                         </ul>
                     </nav>
                     {% endif %}
                 {% else %}
-                    <div class="alert alert-info">
-                        <p class="mb-0">No products found {% if search_query %}matching "{{ search_query }}"{% endif %}.</p>
+                    <div class="alert alert-info" role="alert">
+                        <p class="mb-0">
+                            No products found {% if search_query %}matching "{{ search_query }}"{% endif %}.
+                            {% if search_query %}
+                                <a href="{% url 'shop:product_list' %}"
+                                   aria-label="Clear search and view all products">
+                                    View all products
+                                </a>
+                            {% endif %}
+                        </p>
                     </div>
                 {% endif %}
             </div>
-        </div>
+        </section>
     </div>
-</div>
+</main>
 
 <!-- Include quantity selection modal -->
 {% include 'shop/includes/quantity_modal.html' %}

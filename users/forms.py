@@ -13,22 +13,83 @@ from .widgets import ProfileImageCropperWidget
 
 
 class ContactForm(forms.Form):
-    email = forms.EmailField(required=True)
-    subject = forms.CharField(max_length=100, required=True)
-    phone_number = forms.CharField(required=False, max_length=20)
-    message = forms.CharField(widget=forms.Textarea, required=True)
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(attrs={
+            'aria-describedby': 'id_email_help',
+            'autocomplete': 'email',
+        }),
+        help_text='We\'ll use this to respond to your inquiry.',
+        error_messages={
+            'required': 'Please provide your email address so we can respond.',
+            'invalid': 'Please enter a valid email address.',
+        }
+    )
+    subject = forms.CharField(
+        max_length=100,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'aria-describedby': 'id_subject_help',
+            'autocomplete': 'off',
+        }),
+        help_text='Brief description of your inquiry.',
+        error_messages={
+            'required': 'Please provide a subject for your message.',
+            'max_length': 'Subject must be 100 characters or less.',
+        }
+    )
+    phone_number = forms.CharField(
+        required=False,
+        max_length=20,
+        widget=forms.TextInput(attrs={
+            'aria-describedby': 'id_phone_number_help',
+            'autocomplete': 'tel',
+        }),
+        help_text='Optional. Include if you prefer a phone callback.',
+        error_messages={
+            'max_length': 'Phone number must be 20 characters or less.',
+        }
+    )
+    message = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'rows': 5,
+            'aria-describedby': 'id_message_help',
+            'maxlength': 2000,
+        }),
+        required=True,
+        help_text='Please provide details about your inquiry '
+                  '(maximum 2000 characters).',
+        error_messages={
+            'required': 'Please include your message.',
+        }
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = 'post'
+        self.helper.form_id = 'contact-form'
+        self.helper.form_class = 'needs-validation'
+        self.helper.attrs = {'novalidate': True}
         self.helper.layout = Layout(
-            Field('email'),
-            Field('phone_number'),
-            Field('subject'),
-            Field('message'),
+            Field('email',
+                  css_class='form-control',
+                  aria_required='true',
+                  placeholder='your.email@example.com'),
+            Field('phone_number',
+                  css_class='form-control',
+                  placeholder='+44 123 456 7890 (optional)'),
+            Field('subject',
+                  css_class='form-control',
+                  aria_required='true',
+                  placeholder='Brief description of your inquiry'),
+            Field('message',
+                  css_class='form-control',
+                  aria_required='true',
+                  placeholder='Please provide details about your inquiry...'),
         )
-        self.helper.add_input(Submit('submit', 'Send Message'))
+        self.helper.add_input(Submit('submit', 'Send Message',
+                                     css_class='btn btn-primary'))
 
 
 class ResendVerificationForm(forms.Form):

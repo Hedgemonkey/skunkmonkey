@@ -1,6 +1,6 @@
 {
-  "_WishlistManager.BexFhMjX.js": {
-    "file": "js/chunks/WishlistManager.BexFhMjX.js",
+  "_WishlistManager.DmSBy4bw.js": {
+    "file": "js/chunks/WishlistManager.DmSBy4bw.js",
     "name": "WishlistManager",
     "css": [
       "css/common/WishlistManager.css"
@@ -88,6 +88,15 @@
     "imports": [
       "_common.Dz0GDR6V.js",
       "_bootstrap.DA4YfA_0.js"
+    ]
+  },
+  "src/core/accessibility.js": {
+    "file": "js/core/accessibility.js",
+    "name": "accessibility",
+    "src": "src/core/accessibility.js",
+    "isEntry": true,
+    "css": [
+      "css/common/accessibility.css"
     ]
   },
   "src/core/js/asset-health.js": {
@@ -184,9 +193,9 @@
     "src": "src/products/js/cropper_init.js",
     "isEntry": true,
     "imports": [
-      "_common.Dz0GDR6V.js",
       "_bootstrap.DA4YfA_0.js",
-      "src/common/js/image_cropper.js"
+      "src/common/js/image_cropper.js",
+      "_common.Dz0GDR6V.js"
     ]
   },
   "src/products/js/filters.js": {
@@ -320,7 +329,6 @@
     "src": "src/shop/js/checkout-manager.js",
     "isEntry": true,
     "imports": [
-      "src/common/js/api-client.js",
       "src/products/utilities/js/base-manager.js",
       "_common.Dz0GDR6V.js",
       "_ajax_helper.EulIYOr7.js"
@@ -400,8 +408,7 @@
     "src": "src/shop/js/product-list-manager.js",
     "isEntry": true,
     "imports": [
-      "_WishlistManager.BexFhMjX.js",
-      "_common.Dz0GDR6V.js"
+      "_WishlistManager.DmSBy4bw.js"
     ],
     "css": [
       "css/common/product-list.css"
@@ -430,7 +437,7 @@
     "src": "src/shop/js/wishlist-initializer.js",
     "isEntry": true,
     "imports": [
-      "_WishlistManager.BexFhMjX.js"
+      "_WishlistManager.DmSBy4bw.js"
     ]
   },
   "src/shop/utilities/js/notifications.js": {

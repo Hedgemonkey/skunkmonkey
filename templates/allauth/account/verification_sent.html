@@ -2,29 +2,89 @@
 
 {% load i18n %}
 {% load allauth %}
-{% load crispy_forms_tags %}  </head>
-
+{% load crispy_forms_tags %}
 
 {% block head_title %}{% trans "Verify Your Email Address" %}{% endblock %}
 
 {% block content %}
+<main role="main" aria-labelledby="verification-heading">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-6">
-                <div class="mt-4">
-                    <h2 class="text-center">{% trans "Email Verification Sent" %}</h2>
+                <div class="card mt-4">
+                    <header class="card-header bg-white border-bottom-0 text-center" role="banner">
+                        <div class="mb-2" aria-hidden="true">
+                            <i class="fas fa-envelope-open fa-2x text-primary"></i>
+                        </div>
+                        <h1 id="verification-heading" class="h2">{% trans "Email Verification Sent" %}</h1>
+                    </header>
 
-                    {% if 'resent' in request.GET %}
-                        <p class="text-center">
-                            {% blocktrans %}A new verification email has been sent. Please check your inbox and spam folder.{% endblocktrans %}
-                        </p>
-                    {% else %}
-                        <p class="text-center">
-                            {% blocktrans %}We have sent an email to you for verification. Follow the link provided to finalize the signup process. If you do not see the verification email in your main inbox, check your spam folder. Please contact us if you do not receive the verification email within a few minutes.{% endblocktrans %}
-                        </p>
-                    {% endif %}
+                    <div class="card-body">
+                        <div class="alert alert-success" role="alert" aria-live="polite">
+                            <i class="fas fa-check-circle me-2" aria-hidden="true"></i>
+                            <strong>Verification Email Sent</strong>
+                        </div>
+
+                        {% if 'resent' in request.GET %}
+                            <section role="region" aria-labelledby="resent-section">
+                                <div class="alert alert-info" role="alert" aria-live="polite">
+                                    <i class="fas fa-sync-alt me-2" aria-hidden="true"></i>
+                                    <strong>New Email Sent</strong>
+                                </div>
+
+                                <p class="text-center mb-4">
+                                    {% blocktrans %}A new verification email has been sent to your email address.
+                                    Please check your inbox and spam folder for the verification link.{% endblocktrans %}
+                                </p>
+                            </section>
+                        {% else %}
+                            <section role="region" aria-labelledby="instructions-section">
+                                <p class="text-center mb-4">
+                                    {% blocktrans %}We have sent an email to you for verification. Follow the link provided to finalize the signup process.{% endblocktrans %}
+                                </p>
+                            </section>
+                        {% endif %}
+
+                        <section role="region" aria-labelledby="help-section">
+                            <h2 id="help-section" class="h5 mb-3">{% trans "Didn't receive the email?" %}</h2>
+
+                            <div class="alert alert-info" role="alert">
+                                <i class="fas fa-info-circle me-2" aria-hidden="true"></i>
+                                <strong>Check these locations:</strong>
+                                <ul class="mb-0 mt-2">
+                                    <li>Your main inbox</li>
+                                    <li>Spam or junk folder</li>
+                                    <li>Promotions or updates tab (Gmail)</li>
+                                </ul>
+                            </div>
+
+                            <p class="text-muted small">
+                                <i class="fas fa-clock me-1" aria-hidden="true"></i>
+                                If you don't see the verification email within a few minutes, please contact us for assistance.
+                            </p>
+                        </section>
+
+                        <nav role="navigation" aria-label="Email verification actions" class="mt-4">
+                            <div class="d-grid gap-2">
+                                <a href="{% url 'account_email' %}"
+                                   class="btn btn-primary"
+                                   aria-label="Manage email addresses and resend verification">
+                                    <i class="fas fa-envelope me-2" aria-hidden="true"></i>
+                                    {% trans "Manage Email Addresses" %}
+                                </a>
+
+                                <a href="{% url 'account_login' %}"
+                                   class="btn btn-outline-secondary"
+                                   aria-label="Return to login page">
+                                    <i class="fas fa-sign-in-alt me-2" aria-hidden="true"></i>
+                                    {% trans "Return to Login" %}
+                                </a>
+                            </div>
+                        </nav>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+</main>
 {% endblock %}

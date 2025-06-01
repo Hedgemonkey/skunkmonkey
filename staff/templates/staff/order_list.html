@@ -207,98 +207,146 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover" role="table"
+                       aria-label="Orders list">
                     <thead>
-                        <tr>
-                            <th>
+                        <tr role="row">
+                            <th scope="col" role="columnheader">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="selectAllOrders">
-                                    <label class="form-check-label" for="selectAllOrders"></label>
+                                    <input class="form-check-input" type="checkbox" id="selectAllOrders"
+                                           aria-label="Select all orders on this page">
+                                    <label class="form-check-label visually-hidden" for="selectAllOrders">
+                                        Select all orders
+                                    </label>
                                 </div>
                             </th>
-                            <th>Order #</th>
-                            <th>Date</th>
-                            <th>Customer</th>
-                            <th>Items</th>
-                            <th>Total</th>
-                            <th>Status</th>
-                            <th>Payment</th>
-                            <th>Actions</th>
+                            <th scope="col" role="columnheader">Order #</th>
+                            <th scope="col" role="columnheader">Date</th>
+                            <th scope="col" role="columnheader">Customer</th>
+                            <th scope="col" role="columnheader">Items</th>
+                            <th scope="col" role="columnheader">Total</th>
+                            <th scope="col" role="columnheader">Status</th>
+                            <th scope="col" role="columnheader">Payment</th>
+                            <th scope="col" role="columnheader">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for order in orders %}
-                        <tr>
-                            <td>
+                        <tr role="row">
+                            <td role="gridcell">
                                 <div class="form-check">
-                                    <input class="form-check-input order-checkbox" type="checkbox" value="{{ order.id }}" id="order_{{ order.id }}">
-                                    <label class="form-check-label" for="order_{{ order.id }}"></label>
+                                    <input class="form-check-input order-checkbox" type="checkbox"
+                                           value="{{ order.id }}" id="order_{{ order.id }}"
+                                           aria-label="Select order {{ order.order_number }}">
+                                    <label class="form-check-label visually-hidden" for="order_{{ order.id }}">
+                                        Select order {{ order.order_number }}
+                                    </label>
                                 </div>
                             </td>
-                            <td><a href="{% url 'staff:order_detail' order.id %}" class="fw-bold text-decoration-none">{{ order.order_number }}</a></td>
-                            <td>{{ order.created_at|date:"d M Y H:i" }}</td>
-                            <td>
-                                {{ order.full_name|truncatechars:20 }}
-                                {% if order.user %}<span class="badge bg-primary">Account</span>{% endif %}
+                            <td role="gridcell">
+                                <a href="{% url 'staff:order_detail' order.id %}"
+                                   class="fw-bold text-decoration-none d-flex align-items-center"
+                                   aria-label="View order {{ order.order_number }} details">
+                                    {{ order.order_number }}
+                                    <i class="fa fa-external-link-alt ms-1 text-muted" aria-hidden="true" style="font-size: 0.75rem;"></i>
+                                </a>
                             </td>
-                            <td>{{ order.items.count }}</td>
-                            <td>£{{ order.total_price }}</td>
-                            <td>
+                            <td role="gridcell">
+                                <time datetime="{{ order.created_at|date:'c' }}"
+                                      aria-label="Order placed on {{ order.created_at|date:'F j, Y \a\t g:i A' }}">
+                                    {{ order.created_at|date:"d M Y H:i" }}
+                                </time>
+                            </td>
+                            <td role="gridcell">
+                                <span aria-label="Customer: {{ order.full_name }}">
+                                    {{ order.full_name|truncatechars:20 }}
+                                </span>
+                                {% if order.user %}
+                                    <span class="badge bg-primary" aria-label="Registered account holder">Account</span>
+                                {% endif %}
+                            </td>
+                            <td role="gridcell">
+                                <span aria-label="{{ order.items.count }} item{{ order.items.count|pluralize }}">
+                                    {{ order.items.count }}
+                                </span>
+                            </td>
+                            <td role="gridcell">
+                                <span aria-label="Total: £{{ order.total_price }}">£{{ order.total_price }}</span>
+                            </td>
+                            <td role="gridcell">
                                 <span class="badge {% if order.status == 'cancelled' %}bg-danger
                                                   {% elif order.status == 'delivered' %}bg-success
                                                   {% elif order.status == 'shipped' %}bg-primary
                                                   {% elif order.status == 'processing' %}bg-info
-                                                  {% else %}bg-warning{% endif %}">
+                                                  {% else %}bg-warning{% endif %}"
+                                      aria-label="Order status: {{ order.get_status_display }}">
                                     {{ order.get_status_display }}
                                 </span>
                             </td>
-                            <td>
+                            <td role="gridcell">
                                 <span class="badge {% if order.payment_status == 'completed' %}bg-success
                                                   {% elif order.payment_status == 'processing' %}bg-info
                                                   {% elif order.payment_status == 'failed' %}bg-danger
                                                   {% elif order.payment_status == 'refunded' %}bg-secondary
-                                                  {% else %}bg-warning{% endif %}">
+                                                  {% else %}bg-warning{% endif %}"
+                                      aria-label="Payment status: {{ order.get_payment_status_display }}">
                                     {{ order.get_payment_status_display }}
                                 </span>
                             </td>
-                            <td>
-                                <div class="btn-group">
-                                    <a href="{% url 'staff:order_detail' order.id %}" class="btn btn-sm btn-outline-primary">
-                                        <i class="fa fa-eye"></i>
-                                    </a>
-                                    <a href="{% url 'staff:order_update' order.id %}" class="btn btn-sm btn-outline-secondary">
-                                        <i class="fa fa-edit"></i>
-                                    </a>
-                                    <button type="button" class="btn btn-sm btn-outline-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="fa fa-cog"></i>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        <li>
-                                            <a href="{% url 'staff:order_update' order.id %}" class="dropdown-item">
-                                                <i class="fa fa-cogs me-1"></i> Mark as Processing
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="{% url 'staff:order_update' order.id %}" class="dropdown-item">
-                                                <i class="fa fa-truck me-1"></i> Mark as Shipped
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="{% url 'staff:order_update' order.id %}" class="dropdown-item">
-                                                <i class="fa fa-check-circle me-1"></i> Mark as Delivered
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <hr class="dropdown-divider">
-                                        </li>
-                                    </ul>
+                            <td role="gridcell">
+                                <div class="btn-group" role="group"
+                                     aria-label="Actions for order {{ order.order_number }}">
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-sm btn-outline-info dropdown-toggle"
+                                                data-bs-toggle="dropdown" aria-expanded="false"
+                                                aria-label="Actions for order {{ order.order_number }}"
+                                                title="Order actions">
+                                            <i class="fa fa-cog" aria-hidden="true"></i>
+                                            <span class="visually-hidden">Actions</span>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end"
+                                            aria-label="Order actions menu">
+                                            <li>
+                                                <a href="{% url 'staff:order_update' order.id %}"
+                                                   class="dropdown-item"
+                                                   aria-label="Edit order {{ order.order_number }}">
+                                                    <i class="fa fa-edit me-1" aria-hidden="true"></i> Edit Order
+                                                </a>
+                                            </li>
+                                            <li><hr class="dropdown-divider" role="separator"></li>
+                                            <li>
+                                                <a href="{% url 'staff:order_update' order.id %}"
+                                                   class="dropdown-item"
+                                                   aria-label="Mark order {{ order.order_number }} as processing">
+                                                    <i class="fa fa-cogs me-1" aria-hidden="true"></i> Mark as Processing
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="{% url 'staff:order_update' order.id %}"
+                                                   class="dropdown-item"
+                                                   aria-label="Mark order {{ order.order_number }} as shipped">
+                                                    <i class="fa fa-truck me-1" aria-hidden="true"></i> Mark as Shipped
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="{% url 'staff:order_update' order.id %}"
+                                                   class="dropdown-item"
+                                                   aria-label="Mark order {{ order.order_number }} as delivered">
+                                                    <i class="fa fa-check-circle me-1" aria-hidden="true"></i> Mark as Delivered
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="9" class="text-center py-4">
-                                <p class="mb-0">No orders found matching your criteria.</p>
+                            <td colspan="9" class="text-center py-4" role="gridcell">
+                                <div role="alert" aria-live="polite">
+                                    <i class="fa fa-info-circle me-2" aria-hidden="true"></i>
+                                    <p class="mb-0">No orders found matching your criteria.</p>
+                                </div>
                                 {% if filtered %}
                                 <p class="mb-0">
                                     <a href="{% url 'staff:order_list' %}" class="alert-link">Clear all filters</a> to see all orders.

@@ -6,17 +6,21 @@
 {% block head_title %}{% trans "Sign In" %}{% endblock %}
 
 {% block content %}
-<div class="container">
+<main class="container" role="main">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="mt-4">
-                <h2>{% trans "Sign In" %}</h2>
+            <section class="mt-4" aria-labelledby="login-heading">
+                <h1 id="login-heading">{% trans "Sign In" %}</h1>
 
                 {% if not SOCIALACCOUNT_ONLY %}
                     <p>{% blocktranslate %}If you have not created an account yet, then please
-                        <a href="{{ signup_url }}">sign up</a> first.{% endblocktranslate %}</p>
+                        <a href="{{ signup_url }}" aria-label="Go to sign up page to create new account">sign up</a> first.{% endblocktranslate %}</p>
 
-                    <form method="post" action="{% url 'account_login' %}" class="login"> {# Add class for styling if needed #}
+                    <form method="post"
+                          action="{% url 'account_login' %}"
+                          class="login"
+                          aria-label="Sign in form"
+                          novalidate> {# Add class for styling if needed #}
                         {% csrf_token %}
                         {% crispy form %} {# Use crispy forms #}
                         {{ redirect_field }}
@@ -25,27 +29,48 @@
                 {% endif %}
 
                 {% if LOGIN_BY_CODE_ENABLED or PASSKEY_LOGIN_ENABLED %}
-                    <hr>
-                    <div class="btn-group-vertical">  <div> {# Use Bootstrap button group #}
-                        {% if PASSKEY_LOGIN_ENABLED %}
-                            <button type="submit" form="mfa_login" id="passkey_login" class="btn btn-outline-primary">{% trans "Sign in with a passkey" %}</button>
-                        {% endif %}
+                    <hr role="separator" aria-label="Alternative sign-in methods">
+                    <section aria-labelledby="alternative-login-heading">
+                        <h2 id="alternative-login-heading" class="h5">Alternative Sign-in Methods</h2>
+                        <div class="btn-group-vertical">  <div> {# Use Bootstrap button group #}
+                            {% if PASSKEY_LOGIN_ENABLED %}
+                                <button type="submit"
+                                        form="mfa_login"
+                                        id="passkey_login"
+                                        class="btn btn-outline-primary"
+                                        aria-describedby="passkey-help">
+                                    {% trans "Sign in with a passkey" %}
+                                </button>
+                                <small id="passkey-help" class="text-muted">
+                                    Use your device's biometric authentication or security key
+                                </small>
+                            {% endif %}
 
-                        {% if LOGIN_BY_CODE_ENABLED %}
-                            <a href="{{ request_login_code_url }}" class="btn btn-outline-primary">{% trans "Mail me a sign-in code" %}</a>
-                        {% endif %}
-                    </div>
+                            {% if LOGIN_BY_CODE_ENABLED %}
+                                <a href="{{ request_login_code_url }}"
+                                   class="btn btn-outline-primary"
+                                   aria-describedby="code-help">
+                                    {% trans "Mail me a sign-in code" %}
+                                </a>
+                                <small id="code-help" class="text-muted">
+                                    Receive a temporary login code via email
+                                </small>
+                            {% endif %}
+                        </div>
+                    </section>
                 {% endif %}
-
 
                 {% if SOCIALACCOUNT_ENABLED %}
-                    {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
+                    <section aria-labelledby="social-login-heading">
+                        <h2 id="social-login-heading" class="h5">Social Sign-in</h2>
+                        {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
+                    </section>
                 {% endif %}
 
-            </div>
+            </section>
         </div>
     </div>
-</div>
+</main>
 {% endblock %}
 
 {% block extra_body %}

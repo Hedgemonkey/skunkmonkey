@@ -11,93 +11,140 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
+<main class="container" role="main">
     <!-- Hero Section -->
-    <section class="hero-section">
+    <section class="hero-section" aria-labelledby="hero-heading">
         <div class="row align-items-center">
             <div class="col-12 col-md-6 my-auto hero-content">
-                <h1 class="display-4 logo-font">Welcome to Skunk Monkey</h1>
+                <h1 id="hero-heading" class="display-4 logo-font">Welcome to Skunk Monkey</h1>
                 <div class="my-4">
                     <p class="lead mb-4">
                         Premium quality products with secure checkout and fast delivery.
                         Discover our wide selection of items at competitive prices.
                     </p>
                     <div class="my-5">
-                        <a href="{% url 'shop:product_list' %}" class="shop-now-button btn btn-lg rounded-0 text-uppercase py-3">Shop Now</a>
+                        <a href="{% url 'shop:product_list' %}"
+                           class="shop-now-button btn btn-lg rounded-0 text-uppercase py-3"
+                           aria-label="Browse all products in our shop">
+                            Shop Now
+                        </a>
                     </div>
                 </div>
             </div>
             <div class="col-12 col-md-6 my-auto d-none d-md-block">
-                <img src="{{ MEDIA_URL }}homepage-hero.jpg" alt="Skunk Monkey Products" class="img-fluid rounded">
+                <img src="{{ MEDIA_URL }}homepage-hero.jpg"
+                     alt="Collection of premium Skunk Monkey products showcasing quality and variety"
+                     class="img-fluid rounded">
             </div>
         </div>
     </section>
 
     <!-- Categories Section -->
-    <section class="category-section">
-        <h2 class="section-heading">Shop by Category</h2>
-        <div class="row">
+    <section class="category-section" aria-labelledby="categories-heading">
+        <h2 id="categories-heading" class="section-heading">Shop by Category</h2>
+        <div class="row" role="list" aria-label="Product categories">
             {% for category in categories %}
-            <div class="col-12 col-sm-6 col-md-4 mb-4">
-                <div class="category-card h-100">
-                    <a href="{% url 'shop:product_list' %}?category={{ category.name|urlencode }}">
+            <div class="col-12 col-sm-6 col-md-4 mb-4" role="listitem">
+                <article class="category-card h-100">
+                    <a href="{% url 'shop:product_list' %}?category={{ category.name|urlencode }}"
+                       aria-label="Browse {{ category.friendly_name }} products">
                         {% if category.image %}
-                            <div class="card-category-img" style="background-image: url('{{ category.image.url }}')"></div>
+                            <div class="card-category-img"
+                                 style="background-image: url('{{ category.image.url }}')"
+                                 role="img"
+                                 aria-label="{{ category.friendly_name }} category image"></div>
                         {% else %}
-                            <div class="card-category-img" style="background-image: url('{{ MEDIA_URL }}noimage.png')"></div>
+                            <div class="card-category-img"
+                                 style="background-image: url('{{ MEDIA_URL }}noimage.png')"
+                                 role="img"
+                                 aria-label="No image available for {{ category.friendly_name }} category"></div>
                         {% endif %}
                     </a>
                     <div class="category-card-body">
                         <h3 class="category-card-title">{{ category.friendly_name }}</h3>
-                        <a href="{% url 'shop:product_list' %}?category={{ category.name|urlencode }}" class="btn-view-category">
+                        <a href="{% url 'shop:product_list' %}?category={{ category.name|urlencode }}"
+                           class="btn-view-category"
+                           aria-label="View all products in {{ category.friendly_name }} category">
                             View Products
                         </a>
                     </div>
-                </div>
+                </article>
             </div>
             {% empty %}
             <div class="col-12 text-center">
-                <p>No categories found.</p>
+                <p role="status" aria-live="polite">No categories found.</p>
             </div>
             {% endfor %}
         </div>
     </section>
 
     <!-- Featured Products Section -->
-    <section class="featured-products">
-        <h2 class="section-heading">Featured Products</h2>
+    <section class="featured-products" aria-labelledby="featured-heading">
+        <h2 id="featured-heading" class="section-heading">Featured Products</h2>
 
-        <div class="row">
+        <div class="row" role="list" aria-label="Featured products">
             {% for product in featured_products %}
-            <div class="col-6 col-md-4 col-lg-3 mb-4 product-item" data-category="{{ product.category.name|lower }}">
-                <div class="product-card h-100">
-                    <a href="{% url 'shop:product_detail' product.id %}">
+            <div class="col-6 col-md-4 col-lg-3 mb-4 product-item"
+                 data-category="{{ product.category.name|lower }}"
+                 role="listitem">
+                <article class="product-card h-100">
+                    <a href="{% url 'shop:product_detail' product.id %}"
+                       aria-label="View details for {{ product.name }}">
                         <div class="product-img-container">
                             {% if product.image %}
-                                <img class="product-img" src="{{ product.image.url }}" alt="{{ product.name }}">
+                                <img class="product-img"
+                                     src="{{ product.image.url }}"
+                                     alt="{{ product.name }} - Product image">
                             {% else %}
-                                <img class="product-img" src="{{ MEDIA_URL }}noimage.png" alt="{{ product.name }}">
+                                <img class="product-img"
+                                     src="{{ MEDIA_URL }}noimage.png"
+                                     alt="{{ product.name }} - No image available">
                             {% endif %}
                         </div>
                     </a>
                     <div class="product-card-body">
-                        <a href="{% url 'shop:product_detail' product.id %}" class="text-decoration-none">
+                        <a href="{% url 'shop:product_detail' product.id %}"
+                           class="text-decoration-none"
+                           aria-label="View {{ product.name }} details">
                             <h3 class="product-title">{{ product.name }}</h3>
                         </a>
                         <div class="product-price">
-                            <span>${{ product.price }}</span>
+                            <span aria-label="Price: ${{ product.price }}">${{ product.price }}</span>
                         </div>
                         <div class="product-card-footer">
-                            <form class="form" action="{% url 'shop:cart_add' product.id %}" method="POST">
+                            <form class="form"
+                                  action="{% url 'shop:cart_add' product.id %}"
+                                  method="POST"
+                                  aria-label="Add {{ product.name }} to cart">
                                 {% csrf_token %}
                                 <input type="hidden" name="quantity" value="1">
                                 <input type="hidden" name="redirect_url" value="{{ request.path }}">
-                                <button type="submit" class="btn-add-to-cart">Add to Cart</button>
+                                <button type="submit"
+                                        class="btn-add-to-cart"
+                                        aria-label="Add {{ product.name }} to shopping cart">
+                                    Add to Cart
+                                </button>
                             </form>
                             {% if product.category %}
                             <p class="small mt-1 mb-0">
-                                <a class="text-muted" href="{% url 'shop:product_list' %}?category={{ product.category.name|urlencode }}">
-                                    <i class="fas fa-tag mr-1"></i>{{ product.category.friendly_name }}
+                                <a class="text-muted"
+                                   href="{% url 'shop:product_list' %}?category={{ product.category.name|urlencode }}"
+                                   aria-label="Browse more products in {{ product.category.friendly_name }} category">
+                                    <i class="fas fa-tag mr-1" aria-hidden="true"></i>{{ product.category.friendly_name }}
+                                </a>
+                            </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </article>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p role="status" aria-live="polite">No featured products found.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
                                 </a>
                             </p>
                             {% endif %}
@@ -114,87 +161,100 @@
     </section>
 
     <!-- Testimonials Section -->
-    <section class="testimonials-section">
-        <h2 class="section-heading">What Our Customers Say</h2>
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="testimonial-card">
-                    <div class="testimonial-quote">
+    <section class="testimonials-section" aria-labelledby="testimonials-heading">
+        <h2 id="testimonials-heading" class="section-heading">What Our Customers Say</h2>
+        <div class="row" role="list" aria-label="Customer testimonials">
+            <div class="col-md-4 mb-4" role="listitem">
+                <article class="testimonial-card">
+                    <div class="testimonial-quote" aria-hidden="true">
                         <i class="fas fa-quote-left"></i>
                     </div>
-                    <p class="testimonial-text">"Great products and fast delivery. Will definitely shop here again!"</p>
+                    <blockquote class="testimonial-text">
+                        "Great products and fast delivery. Will definitely shop here again!"
+                    </blockquote>
                     <p class="testimonial-author">- Sarah J.</p>
-                    <div class="star-rating">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
+                    <div class="star-rating" role="img" aria-label="5 out of 5 stars">
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
                     </div>
-                </div>
+                </article>
             </div>
-            <div class="col-md-4 mb-4">
-                <div class="testimonial-card">
-                    <div class="testimonial-quote">
+            <div class="col-md-4 mb-4" role="listitem">
+                <article class="testimonial-card">
+                    <div class="testimonial-quote" aria-hidden="true">
                         <i class="fas fa-quote-left"></i>
                     </div>
-                    <p class="testimonial-text">"The checkout process was smooth and secure. Excellent service!"</p>
+                    <blockquote class="testimonial-text">
+                        "The checkout process was smooth and secure. Excellent service!"
+                    </blockquote>
                     <p class="testimonial-author">- Michael T.</p>
-                    <div class="star-rating">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star-half-alt"></i>
+                    <div class="star-rating" role="img" aria-label="4.5 out of 5 stars">
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star-half-alt" aria-hidden="true"></i>
                     </div>
-                </div>
+                </article>
             </div>
-            <div class="col-md-4 mb-4">
-                <div class="testimonial-card">
-                    <div class="testimonial-quote">
+            <div class="col-md-4 mb-4" role="listitem">
+                <article class="testimonial-card">
+                    <div class="testimonial-quote" aria-hidden="true">
                         <i class="fas fa-quote-left"></i>
                     </div>
-                    <p class="testimonial-text">"Quality products at reasonable prices. Highly recommend!"</p>
+                    <blockquote class="testimonial-text">
+                        "Quality products at reasonable prices. Highly recommend!"
+                    </blockquote>
                     <p class="testimonial-author">- Lisa M.</p>
-                    <div class="star-rating">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
+                    <div class="star-rating" role="img" aria-label="5 out of 5 stars">
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
                     </div>
-                </div>
+                </article>
             </div>
         </div>
     </section>
 
     <!-- Features Section -->
-    <section class="features-section">
-        <div class="row text-center mb-5">
-            <div class="col-md-4 mb-4">
-                <div class="feature-icon">
-                    <i class="fas fa-truck fa-3x mb-3"></i>
-                </div>
-                <h3 class="feature-title">Fast Delivery</h3>
-                <p class="feature-text">Quick and reliable shipping on all orders.</p>
+    <section class="features-section" aria-labelledby="features-heading">
+        <h2 id="features-heading" class="visually-hidden">Why Choose Skunk Monkey</h2>
+        <div class="row text-center mb-5" role="list" aria-label="Key features">
+            <div class="col-md-4 mb-4" role="listitem">
+                <article class="feature-item">
+                    <div class="feature-icon" aria-hidden="true">
+                        <i class="fas fa-truck fa-3x mb-3"></i>
+                    </div>
+                    <h3 class="feature-title">Fast Delivery</h3>
+                    <p class="feature-text">Quick and reliable shipping on all orders.</p>
+                </article>
             </div>
-            <div class="col-md-4 mb-4">
-                <div class="feature-icon">
-                    <i class="fas fa-lock fa-3x mb-3"></i>
-                </div>
-                <h3 class="feature-title">Secure Payments</h3>
-                <p class="feature-text">Your transactions are always safe with us.</p>
+            <div class="col-md-4 mb-4" role="listitem">
+                <article class="feature-item">
+                    <div class="feature-icon" aria-hidden="true">
+                        <i class="fas fa-lock fa-3x mb-3"></i>
+                    </div>
+                    <h3 class="feature-title">Secure Payments</h3>
+                    <p class="feature-text">Your transactions are always safe with us.</p>
+                </article>
             </div>
-            <div class="col-md-4 mb-4">
-                <div class="feature-icon">
-                    <i class="fas fa-headset fa-3x mb-3"></i>
-                </div>
-                <h3 class="feature-title">Customer Support</h3>
-                <p class="feature-text">We're here to help whenever you need us.</p>
+            <div class="col-md-4 mb-4" role="listitem">
+                <article class="feature-item">
+                    <div class="feature-icon" aria-hidden="true">
+                        <i class="fas fa-headset fa-3x mb-3"></i>
+                    </div>
+                    <h3 class="feature-title">Customer Support</h3>
+                    <p class="feature-text">We're here to help whenever you need us.</p>
+                </article>
             </div>
         </div>
     </section>
-</div>
+</main>
 {% endblock %}
 
 {% block postloadjs %}

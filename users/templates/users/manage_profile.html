@@ -16,81 +16,130 @@
 {% endblock %}
 
 {% block profile_content %}
-    <h2 class="mb-4">Manage Your Profile</h2>
+<main role="main" aria-labelledby="profile-heading">
+    <header class="mb-4">
+        <h1 id="profile-heading" class="h2 mb-2">Manage Your Profile</h1>
+        <p class="text-muted">Update your personal information and account preferences</p>
+    </header>
+
     <div class="row">
         <div class="col-12">
             {% include "users/includes/_messages.html" %}
 
-            <form method="post" action="{% url 'users:manage_profile' %}" enctype="multipart/form-data">
+            <form method="post"
+                  action="{% url 'users:manage_profile' %}"
+                  enctype="multipart/form-data"
+                  novalidate
+                  role="form"
+                  aria-describedby="profile-form-description">
+                <div id="profile-form-description" class="visually-hidden">
+                    Profile management form to update your personal information, contact details, and preferences
+                </div>
                 {% csrf_token %}
 
                 <!-- Basic Information -->
-                <div class="card mb-4">
-                    <div class="card-header bg-light">
-                        <h5 class="mb-0">Personal Information</h5>
-                    </div>
+                <section class="card mb-4" aria-labelledby="personal-info-heading">
+                    <header class="card-header bg-light">
+                        <h2 id="personal-info-heading" class="mb-0 h5">
+                            <i class="fas fa-user me-2" aria-hidden="true"></i>
+                            Personal Information
+                        </h2>
+                    </header>
                     <div class="card-body">
-                        {% crispy user_form %}
-                        {{ profile_form.display_name|as_crispy_field }}
+                        <fieldset aria-labelledby="personal-info-heading">
+                            <legend class="visually-hidden">Personal Information Fields</legend>
+                            {% crispy user_form %}
+                            {{ profile_form.display_name|as_crispy_field }}
+                        </fieldset>
                     </div>
-                </div>
+                </section>
 
                 <!-- Contact Information -->
-                <div class="card mb-4">
-                    <div class="card-header bg-light">
-                        <h5 class="mb-0">Contact Information</h5>
-                    </div>
+                <section class="card mb-4" aria-labelledby="contact-info-heading">
+                    <header class="card-header bg-light">
+                        <h2 id="contact-info-heading" class="mb-0 h5">
+                            <i class="fas fa-phone me-2" aria-hidden="true"></i>
+                            Contact Information
+                        </h2>
+                    </header>
                     <div class="card-body">
-                        {{ profile_form.phone_number|as_crispy_field }}
+                        <fieldset aria-labelledby="contact-info-heading">
+                            <legend class="visually-hidden">Contact Information Fields</legend>
+                            {{ profile_form.phone_number|as_crispy_field }}
+                        </fieldset>
                     </div>
-                </div>
+                </section>
 
                 <!-- Profile Details -->
-                <div class="card mb-4">
-                    <div class="card-header bg-light">
-                        <h5 class="mb-0">Profile Details</h5>
-                    </div>
+                <section class="card mb-4" aria-labelledby="profile-details-heading">
+                    <header class="card-header bg-light">
+                        <h2 id="profile-details-heading" class="mb-0 h5">
+                            <i class="fas fa-id-card me-2" aria-hidden="true"></i>
+                            Profile Details
+                        </h2>
+                    </header>
                     <div class="card-body">
-                        {{ profile_form.bio|as_crispy_field }}
-                        {{ profile_form.birth_date|as_crispy_field }}
+                        <fieldset aria-labelledby="profile-details-heading">
+                            <legend class="visually-hidden">Profile Details Fields</legend>
+                            {{ profile_form.bio|as_crispy_field }}
+                            {{ profile_form.birth_date|as_crispy_field }}
 
-                        <!-- Profile Image Management Component -->
-                        {% include "users/includes/_profile_image_manager.html" %}
+                            <!-- Profile Image Management Component -->
+                            {% include "users/includes/_profile_image_manager.html" %}
+                        </fieldset>
                     </div>
-                </div>
+                </section>
 
                 <!-- Preferences -->
-                <div class="card mb-4">
-                    <div class="card-header bg-light">
-                        <h5 class="mb-0">Your Preferences</h5>
-                    </div>
+                <section class="card mb-4" aria-labelledby="preferences-heading">
+                    <header class="card-header bg-light">
+                        <h2 id="preferences-heading" class="mb-0 h5">
+                            <i class="fas fa-cog me-2" aria-hidden="true"></i>
+                            Your Preferences
+                        </h2>
+                    </header>
                     <div class="card-body">
-                        {{ profile_form.notification_preference|as_crispy_field }}
-                        {{ profile_form.receive_marketing_emails|as_crispy_field }}
-                        {{ profile_form.theme_preference|as_crispy_field }}
+                        <fieldset aria-labelledby="preferences-heading">
+                            <legend class="visually-hidden">Preference Settings</legend>
+                            {{ profile_form.notification_preference|as_crispy_field }}
+                            {{ profile_form.receive_marketing_emails|as_crispy_field }}
+                            {{ profile_form.theme_preference|as_crispy_field }}
+                        </fieldset>
                     </div>
-                </div>
+                </section>
 
                 <!-- Submit Button -->
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-4">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save me-2"></i>Save Profile Changes
+                    <button type="submit"
+                            class="btn btn-primary"
+                            aria-describedby="save-button-help">
+                        <i class="fas fa-save me-2" aria-hidden="true"></i>Save Profile Changes
                     </button>
+                    <div id="save-button-help" class="form-text text-end">
+                        Save all changes to your profile information
+                    </div>
                 </div>
             </form>
 
             <!-- Account Actions Card -->
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">Account Actions</h5>
-                </div>
+            <section class="card" aria-labelledby="account-actions-heading">
+                <header class="card-header bg-light">
+                    <h2 id="account-actions-heading" class="mb-0 h5">
+                        <i class="fas fa-tools me-2" aria-hidden="true"></i>
+                        Account Actions
+                    </h2>
+                </header>
                 <div class="card-body">
-                    <div class="d-grid gap-2">
-                        <a href="{% url 'users:manage_email' %}" class="btn btn-outline-primary">
-                            <i class="fas fa-envelope me-2"></i>Manage Email Addresses
+                    <div class="d-grid gap-2" role="group" aria-label="Account management actions">
+                        <a href="{% url 'users:manage_email' %}"
+                           class="btn btn-outline-primary"
+                           aria-label="Manage your email addresses">
+                            <i class="fas fa-envelope me-2" aria-hidden="true"></i>Manage Email Addresses
                         </a>
-                        <a href="{% url 'users:manage_password' %}" class="btn btn-outline-primary">
-                            <i class="fas fa-key me-2"></i>Change Password
+                        <a href="{% url 'users:manage_password' %}"
+                           class="btn btn-outline-primary"
+                           aria-label="Change your account password">
+                            <i class="fas fa-key me-2" aria-hidden="true"></i>Change Password
                         </a>
                         <button
                             data-account-action="manage"
@@ -98,89 +147,184 @@
                             data-deactivate-redirect-url="{% url 'users:account_inactive_message' %}"
                             data-delete-url="{% url 'users:delete_account' %}"
                             data-delete-redirect-url="{% url 'users:deleted_account' %}"
-                            class="btn btn-outline-danger mt-3">
-                            <i class="fas fa-user-slash me-2"></i>Deactivate/Delete Account
+                            class="btn btn-outline-danger mt-3"
+                            aria-label="Deactivate or permanently delete your account"
+                            aria-describedby="account-danger-warning">
+                            <i class="fas fa-user-slash me-2" aria-hidden="true"></i>Deactivate/Delete Account
                         </button>
+                        <div id="account-danger-warning" class="form-text text-danger small">
+                            <i class="fas fa-exclamation-triangle me-1" aria-hidden="true"></i>
+                            Warning: These actions will affect your account access
+                        </div>
                     </div>
                 </div>
-            </div>
+            </section>
         </div>
     </div>
 
     <!-- Cropper Modal -->
-    <div class="modal fade" id="cropperModal" tabindex="-1" aria-labelledby="cropperModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+    <div class="modal fade" id="cropperModal" tabindex="-1" aria-labelledby="cropperModalLabel" aria-hidden="true" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="cropperModalLabel">Crop Profile Picture</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
+                <header class="modal-header">
+                    <h3 class="modal-title h5" id="cropperModalLabel">Crop Profile Picture</h3>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close image cropper modal">
+                    </button>
+                </header>
                 <div class="modal-body">
-                    <img id="cropper-image" src="#" alt="Image to crop">
+                    <img id="cropper-image"
+                         src="#"
+                         alt="Image to crop for profile picture"
+                         aria-describedby="cropper-instructions">
+                    <div id="cropper-instructions" class="visually-hidden">
+                        Use the controls below to position and adjust your profile image before saving
+                    </div>
                 </div>
-                <div class="modal-footer">
+                <footer class="modal-footer">
                     <div class="cropper-controls">
                         <div class="control-row">
-                            <div class="d-pad">
-                                <button type="button" class="btn btn-secondary" id="move-up"><i class="fas fa-arrow-up"></i></button>
-                                <button type="button" class="btn btn-secondary" id="move-left"><i class="fas fa-arrow-left"></i></button>
-                                <button type="button" class="btn btn-secondary" id="move-right"><i class="fas fa-arrow-right"></i></button>
-                                <button type="button" class="btn btn-secondary" id="move-down"><i class="fas fa-arrow-down"></i></button>
-                            </div>
+                            <fieldset class="d-pad" aria-label="Image positioning controls">
+                                <legend class="visually-hidden">Move Image Position</legend>
+                                <button type="button"
+                                        class="btn btn-secondary"
+                                        id="move-up"
+                                        aria-label="Move image up">
+                                    <i class="fas fa-arrow-up" aria-hidden="true"></i>
+                                </button>
+                                <button type="button"
+                                        class="btn btn-secondary"
+                                        id="move-left"
+                                        aria-label="Move image left">
+                                    <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                                </button>
+                                <button type="button"
+                                        class="btn btn-secondary"
+                                        id="move-right"
+                                        aria-label="Move image right">
+                                    <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                                </button>
+                                <button type="button"
+                                        class="btn btn-secondary"
+                                        id="move-down"
+                                        aria-label="Move image down">
+                                    <i class="fas fa-arrow-down" aria-hidden="true"></i>
+                                </button>
+                            </fieldset>
                             <div class="rotate-slider-container">
                                 <label for="rotate-slider" class="form-label mt-2">Free Rotate</label>
-                                <input type="range" class="form-range" id="rotate-slider" min="-180" max="180" value="0">
-                            </div>
-                            <div class="zoom-rotate-controls">
-                                <div class="zoom-controls">
-                                    <button type="button" class="btn btn-secondary" id="zoom-in"><i class="fas fa-search-plus"></i></button>
-                                    <button type="button" class="btn btn-secondary" id="zoom-out"><i class="fas fa-search-minus"></i></button>
+                                <input type="range"
+                                       class="form-range"
+                                       id="rotate-slider"
+                                       min="-180"
+                                       max="180"
+                                       value="0"
+                                       aria-describedby="rotate-help">
+                                <div id="rotate-help" class="form-text">
+                                    Drag to rotate image from -180° to +180°
                                 </div>
-                                <div class="rotate-controls">
-                                    <button type="button" class="btn btn-secondary" id="rotate-left"><i class="fas fa-undo"></i></button>
-                                    <button type="button" class="btn btn-secondary" id="rotate-right"><i class="fas fa-redo"></i></button>
-                                </div>
                             </div>
+                            <fieldset class="zoom-rotate-controls" aria-label="Zoom and rotation controls">
+                                <legend class="visually-hidden">Image Zoom and Rotation</legend>
+                                <div class="zoom-controls" role="group" aria-label="Zoom controls">
+                                    <button type="button"
+                                            class="btn btn-secondary"
+                                            id="zoom-in"
+                                            aria-label="Zoom in">
+                                        <i class="fas fa-search-plus" aria-hidden="true"></i>
+                                    </button>
+                                    <button type="button"
+                                            class="btn btn-secondary"
+                                            id="zoom-out"
+                                            aria-label="Zoom out">
+                                        <i class="fas fa-search-minus" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                                <div class="rotate-controls" role="group" aria-label="Rotation controls">
+                                    <button type="button"
+                                            class="btn btn-secondary"
+                                            id="rotate-left"
+                                            aria-label="Rotate left 90 degrees">
+                                        <i class="fas fa-undo" aria-hidden="true"></i>
+                                    </button>
+                                    <button type="button"
+                                            class="btn btn-secondary"
+                                            id="rotate-right"
+                                            aria-label="Rotate right 90 degrees">
+                                        <i class="fas fa-redo" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </fieldset>
                         </div>
                     </div>
-                    <div class="action-buttons mt-3">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" id="crop-image-button">Save</button>
+                    <div class="action-buttons mt-3" role="group" aria-label="Cropper actions">
+                        <button type="button"
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal"
+                                aria-label="Cancel image cropping">
+                            Cancel
+                        </button>
+                        <button type="button"
+                                class="btn btn-primary"
+                                id="crop-image-button"
+                                aria-label="Save cropped image">
+                            <i class="fas fa-save me-2" aria-hidden="true"></i>
+                            Save
+                        </button>
                     </div>
-                    <img id="cropped-image-display" style="display: none;">
-                </div>
+                    <img id="cropped-image-display"
+                         alt="Cropped profile image preview"
+                         style="display: none;"
+                         aria-live="polite">
+                </footer>
             </div>
         </div>
     </div>
 
     <!-- Account Action Modal -->
-    <div class="modal fade" id="accountActionModal" tabindex="-1" aria-labelledby="accountActionModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+    <div class="modal fade" id="accountActionModal" tabindex="-1" aria-labelledby="accountActionModalLabel" aria-hidden="true" role="dialog">
+        <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="accountActionModalLabel">Account Actions</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
+                <header class="modal-header">
+                    <h3 class="modal-title h5" id="accountActionModalLabel">Account Actions</h3>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close account actions modal">
+                    </button>
+                </header>
                 <div class="modal-body">
-                    <div class="alert alert-warning">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2" aria-hidden="true"></i>
                         Please select what you'd like to do with your account:
                     </div>
-                    <div class="d-grid gap-3">
-                        <button id="deactivateAccount" class="btn btn-warning">
-                            <i class="fas fa-user-slash me-2"></i>Deactivate Account
-                            <small class="d-block mt-1">(You can reactivate later)</small>
+                    <div class="d-grid gap-3" role="group" aria-label="Account action options">
+                        <button id="deactivateAccount"
+                                class="btn btn-warning"
+                                aria-describedby="deactivate-help">
+                            <i class="fas fa-user-slash me-2" aria-hidden="true"></i>Deactivate Account
+                            <small class="d-block mt-1" id="deactivate-help">(You can reactivate later)</small>
                         </button>
-                        <button id="deleteAccount" class="btn btn-danger">
-                            <i class="fas fa-trash-alt me-2"></i>Delete Account Permanently
-                            <small class="d-block mt-1">(This cannot be undone)</small>
+                        <button id="deleteAccount"
+                                class="btn btn-danger"
+                                aria-describedby="delete-help">
+                            <i class="fas fa-trash-alt me-2" aria-hidden="true"></i>Delete Account Permanently
+                            <small class="d-block mt-1" id="delete-help">(This cannot be undone)</small>
                         </button>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                </div>
+                <footer class="modal-footer">
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal"
+                            aria-label="Cancel account actions">
+                        Cancel
+                    </button>
+                </footer>
             </div>
         </div>
     </div>
+</main>
 {% endblock %}

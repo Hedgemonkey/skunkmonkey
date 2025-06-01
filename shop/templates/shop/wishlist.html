@@ -14,96 +14,136 @@
 {% endblock %}
 
 {% block header %}
-<div class="py-4 bg-primary text-white">
+<header class="py-4 bg-primary text-white" role="banner">
     <div class="container">
         <h1 class="mb-0">Your Wishlist</h1>
     </div>
-</div>
+</header>
 {% endblock %}
 
 {% block content %}
 <!-- Add wishlist-page class to enable specific styling -->
-<div class="container my-4 wishlist-page">
-    <h1 class="mb-4">Your Wishlist</h1>
-
+<main class="container my-4 wishlist-page" role="main">
     {% if wishlist_items %}
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            {% for item in wishlist_items %}
-                {% if item.product %}
-                    <div class="col">
-                        <div class="card h-100 product-card">
-                            <!-- Product image -->
-                            {% if item.product.image %}
-                                <img src="{{ item.product.image.url }}" class="card-img-top product-image" alt="{{ item.product.name }}">
-                            {% else %}
-                                <img src="{{ MEDIA_URL }}noimage.png" class="card-img-top product-image" alt="No image available">
-                            {% endif %}
-
-                            <!-- Product details -->
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    <a href="{% url 'shop:product_detail' item.product.slug %}" class="text-decoration-none text-dark">{{ item.product.name }}</a>
-                                </h5>
-                                <p class="card-text text-muted small">{{ item.product.category.name }}</p>
-
-                                <!-- Price display with possible sale price -->
-                                <div class="price-display">
-                                    {% if item.product.is_sale %}
-                                        <span class="text-danger me-2">£{{ item.product.price }}</span>
-                                        <span class="text-muted text-decoration-line-through">£{{ item.product.compare_at_price }}</span>
-                                    {% else %}
-                                        <span>£{{ item.product.price }}</span>
-                                    {% endif %}
-                                </div>
-                            </div>
-
-                            <!-- Action buttons -->
-                            <div class="card-footer bg-transparent">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    {% if item.product.stock_quantity > 0 %}
-                                        <button type="button"
-                                                class="btn btn-sm btn-primary add-to-cart-modal-btn"
-                                                data-product-id="{{ item.product.id }}"
-                                                data-product-name="{{ item.product.name }}"
-                                                data-product-price="{{ item.product.price }}"
-                                                data-product-image="{% if item.product.image %}{{ item.product.image.url }}{% else %}{{ MEDIA_URL }}noimage.png{% endif %}"
-                                                data-stock-quantity="{{ item.product.stock_quantity }}"
-                                                data-cart-add-url="{% url 'shop:cart_add' item.product.id %}"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#quantityModal">
-                                            Add to Cart
-                                        </button>
-                                    {% else %}
-                                        <button type="button" class="btn btn-sm btn-secondary" disabled>
-                                            Out of Stock
-                                        </button>
-                                    {% endif %}
-
-                                    <!-- Updated to use toggle_wishlist instead of remove_from_wishlist -->
-                                    <a href="{% url 'shop:toggle_wishlist' item.product.id %}"
-                                       class="remove-wishlist-btn wishlist-btn btn btn-sm btn-danger"
-                                       data-product-id="{{ item.product.id }}"
-                                       data-product-name="{{ item.product.name }}"
-                                       aria-label="Remove {{ item.product.name }} from wishlist"
-                                    >
-                                        <i class="fas fa-heart-broken"></i> Remove
+        <section aria-labelledby="wishlist-products-heading">
+            <h2 id="wishlist-products-heading" class="visually-hidden">Wishlist Products</h2>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4"
+                 role="list"
+                 aria-label="Products in your wishlist">
+                {% for item in wishlist_items %}
+                    {% if item.product %}
+                        <div class="col" role="listitem">
+                            <article class="card h-100 product-card" aria-labelledby="product-title-{{ item.product.id }}">
+                                <!-- Product image -->
+                                <div class="product-image-wrapper">
+                                    <a href="{% url 'shop:product_detail' item.product.slug %}"
+                                       aria-label="View details for {{ item.product.name }}">
+                                        {% if item.product.image %}
+                                            <img src="{{ item.product.image.url }}"
+                                                 class="card-img-top product-image"
+                                                 alt="{{ item.product.name }} - Product image">
+                                        {% else %}
+                                            <img src="{{ MEDIA_URL }}noimage.png"
+                                                 class="card-img-top product-image"
+                                                 alt="No image available for {{ item.product.name }}">
+                                        {% endif %}
                                     </a>
                                 </div>
-                            </div>
+
+                                <!-- Product details -->
+                                <div class="card-body">
+                                    <h3 id="product-title-{{ item.product.id }}" class="card-title h5">
+                                        <a href="{% url 'shop:product_detail' item.product.slug %}"
+                                           class="text-decoration-none text-dark"
+                                           aria-label="View {{ item.product.name }} details">
+                                            {{ item.product.name }}
+                                        </a>
+                                    </h3>
+                                    <p class="card-text text-muted small">
+                                        <a href="{% url 'shop:product_list_by_category' item.product.category.slug %}"
+                                           aria-label="Browse {{ item.product.category.name }} category">
+                                            {{ item.product.category.name }}
+                                        </a>
+                                    </p>
+
+                                    <!-- Price display with possible sale price -->
+                                    <div class="price-display" aria-label="Price information">
+                                        {% if item.product.is_sale %}
+                                            <span class="text-danger me-2"
+                                                  aria-label="Sale price £{{ item.product.price }}">
+                                                £{{ item.product.price }}
+                                            </span>
+                                            <span class="text-muted text-decoration-line-through"
+                                                  aria-label="Original price £{{ item.product.compare_at_price }}">
+                                                £{{ item.product.compare_at_price }}
+                                            </span>
+                                        {% else %}
+                                            <span aria-label="Price £{{ item.product.price }}">
+                                                £{{ item.product.price }}
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- Action buttons -->
+                                <div class="card-footer bg-transparent">
+                                    <div class="d-flex justify-content-between align-items-center"
+                                         role="group"
+                                         aria-labelledby="product-title-{{ item.product.id }}">
+                                        {% if item.product.stock_quantity > 0 %}
+                                            <button type="button"
+                                                    class="btn btn-sm btn-primary add-to-cart-modal-btn"
+                                                    data-product-id="{{ item.product.id }}"
+                                                    data-product-name="{{ item.product.name }}"
+                                                    data-product-price="{{ item.product.price }}"
+                                                    data-product-image="{% if item.product.image %}{{ item.product.image.url }}{% else %}{{ MEDIA_URL }}noimage.png{% endif %}"
+                                                    data-stock-quantity="{{ item.product.stock_quantity }}"
+                                                    data-cart-add-url="{% url 'shop:cart_add' item.product.id %}"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#quantityModal"
+                                                    aria-label="Add {{ item.product.name }} to shopping cart">
+                                                <i class="fas fa-shopping-cart me-1" aria-hidden="true"></i>
+                                                Add to Cart
+                                            </button>
+                                        {% else %}
+                                            <button type="button"
+                                                    class="btn btn-sm btn-secondary"
+                                                    disabled
+                                                    aria-disabled="true"
+                                                    aria-label="{{ item.product.name }} is out of stock">
+                                                <i class="fas fa-times-circle me-1" aria-hidden="true"></i>
+                                                Out of Stock
+                                            </button>
+                                        {% endif %}
+
+                                        <!-- Updated to use toggle_wishlist instead of remove_from_wishlist -->
+                                        <a href="{% url 'shop:toggle_wishlist' item.product.id %}"
+                                           class="remove-wishlist-btn wishlist-btn btn btn-sm btn-danger"
+                                           data-product-id="{{ item.product.id }}"
+                                           data-product-name="{{ item.product.name }}"
+                                           aria-label="Remove {{ item.product.name }} from wishlist">
+                                            <i class="fas fa-heart-broken me-1" aria-hidden="true"></i> Remove
+                                        </a>
+                                    </div>
+                                </div>
+                            </article>
                         </div>
-                    </div>
-                {% endif %}
-            {% endfor %}
-        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </section>
     {% else %}
-        <div class="alert alert-info empty-wishlist-message">
-            <p class="mb-3">Your wishlist is empty.</p>
-            <a href="{% url 'shop:product_list' %}" class="btn btn-primary">
-                <i class="fas fa-shopping-bag me-2"></i>Browse Products
+        <section class="alert alert-info empty-wishlist-message" role="alert" aria-live="polite">
+            <h2 class="h4 mb-3">Your wishlist is empty</h2>
+            <p class="mb-3">Start adding products you love to your wishlist!</p>
+            <a href="{% url 'shop:product_list' %}"
+               class="btn btn-primary"
+               aria-label="Browse all products to add to your wishlist">
+                <i class="fas fa-shopping-bag me-2" aria-hidden="true"></i>Browse Products
             </a>
-        </div>
+        </section>
     {% endif %}
-</div>
+</main>
 
 <!-- Include quantity selection modal -->
 {% include 'shop/includes/quantity_modal.html' %}

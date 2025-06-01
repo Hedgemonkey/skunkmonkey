@@ -1,25 +1,61 @@
 {% extends "account/base_manage.html" %}
 {% load allauth i18n %}
+
 {% block head_title %}
     {% trans "Sign Out" %}
 {% endblock head_title %}
+
 {% block content %}
-    {% element h1 %}
-        {% trans "Sign Out" %}
-    {% endelement %}
-    {% element p %}
-        {% trans 'Are you sure you want to sign out?' %}
-    {% endelement %}
+<main role="main" aria-labelledby="logout-heading">
+    <div class="text-center mb-4">
+        <i class="fas fa-sign-out-alt fa-3x text-warning mb-3" aria-hidden="true"></i>
+        {% element h1 id="logout-heading" class="h2" %}
+            {% trans "Sign Out" %}
+        {% endelement %}
+    </div>
+
+    <div class="alert alert-warning" role="alert" aria-live="polite">
+        <i class="fas fa-exclamation-triangle me-2" aria-hidden="true"></i>
+        {% element p class="mb-0" %}
+            {% trans 'Are you sure you want to sign out? You will be logged out of your account and redirected to the homepage.' %}
+        {% endelement %}
+    </div>
+
     {% url 'account_logout' as action_url %}
-    {% element form method="post" action=action_url no_visible_fields=True %}
+    {% element form method="post" action=action_url no_visible_fields=True role="form" aria-describedby="logout-form-description" %}
+        <div id="logout-form-description" class="visually-hidden">
+            Form to confirm signing out of your account
+        </div>
         {% slot body %}
             {% csrf_token %}
             {{ redirect_field }}
         {% endslot %}
         {% slot actions %}
-            {% element button type="submit" %}
-                {% trans 'Sign Out' %}
-            {% endelement %}
+            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                {% element button type="submit" class="btn btn-warning me-md-2" aria-describedby="signout-button-help" %}
+                    <i class="fas fa-sign-out-alt me-2" aria-hidden="true"></i>
+                    {% trans 'Sign Out' %}
+                {% endelement %}
+                <a href="{% url 'home:index' %}"
+                   class="btn btn-secondary"
+                   aria-label="Cancel sign out and return to homepage">
+                    <i class="fas fa-times me-2" aria-hidden="true"></i>
+                    Cancel
+                </a>
+            </div>
+            <div id="signout-button-help" class="form-text text-center mt-2">
+                Click to confirm and sign out of your account
+            </div>
         {% endslot %}
     {% endelement %}
+
+    <div class="text-center mt-4">
+        <p class="text-muted">
+            <i class="fas fa-info-circle me-1" aria-hidden="true"></i>
+            <span aria-label="Information about signing out">
+                Once signed out, you'll need to log in again to access your account features.
+            </span>
+        </p>
+    </div>
+</main>
 {% endblock content %}

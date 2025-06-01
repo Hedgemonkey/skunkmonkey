@@ -76,7 +76,7 @@
                             <label for="{{ form.image.id_for_label }}" class="form-label">Category Image (Optional)</label>
                             <div class="image-preview-container mb-2">
                                 {% if form.instance.image %}
-                                <img src="{{ form.instance.image.url }}" class="img-fluid mb-2" style="max-height: 200px;">
+                                <img src="{{ form.instance.image.url }}" alt="Category image preview" class="img-fluid mb-2" style="max-height: 200px;">
                                 {% endif %}
                             </div>
                             {{ form.image }}

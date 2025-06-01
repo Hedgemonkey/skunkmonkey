@@ -3,17 +3,26 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h1>{% trans "Update User Profile" %} - {{ userprofile.user.username }}</h1>
+    <h1 id="form-heading">{% trans "Update User Profile" %} - {{ userprofile.user.username }}</h1>
 
-    <div class="card">
+    <section class="card" aria-labelledby="form-heading">
         <div class="card-body">
-            <form method="post" enctype="multipart/form-data">
+            <form method="post" enctype="multipart/form-data" id="userprofile-form" novalidate>
                 {% csrf_token %}
                 {{ form|crispy }}
-                <button type="submit" class="btn btn-primary">{% trans "Update Profile" %}</button>
-                <a href="{% url 'staff:user_detail' userprofile.user.pk %}" class="btn btn-outline-secondary">{% trans "Cancel" %}</a>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary" aria-describedby="update-help">
+                        {% trans "Update Profile" %}
+                    </button>
+                    <a href="{% url 'staff:user_detail' userprofile.user.pk %}"
+                       class="btn btn-outline-secondary"
+                       aria-label="Cancel and return to user detail page">
+                        {% trans "Cancel" %}
+                    </a>
+                </div>
+                <div id="update-help" class="visually-hidden">Save changes to user profile</div>
             </form>
         </div>
-    </div>
+    </section>
 </div>
 {% endblock content %}

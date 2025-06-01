@@ -4,54 +4,107 @@
 {% load allauth %}
 {% load crispy_forms_tags %}
 
-
 {% block head_title %}{% trans "Confirm Email Address" %}{% endblock %}
 
 {% block content %}
 
-<div class="container mt-5 mb-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-white border-bottom-0 text-center">
-                    <h2 class="mb-0">{% trans "Confirm Email Address" %}</h2>
-                </div>
-                <div class="card-body">
-                    {% if confirmation %}
-                        {% user_display confirmation.email_address.user as user_display %}
-                        {% if can_confirm %}
-                            <p class="text-center">
-                                {% blocktrans with confirmation.email_address.email as email %}
-                                    Please confirm that <a href="mailto:{{ email }}">{{ email }}</a> is an email address
-                                    for user {{ user_display }}.
-                                {% endblocktrans %}
+<main role="main" aria-labelledby="email-confirm-heading">
+    <div class="container mt-5 mb-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <header class="card-header bg-white border-bottom-0 text-center" role="banner">
+                        <div class="mb-2" aria-hidden="true">
+                            <i class="fas fa-envelope-open fa-2x text-primary"></i>
+                        </div>
+                        <h1 id="email-confirm-heading" class="mb-0 h2">{% trans "Confirm Email Address" %}</h1>
+                    </header>
+                    <div class="card-body">
+                        {% if confirmation %}
+                            {% user_display confirmation.email_address.user as user_display %}
+                            {% if can_confirm %}
+                                <section role="region" aria-labelledby="confirmation-section">
+                                    <div class="alert alert-info" role="alert" aria-live="polite">
+                                        <i class="fas fa-info-circle me-2" aria-hidden="true"></i>
+                                        <span class="fw-bold">Email Confirmation Required</span>
+                                    </div>
+
+                                    <p class="text-center mb-4">
+                                        {% blocktrans with confirmation.email_address.email as email %}
+                                            Please confirm that <a href="mailto:{{ email }}"
+                                               aria-label="Send email to {{ email }}">{{ email }}</a> is an email address
+                                            for user <strong>{{ user_display }}</strong>.
+                                        {% endblocktrans %}
+                                    </p>
+
+                                    <form method="post"
+                                          action="{% url 'account_confirm_email' confirmation.key %}"
+                                          role="form"
+                                          aria-labelledby="email-confirm-heading">
+                                        {% csrf_token %}
+                                        {{ redirect_field }}
+
+                                        <div class="d-grid">
+                                            <button type="submit"
+                                                    class="btn btn-primary btn-lg"
+                                                    aria-describedby="confirm-help">
+                                                <i class="fas fa-check-circle me-2" aria-hidden="true"></i>
+                                                {% trans "Confirm Email Address" %}
+                                            </button>
+                                        </div>
+
+                                        <div id="confirm-help" class="form-text text-center mt-3">
+                                            <small class="text-muted">
+                                                <i class="fas fa-shield-alt me-1" aria-hidden="true"></i>
+                                                This will verify your email address and complete your account setup.
+                                            </small>
+                                        </div>
+                                    </form>
+                                </section>
+                            {% else %}
+                                <div class="alert alert-warning" role="alert" aria-live="polite">
+                                    <i class="fas fa-exclamation-triangle me-2" aria-hidden="true"></i>
+                                    <strong>Unable to Confirm Email</strong>
+                                    <p class="mb-0 mt-2">
+                                        {% blocktrans %}Unable to confirm {{ email }} because it is already confirmed by a different account.{% endblocktrans %}
+                                    </p>
+                                </div>
+
+                                <div class="text-center mt-4">
+                                    <a href="{% url 'account_login' %}"
+                                       class="btn btn-outline-primary"
+                                       aria-label="Go to login page">
+                                        <i class="fas fa-sign-in-alt me-2" aria-hidden="true"></i>
+                                        {% trans "Return to Login" %}
+                                    </a>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <div class="alert alert-danger" role="alert" aria-live="assertive">
+                                <i class="fas fa-times-circle me-2" aria-hidden="true"></i>
+                                <strong>Invalid Confirmation Link</strong>
+                            </div>
+
+                            <p class="text-center mb-4">
+                                {% url 'account_email' as email_url %}
+                                {% blocktrans %}This email confirmation link expired or is invalid. Please <a href="{{ email_url }}"
+                                   aria-label="Request new email confirmation">issue a new email confirmation request</a>.{% endblocktrans %}
                             </p>
 
-                            <form method="post" action="{% url 'account_confirm_email' confirmation.key %}">
-                                {% csrf_token %}
-                                {{ redirect_field }}
-                                <button type="submit" class="btn btn-primary btn-block mt-3">{% trans "Confirm" %}</button>
-                            </form>
-                        {% else %}
-
-                            <p class="text-center">{% blocktrans %}Unable to confirm {{ email }} because it is already confirmed by a different account.{% endblocktrans %}</p>
+                            <div class="text-center">
+                                <a href="{{ email_url }}"
+                                   class="btn btn-primary"
+                                   aria-label="Request new email confirmation">
+                                    <i class="fas fa-envelope me-2" aria-hidden="true"></i>
+                                    {% trans "Request New Confirmation" %}
+                                </a>
+                            </div>
                         {% endif %}
-
-
-
-                    {% else %}
-                        <p class="text-center">
-                        {% url 'account_email' as email_url %}
-                            {% blocktrans %}This e-mail confirmation link expired or is invalid. Please <a href="{{ email_url }}">issue a new e-mail confirmation request</a>.{% endblocktrans %}
-                        </p>
-
-
-
-                    {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</main>
 
 {% endblock %}

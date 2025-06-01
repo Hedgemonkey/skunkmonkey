@@ -10,28 +10,37 @@
 {{ wishlist_product_ids|json_script:"wishlist-data" }}
 {{ comparison_product_ids|json_script:"comparison-data" }}
 
-<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4 product-grid">
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4 product-grid"
+     role="grid"
+     aria-label="Product grid">
     {% if products %}
         {% for product in products %}
-            <div class="col">
-                <div class="card h-100 product-card shadow-sm"
-                     data-name="{{ product.name }}"
-                     data-price="{{ product.price }}"
-                     data-category="{{ product.category.name }}">
+            <div class="col" role="gridcell">
+                <article class="card h-100 product-card shadow-sm"
+                         data-name="{{ product.name }}"
+                         data-price="{{ product.price }}"
+                         data-category="{{ product.category.name }}"
+                         aria-labelledby="product-title-{{ product.id }}">
 
                     <!-- Product image with hover effect -->
                     <div class="product-image-container position-relative">
-                        {% if product.image %}
-                            <img src="{{ product.image.url }}" class="card-img-top product-image" alt="{{ product.name }}">
-                        {% else %}
-                            <div class="no-image-placeholder d-flex align-items-center justify-content-center">
-                                <i class="fas fa-image fa-3x text-muted"></i>
-                            </div>
-                        {% endif %}
+                        <a href="{% url 'shop:product_detail' product.slug %}"
+                           aria-label="View details for {{ product.name }}">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}"
+                                     class="card-img-top product-image"
+                                     alt="{{ product.name }} - Product image">
+                            {% else %}
+                                <div class="no-image-placeholder d-flex align-items-center justify-content-center"
+                                     role="img"
+                                     aria-label="No image available for {{ product.name }}">
+                                    <i class="fas fa-image fa-3x text-muted" aria-hidden="true"></i>
+                                </div>
+                            {% endif %}
+                        </a>
 
                         <!-- Top-right elements container -->
-                        <div class="product-top-right">
-
+                        <div class="product-top-right" role="group" aria-label="Product actions">
                             <!-- Wishlist button - updated to use toggle endpoint -->
                             {% if user.is_authenticated %}
                                 <a href="{% url 'shop:toggle_wishlist' product.id %}?next={{ request.path }}"
@@ -39,8 +48,9 @@
                                    data-product-id="{{ product.id }}"
                                    data-product-name="{{ product.name }}"
                                    data-bs-toggle="tooltip"
+                                   aria-label="{% if product.id in wishlist_product_ids %}Remove {{ product.name }} from{% else %}Add {{ product.name }} to{% endif %} wishlist"
                                    title="{% if product.id in wishlist_product_ids %}Remove from{% else %}Add to{% endif %} wishlist">
-                                    <i class="{% if product.id in wishlist_product_ids %}fas{% else %}far{% endif %} fa-heart"></i>
+                                    <i class="{% if product.id in wishlist_product_ids %}fas{% else %}far{% endif %} fa-heart" aria-hidden="true"></i>
                                 </a>
                             {% endif %}
                         </div>
@@ -48,20 +58,24 @@
 
                     <div class="card-body d-flex flex-column">
                         <!-- Product title - moved up -->
-                        <h5 class="card-title product-title mb-2">
-                            <a href="{% url 'shop:product_detail' product.slug %}" class="text-decoration-none text-dark">
+                        <h3 id="product-title-{{ product.id }}" class="card-title product-title mb-2 h5">
+                            <a href="{% url 'shop:product_detail' product.slug %}"
+                               class="text-decoration-none text-dark"
+                               aria-label="View {{ product.name }} details">
                                 {{ product.name }}
                             </a>
-                        </h5>
+                        </h3>
 
                         <!-- Divider -->
-                        <hr class="my-2">
+                        <hr class="my-2" aria-hidden="true">
 
                         <!-- Category tags -->
                         <div class="product-meta mb-2">
                             <span class="product-category badge bg-light text-dark">
-                                <a href="{% url 'shop:product_list_by_category' product.category.slug %}" class="text-decoration-none text-muted">
-                                    <i class="fas fa-tag me-1"></i>{{ product.category.name }}
+                                <a href="{% url 'shop:product_list_by_category' product.category.slug %}"
+                                   class="text-decoration-none text-muted"
+                                   aria-label="Browse {{ product.category.name }} category">
+                                    <i class="fas fa-tag me-1" aria-hidden="true"></i>{{ product.category.name }}
                                 </a>
                             </span>
                         </div>
@@ -72,43 +86,61 @@
                         </p>
 
                         <!-- Product price -->
-                        <div class="product-price mb-3">
+                        <div class="product-price mb-3" aria-label="Price information">
                             {% if product.compare_at_price and product.compare_at_price > product.price %}
-                                <span class="text-decoration-line-through text-muted me-2">£{{ product.compare_at_price }}</span>
-                                <span class="fw-bold text-danger">£{{ product.price }}</span>
+                                <span class="text-decoration-line-through text-muted me-2"
+                                      aria-label="Original price £{{ product.compare_at_price }}">
+                                    £{{ product.compare_at_price }}
+                                </span>
+                                <span class="fw-bold text-danger"
+                                      aria-label="Sale price £{{ product.price }}">
+                                    £{{ product.price }}
+                                </span>
                             {% else %}
-                                <span class="fw-bold">£{{ product.price }}</span>
+                                <span class="fw-bold" aria-label="Price £{{ product.price }}">
+                                    £{{ product.price }}
+                                </span>
                             {% endif %}
                         </div>
 
                         <!-- Product availability -->
-                        <div class="product-availability mb-3 small">
+                        <div class="product-availability mb-3 small" role="status" aria-live="polite">
                             {% if product.stock_quantity > 0 %}
-                                <span class="text-success"><i class="fas fa-check-circle me-1"></i> In stock</span>
+                                <span class="text-success"
+                                      role="img"
+                                      aria-label="In stock - {{ product.stock_quantity }} available">
+                                    <i class="fas fa-check-circle me-1" aria-hidden="true"></i> In stock
+                                </span>
                             {% else %}
-                                <span class="text-danger"><i class="fas fa-times-circle me-1"></i> Out of stock</span>
+                                <span class="text-danger"
+                                      role="img"
+                                      aria-label="Out of stock - currently unavailable">
+                                    <i class="fas fa-times-circle me-1" aria-hidden="true"></i> Out of stock
+                                </span>
                             {% endif %}
                         </div>
 
                         <!-- Action buttons -->
-                        <div class="d-grid gap-2">
-                            <a href="{% url 'shop:product_detail' product.slug %}" class="btn btn-primary">
-                                <i class="fas fa-info-circle me-1"></i> View Details
-                            </a>
-                            <form action="{% url 'shop:cart_add' product.id %}" method="post" class="add-to-cart-form" data-product-form>
+                        <div class="d-grid gap-2" role="group" aria-labelledby="product-title-{{ product.id }}">
+                            <form action="{% url 'shop:cart_add' product.id %}"
+                                  method="post"
+                                  class="add-to-cart-form"
+                                  data-product-form>
                                 {% csrf_token %}
                                 <input type="hidden" name="quantity" value="1">
                                 <input type="hidden" name="update" value="False">
                                 <input type="hidden" name="next" value="{{ request.path }}">
-                                <button type="button" class="btn btn-outline-primary w-100 add-to-cart-btn"
+                                <button type="button"
+                                        class="btn btn-outline-primary w-100 add-to-cart-btn"
                                         data-product-id="{{ product.id }}"
                                         data-product-name="{{ product.name }}"
                                         data-product-price="£{{ product.price }}"
                                         data-product-image="{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/no-image-placeholder.png' %}{% endif %}"
                                         data-stock-quantity="{{ product.stock_quantity }}"
                                         data-cart-add-url="{% url 'shop:cart_add' product.id %}"
-                                        {% if product.stock_quantity == 0 %}disabled{% endif %}>
-                                    <i class="fas fa-shopping-cart me-1"></i>
+                                        {% if product.stock_quantity == 0 %}disabled aria-disabled="true"{% endif %}
+                                        aria-label="{% if product.stock_quantity == 0 %}{{ product.name }} is out of stock{% else %}Add {{ product.name }} to shopping cart{% endif %}">
+                                    <i class="fas fa-shopping-cart me-1" aria-hidden="true"></i>
                                     {% if product.stock_quantity == 0 %}Out of Stock{% else %}Add to Cart{% endif %}
                                 </button>
                             </form>
@@ -120,8 +152,9 @@
                                    data-product-id="{{ product.id }}"
                                    data-product-name="{{ product.name }}"
                                    data-bs-toggle="tooltip"
+                                   aria-label="Remove {{ product.name }} from comparison list"
                                    title="Remove from comparison">
-                                    <i class="fas fa-check me-1"></i> Compared
+                                    <i class="fas fa-check me-1" aria-hidden="true"></i> Compared
                                 </a>
                            {% else %}
                                 <a href="{% url 'shop:toggle_comparison' product.id %}?next={{ request.path }}"
@@ -129,19 +162,21 @@
                                    data-product-id="{{ product.id }}"
                                    data-product-name="{{ product.name }}"
                                    data-bs-toggle="tooltip"
+                                   aria-label="Add {{ product.name }} to comparison list"
                                    title="Add to comparison">
-                                    <i class="fas fa-balance-scale me-1"></i> Compare
+                                    <i class="fas fa-balance-scale me-1" aria-hidden="true"></i> Compare
                                 </a>
                            {% endif %}
                        </div>
                     </div>
-                </div>
+                </article>
             </div>
         {% endfor %}
     {% else %}
         <div class="col-12">
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle me-2"></i> No products found matching your criteria.
+            <div class="alert alert-info" role="alert" aria-live="polite">
+                <i class="fas fa-info-circle me-2" aria-hidden="true"></i>
+                No products found matching your criteria.
             </div>
         </div>
     {% endif %}

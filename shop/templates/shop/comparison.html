@@ -14,30 +14,59 @@
 {% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    <h1 class="mb-4">Product Comparison</h1>
+<main class="container my-5" role="main">
+    <header class="mb-4">
+        <h1 class="mb-2">Product Comparison</h1>
+        <p class="text-muted" aria-live="polite">
+            {% if products %}
+                Comparing {{ products|length }} product{{ products|length|pluralize }}
+            {% else %}
+                No products to compare
+            {% endif %}
+        </p>
+    </header>
 
     {% if products %}
-        <div class="table-responsive">
-            <table class="comparison-table">
+        <section class="table-responsive" aria-labelledby="comparison-table-heading">
+            <h2 id="comparison-table-heading" class="visually-hidden">Product Comparison Table</h2>
+            <table class="comparison-table"
+                   role="table"
+                   aria-label="Product comparison showing features and specifications"
+                   aria-describedby="comparison-table-description">
+                <caption id="comparison-table-description" class="visually-hidden">
+                    Table comparing {{ products|length }} products across various features including price, category, stock, and specifications
+                </caption>
                 <thead>
-                    <tr>
-                        <th></th>
+                    <tr role="row">
+                        <th scope="col" role="columnheader" class="visually-hidden">Feature</th>
                         {% for product in products %}
-                            <th>
+                            <th scope="col" role="columnheader" aria-labelledby="product-header-{{ product.id }}">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span>{{ product.name }}</span>
-                                    <a href="{% url 'shop:toggle_comparison' product.id %}" class="remove-product toggle-comparison-btn">
-                                        <i class="fas fa-times"></i>
+                                    <span id="product-header-{{ product.id }}">{{ product.name }}</span>
+                                    <a href="{% url 'shop:toggle_comparison' product.id %}"
+                                       class="remove-product toggle-comparison-btn"
+                                       aria-label="Remove {{ product.name }} from comparison"
+                                       title="Remove from comparison">
+                                        <i class="fas fa-times" aria-hidden="true"></i>
                                     </a>
                                 </div>
                                 {% if product.image %}
-                                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image mb-2">
+                                    <img src="{{ product.image.url }}"
+                                         alt="{{ product.name }} product image"
+                                         class="product-image mb-2">
                                 {% else %}
-                                    <img src="{{ MEDIA_URL }}noimage.png" alt="No image" class="product-image mb-2">
+                                    <img src="{{ MEDIA_URL }}noimage.png"
+                                         alt="No image available for {{ product.name }}"
+                                         class="product-image mb-2">
                                 {% endif %}
-                                <div class="product-price mb-2">£{{ product.price }}</div>
-                                <a href="{% url 'shop:product_detail' product.slug %}" class="btn btn-sm btn-outline-primary mb-2">View Details</a>
+                                <div class="product-price mb-2" aria-label="Price £{{ product.price }}">
+                                    £{{ product.price }}
+                                </div>
+                                <a href="{% url 'shop:product_detail' product.slug %}"
+                                   class="btn btn-sm btn-outline-primary mb-2"
+                                   aria-label="View detailed information for {{ product.name }}">
+                                    View Details
+                                </a>
                                 {% if product.stock_quantity > 0 %}
                                     <button type="button"
                                             class="btn btn-sm btn-primary add-to-cart-modal-btn"
@@ -48,11 +77,21 @@
                                             data-stock-quantity="{{ product.stock_quantity }}"
                                             data-cart-add-url="{% url 'shop:cart_add' product.id %}"
                                             data-bs-toggle="modal"
-                                            data-bs-target="#quantityModal">
+                                            data-bs-target="#quantityModal"
+                                            aria-label="Add {{ product.name }} to shopping cart"
+                                            aria-describedby="cart-help-{{ product.id }}">
+                                        <i class="fas fa-cart-plus me-1" aria-hidden="true"></i>
                                         Add to Cart
                                     </button>
+                                    <div id="cart-help-{{ product.id }}" class="visually-hidden">
+                                        Opens modal to select quantity for {{ product.name }}
+                                    </div>
                                 {% else %}
-                                    <button type="button" class="btn btn-sm btn-secondary" disabled>
+                                    <button type="button"
+                                            class="btn btn-sm btn-secondary"
+                                            disabled
+                                            aria-label="{{ product.name }} is out of stock">
+                                        <i class="fas fa-times-circle me-1" aria-hidden="true"></i>
                                         Out of Stock
                                     </button>
                                 {% endif %}
@@ -62,43 +101,66 @@
                 </thead>
                 <tbody>
                     <!-- Basic Info -->
-                    <tr>
-                        <td class="feature-name">Category</td>
+                    <tr role="row">
+                        <td class="feature-name" role="rowheader" scope="row">Category</td>
                         {% for product in products %}
-                            <td>{{ product.category.name }}</td>
+                            <td role="gridcell" aria-label="Category: {{ product.category.name }}">
+                                {{ product.category.name }}
+                            </td>
                         {% endfor %}
                     </tr>
-                    <tr>
-                        <td class="feature-name">Stock</td>
+                    <tr role="row">
+                        <td class="feature-name" role="rowheader" scope="row">Stock</td>
                         {% for product in products %}
-                            <td>
+                            <td role="gridcell">
                                 {% if product.stock_quantity > 10 %}
-                                    <span class="text-success">In Stock</span>
+                                    <span class="text-success"
+                                          role="status"
+                                          aria-label="In stock - {{ product.stock_quantity }} available">
+                                        <i class="fas fa-check-circle me-1" aria-hidden="true"></i>
+                                        In Stock
+                                    </span>
                                 {% elif product.stock_quantity > 0 %}
-                                    <span class="text-warning">Low Stock ({{ product.stock_quantity }})</span>
+                                    <span class="text-warning"
+                                          role="status"
+                                          aria-label="Low stock - only {{ product.stock_quantity }} remaining">
+                                        <i class="fas fa-exclamation-triangle me-1" aria-hidden="true"></i>
+                                        Low Stock ({{ product.stock_quantity }})
+                                    </span>
                                 {% else %}
-                                    <span class="text-danger">Out of Stock</span>
+                                    <span class="text-danger"
+                                          role="status"
+                                          aria-label="Out of stock">
+                                        <i class="fas fa-times-circle me-1" aria-hidden="true"></i>
+                                        Out of Stock
+                                    </span>
                                 {% endif %}
                             </td>
                         {% endfor %}
                     </tr>
-                    <tr>
-                        <td class="feature-name">Description</td>
+                    <tr role="row">
+                        <td class="feature-name" role="rowheader" scope="row">Description</td>
                         {% for product in products %}
-                            <td>{{ product.description|truncatewords:30 }}</td>
+                            <td role="gridcell" aria-label="Description: {{ product.description|truncatewords:30 }}">
+                                {{ product.description|truncatewords:30 }}
+                            </td>
                         {% endfor %}
                     </tr>
 
                     <!-- Product Attributes -->
                     {% for attr_type in attribute_types %}
-                        <tr>
-                            <td class="feature-name">{{ attr_type.display_name }}</td>
+                        <tr role="row">
+                            <td class="feature-name" role="rowheader" scope="row">
+                                {{ attr_type.display_name }}
+                            </td>
                             {% for product in products %}
-                                <td>
+                                <td role="gridcell">
                                     {% if product.id in product_attributes and attr_type.id in product_attributes|get_item:product.id %}
-                                        {{ product_attributes|get_item:product.id|get_item:attr_type.id|join:", " }}
+                                        <span aria-label="{{ attr_type.display_name }}: {{ product_attributes|get_item:product.id|get_item:attr_type.id|join:', ' }}">
+                                            {{ product_attributes|get_item:product.id|get_item:attr_type.id|join:", " }}
+                                        </span>
                                     {% else %}
-                                        -
+                                        <span aria-label="{{ attr_type.display_name }}: Not specified">-</span>
                                     {% endif %}
                                 </td>
                             {% endfor %}
@@ -106,40 +168,60 @@
                     {% endfor %}
 
                     <!-- Special Features -->
-                    <tr>
-                        <td class="feature-name">On Sale</td>
+                    <tr role="row">
+                        <td class="feature-name" role="rowheader" scope="row">On Sale</td>
                         {% for product in products %}
-                            <td>
+                            <td role="gridcell">
                                 {% if product.is_sale %}
-                                    <span class="text-success">Yes ({{ product.discount_percentage }}% off)</span>
+                                    <span class="text-success"
+                                          aria-label="On sale with {{ product.discount_percentage }} percent discount">
+                                        <i class="fas fa-tag me-1" aria-hidden="true"></i>
+                                        Yes ({{ product.discount_percentage }}% off)
+                                    </span>
                                 {% else %}
-                                    <span>No</span>
+                                    <span aria-label="Not on sale">
+                                        <i class="fas fa-minus me-1 text-muted" aria-hidden="true"></i>
+                                        No
+                                    </span>
                                 {% endif %}
                             </td>
                         {% endfor %}
                     </tr>
-                    <tr>
-                        <td class="feature-name">New Arrival</td>
+                    <tr role="row">
+                        <td class="feature-name" role="rowheader" scope="row">New Arrival</td>
                         {% for product in products %}
-                            <td>
+                            <td role="gridcell">
                                 {% if product.is_new %}
-                                    <span class="text-primary">Yes</span>
+                                    <span class="text-primary" aria-label="New arrival">
+                                        <i class="fas fa-star me-1" aria-hidden="true"></i>
+                                        Yes
+                                    </span>
                                 {% else %}
-                                    <span>No</span>
+                                    <span aria-label="Not a new arrival">
+                                        <i class="fas fa-minus me-1 text-muted" aria-hidden="true"></i>
+                                        No
+                                    </span>
                                 {% endif %}
                             </td>
                         {% endfor %}
                     </tr>
                 </tbody>
             </table>
-        </div>
+        </section>
     {% else %}
-        <div class="empty-comparison">
-            <p class="lead mb-4">You haven't added any products to compare yet.</p>
-            <a href="{% url 'shop:product_list' %}" class="btn btn-primary">Browse Products</a>
-        </div>
+        <section class="empty-comparison text-center py-5" aria-labelledby="empty-comparison-heading">
+            <i class="fas fa-balance-scale fa-4x mb-3 text-muted" aria-hidden="true"></i>
+            <h2 id="empty-comparison-heading" class="h3">No Products to Compare</h2>
+            <p class="lead mb-4">You haven't added any products to compare yet. Browse our products and select items to compare their features.</p>
+            <a href="{% url 'shop:product_list' %}"
+               class="btn btn-primary"
+               aria-label="Browse products to add to comparison">
+                <i class="fas fa-shopping-cart me-2" aria-hidden="true"></i>
+                Browse Products
+            </a>
+        </section>
     {% endif %}
-</div>
+</main>
 
 <!-- Include quantity selection modal -->
 {% include 'shop/includes/quantity_modal.html' %}

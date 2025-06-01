@@ -9,24 +9,37 @@
 {% block head_title %}{% trans "Contact Us" %}{% endblock %}
 
 {% block content %}
-    <div class="container">
+    <main class="container" role="main">
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="mt-4">  <!-- Add some top margin for spacing -->
-                    <h2>{% trans "Contact Us" %}</h2>
+                    <h1 class="h2">{% trans "Contact Us" %}</h1>
+                    <p class="lead">{% trans "Get in touch with us using the form below. We'll get back to you as soon as possible." %}</p>
+
+                    <!-- Live region for form status messages -->
+                    <div id="form-status" aria-live="polite" class="visually-hidden"></div>
 
                     {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-                        {% endfor %}
+                        <div role="alert" aria-live="assertive">
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        </div>
                     {% endif %}
 
-                    <form method="post">
-                        {% csrf_token %}
-                        {% crispy form %}
+                    <form method="post" novalidate aria-labelledby="contact-form-heading"
+                          class="needs-validation" id="contact-form">
+                        <fieldset>
+                            <legend id="contact-form-heading" class="visually-hidden">{% trans "Contact Form" %}</legend>
+                            {% csrf_token %}
+                            {% crispy form %}
+                        </fieldset>
                     </form>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 {% endblock %}

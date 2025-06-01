@@ -6,12 +6,18 @@
 {% block staff_title %}Order #{{ order.order_number }}{% endblock %}
 
 {% block staff_actions %}
-<div class="btn-group">
-    <a href="{% url 'staff:order_list' %}" class="btn btn-secondary mb-3">
-        <i class="fa fa-arrow-left me-1"></i> Back to Orders
+<div class="btn-group" role="group" aria-label="Order actions">
+    <a href="{% url 'staff:order_list' %}"
+       class="btn btn-secondary mb-3"
+       aria-describedby="back-to-orders-desc">
+        <i class="fa fa-arrow-left me-1" aria-hidden="true"></i> Back to Orders
+        <span id="back-to-orders-desc" class="visually-hidden">Return to the orders list</span>
     </a>
-    <a href="{% url 'staff:order_update' order.id %}" class="btn btn-primary mb-3">
-        <i class="fa fa-edit me-1"></i> Edit Order
+    <a href="{% url 'staff:order_update' order.id %}"
+       class="btn btn-primary mb-3"
+       aria-describedby="edit-order-desc">
+        <i class="fa fa-edit me-1" aria-hidden="true"></i> Edit Order
+        <span id="edit-order-desc" class="visually-hidden">Edit order #{{ order.order_number }}</span>
     </a>
 </div>
 {% endblock %}
@@ -20,222 +26,328 @@
 <div class="row mb-4">
     <!-- Order summary card -->
     <div class="col-md-6 mb-4">
-        <div class="card shadow h-100">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Order Summary</h5>
-                <span class="badge {% if order.status == 'cancelled' %}bg-danger{% elif order.status == 'delivered' %}bg-success{% elif order.status == 'shipped' %}bg-primary{% elif order.status == 'paid' %}bg-info{% else %}bg-warning{% endif %} px-3 py-2">
-                    {{ order.get_status_display }}
-                </span>
+        <section aria-labelledby="order-summary-heading">
+            <div class="card shadow h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h2 id="order-summary-heading" class="h5 mb-0">Order Summary</h2>
+                    <span class="badge {% if order.status == 'cancelled' %}bg-danger{% elif order.status == 'delivered' %}bg-success{% elif order.status == 'shipped' %}bg-primary{% elif order.status == 'paid' %}bg-info{% else %}bg-warning{% endif %} px-3 py-2"
+                          aria-label="Order status: {{ order.get_status_display }}">
+                        {{ order.get_status_display }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-3">
+                        <dt class="col-6">Order Number:</dt>
+                        <dd class="col-6">{{ order.order_number }}</dd>
+
+                        <dt class="col-6">Date Placed:</dt>
+                        <dd class="col-6">
+                            <time datetime="{{ order.created_at|date:'c' }}">
+                                {{ order.created_at|date:"M d, Y H:i" }}
+                            </time>
+                        </dd>
+                    </dl>
+
+                    <dl class="row mb-3">
+                        <dt class="col-6">Total Items:</dt>
+                        <dd class="col-6">{{ order.items.count }}</dd>
+
+                        <dt class="col-6">Total:</dt>
+                        <dd class="col-6">
+                            <span class="h5" aria-label="Order total: £{{ order.total_price }}">
+                                £{{ order.total_price }}
+                            </span>
+                        </dd>
+                    </dl>
+
+                    <dl class="row mb-3">
+                        <dt class="col-6">Payment Status:</dt>
+                        <dd class="col-6">
+                            <span class="badge {% if order.payment_status == 'completed' %}bg-success{% elif order.payment_status == 'refunded' %}bg-secondary{% elif order.payment_status == 'failed' %}bg-danger{% else %}bg-warning{% endif %}"
+                                  aria-label="Payment status: {{ order.get_payment_status_display }}">
+                                {{ order.get_payment_status_display }}
+                            </span>
+                        </dd>
+
+                        <dt class="col-6">Paid On:</dt>
+                        <dd class="col-6">
+                            {% if order.paid_at %}
+                                <time datetime="{{ order.paid_at|date:'c' }}">
+                                    {{ order.paid_at|date:"M d, Y H:i" }}
+                                </time>
+                            {% else %}
+                                <span aria-label="Payment not yet received">Not paid yet</span>
+                            {% endif %}
+                        </dd>
+                    </dl>
+
+                    {% if order.tracking_number %}
+                    <dl class="row mb-3">
+                        <dt class="col-12">Tracking Number:</dt>
+                        <dd class="col-12">
+                            <code aria-label="Tracking number: {{ order.tracking_number }}">
+                                {{ order.tracking_number }}
+                            </code>
+                        </dd>
+                    </dl>
+                    {% endif %}
+
+                    <dl class="row">
+                        <dt class="col-6">Shipped On:</dt>
+                        <dd class="col-6">
+                            {% if order.shipped_at %}
+                                <time datetime="{{ order.shipped_at|date:'c' }}">
+                                    {{ order.shipped_at|date:"M d, Y" }}
+                                </time>
+                            {% else %}
+                                <span aria-label="Order not yet shipped">Not shipped yet</span>
+                            {% endif %}
+                        </dd>
+
+                        <dt class="col-6">Delivered On:</dt>
+                        <dd class="col-6">
+                            {% if order.delivered_at %}
+                                <time datetime="{{ order.delivered_at|date:'c' }}">
+                                    {{ order.delivered_at|date:"M d, Y" }}
+                                </time>
+                            {% else %}
+                                <span aria-label="Order not yet delivered">Not delivered yet</span>
+                            {% endif %}
+                        </dd>
+                    </dl>
+                </div>
             </div>
-            <div class="card-body">
-                <div class="row mb-3">
-                    <div class="col-6">
-                        <p class="mb-0"><strong>Order Number:</strong></p>
-                        <p>{{ order.order_number }}</p>
-                    </div>
-                    <div class="col-6">
-                        <p class="mb-0"><strong>Date Placed:</strong></p>
-                        <p>{{ order.created_at|date:"M d, Y H:i" }}</p>
-                    </div>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-6">
-                        <p class="mb-0"><strong>Total Items:</strong></p>
-                        <p>{{ order.items.count }}</p>
-                    </div>
-                    <div class="col-6">
-                        <p class="mb-0"><strong>Total:</strong></p>
-                        <p class="h5">£{{ order.total_price }}</p>
-                    </div>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-6">
-                        <p class="mb-0"><strong>Payment Status:</strong></p>
-                        <p><span class="badge {% if order.payment_status == 'completed' %}bg-success{% elif order.payment_status == 'refunded' %}bg-secondary{% elif order.payment_status == 'failed' %}bg-danger{% else %}bg-warning{% endif %}">
-                            {{ order.get_payment_status_display }}
-                        </span></p>
-                    </div>
-                    <div class="col-6">
-                        <p class="mb-0"><strong>Paid On:</strong></p>
-                        <p>{% if order.paid_at %}{{ order.paid_at|date:"M d, Y H:i" }}{% else %}Not paid yet{% endif %}</p>
-                    </div>
-                </div>
-
-                {% if order.tracking_number %}
-                <div class="row mb-3">
-                    <div class="col-12">
-                        <p class="mb-0"><strong>Tracking Number:</strong></p>
-                        <p>{{ order.tracking_number }}</p>
-                    </div>
-                </div>
-                {% endif %}
-
-                <div class="row">
-                    <div class="col-6">
-                        <p class="mb-0"><strong>Shipped On:</strong></p>
-                        <p>{% if order.shipped_at %}{{ order.shipped_at|date:"M d, Y" }}{% else %}Not shipped yet{% endif %}</p>
-                    </div>
-                    <div class="col-6">
-                        <p class="mb-0"><strong>Delivered On:</strong></p>
-                        <p>{% if order.delivered_at %}{{ order.delivered_at|date:"M d, Y" }}{% else %}Not delivered yet{% endif %}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </section>
     </div>
 
     <!-- Customer information card -->
     <div class="col-md-6 mb-4">
-        <div class="card shadow h-100">
-            <div class="card-header">
-                <h5 class="mb-0">Customer Information</h5>
+        <section aria-labelledby="customer-info-heading">
+            <div class="card shadow h-100">
+                <div class="card-header">
+                    <h2 id="customer-info-heading" class="h5 mb-0">Customer Information</h2>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-3">
+                        <dt class="col-12">Customer Name:</dt>
+                        <dd class="col-12">{{ order.full_name }}</dd>
+                    </dl>
+
+                    <dl class="row mb-3">
+                        <dt class="col-6">Email:</dt>
+                        <dd class="col-6">
+                            <a href="mailto:{{ order.email }}" aria-label="Send email to {{ order.email }}">
+                                {{ order.email }}
+                            </a>
+                        </dd>
+
+                        <dt class="col-6">Phone:</dt>
+                        <dd class="col-6">
+                            {% if order.phone_number %}
+                                <a href="tel:{{ order.phone_number }}" aria-label="Call {{ order.phone_number }}">
+                                    {{ order.phone_number }}
+                                </a>
+                            {% else %}
+                                <span aria-label="Phone number not provided">Not provided</span>
+                            {% endif %}
+                        </dd>
+                    </dl>
+
+                    <!-- Billing Address Section -->
+                    <dl class="row mb-3">
+                        <dt class="col-12">Billing Address:</dt>
+                        <dd class="col-12">
+                            <address aria-label="Customer billing address">
+                                {% if address_mapping.address_line_1 %}{{ address_mapping.address_line_1 }}<br>{% endif %}
+                                {% if address_mapping.address_line_2 %}{{ address_mapping.address_line_2 }}<br>{% endif %}
+                                {% if address_mapping.town_or_city %}{{ address_mapping.town_or_city }}<br>{% endif %}
+                                {% if address_mapping.county %}{{ address_mapping.county }}<br>{% endif %}
+                                {% if address_mapping.postcode %}{{ address_mapping.postcode }}<br>{% endif %}
+                                {% if address_mapping.country.name %}{{ address_mapping.country.name }}{% endif %}
+                            </address>
+                        </dd>
+                    </dl>
+
+                    <dl class="row">
+                        <dt class="col-12">Account:</dt>
+                        <dd class="col-12">
+                            {% if order.user %}
+                                <span aria-label="Order placed by registered user with ID {{ order.user.id }}">
+                                    Registered user (ID: {{ order.user.id }})
+                                </span>
+                            {% else %}
+                                <span aria-label="Order placed via guest checkout">Guest checkout</span>
+                            {% endif %}
+                        </dd>
+                    </dl>
+                </div>
             </div>
-            <div class="card-body">
-                <div class="row mb-3">
-                    <div class="col-12">
-                        <p class="mb-0"><strong>Customer Name:</strong></p>
-                        <p>{{ order.full_name }}</p>
-                    </div>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-6">
-                        <p class="mb-0"><strong>Email:</strong></p>
-                        <p>{{ order.email }}</p>
-                    </div>
-                    <div class="col-6">
-                        <p class="mb-0"><strong>Phone:</strong></p>
-                        <p>{{ order.phone_number|default:"Not provided" }}</p>
-                    </div>
-                </div>
-
-                <!-- Billing Address Section -->
-                <div class="row mb-3">
-                    <div class="col-12">
-                        <p class="mb-0"><strong>Billing Address:</strong></p>
-                        <address>
-                            {% if address_mapping.address_line_1 %}{{ address_mapping.address_line_1 }}<br>{% endif %}
-                            {% if address_mapping.address_line_2 %}{{ address_mapping.address_line_2 }}<br>{% endif %}
-                            {% if address_mapping.town_or_city %}{{ address_mapping.town_or_city }}<br>{% endif %}
-                            {% if address_mapping.county %}{{ address_mapping.county }}<br>{% endif %}
-                            {% if address_mapping.postcode %}{{ address_mapping.postcode }}<br>{% endif %}
-                            {% if address_mapping.country.name %}{{ address_mapping.country.name }}{% endif %}
-                        </address>
-                    </div>
-                </div>
-
-                {% if order.user %}
-                <div class="row">
-                    <div class="col-12">
-                        <p class="mb-0"><strong>Account:</strong></p>
-                        <p>Registered user (ID: {{ order.user.id }})</p>
-                    </div>
-                </div>
-                {% else %}
-                <div class="row">
-                    <div class="col-12">
-                        <p class="mb-0"><strong>Account:</strong></p>
-                        <p>Guest checkout</p>
-                    </div>
-                </div>
-                {% endif %}
-            </div>
-        </div>
+        </section>
     </div>
 </div>
 
 <div class="row">
     <!-- Order items card -->
     <div class="col-12 mb-4">
-        <div class="card shadow">
-            <div class="card-header">
-                <h5 class="mb-0">Order Items</h5>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th style="width: 80px;"></th>
-                                <th>Product</th>
-                                <th class="text-center">Quantity</th>
-                                <th class="text-end">Price</th>
-                                <th class="text-end">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for item in items %}
-                            <tr>
-                                <td>
-                                    {% if item.product.image %}
-                                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-fluid" style="max-height: 50px;">
-                                    {% else %}
-                                    <img src="{{ MEDIA_URL }}noimage.png" alt="No image available" class="img-fluid" style="max-height: 50px;">
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {{ item.product.name }}
-                                    {% if item.product_variant %}
-                                    <small class="text-muted d-block">Variant: {{ item.product_variant }}</small>
-                                    {% endif %}
-                                </td>
-                                <td class="text-center">{{ item.quantity }}</td>
-                                <td class="text-end">£{{ item.price }}</td>
-                                <td class="text-end">£{{ item.total_price }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <th colspan="4" class="text-end">Subtotal:</th>
-                                <th class="text-end">£{{ pricing.subtotal_price }}</th>
-                            </tr>
-                            {% if pricing.shipping_price %}
-                            <tr>
-                                <th colspan="4" class="text-end">Shipping:</th>
-                                <td class="text-end">£{{ pricing.shipping_price }}</td>
-                            </tr>
-                            {% endif %}
-                            {% if pricing.discount_amount %}
-                            <tr>
-                                <th colspan="4" class="text-end">Discount:</th>
-                                <td class="text-end">-£{{ pricing.discount_amount }}</td>
-                            </tr>
-                            {% endif %}
-                            <tr>
-                                <th colspan="4" class="text-end">Total:</th>
-                                <th class="text-end">£{{ order.total_price }}</th>
-                            </tr>
-                        </tfoot>
-                    </table>
+        <section aria-labelledby="order-items-heading">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h2 id="order-items-heading" class="h5 mb-0">Order Items</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped"
+                               role="table"
+                               aria-label="Order items details"
+                               aria-describedby="order-items-desc">
+                            <caption id="order-items-desc" class="visually-hidden">
+                                Table showing {{ items|length }} item{% if items|length != 1 %}s{% endif %} in order {{ order.order_number }} with product details, quantities, prices and totals
+                            </caption>
+                            <thead>
+                                <tr role="row">
+                                    <th scope="col" style="width: 80px;">Image</th>
+                                    <th scope="col">Product</th>
+                                    <th scope="col" class="text-center">Quantity</th>
+                                    <th scope="col" class="text-end">Price</th>
+                                    <th scope="col" class="text-end">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in items %}
+                                <tr role="row">
+                                    <td>
+                                        {% if item.product.image %}
+                                        <img src="{{ item.product.image.url }}"
+                                             alt="Product image for {{ item.product.name }}"
+                                             class="img-fluid"
+                                             style="max-height: 50px;"
+                                             role="img">
+                                        {% else %}
+                                        <img src="{{ MEDIA_URL }}noimage.png"
+                                             alt="No image available for {{ item.product.name }}"
+                                             class="img-fluid"
+                                             style="max-height: 50px;"
+                                             role="img">
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <strong>{{ item.product.name }}</strong>
+                                            {% if item.product_variant %}
+                                            <small class="text-muted d-block" aria-label="Product variant: {{ item.product_variant }}">
+                                                Variant: {{ item.product_variant }}
+                                            </small>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td class="text-center" aria-label="Quantity: {{ item.quantity }}">
+                                        {{ item.quantity }}
+                                    </td>
+                                    <td class="text-end" aria-label="Unit price: £{{ item.price }}">
+                                        £{{ item.price }}
+                                    </td>
+                                    <td class="text-end" aria-label="Line total: £{{ item.total_price }}">
+                                        £{{ item.total_price }}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="4" class="text-end" scope="row">Subtotal:</th>
+                                    <th class="text-end" aria-label="Subtotal: £{{ pricing.subtotal_price }}">
+                                        £{{ pricing.subtotal_price }}
+                                    </th>
+                                </tr>
+                                {% if pricing.shipping_price %}
+                                <tr>
+                                    <th colspan="4" class="text-end" scope="row">Shipping:</th>
+                                    <td class="text-end" aria-label="Shipping cost: £{{ pricing.shipping_price }}">
+                                        £{{ pricing.shipping_price }}
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% if pricing.discount_amount %}
+                                <tr>
+                                    <th colspan="4" class="text-end" scope="row">Discount:</th>
+                                    <td class="text-end" aria-label="Discount applied: £{{ pricing.discount_amount }}">
+                                        -£{{ pricing.discount_amount }}
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                <tr>
+                                    <th colspan="4" class="text-end" scope="row">Total:</th>
+                                    <th class="text-end" aria-label="Final total: £{{ order.total_price }}">
+                                        £{{ order.total_price }}
+                                    </th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
     </div>
 </div>
 
 <!-- Tabs for actions, notes, and history -->
 <div class="row">
     <div class="col-12">
-        <ul class="nav nav-tabs" id="orderTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="actions-tab" data-bs-toggle="tab" data-bs-target="#actions" type="button" role="tab" aria-controls="actions" aria-selected="true">
-                    Actions
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="notes-tab" data-bs-toggle="tab" data-bs-target="#notes" type="button" role="tab" aria-controls="notes" aria-selected="false">
-                    Staff Notes <span class="badge bg-secondary rounded-pill">{{ notes|length }}</span>
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false">
-                    History <span class="badge bg-secondary rounded-pill">{{ actions|length }}</span>
-                </button>
-            </li>
-        </ul>
+        <nav role="navigation" aria-label="Order management sections">
+            <ul class="nav nav-tabs" id="orderTabs" role="tablist" aria-label="Order management tabs">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active"
+                            id="actions-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#actions"
+                            type="button"
+                            role="tab"
+                            aria-controls="actions"
+                            aria-selected="true"
+                            aria-describedby="actions-tab-desc">
+                        <i class="fa fa-cogs me-1" aria-hidden="true"></i>
+                        Actions
+                        <span id="actions-tab-desc" class="visually-hidden">Update order status and manage order actions</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link"
+                            id="notes-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#notes"
+                            type="button"
+                            role="tab"
+                            aria-controls="notes"
+                            aria-selected="false"
+                            aria-describedby="notes-tab-desc">
+                        <i class="fa fa-sticky-note me-1" aria-hidden="true"></i>
+                        Staff Notes
+                        <span class="badge bg-secondary rounded-pill ms-1" aria-label="{{ notes|length }} note{% if notes|length != 1 %}s{% endif %}">
+                            {{ notes|length }}
+                        </span>
+                        <span id="notes-tab-desc" class="visually-hidden">View and manage staff notes for this order</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link"
+                            id="history-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#history"
+                            type="button"
+                            role="tab"
+                            aria-controls="history"
+                            aria-selected="false"
+                            aria-describedby="history-tab-desc">
+                        <i class="fa fa-history me-1" aria-hidden="true"></i>
+                        History
+                        <span class="badge bg-secondary rounded-pill ms-1" aria-label="{{ actions|length }} history entr{% if actions|length != 1 %}ies{% else %}y{% endif %}">
+                            {{ actions|length }}
+                        </span>
+                        <span id="history-tab-desc" class="visually-hidden">View order history and status changes</span>
+                    </button>
+                </li>
+            </ul>
+        </nav>
 
         <div class="tab-content p-4 border border-top-0 rounded-bottom shadow-sm mb-4" id="orderTabsContent">
             <!-- Actions tab -->

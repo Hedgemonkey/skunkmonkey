@@ -2,101 +2,194 @@
 {% load static %}
 {% load product_filters %}
 
-<div class="filter-controls mb-4">
+<section class="filter-controls mb-4"
+         role="region"
+         aria-labelledby="filter-heading"
+         aria-describedby="filter-description">
     <div class="filter-panel p-3 bg-light rounded border">
         <!-- Header with title -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="mb-0">Filter {{ item_type|default:'products'|title }}</h5>
-            <div class="d-flex">
-                <button class="btn btn-sm btn-outline-secondary me-2 reset-all-filters" type="button" title="Reset all filters">
-                    <i class="fas fa-undo-alt me-1"></i> Reset
+        <header class="d-flex justify-content-between align-items-center mb-3" role="banner">
+            <div>
+                <h2 id="filter-heading" class="mb-1 h5">Filter {{ item_type|default:'products'|title }}</h2>
+                <p id="filter-description" class="text-muted small mb-0">
+                    Use filters below to refine your search results
+                </p>
+            </div>
+            <div class="d-flex" role="group" aria-label="Filter actions">
+                <button class="btn btn-sm btn-outline-secondary me-2 reset-all-filters"
+                        type="button"
+                        aria-label="Reset all filters and show all {{ item_type|default:'products' }}"
+                        aria-describedby="reset-help">
+                    <i class="fas fa-undo-alt me-1" aria-hidden="true"></i> Reset
                 </button>
-                <button class="btn btn-sm btn-outline-primary filter-toggle collapsed" type="button" aria-expanded="false" aria-controls="filterOptions">
-                    <i class="fas fa-sliders-h me-1"></i> <span class="filter-toggle-text">Show Filters</span>
+                <div id="reset-help" class="visually-hidden">
+                    Clears all current filters and displays all available {{ item_type|default:'products' }}
+                </div>
+
+                <button class="btn btn-sm btn-outline-primary filter-toggle collapsed"
+                        type="button"
+                        aria-expanded="false"
+                        aria-controls="filterOptions"
+                        aria-label="Toggle filter options visibility"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#filterOptions">
+                    <i class="fas fa-sliders-h me-1" aria-hidden="true"></i>
+                    <span class="filter-toggle-text">Show Filters</span>
                 </button>
             </div>
-        </div>
+        </header>
 
         <!-- Collapsible filter content -->
-        <div class="collapse" id="filterOptions">
-            <!-- Search and Sort options -->
-            <div class="row g-3 mb-3">
-                <div class="col-12 col-md-7">
-                    <label class="form-label small fw-bold">Search</label>
-                    <div class="input-group">
-                        <input type="text"
-                               class="form-control filter-search"
-                               placeholder="Enter search terms..."
-                               {% if search %}value="{{ search }}"{% endif %}>
-                        <button class="btn btn-outline-secondary clear-search" type="button">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="col-12 col-md-5">
-                    <label class="form-label small fw-bold">Sort By</label>
-                    <select class="form-select filter-sort">
-                        {% for option in sort_options %}
-                            <option value="{{ option|safe_attr:'value' }}"
-                                    {% if current_sort == option|safe_attr:'value' %}selected{% endif %}>
-                                {{ option|safe_attr:'text' }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
+        <div class="collapse" id="filterOptions" role="group" aria-labelledby="filter-options-heading">
+            <div id="filter-options-heading" class="visually-hidden">Filter Options</div>
 
-            <!-- Category selection -->
-            {% if show_category_filter %}
-            <div class="row mt-3">
-                <div class="col-12">
-                    <label class="form-label small fw-bold">Categories</label>
-                    <select class="form-select filter-category mb-2" multiple data-placeholder="Select Categories" aria-label="Select Categories">
-                        {% for category in categories %}
-                            <option value="{{ category|safe_attr:'id' }}"
-                                    {% if selected_categories %}
-                                        {% with category_id=category|safe_attr:'id'|stringformat:"i" %}
-                                            {% with selected_list=selected_categories|stringformat:"s"|split:"," %}
-                                                {% if category_id in selected_list %}selected{% endif %}
-                                            {% endwith %}
-                                        {% endwith %}
-                                    {% endif %}>
-                                {{ category|safe_attr:'name' }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                    <div class="selected-categories-tags mt-2" id="selectedCategoriesTags"></div>
-                    <div class="d-flex justify-content-between align-items-center mt-2 category-summary">
-                        <small class="text-muted">Selected: <span class="category-count">
-                            {% if selected_categories %}
-                                {% with selected_list=selected_categories|stringformat:"s"|split:"," %}
-                                    {{ selected_list|length }}
-                                {% endwith %}
-                            {% else %}
-                                0
-                            {% endif %}
-                        </span></small>
-                        <div class="category-action-buttons">
-                            <button class="btn btn-sm btn-outline-secondary clear-categories-btn" type="button">
-                                <i class="fas fa-times me-1"></i>Clear Selection
+            <!-- Search and Sort options -->
+            <fieldset class="border-0 p-0 mb-3">
+                <legend class="visually-hidden">Search and Sort Options</legend>
+
+                <div class="row g-3">
+                    <div class="col-12 col-md-7">
+                        <label for="searchFilter" class="form-label small fw-bold">
+                            <i class="fas fa-search me-1" aria-hidden="true"></i>
+                            Search {{ item_type|default:'products'|title }}
+                        </label>
+                        <div class="input-group">
+                            <input type="text"
+                                   id="searchFilter"
+                                   class="form-control filter-search"
+                                   placeholder="Enter search terms..."
+                                   aria-describedby="search-help"
+                                   {% if search %}value="{{ search }}"{% endif %}>
+                            <button class="btn btn-outline-secondary clear-search"
+                                    type="button"
+                                    aria-label="Clear search input"
+                                    aria-describedby="clear-search-help">
+                                <i class="fas fa-times" aria-hidden="true"></i>
                             </button>
-                            {% if item_type == 'categories' %}
-                            <button class="btn btn-sm btn-outline-primary list-products-btn ms-2" type="button" id="expanded-list-products-btn">
-                                <i class="fas fa-list me-1"></i>List Products
-                            </button>
-                            {% endif %}
+                        </div>
+                        <div id="search-help" class="form-text">
+                            Search by name, description, or other {{ item_type|default:'product' }} attributes
+                        </div>
+                        <div id="clear-search-help" class="visually-hidden">
+                            Removes the current search term and shows all {{ item_type|default:'products' }}
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-5">
+                        <label for="sortFilter" class="form-label small fw-bold">
+                            <i class="fas fa-sort me-1" aria-hidden="true"></i>
+                            Sort By
+                        </label>
+                        <select id="sortFilter"
+                                class="form-select filter-sort"
+                                aria-describedby="sort-help">
+                            {% for option in sort_options %}
+                                <option value="{{ option|safe_attr:'value' }}"
+                                        {% if current_sort == option|safe_attr:'value' %}selected{% endif %}>
+                                    {{ option|safe_attr:'text' }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <div id="sort-help" class="form-text">
+                            Choose how to order the {{ item_type|default:'products' }} list
                         </div>
                     </div>
                 </div>
-            </div>
+            </fieldset>
+
+            <!-- Category selection -->
+            {% if show_category_filter %}
+            <fieldset class="border-0 p-0 mt-3">
+                <legend class="form-label small fw-bold">
+                    <i class="fas fa-tags me-1" aria-hidden="true"></i>
+                    Category Filter
+                </legend>
+
+                <div class="row">
+                    <div class="col-12">
+                        <label for="categoryFilter" class="visually-hidden">Select Categories</label>
+                        <select id="categoryFilter"
+                                class="form-select filter-category mb-2"
+                                multiple
+                                data-placeholder="Select Categories"
+                                aria-label="Select categories to filter {{ item_type|default:'products' }}"
+                                aria-describedby="category-help">
+                            {% for category in categories %}
+                                <option value="{{ category|safe_attr:'id' }}"
+                                        {% if selected_categories %}
+                                            {% with category_id=category|safe_attr:'id'|stringformat:"i" %}
+                                                {% with selected_list=selected_categories|stringformat:"s"|split:"," %}
+                                                    {% if category_id in selected_list %}selected{% endif %}
+                                                {% endwith %}
+                                            {% endwith %}
+                                        {% endif %}>
+                                    {{ category|safe_attr:'name' }}
+                                </option>
+                            {% endfor %}
+                        </select>
+
+                        <div id="category-help" class="form-text mb-2">
+                            Hold Ctrl (Cmd on Mac) to select multiple categories
+                        </div>
+
+                        <div class="selected-categories-tags mt-2"
+                             id="selectedCategoriesTags"
+                             role="region"
+                             aria-label="Selected categories"
+                             aria-live="polite"></div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-2 category-summary">
+                            <div role="status" aria-live="polite">
+                                <small class="text-muted">
+                                    Selected: <span class="category-count">
+                                        {% if selected_categories %}
+                                            {% with selected_list=selected_categories|stringformat:"s"|split:"," %}
+                                                {{ selected_list|length }}
+                                            {% endwith %}
+                                        {% else %}
+                                            0
+                                        {% endif %}
+                                    </span> categories
+                                </small>
+                            </div>
+
+                            <div class="category-action-buttons" role="group" aria-label="Category actions">
+                                <button class="btn btn-sm btn-outline-secondary clear-categories-btn"
+                                        type="button"
+                                        aria-label="Clear all selected categories"
+                                        aria-describedby="clear-categories-help">
+                                    <i class="fas fa-times me-1" aria-hidden="true"></i>Clear Selection
+                                </button>
+                                <div id="clear-categories-help" class="visually-hidden">
+                                    Removes all category selections and shows {{ item_type|default:'products' }} from all categories
+                                </div>
+
+                                {% if item_type == 'categories' %}
+                                <button class="btn btn-sm btn-outline-primary list-products-btn ms-2"
+                                        type="button"
+                                        id="expanded-list-products-btn"
+                                        aria-label="List products from selected categories"
+                                        aria-describedby="list-products-help">
+                                    <i class="fas fa-list me-1" aria-hidden="true"></i>List Products
+                                </button>
+                                <div id="list-products-help" class="visually-hidden">
+                                    Shows all products that belong to the currently selected categories
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
             {% endif %}
 
-            <!-- Active filters summary row - Apply Filters button removed -->
-            <div class="active-filters mt-3 pt-2 border-top">
+            <!-- Active filters summary row -->
+            <section class="active-filters mt-3 pt-2 border-top" role="region" aria-labelledby="active-filters-heading">
+                <h3 id="active-filters-heading" class="visually-hidden">Active Filters Summary</h3>
+
                 <div class="d-flex justify-content-between align-items-center">
-                    <div class="active-filter-display">
+                    <div class="active-filter-display" role="status" aria-live="polite">
                         <small class="text-muted">
-                            Active filters:
+                            <span class="filter-label">Active filters:</span>
                             <span class="search-display {% if not search %}d-none{% endif %}">
                                 Search: "<span class="search-term">{{ search }}</span>"
                             </span>
@@ -111,25 +204,34 @@
                                     {% endif %}
                                 </span>
                             </span>
+                            <span class="no-filters {% if search or selected_categories %}d-none{% endif %}">
+                                None
+                            </span>
                         </small>
                     </div>
-                    <!-- Apply Filters button removed -->
                 </div>
-            </div>
+            </section>
         </div>
 
-        <!-- Always visible summary when collapsed - MODIFIED to show by default -->
-        <div class="filter-summary mt-1 d-flex justify-content-between align-items-center flex-wrap" id="filterSummary">
-            <div class="active-filters-summary">
+        <!-- Always visible summary when collapsed -->
+        <footer class="filter-summary mt-1 d-flex justify-content-between align-items-center flex-wrap"
+                id="filterSummary"
+                role="contentinfo"
+                aria-label="Filter summary and results">
+            <div class="active-filters-summary" role="group" aria-label="Applied filters">
                 <small>
                     <span class="search-summary {% if not search %}d-none{% endif %}">
-                        <span class="badge bg-secondary me-1">
+                        <span class="badge bg-secondary me-1" role="status">
                             Search: <span class="search-term-summary">{{ search }}</span>
-                            <button class="btn-close btn-close-white ms-1" type="button" style="font-size: 0.5rem;" aria-label="Clear search"></button>
+                            <button class="btn-close btn-close-white ms-1"
+                                    type="button"
+                                    style="font-size: 0.5rem;"
+                                    aria-label="Clear search filter">
+                            </button>
                         </span>
                     </span>
                     <span class="categories-summary {% if selected_categories %}{% else %}d-none{% endif %}">
-                        <span class="badge bg-secondary">
+                        <span class="badge bg-secondary" role="status">
                             Categories: <span class="category-count-summary">
                                 {% if selected_categories %}
                                     {% with selected_list=selected_categories|stringformat:"s"|split:"," %}
@@ -139,33 +241,46 @@
                                     0
                                 {% endif %}
                             </span>
-                            <button class="btn-close btn-close-white ms-1" type="button" style="font-size: 0.5rem;" aria-label="Clear categories"></button>
+                            <button class="btn-close btn-close-white ms-1"
+                                    type="button"
+                                    style="font-size: 0.5rem;"
+                                    aria-label="Clear category filters">
+                            </button>
                         </span>
                     </span>
                 </small>
             </div>
-            <div class="d-flex align-items-center gap-2">
+
+            <div class="d-flex align-items-center gap-2" role="group" aria-label="Results and actions">
                 <!-- Enhanced results count display -->
-                <small class="results-count text-muted">
-                    <span class="item-count-display">
-                        Showing <span class="item-count">0</span> {{ item_type|default:'products' }}
-                    </span>
-                    {% if item_type == 'categories' %}
-                    <span class="selected-stats d-none">
-                        (<span class="selected-count">0</span> selected with
-                        <span class="product-count">0</span> products)
-                    </span>
-                    {% endif %}
-                </small>
+                <div role="status" aria-live="polite" aria-label="Results count">
+                    <small class="results-count text-muted">
+                        <span class="item-count-display">
+                            Showing <span class="item-count">0</span> {{ item_type|default:'products' }}
+                        </span>
+                        {% if item_type == 'categories' %}
+                        <span class="selected-stats d-none">
+                            (<span class="selected-count">0</span> selected with
+                            <span class="product-count">0</span> products)
+                        </span>
+                        {% endif %}
+                    </small>
+                </div>
+
                 {% if item_type == 'categories' %}
-                <!-- Changed from d-none to visible by default -->
                 <div class="collapsed-list-products-btn-container">
-                    <button class="btn btn-sm btn-outline-primary list-products-btn" type="button">
-                        <i class="fas fa-list me-1"></i>List Products
+                    <button class="btn btn-sm btn-outline-primary list-products-btn"
+                            type="button"
+                            aria-label="List products from filtered categories"
+                            aria-describedby="list-products-collapsed-help">
+                        <i class="fas fa-list me-1" aria-hidden="true"></i>List Products
                     </button>
+                    <div id="list-products-collapsed-help" class="visually-hidden">
+                        Navigate to view products from the currently filtered categories
+                    </div>
                 </div>
                 {% endif %}
             </div>
-        </div>
+        </footer>
     </div>
-</div>
+</section>

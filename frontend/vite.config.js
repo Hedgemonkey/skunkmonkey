@@ -29,6 +29,7 @@ export default defineConfig({
         main: resolve(__dirname, 'src/core/js/main.js'),
         djangoMessages: resolve(__dirname, 'src/core/js/django-messages.js'),
         assetHealth: resolve(__dirname, 'src/core/js/asset-health.js'),
+        accessibility: resolve(__dirname, 'src/core/accessibility.js'),
         home: resolve(__dirname, 'src/home/js/home.js'),
         // Testing script
         "test-assets": resolve(__dirname, 'src/core/js/test-assets.js'),
@@ -102,6 +103,7 @@ export default defineConfig({
             'main': 'js/core/main.js',
             'djangoMessages': 'js/core/djangoMessages.js',
             'assetHealth': 'js/core/assetHealth.js',
+            'accessibility': 'js/core/accessibility.js',
             'home': 'js/home/home.js',
             'test-assets': 'js/core/test-assets.js',
 

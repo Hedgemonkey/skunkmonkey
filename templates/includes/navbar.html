@@ -1,19 +1,50 @@
 <!-- Responsive navbar-->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav id="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark" role="navigation" aria-label="Main navigation">
     <div class="container">
-        <a class="navbar-brand" href="{% url 'home' %}">SkunkMonkey</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+        <a class="navbar-brand" href="{% url 'home' %}" aria-label="SkunkMonkey home page">SkunkMonkey</a>
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation menu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                <li class="nav-item"><a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">Home</a></li>
-                <li class="nav-item"><a class="nav-link {% if '/shop/' in request.path %}active{% endif %}" href="{% url 'shop:product_list' %}">Shop</a></li>
-                <li class="nav-item"><a class="nav-link {% if '/users/contact/' in request.path %}active{% endif %}" href="{% url 'users:users_contact' %}">Contact</a></li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/' %}active{% endif %}"
+                       href="{% url 'home' %}"
+                       {% if request.path == '/' %}aria-current="page"{% endif %}>
+                        Home
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if '/shop/' in request.path %}active{% endif %}"
+                       href="{% url 'shop:product_list' %}"
+                       {% if '/shop/' in request.path %}aria-current="page"{% endif %}>
+                        Shop
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if '/users/contact/' in request.path %}active{% endif %}"
+                       href="{% url 'users:users_contact' %}"
+                       {% if '/users/contact/' in request.path %}aria-current="page"{% endif %}>
+                        Contact
+                    </a>
+                </li>
 
                 <!-- Cart icon with item count -->
                 <li class="nav-item">
-                    <a class="nav-link position-relative" href="{% url 'shop:cart' %}">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    <a class="nav-link position-relative"
+                       href="{% url 'shop:cart' %}"
+                       aria-label="Shopping cart with {{ request.cart.item_count|default:'0' }} items">
+                        <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+                        <span class="visually-hidden">Cart</span>
+                        <span id="cart-count"
+                              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                              aria-label="{{ request.cart.item_count|default:'0' }} items in cart">
                             {{ request.cart.item_count|default:'0' }}
                         </span>
                     </a>
@@ -21,9 +52,13 @@
 
                 <!-- Comparison icon with count -->
                 <li class="nav-item">
-                    <a class="nav-link position-relative" href="{% url 'shop:comparison' %}">
-                        <i class="fas fa-balance-scale"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary comparison-count">
+                    <a class="nav-link position-relative"
+                       href="{% url 'shop:comparison' %}"
+                       aria-label="Product comparison list with {{ request.comparison_list.products.count|default:'0' }} items">
+                        <i class="fas fa-balance-scale" aria-hidden="true"></i>
+                        <span class="visually-hidden">Compare</span>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary comparison-count"
+                              aria-label="{{ request.comparison_list.products.count|default:'0' }} items to compare">
                             {{ request.comparison_list.products.count|default:'0' }}
                         </span>
                     </a>
@@ -31,10 +66,14 @@
 
                 <!-- Favourites/Wishlist icon -->
                 <li class="nav-item">
-                    <a class="nav-link position-relative" href="{% url 'shop:wishlist' %}" title="My Wishlist">
-                        <i class="fas fa-heart"></i>
+                    <a class="nav-link position-relative"
+                       href="{% url 'shop:wishlist' %}"
+                       aria-label="My wishlist{% if user.is_authenticated %} with {{ request.wishlist.count|default:'0' }} items{% endif %}">
+                        <i class="fas fa-heart" aria-hidden="true"></i>
+                        <span class="visually-hidden">Wishlist</span>
                         {% if user.is_authenticated %}
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                  aria-label="{{ request.wishlist.count|default:'0' }} items in wishlist">
                                 {{ request.wishlist.count|default:'0' }}
                             </span>
                         {% endif %}

@@ -9,55 +9,94 @@
 {% endblock %}
 
 {% block header %}
-<div class="py-4 bg-primary text-white">
+<header class="py-4 bg-primary text-white" role="banner">
     <div class="container">
         <h1 class="mb-0">Order History</h1>
+        <p class="mb-0 mt-1" aria-live="polite">
+            {% if orders %}
+                {{ orders|length }} order{{ orders|length|pluralize }} found
+            {% else %}
+                No orders found
+            {% endif %}
+        </p>
     </div>
-</div>
+</header>
 {% endblock %}
 
 {% block content %}
-<div class="container my-5">
+<main class="container my-5" role="main">
     {% if orders %}
-        <div class="card">
+        <section class="card" aria-labelledby="orders-heading">
             <div class="card-header bg-transparent">
-                <h5 class="mb-0">Your Orders</h5>
+                <h2 id="orders-heading" class="mb-0 h5">Your Orders</h2>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0">
+                    <table class="table table-hover mb-0"
+                           role="table"
+                           aria-label="Order history table"
+                           aria-describedby="orders-description">
+                        <caption id="orders-description" class="visually-hidden">
+                            A table showing your order history with order number, date, items, total, status, and available actions
+                        </caption>
                         <thead>
-                            <tr>
-                                <th>Order Number</th>
-                                <th>Date</th>
-                                <th>Items</th>
-                                <th>Total</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                            <tr role="row">
+                                <th scope="col" role="columnheader">Order Number</th>
+                                <th scope="col" role="columnheader">Date</th>
+                                <th scope="col" role="columnheader">Items</th>
+                                <th scope="col" role="columnheader">Total</th>
+                                <th scope="col" role="columnheader">Status</th>
+                                <th scope="col" role="columnheader">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for order in orders %}
-                                <tr>
-                                    <td>{{ order.order_number }}</td>
-                                    <td>{{ order.created_at|date:"M d, Y" }}</td>
-                                    <td>{{ order.items.count }}</td>
-                                    <td>${{ order.total_price }}</td>
-                                    <td>
-                                        <span class="badge {% if order.status == 'pending' %}bg-warning{% elif order.status == 'delivered' %}bg-success{% elif order.status == 'cancelled' %}bg-danger{% else %}bg-info{% endif %}">
+                                <tr role="row">
+                                    <td role="gridcell">
+                                        <strong>{{ order.order_number }}</strong>
+                                    </td>
+                                    <td role="gridcell">
+                                        <time datetime="{{ order.created_at|date:'c' }}"
+                                              aria-label="Order placed on {{ order.created_at|date:'F j, Y' }}">
+                                            {{ order.created_at|date:"M d, Y" }}
+                                        </time>
+                                    </td>
+                                    <td role="gridcell">
+                                        <span aria-label="{{ order.items.count }} item{{ order.items.count|pluralize }}">
+                                            {{ order.items.count }}
+                                        </span>
+                                    </td>
+                                    <td role="gridcell">
+                                        <span aria-label="Total cost ${{ order.total_price }}">
+                                            ${{ order.total_price }}
+                                        </span>
+                                    </td>
+                                    <td role="gridcell">
+                                        <span class="badge {% if order.status == 'pending' %}bg-warning{% elif order.status == 'delivered' %}bg-success{% elif order.status == 'cancelled' %}bg-danger{% else %}bg-info{% endif %}"
+                                              role="status"
+                                              aria-label="Order status: {{ order.get_status_display }}">
                                             {{ order.get_status_display }}
                                         </span>
                                     </td>
-                                    <td>
-                                        <div class="btn-group btn-group-sm" role="group">
+                                    <td role="gridcell">
+                                        <div class="btn-group btn-group-sm"
+                                             role="group"
+                                             aria-label="Actions for order {{ order.order_number }}">
                                             <button class="btn btn-outline-primary"
                                                     type="button"
                                                     data-bs-toggle="collapse"
                                                     data-bs-target="#order-{{ order.id }}"
-                                                    aria-expanded="false">
+                                                    aria-expanded="false"
+                                                    aria-controls="order-{{ order.id }}"
+                                                    aria-describedby="view-details-desc-{{ order.id }}">
                                                 View Details
                                             </button>
-                                            <a href="{% url 'shop:order_detail' order.id %}" class="btn btn-primary">
+                                            <span id="view-details-desc-{{ order.id }}" class="visually-hidden">
+                                                View detailed information for order {{ order.order_number }}
+                                            </span>
+                                            <a href="{% url 'shop:order_detail' order.id %}"
+                                               class="btn btn-primary"
+                                               aria-label="Open complete order details for order {{ order.order_number }}">
                                                 Open Order
                                             </a>
                                         </div>
@@ -65,49 +104,72 @@
                                 </tr>
                                 <tr class="order-details-row">
                                     <td colspan="6" class="p-0">
-                                        <div class="collapse" id="order-{{ order.id }}">
-                                            <div class="p-3">
-                                                <h6>Items</h6>
+                                        <div class="collapse" id="order-{{ order.id }}" aria-live="polite">
+                                            <section class="p-3" aria-labelledby="order-details-{{ order.id }}">
+                                                <h3 id="order-details-{{ order.id }}" class="h6">Order Details for {{ order.order_number }}</h3>
+
                                                 <div class="table-responsive">
-                                                    <table class="table table-sm">
+                                                    <table class="table table-sm"
+                                                           role="table"
+                                                           aria-label="Items in order {{ order.order_number }}"
+                                                           aria-describedby="items-description-{{ order.id }}">
+                                                        <caption id="items-description-{{ order.id }}" class="visually-hidden">
+                                                            Detailed breakdown of items, quantities, prices and totals for this order
+                                                        </caption>
                                                         <thead>
-                                                            <tr>
-                                                                <th>Product</th>
-                                                                <th>Quantity</th>
-                                                                <th>Price</th>
-                                                                <th>Subtotal</th>
+                                                            <tr role="row">
+                                                                <th scope="col" role="columnheader">Product</th>
+                                                                <th scope="col" role="columnheader">Quantity</th>
+                                                                <th scope="col" role="columnheader">Price</th>
+                                                                <th scope="col" role="columnheader">Subtotal</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
                                                             {% for item in order.items.all %}
-                                                                <tr>
-                                                                    <td>
+                                                                <tr role="row">
+                                                                    <td role="gridcell">
                                                                         {% if item.product %}
-                                                                            <a href="{% url 'shop:product_detail' item.product.slug %}">
+                                                                            <a href="{% url 'shop:product_detail' item.product.slug %}"
+                                                                               aria-label="View product details for {{ item.product.name }}">
                                                                                 {{ item.product.name }}
                                                                             </a>
                                                                         {% else %}
-                                                                            Product no longer available
+                                                                            <span class="text-muted"
+                                                                                  aria-label="Product no longer available">
+                                                                                Product no longer available
+                                                                            </span>
                                                                         {% endif %}
                                                                     </td>
-                                                                    <td>{{ item.quantity }}</td>
-                                                                    <td>${{ item.price|floatformat:2 }}</td>
-                                                                    <td>${{ item.price|floatformat:2|multiply:item.quantity }}</td>
+                                                                    <td role="gridcell" aria-label="Quantity {{ item.quantity }}">
+                                                                        {{ item.quantity }}
+                                                                    </td>
+                                                                    <td role="gridcell" aria-label="Price ${{ item.price|floatformat:2 }}">
+                                                                        ${{ item.price|floatformat:2 }}
+                                                                    </td>
+                                                                    <td role="gridcell" aria-label="Subtotal ${{ item.price|floatformat:2|multiply:item.quantity }}">
+                                                                        ${{ item.price|floatformat:2|multiply:item.quantity }}
+                                                                    </td>
                                                                 </tr>
                                                             {% endfor %}
-                                                            <tr>
-                                                                <td colspan="3" class="text-end fw-bold">Subtotal:</td>
-                                                                <td>${{ order.total_price|floatformat:2 }}</td>
+                                                            <tr role="row">
+                                                                <td colspan="3" class="text-end fw-bold" role="rowheader">Subtotal:</td>
+                                                                <td role="gridcell" aria-label="Order subtotal ${{ order.total_price|floatformat:2 }}">
+                                                                    ${{ order.total_price|floatformat:2 }}
+                                                                </td>
                                                             </tr>
                                                             {% if order.shipping_cost %}
-                                                            <tr>
-                                                                <td colspan="3" class="text-end">Shipping:</td>
-                                                                <td>${{ order.shipping_cost|floatformat:2 }}</td>
+                                                            <tr role="row">
+                                                                <td colspan="3" class="text-end" role="rowheader">Shipping:</td>
+                                                                <td role="gridcell" aria-label="Shipping cost ${{ order.shipping_cost|floatformat:2 }}">
+                                                                    ${{ order.shipping_cost|floatformat:2 }}
+                                                                </td>
                                                             </tr>
                                                             {% endif %}
-                                                            <tr>
-                                                                <td colspan="3" class="text-end fw-bold">Total:</td>
-                                                                <td class="fw-bold">${{ order.grand_total|floatformat:2 }}</td>
+                                                            <tr role="row">
+                                                                <td colspan="3" class="text-end fw-bold" role="rowheader">Total:</td>
+                                                                <td class="fw-bold" role="gridcell" aria-label="Grand total ${{ order.grand_total|floatformat:2 }}">
+                                                                    ${{ order.grand_total|floatformat:2 }}
+                                                                </td>
                                                             </tr>
                                                         </tbody>
                                                     </table>
@@ -115,39 +177,68 @@
 
                                                 <div class="row mt-3">
                                                     <div class="col-md-6">
-                                                        <h6>Shipping Address</h6>
-                                                        <p class="mb-0">{{ order.full_name }}</p>
-                                                        <p class="mb-0">{{ order.shipping_address1 }}</p>
-                                                        {% if order.shipping_address2 %}
-                                                            <p class="mb-0">{{ order.shipping_address2 }}</p>
-                                                        {% endif %}
-                                                        <p class="mb-0">
-                                                            {{ order.shipping_city }},
-                                                            {% if order.shipping_state %}{{ order.shipping_state }}, {% endif %}
-                                                            {{ order.shipping_zipcode }}
-                                                        </p>
-                                                        <p class="mb-0">{{ order.shipping_country }}</p>
+                                                        <h4 class="h6">Shipping Address</h4>
+                                                        <address aria-label="Shipping address for order {{ order.order_number }}">
+                                                            <div>{{ order.full_name }}</div>
+                                                            <div>{{ order.shipping_address1 }}</div>
+                                                            {% if order.shipping_address2 %}
+                                                                <div>{{ order.shipping_address2 }}</div>
+                                                            {% endif %}
+                                                            <div>
+                                                                {{ order.shipping_city }},
+                                                                {% if order.shipping_state %}{{ order.shipping_state }}, {% endif %}
+                                                                {{ order.shipping_zipcode }}
+                                                            </div>
+                                                            <div>{{ order.shipping_country }}</div>
+                                                        </address>
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <h6>Order Information</h6>
-                                                        <p class="mb-0"><strong>Order Date:</strong> {{ order.created_at|date:"F j, Y" }}</p>
-                                                        <p class="mb-0"><strong>Payment Status:</strong> {{ order.get_payment_status_display }}</p>
-                                                        {% if order.tracking_number %}
-                                                            <p class="mb-0"><strong>Tracking Number:</strong> {{ order.tracking_number }}</p>
-                                                        {% endif %}
-                                                        {% if order.is_paid and order.paid_at %}
-                                                            <p class="mb-0"><strong>Paid On:</strong> {{ order.paid_at|date:"F j, Y" }}</p>
-                                                        {% endif %}
+                                                        <h4 class="h6">Order Information</h4>
+                                                        <dl class="mb-0">
+                                                            <dt>Order Date:</dt>
+                                                            <dd>
+                                                                <time datetime="{{ order.created_at|date:'c' }}"
+                                                                      aria-label="Order placed on {{ order.created_at|date:'F j, Y' }}">
+                                                                    {{ order.created_at|date:"F j, Y" }}
+                                                                </time>
+                                                            </dd>
+                                                            <dt>Payment Status:</dt>
+                                                            <dd>
+                                                                <span role="status" aria-label="Payment status: {{ order.get_payment_status_display }}">
+                                                                    {{ order.get_payment_status_display }}
+                                                                </span>
+                                                            </dd>
+                                                            {% if order.tracking_number %}
+                                                                <dt>Tracking Number:</dt>
+                                                                <dd>
+                                                                    <span aria-label="Tracking number {{ order.tracking_number }}">
+                                                                        {{ order.tracking_number }}
+                                                                    </span>
+                                                                </dd>
+                                                            {% endif %}
+                                                            {% if order.is_paid and order.paid_at %}
+                                                                <dt>Paid On:</dt>
+                                                                <dd>
+                                                                    <time datetime="{{ order.paid_at|date:'c' }}"
+                                                                          aria-label="Payment completed on {{ order.paid_at|date:'F j, Y' }}">
+                                                                        {{ order.paid_at|date:"F j, Y" }}
+                                                                    </time>
+                                                                </dd>
+                                                            {% endif %}
+                                                        </dl>
                                                     </div>
                                                 </div>
 
                                                 <!-- Order actions -->
                                                 <div class="mt-3 text-end">
-                                                    <a href="{% url 'shop:order_detail' order.id %}" class="btn btn-primary">
+                                                    <a href="{% url 'shop:order_detail' order.id %}"
+                                                       class="btn btn-primary"
+                                                       aria-label="View complete order details for order {{ order.order_number }}">
+                                                        <i class="fas fa-external-link-alt me-1" aria-hidden="true"></i>
                                                         View Complete Order
                                                     </a>
                                                 </div>
-                                            </div>
+                                            </section>
                                         </div>
                                     </td>
                                 </tr>
@@ -156,31 +247,49 @@
                     </table>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- Pagination -->
         {% if is_paginated %}
-        <nav aria-label="Order pagination" class="mt-4">
-            <ul class="pagination justify-content-center">
+        <nav aria-label="Order history pagination" class="mt-4">
+            <ul class="pagination justify-content-center" role="list">
                 {% if page_obj.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page=1">First</a>
+                    <li class="page-item" role="listitem">
+                        <a class="page-link"
+                           href="?page=1"
+                           aria-label="Go to first page of orders">
+                            First
+                        </a>
                     </li>
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    <li class="page-item" role="listitem">
+                        <a class="page-link"
+                           href="?page={{ page_obj.previous_page_number }}"
+                           aria-label="Go to previous page, page {{ page_obj.previous_page_number }}">
+                            Previous
+                        </a>
                     </li>
                 {% endif %}
 
-                <li class="page-item active">
-                    <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                <li class="page-item active" role="listitem">
+                    <span class="page-link" aria-current="page" aria-label="Current page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}">
+                        {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                    </span>
                 </li>
 
                 {% if page_obj.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    <li class="page-item" role="listitem">
+                        <a class="page-link"
+                           href="?page={{ page_obj.next_page_number }}"
+                           aria-label="Go to next page, page {{ page_obj.next_page_number }}">
+                            Next
+                        </a>
                     </li>
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                    <li class="page-item" role="listitem">
+                        <a class="page-link"
+                           href="?page={{ page_obj.paginator.num_pages }}"
+                           aria-label="Go to last page of orders">
+                            Last
+                        </a>
                     </li>
                 {% endif %}
             </ul>
@@ -188,14 +297,17 @@
         {% endif %}
 
     {% else %}
-        <div class="text-center py-5">
-            <i class="fas fa-shopping-bag fa-4x mb-3 text-muted"></i>
-            <h3>No Orders Yet</h3>
-            <p class="mb-4">You haven't placed any orders yet.</p>
-            <a href="{% url 'shop:product_list' %}" class="btn btn-primary">
+        <section class="text-center py-5" aria-labelledby="no-orders-heading">
+            <i class="fas fa-shopping-bag fa-4x mb-3 text-muted" aria-hidden="true"></i>
+            <h2 id="no-orders-heading" class="h3">No Orders Yet</h2>
+            <p class="mb-4">You haven't placed any orders yet. Start browsing our products to make your first purchase!</p>
+            <a href="{% url 'shop:product_list' %}"
+               class="btn btn-primary"
+               aria-label="Start shopping - browse our product catalog">
+                <i class="fas fa-shopping-cart me-2" aria-hidden="true"></i>
                 Start Shopping
             </a>
-        </div>
+        </section>
     {% endif %}
-</div>
+</main>
 {% endblock %}

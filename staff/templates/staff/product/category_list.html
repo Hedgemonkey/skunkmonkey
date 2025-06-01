@@ -5,49 +5,55 @@
 {% block staff_title %}Category Management{% endblock %}
 
 {% block staff_actions %}
-<div class="btn-group">
-    <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
-        <i class="fas fa-plus-circle"></i> Add Category
+<nav aria-label="Category management actions" class="btn-group" role="group">
+    <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#addCategoryModal"
+            aria-describedby="add-category-help">
+        <i class="fas fa-plus-circle" aria-hidden="true"></i> Add Category
     </button>
-    <a href="{% url 'staff:product_list' %}" class="btn btn-sm btn-outline-secondary">
-        <i class="fas fa-arrow-left"></i> Back to Products
+    <div id="add-category-help" class="visually-hidden">Open dialog to create a new product category</div>
+    <a href="{% url 'staff:product_list' %}" class="btn btn-sm btn-outline-secondary" aria-label="Back to product list">
+        <i class="fas fa-arrow-left" aria-hidden="true"></i> Back to Products
     </a>
-</div>
+</nav>
 {% endblock %}
 
 {% block staff_content %}
 <div class="container-fluid px-4">
+    <header>
+        <h1 class="visually-hidden">Category Management</h1>
+    </header>
     <!-- Status stats bar -->
-    <div class="row mb-4">
+    <section aria-labelledby="category-stats-heading" class="row mb-4">
         <div class="col-12">
             <div class="card">
                 <div class="card-body py-2">
+                    <h2 id="category-stats-heading" class="visually-hidden">Category Statistics</h2>
                     <div class="row text-center">
-                        <div class="col border-end">
-                            <div class="small text-muted mb-1">All Categories</div>
-                            <div class="h5 mb-0 fw-bold">{{ total_categories }}</div>
+                        <div class="col border-end" role="group" aria-labelledby="all-categories-label">
+                            <div id="all-categories-label" class="small text-muted mb-1">All Categories</div>
+                            <div class="h5 mb-0 fw-bold" aria-describedby="all-categories-label">{{ total_categories }}</div>
                         </div>
-                        <div class="col border-end">
-                            <div class="small text-muted mb-1">Active Categories</div>
-                            <div class="h5 mb-0 fw-bold">{{ active_categories }}</div>
+                        <div class="col border-end" role="group" aria-labelledby="active-categories-label">
+                            <div id="active-categories-label" class="small text-muted mb-1">Active Categories</div>
+                            <div class="h5 mb-0 fw-bold" aria-describedby="active-categories-label">{{ active_categories }}</div>
                         </div>
-                        <div class="col border-end">
-                            <div class="small text-muted mb-1">With Products</div>
-                            <div class="h5 mb-0 fw-bold">{{ categories_with_products }}</div>
+                        <div class="col border-end" role="group" aria-labelledby="with-products-label">
+                            <div id="with-products-label" class="small text-muted mb-1">With Products</div>
+                            <div class="h5 mb-0 fw-bold" aria-describedby="with-products-label">{{ categories_with_products }}</div>
                         </div>
-                        <div class="col">
-                            <div class="small text-muted mb-1">Empty Categories</div>
-                            <div class="h5 mb-0 fw-bold">{{ empty_categories }}</div>
+                        <div class="col" role="group" aria-labelledby="empty-categories-label">
+                            <div id="empty-categories-label" class="small text-muted mb-1">Empty Categories</div>
+                            <div class="h5 mb-0 fw-bold" aria-describedby="empty-categories-label">{{ empty_categories }}</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
     <div class="row">
         <!-- Categories list -->
-        <div class="col-lg-8">
+        <section class="col-lg-8" aria-labelledby="categories-list-heading">
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
                     <h6 class="m-0 fw-bold">Categories</h6>

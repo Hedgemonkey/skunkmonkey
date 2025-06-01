@@ -235,7 +235,7 @@ python manage.py shell
 
 (Covered in Performance section above - check accessibility score)
 
-### 7.3 Manual Keyboard Navigation Test
+!!!--- Didn't test ---!!! ### 7.3 Manual Keyboard Navigation Test
 
 **Manual Steps:**
 1. Navigate your site using only Tab, Enter, and arrow keys
@@ -244,7 +244,7 @@ python manage.py shell
 
 **Screenshot Needed:** ✅ Screenshots showing visible focus indicators
 
-### 7.4 Screen Reader Testing (Optional but Recommended)
+!!!--- Didn't test ---!!! ### 7.4 Screen Reader Testing (Optional but Recommended)
 
 **Manual Steps:**
 1. Install NVDA (Windows) or use VoiceOver (Mac)

@@ -1,27 +1,48 @@
 {% load allauth %}
-{{ attrs.errors }}
-<p>
+{% if attrs.errors %}
+    <div class="alert alert-danger" role="alert" aria-live="polite">
+        {{ attrs.errors }}
+    </div>
+{% endif %}
+<div class="mb-3">
     {% if attrs.type == "textarea" %}
-        <label for="{{ attrs.id }}">
+        <label for="{{ attrs.id }}" class="form-label{% if attrs.required %} required{% endif %}">
             {% slot label %}
             {% endslot %}
+            {% if attrs.required %}<span class="text-danger ms-1" aria-label="required">*</span>{% endif %}
         </label>
-        <textarea {% if attrs.required %}required{% endif %}
+        {% if slots.help_text %}
+            <div class="form-text text-muted small" id="{{ attrs.id }}-help">
+                {% slot help_text %}
+                {% endslot %}
+            </div>
+        {% endif %}
+        <textarea class="form-control{% if attrs.errors %} is-invalid{% endif %}"
+                  {% if attrs.required %}required{% endif %}
                   {% if attrs.rows %}rows="{{ attrs.rows }}"{% endif %}
                   {% if attrs.disabled %}disabled{% endif %}
                   {% if attrs.readonly %}readonly{% endif %}
                   {% if attrs.checked %}checked{% endif %}
                   {% if attrs.name %}name="{{ attrs.name }}"{% endif %}
                   {% if attrs.id %}id="{{ attrs.id }}"{% endif %}
-                  {% if attrs.placeholder %}placeholder="{{ attrs.placeholder }}"{% endif %}>{% slot value %}{% endslot %}</textarea>
+                  {% if attrs.placeholder %}placeholder="{{ attrs.placeholder }}"{% endif %}
+                  {% if attrs.errors %}aria-invalid="true" aria-describedby="{{ attrs.id }}-error{% if slots.help_text %} {{ attrs.id }}-help{% endif %}"{% else %}{% if slots.help_text %}aria-describedby="{{ attrs.id }}-help"{% endif %}{% endif %}>{% slot value %}{% endslot %}</textarea>
     {% else %}
         {% if attrs.type != "checkbox" and attrs.type != "radio" %}
-            <label for="{{ attrs.id }}">
+            <label for="{{ attrs.id }}" class="form-label{% if attrs.required %} required{% endif %}">
                 {% slot label %}
                 {% endslot %}
+                {% if attrs.required %}<span class="text-danger ms-1" aria-label="required">*</span>{% endif %}
             </label>
         {% endif %}
-        <input {% if attrs.required %}required{% endif %}
+        {% if slots.help_text and attrs.type != "checkbox" and attrs.type != "radio" %}
+            <div class="form-text text-muted small" id="{{ attrs.id }}-help">
+                {% slot help_text %}
+                {% endslot %}
+            </div>
+        {% endif %}
+        <input class="{% if attrs.type == 'checkbox' or attrs.type == 'radio' %}form-check-input{% else %}form-control{% endif %}{% if attrs.errors %} is-invalid{% endif %}"
+               {% if attrs.required %}required{% endif %}
                {% if attrs.disabled %}disabled{% endif %}
                {% if attrs.readonly %}readonly{% endif %}
                {% if attrs.checked %}checked{% endif %}
@@ -30,18 +51,25 @@
                {% if attrs.placeholder %}placeholder="{{ attrs.placeholder }}"{% endif %}
                {% if attrs.autocomplete %}autocomplete="{{ attrs.autocomplete }}"{% endif %}
                {% if attrs.value is not None %}value="{{ attrs.value }}"{% endif %}
+               {% if attrs.errors %}aria-invalid="true" aria-describedby="{{ attrs.id }}-error{% if slots.help_text %} {{ attrs.id }}-help{% endif %}"{% else %}{% if slots.help_text %}aria-describedby="{{ attrs.id }}-help"{% endif %}{% endif %}
                type="{{ attrs.type }}">
         {% if attrs.type == "checkbox" or attrs.type == "radio" %}
-            <label for="{{ attrs.id }}">
+            <label for="{{ attrs.id }}" class="form-check-label">
                 {% slot label %}
                 {% endslot %}
+                {% if attrs.required %}<span class="text-danger ms-1" aria-label="required">*</span>{% endif %}
             </label>
+            {% if slots.help_text %}
+                <div class="form-text text-muted small" id="{{ attrs.id }}-help">
+                    {% slot help_text %}
+                    {% endslot %}
+                </div>
+            {% endif %}
         {% endif %}
     {% endif %}
-    {% if slots.help_text %}
-        <span>
-            {% slot help_text %}
-            {% endslot %}
-        </span>
+    {% if attrs.errors %}
+        <div class="invalid-feedback d-block" id="{{ attrs.id }}-error" role="alert" aria-live="polite">
+            {{ attrs.errors }}
+        </div>
     {% endif %}
-</p>
+</div>

@@ -11,107 +11,163 @@
 {% endblock %}
 
 {% block header %}
-<div class="py-4 bg-primary text-white">
+<header class="py-4 bg-primary text-white" role="banner">
     <div class="container">
-        <h1 class="mb-0">Checkout</h1>
+        <h1 class="mb-0">Secure Checkout</h1>
+        <nav aria-label="Checkout progress" class="mt-2">
+            <ol class="breadcrumb mb-0 text-white-50">
+                <li class="breadcrumb-item"><span class="text-white-50">Cart</span></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">Checkout</li>
+                <li class="breadcrumb-item"><span class="text-white-50">Confirmation</span></li>
+            </ol>
+        </nav>
     </div>
-</div>
+</header>
 {% endblock %}
 
 {% block content %}
-<div class="container my-5">
+<main class="container my-5" role="main">
     <div class="row">
         <!-- Checkout Form -->
-        <div class="col-lg-8">
+        <section class="col-lg-8" aria-labelledby="checkout-form-heading">
             <div class="card mb-4 shadow-sm">
                 <div class="card-header bg-transparent">
-                    <h5 class="mb-0">Your Information</h5>
+                    <h2 id="checkout-form-heading" class="h5 mb-0">Your Information</h2>
                 </div>
                 <div class="card-body">
-                    <form id="checkout-form" method="post" action="{% url 'shop:checkout' %}">
+                    <form id="checkout-form" method="post" action="{% url 'shop:checkout' %}" novalidate aria-labelledby="checkout-form-heading">
                         {% csrf_token %}
 
-                        {% crispy form %}
+                        <fieldset>
+                            <legend class="visually-hidden">Billing and Shipping Information</legend>
+                            {% crispy form %}
+                        </fieldset>
 
                         <!-- Terms and Conditions -->
-                        <div class="form-check mb-3">
-                            <input class="form-check-input" type="checkbox" id="terms-check" required>
-                            <label class="form-check-label" for="terms-check">
-                                I agree to the <a href="javascript:void(0);" id="terms-link">terms and conditions</a>
-                            </label>
-                        </div>
+                        <fieldset class="mt-4">
+                            <legend class="visually-hidden">Agreement and Terms</legend>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="terms-check"
+                                       required
+                                       aria-describedby="terms-error">
+                                <label class="form-check-label" for="terms-check">
+                                    I agree to the <a href="javascript:void(0);"
+                                                     id="terms-link"
+                                                     aria-label="View terms and conditions (opens in dialog)">
+                                        terms and conditions
+                                    </a>
+                                    <span class="text-danger" aria-label="Required field">*</span>
+                                </label>
+                                <div id="terms-error" class="invalid-feedback" role="alert" aria-live="polite">
+                                    You must agree to the terms and conditions to proceed.
+                                </div>
+                            </div>
+                        </fieldset>
 
                         <div class="d-grid mt-4">
-                            <button id="submit-button" type="submit" class="btn btn-primary btn-lg">
+                            <button id="submit-button"
+                                    type="submit"
+                                    class="btn btn-primary btn-lg"
+                                    aria-describedby="security-notice"
+                                    aria-label="Complete your order securely">
                                 <span id="button-text">
-                                    <i class="fas fa-lock me-2"></i> Complete Order
+                                    <i class="fas fa-lock me-2" aria-hidden="true"></i> Complete Order
                                 </span>
-                                <span id="spinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                                <span id="spinner"
+                                      class="spinner-border spinner-border-sm d-none"
+                                      role="status"
+                                      aria-label="Processing your order">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
                             </button>
 
-                            <div class="mt-3 secured-badge text-center">
-                                <i class="fas fa-lock me-2"></i> Your information is secure and encrypted
+                            <div id="security-notice" class="mt-3 secured-badge text-center text-muted">
+                                <i class="fas fa-lock me-2" aria-hidden="true"></i>
+                                <span>Your information is secure and encrypted</span>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- Order Summary -->
-        <div class="col-lg-4">
+        <aside class="col-lg-4" aria-labelledby="order-summary-heading">
             <div class="card checkout-summary shadow-sm">
                 <div class="card-header bg-transparent">
-                    <h5 class="mb-0">Order Summary</h5>
+                    <h2 id="order-summary-heading" class="h5 mb-0">Order Summary</h2>
                 </div>
                 <div class="card-body">
-                    <div class="order-items mb-4">
-                        {% for item in cart.items.all %}
-                        <div class="d-flex mb-3">
-                            <div class="flex-shrink-0">
-                                {% if item.product.image %}
-                                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="checkout-item-img"
-                                         onerror="this.onerror=null; this.src='{{ MEDIA_URL }}noimage.png';">
-                                {% else %}
-                                    <img src="{{ MEDIA_URL }}noimage.png" alt="No image" class="checkout-item-img" width="60" height="60">
-                                {% endif %}
-                            </div>
-                            <div class="flex-grow-1 ms-3">
-                                <h6 class="mb-0 text-truncate">{{ item.product.name }}</h6>
-                                <div class="d-flex justify-content-between align-items-center mt-1">
-                                    <small class="text-muted">{{ item.quantity }} × ${{ item.product.price }}</small>
-                                    <span class="item-price">${{ item.total_price }}</span>
+                    <section class="order-items mb-4" aria-labelledby="order-items-heading">
+                        <h3 id="order-items-heading" class="visually-hidden">Items in Your Order</h3>
+                        <ul class="list-unstyled" role="list">
+                            {% for item in cart.items.all %}
+                            <li class="d-flex mb-3" role="listitem">
+                                <div class="flex-shrink-0">
+                                    {% if item.product.image %}
+                                        <img src="{{ item.product.image.url }}"
+                                             alt="{{ item.product.name }} - Product image"
+                                             class="checkout-item-img"
+                                             width="60"
+                                             height="60"
+                                             onerror="this.onerror=null; this.src='{{ MEDIA_URL }}noimage.png';">
+                                    {% else %}
+                                        <img src="{{ MEDIA_URL }}noimage.png"
+                                             alt="No image available for {{ item.product.name }}"
+                                             class="checkout-item-img"
+                                             width="60"
+                                             height="60">
+                                    {% endif %}
                                 </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h4 class="h6 mb-0 text-truncate">{{ item.product.name }}</h4>
+                                    <div class="d-flex justify-content-between align-items-center mt-1">
+                                        <span class="text-muted" aria-label="Quantity {{ item.quantity }} at £{{ item.product.price }} each">
+                                            {{ item.quantity }} × £{{ item.product.price }}
+                                        </span>
+                                        <span class="item-price fw-semibold" aria-label="Item total: £{{ item.total_price }}">
+                                            £{{ item.total_price }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </section>
+
+                    <section aria-labelledby="price-breakdown-heading">
+                        <h3 id="price-breakdown-heading" class="visually-hidden">Price Breakdown</h3>
+                        <dl class="checkout-totals">
+                            <div class="d-flex justify-content-between mb-2">
+                                <dt>Subtotal ({{ cart.items.count }} item{% if cart.items.count != 1 %}s{% endif %}):</dt>
+                                <dd class="mb-0">£{{ cart.total_price }}</dd>
                             </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Subtotal ({{ cart.items.count }} item{% if cart.items.count != 1 %}s{% endif %}):</span>
-                        <span>${{ cart.total_price }}</span>
-                    </div>
-
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Shipping:</span>
-                        <span>Free</span>
-                    </div>
-
-                    <hr>
-
-                    <div class="d-flex justify-content-between mb-0">
-                        <span class="fw-bold">Total:</span>
-                        <span class="checkout-total">${{ cart.total_price }}</span>
-                    </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <dt>Shipping:</dt>
+                                <dd class="mb-0 text-success">Free</dd>
+                            </div>
+                            <hr aria-hidden="true">
+                            <div class="d-flex justify-content-between mb-0">
+                                <dt class="fw-bold">Total:</dt>
+                                <dd class="checkout-total fw-bold mb-0" aria-label="Order total: £{{ cart.total_price }}">
+                                    £{{ cart.total_price }}
+                                </dd>
+                            </div>
+                        </dl>
+                    </section>
                 </div>
             </div>
 
             <div class="mt-4">
-                <a href="{% url 'shop:cart' %}" class="btn btn-outline-secondary w-100">
-                    <i class="fas fa-arrow-left me-2"></i> Return to Cart
+                <a href="{% url 'shop:cart' %}"
+                   class="btn btn-outline-secondary w-100"
+                   aria-label="Return to shopping cart to modify items">
+                    <i class="fas fa-arrow-left me-2" aria-hidden="true"></i> Return to Cart
                 </a>
             </div>
-        </div>
+        </aside>
     </div>
 
     <!-- Hidden Stripe configuration data -->
@@ -121,8 +177,9 @@
          data-publishable-key="{{ stripe_publishable_key }}"
          data-client-secret="{{ client_secret }}"
          data-cache-url="{% url 'shop:cache_checkout_data' %}"
-         style="display: none;"></div>
-</div>
+         class="visually-hidden"
+         aria-hidden="true"></div>
+</main>
 {% endblock %}
 
 {% block postloadjs %}

@@ -6,334 +6,442 @@
 {% block staff_content %}
 <div class="container-fluid px-4">
     <!-- Stats Cards -->
-    <div class="row mb-4">
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Total Customers
+    <section aria-labelledby="customer-stats-heading">
+        <h2 id="customer-stats-heading" class="visually-hidden">Customer Statistics Overview</h2>
+        <div class="row mb-4">
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    Total Customers
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" aria-label="Total customers: {{ total_customers }}">{{ total_customers }}</div>
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_customers }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fa fa-users fa-2x text-gray-300"></i>
+                            <div class="col-auto">
+                                <i class="fa fa-users fa-2x text-gray-300" aria-hidden="true"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Active Customers
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Active Customers
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" aria-label="Active customers: {{ active_customers }}">{{ active_customers }}</div>
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ active_customers }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fa fa-user-check fa-2x text-gray-300"></i>
+                            <div class="col-auto">
+                                <i class="fa fa-user-check fa-2x text-gray-300" aria-hidden="true"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                New This Month
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-info shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                    New This Month
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" aria-label="New customers this month: {{ new_customers }}">{{ new_customers }}</div>
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ new_customers }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fa fa-user-plus fa-2x text-gray-300"></i>
+                            <div class="col-auto">
+                                <i class="fa fa-user-plus fa-2x text-gray-300" aria-hidden="true"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                Avg. Customer Value
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    Avg. Customer Value
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" aria-label="Average customer value: £{{ avg_customer_value|default:'0.00' }}">£{{ avg_customer_value|default:"0.00" }}</div>
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">£{{ avg_customer_value|default:"0.00" }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fa fa-dollar-sign fa-2x text-gray-300"></i>
+                            <div class="col-auto">
+                                <i class="fa fa-dollar-sign fa-2x text-gray-300" aria-hidden="true"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
     <!-- Filters -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 fw-bold">Search & Filter</h6>
-            <button class="btn btn-sm btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFilters" aria-expanded="false" aria-controls="collapseFilters">
-                <i class="fa fa-filter me-1"></i> Toggle Filters
-            </button>
-        </div>
-        <div class="collapse show" id="collapseFilters">
-            <div class="card-body">
-                <form method="get" class="row g-3">
-                    <div class="col-md-4">
-                        <label for="search" class="form-label">Search</label>
-                        <input type="text" id="search" name="search" class="form-control" placeholder="Name, email or phone" value="{{ request.GET.search|default:'' }}">
-                    </div>
-                    <div class="col-md-4">
-                        <label for="date_joined_from" class="form-label">Joined From</label>
-                        <input type="date" id="date_joined_from" name="date_joined_from" class="form-control" value="{{ request.GET.date_joined_from|default:'' }}">
-                    </div>
-                    <div class="col-md-4">
-                        <label for="date_joined_to" class="form-label">Joined To</label>
-                        <input type="date" id="date_joined_to" name="date_joined_to" class="form-control" value="{{ request.GET.date_joined_to|default:'' }}">
-                    </div>
+    <section aria-labelledby="customer-filter-heading">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h2 id="customer-filter-heading" class="m-0 fw-bold h6">Search & Filter</h2>
+                <button class="btn btn-sm btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFilters"
+                        aria-expanded="false" aria-controls="collapseFilters" aria-describedby="filter-toggle-help">
+                    <i class="fa fa-filter me-1" aria-hidden="true"></i> Toggle Filters
+                </button>
+                <div id="filter-toggle-help" class="visually-hidden">Click to show or hide the customer filter options</div>
+            </div>
+            <div class="collapse show" id="collapseFilters">
+                <div class="card-body">
+                    <form method="get" class="row g-3" role="search" aria-label="Filter customers">                        <div class="col-md-4">
+                            <label for="search" class="form-label">Search</label>
+                            <input type="text" id="search" name="search" class="form-control"
+                                   placeholder="Name, email or phone"
+                                   value="{{ request.GET.search|default:'' }}"
+                                   aria-describedby="search-help">
+                            <div id="search-help" class="visually-hidden">Search customers by name, email address, or phone number</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="date_joined_from" class="form-label">Joined From</label>
+                            <input type="date" id="date_joined_from" name="date_joined_from" class="form-control"
+                                   value="{{ request.GET.date_joined_from|default:'' }}"
+                                   aria-describedby="date-from-help">
+                            <div id="date-from-help" class="visually-hidden">Filter customers who joined from this date onwards</div>
+                        </div>                        <div class="col-md-4">
+                            <label for="date_joined_to" class="form-label">Joined To</label>
+                            <input type="date" id="date_joined_to" name="date_joined_to" class="form-control"
+                                   value="{{ request.GET.date_joined_to|default:'' }}"
+                                   aria-describedby="date-to-help">
+                            <div id="date-to-help" class="visually-hidden">Filter customers who joined up to this date</div>
+                        </div>
 
-                    <div class="col-md-4">
-                        <label for="has_orders" class="form-label">Order Status</label>
-                        <select id="has_orders" name="has_orders" class="form-select">
-                            <option value="">All Customers</option>
-                            <option value="yes" {% if request.GET.has_orders == 'yes' %}selected{% endif %}>With Orders</option>
-                            <option value="no" {% if request.GET.has_orders == 'no' %}selected{% endif %}>No Orders</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="is_active" class="form-label">Account Status</label>
-                        <select id="is_active" name="is_active" class="form-select">
-                            <option value="">All Statuses</option>
-                            <option value="yes" {% if request.GET.is_active == 'yes' %}selected{% endif %}>Active</option>
-                            <option value="no" {% if request.GET.is_active == 'no' %}selected{% endif %}>Inactive</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="sort" class="form-label">Sort By</label>
-                        <select id="sort" name="sort" class="form-select">
-                            <option value="-date_joined" {% if request.GET.sort == '-date_joined' or not request.GET.sort %}selected{% endif %}>Newest Customers</option>
-                            <option value="date_joined" {% if request.GET.sort == 'date_joined' %}selected{% endif %}>Oldest Customers</option>
-                            <option value="-last_login" {% if request.GET.sort == '-last_login' %}selected{% endif %}>Most Recent Login</option>
-                            <option value="last_login" {% if request.GET.sort == 'last_login' %}selected{% endif %}>Least Recent Login</option>
-                            <option value="-order_count" {% if request.GET.sort == '-order_count' %}selected{% endif %}>Most Orders</option>
-                            <option value="order_count" {% if request.GET.sort == 'order_count' %}selected{% endif %}>Fewest Orders</option>
-                            <option value="-total_spent" {% if request.GET.sort == '-total_spent' %}selected{% endif %}>Highest Spending</option>
-                            <option value="total_spent" {% if request.GET.sort == 'total_spent' %}selected{% endif %}>Lowest Spending</option>
-                        </select>
-                    </div>
-
-                    <div class="col-12">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fa fa-search me-1"></i> Search
-                        </button>
-                        <a href="{% url 'staff:customer_list' %}" class="btn btn-outline-secondary">
-                            <i class="fa fa-times-circle me-1"></i> Clear Filters
-                        </a>
-                    </div>
-                </form>
+                        <div class="col-md-4">
+                            <label for="has_orders" class="form-label">Order Status</label>
+                            <select id="has_orders" name="has_orders" class="form-select"
+                                    aria-describedby="order-status-help">
+                                <option value="">All Customers</option>
+                                <option value="yes" {% if request.GET.has_orders == 'yes' %}selected{% endif %}>With Orders</option>
+                                <option value="no" {% if request.GET.has_orders == 'no' %}selected{% endif %}>No Orders</option>
+                            </select>
+                            <div id="order-status-help" class="visually-hidden">Filter customers based on whether they have placed orders</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="is_active" class="form-label">Account Status</label>
+                            <select id="is_active" name="is_active" class="form-select"
+                                    aria-describedby="account-status-help">
+                                <option value="">All Statuses</option>
+                                <option value="yes" {% if request.GET.is_active == 'yes' %}selected{% endif %}>Active</option>
+                                <option value="no" {% if request.GET.is_active == 'no' %}selected{% endif %}>Inactive</option>
+                            </select>
+                            <div id="account-status-help" class="visually-hidden">Filter customers by their account activation status</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="sort" class="form-label">Sort By</label>
+                            <select id="sort" name="sort" class="form-select"
+                                    aria-describedby="sort-help">
+                                <option value="-date_joined" {% if request.GET.sort == '-date_joined' or not request.GET.sort %}selected{% endif %}>Newest Customers</option>
+                                <option value="date_joined" {% if request.GET.sort == 'date_joined' %}selected{% endif %}>Oldest Customers</option>
+                                <option value="-last_login" {% if request.GET.sort == '-last_login' %}selected{% endif %}>Most Recent Login</option>
+                                <option value="last_login" {% if request.GET.sort == 'last_login' %}selected{% endif %}>Least Recent Login</option>
+                                <option value="-order_count" {% if request.GET.sort == '-order_count' %}selected{% endif %}>Most Orders</option>
+                                <option value="order_count" {% if request.GET.sort == 'order_count' %}selected{% endif %}>Fewest Orders</option>
+                                <option value="-total_spent" {% if request.GET.sort == '-total_spent' %}selected{% endif %}>Highest Spending</option>
+                                <option value="total_spent" {% if request.GET.sort == 'total_spent' %}selected{% endif %}>Lowest Spending</option>
+                            </select>
+                            <div id="sort-help" class="visually-hidden">Choose how to sort the customer list</div>
+                        </div>                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary" aria-describedby="search-btn-help">
+                                <i class="fa fa-search me-1" aria-hidden="true"></i> Search
+                            </button>
+                            <a href="{% url 'staff:customer_list' %}" class="btn btn-outline-secondary" aria-describedby="clear-btn-help">
+                                <i class="fa fa-times-circle me-1" aria-hidden="true"></i> Clear Filters
+                            </a>
+                            <div id="search-btn-help" class="visually-hidden">Apply the selected filters to search customers</div>
+                            <div id="clear-btn-help" class="visually-hidden">Clear all filters and show all customers</div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 
     <!-- Customers Table -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 fw-bold">
-                Customer List
-                {% if is_filtered %}<span class="text-muted">(Filtered)</span>{% endif %}
-            </h6>
-            <div class="dropdown">
-                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fa fa-download me-1"></i> Export
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="exportDropdown">
-                    <li><a class="dropdown-item" href="{% url 'staff:export_customers' %}?format=csv{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"><i class="fa fa-file-csv me-1"></i> Export CSV</a></li>
-                    <li><a class="dropdown-item" href="{% url 'staff:export_customers' %}?format=xlsx{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"><i class="fa fa-file-excel me-1"></i> Export Excel</a></li>
-                </ul>
+    <section aria-labelledby="customer-table-heading">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 id="customer-table-heading" class="m-0 fw-bold h6">
+                        Customer List
+                        {% if is_filtered %}<span class="text-muted">(Filtered)</span>{% endif %}
+                    </h2>
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                            id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                            aria-describedby="export-help">
+                        <i class="fa fa-download me-1" aria-hidden="true"></i> Export
+                    </button>
+                    <div id="export-help" class="visually-hidden">Export customer data in different formats</div>
+                    <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+                        <li><a class="dropdown-item"
+                               href="{% url 'staff:export_customers' %}?format=csv{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+                               aria-label="Export customer data as CSV file">
+                            <i class="fa fa-file-csv me-1" aria-hidden="true"></i> Export CSV</a></li>
+                        <li><a class="dropdown-item"
+                               href="{% url 'staff:export_customers' %}?format=xlsx{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+                               aria-label="Export customer data as Excel file">
+                            <i class="fa fa-file-excel me-1" aria-hidden="true"></i> Export Excel</a></li>
+                    </ul>
+                </div>
             </div>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Joined</th>
-                            <th>Last Login</th>
-                            <th>Orders</th>
-                            <th>Total Spent</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for customer in customers %}
-                        <tr>
-                            <td>
-                                {{ customer.get_full_name|default:"No Name" }}
-                            </td>
-                            <td>{{ customer.email }}</td>
-                            <td>{{ customer.date_joined|date:"M d, Y" }}</td>
-                            <td>
-                                {% if customer.last_login %}
-                                    {{ customer.last_login|timesince }} ago
-                                {% else %}
-                                    Never
-                                {% endif %}
-                            </td>
-                            <td>{{ customer.order_count|default:"0" }}</td>
-                            <td>£{{ customer.total_spent|default:"0.00" }}</td>
-                            <td>
-                                {% if customer.is_active %}
-                                <span class="badge bg-success">Active</span>
-                                {% else %}
-                                <span class="badge bg-danger">Inactive</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <div class="btn-group">
-                                    <a href="{% url 'staff:customer_detail' customer.id %}" class="btn btn-sm btn-outline-primary">
-                                        <i class="fa fa-eye"></i>
-                                    </a>
-                                    <a href="{% url 'staff:user_update' customer.id %}" class="btn btn-sm btn-outline-secondary">
-                                        <i class="fa fa-edit"></i>
-                                    </a>
-                                    <button type="button" class="btn btn-sm btn-outline-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="fa fa-cog"></i>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        <li>
-                                            <a href="{% url 'staff:customer_orders' customer.id %}" class="dropdown-item">
-                                                <i class="fa fa-shopping-cart me-1"></i> View Orders
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#emailCustomerModal" data-customer-id="{{ customer.id }}" data-customer-email="{{ customer.email }}" data-customer-name="{{ customer.get_full_name|default:customer.username }}">
-                                                <i class="fa fa-envelope me-1"></i> Send Email
-                                            </button>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li>
-                                            <form action="{% url 'staff:toggle_customer_status' customer.id %}" method="post">
-                                                {% csrf_token %}
-                                                {% if customer.is_active %}
-                                                <button type="submit" class="dropdown-item text-danger">
-                                                    <i class="fa fa-user-times me-1"></i> Deactivate Account
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover"
+                           role="table"
+                           aria-label="Customer list with details and actions"
+                           aria-describedby="customer-table-desc">
+                        <caption id="customer-table-desc" class="visually-hidden">
+                            A table showing customer information including name, email, join date, last login, order count, total spent, account status, and available actions.
+                        </caption>
+                        <thead>
+                            <tr role="row">
+                                <th scope="col">Name</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Joined</th>
+                                <th scope="col">Last Login</th>
+                                <th scope="col">Orders</th>
+                                <th scope="col">Total Spent</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>                            {% for customer in customers %}
+                            <tr role="row" aria-describedby="customer-{{ customer.id }}-desc">
+                                <td>
+                                    <span aria-label="Customer name: {{ customer.get_full_name|default:'No Name' }}">
+                                        {{ customer.get_full_name|default:"No Name" }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span aria-label="Email address: {{ customer.email }}">{{ customer.email }}</span>
+                                </td>
+                                <td>
+                                    <time datetime="{{ customer.date_joined|date:'c' }}"
+                                          aria-label="Joined on {{ customer.date_joined|date:'F d, Y' }}">
+                                        {{ customer.date_joined|date:"M d, Y" }}
+                                    </time>
+                                </td>
+                                <td>
+                                    {% if customer.last_login %}
+                                        <time datetime="{{ customer.last_login|date:'c' }}"
+                                              aria-label="Last login {{ customer.last_login|timesince }} ago on {{ customer.last_login|date:'F d, Y' }}">
+                                            {{ customer.last_login|timesince }} ago
+                                        </time>
+                                    {% else %}
+                                        <span aria-label="Never logged in">Never</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span aria-label="{{ customer.order_count|default:'0' }} order{{ customer.order_count|default:'0'|pluralize }}">
+                                        {{ customer.order_count|default:"0" }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span aria-label="Total spent: £{{ customer.total_spent|default:'0.00' }}">
+                                        £{{ customer.total_spent|default:"0.00" }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if customer.is_active %}
+                                    <span class="badge bg-success" aria-label="Account status: Active">Active</span>
+                                    {% else %}
+                                    <span class="badge bg-danger" aria-label="Account status: Inactive">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group" aria-label="Actions for {{ customer.get_full_name|default:customer.email }}">
+                                        <a href="{% url 'staff:customer_detail' customer.id %}"
+                                           class="btn btn-sm btn-outline-primary"
+                                           aria-label="View details for {{ customer.get_full_name|default:customer.email }}">
+                                            <i class="fa fa-eye" aria-hidden="true"></i>
+                                            <span class="visually-hidden">View</span>
+                                        </a>
+                                        <a href="{% url 'staff:user_update' customer.id %}"
+                                           class="btn btn-sm btn-outline-secondary"
+                                           aria-label="Edit customer {{ customer.get_full_name|default:customer.email }}">
+                                            <i class="fa fa-edit" aria-hidden="true"></i>
+                                            <span class="visually-hidden">Edit</span>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-info dropdown-toggle"
+                                                data-bs-toggle="dropdown" aria-expanded="false"
+                                                aria-label="More actions for {{ customer.get_full_name|default:customer.email }}">
+                                            <i class="fa fa-cog" aria-hidden="true"></i>
+                                            <span class="visually-hidden">More actions</span>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li>
+                                                <a href="{% url 'staff:customer_orders' customer.id %}"
+                                                   class="dropdown-item"
+                                                   aria-label="View orders for {{ customer.get_full_name|default:customer.email }}">
+                                                    <i class="fa fa-shopping-cart me-1" aria-hidden="true"></i> View Orders
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <button type="button" class="dropdown-item"
+                                                        data-bs-toggle="modal" data-bs-target="#emailCustomerModal"
+                                                        data-customer-id="{{ customer.id }}"
+                                                        data-customer-email="{{ customer.email }}"
+                                                        data-customer-name="{{ customer.get_full_name|default:customer.username }}"
+                                                        aria-label="Send email to {{ customer.get_full_name|default:customer.email }}">
+                                                    <i class="fa fa-envelope me-1" aria-hidden="true"></i> Send Email
                                                 </button>
-                                                {% else %}
-                                                <button type="submit" class="dropdown-item text-success">
-                                                    <i class="fa fa-user-check me-1"></i> Activate Account
-                                                </button>
-                                                {% endif %}
-                                            </form>
-                                        </li>
-                                    </ul>
+                                            </li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <form action="{% url 'staff:toggle_customer_status' customer.id %}" method="post">
+                                                    {% csrf_token %}
+                                                    {% if customer.is_active %}
+                                                    <button type="submit" class="dropdown-item text-danger"
+                                                            aria-label="Deactivate account for {{ customer.get_full_name|default:customer.email }}">
+                                                        <i class="fa fa-user-times me-1" aria-hidden="true"></i> Deactivate Account
+                                                    </button>
+                                                    {% else %}
+                                                    <button type="submit" class="dropdown-item text-success"
+                                                            aria-label="Activate account for {{ customer.get_full_name|default:customer.email }}">
+                                                        <i class="fa fa-user-check me-1" aria-hidden="true"></i> Activate Account
+                                                    </button>
+                                                    {% endif %}
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                                <div id="customer-{{ customer.id }}-desc" class="visually-hidden">
+                                    Customer: {{ customer.get_full_name|default:"No name" }}.
+                                    Email: {{ customer.email }}.
+                                    Joined: {{ customer.date_joined|date:"F d, Y" }}.
+                                    {% if customer.last_login %}Last login: {{ customer.last_login|timesince }} ago{% else %}Never logged in{% endif %}.
+                                    Orders: {{ customer.order_count|default:"0" }}.
+                                    Total spent: £{{ customer.total_spent|default:"0.00" }}.
+                                    Account status: {% if customer.is_active %}Active{% else %}Inactive{% endif %}.
                                 </div>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="8" class="text-center py-4">
-                                <p class="mb-0">No customers found matching your criteria.</p>
-                                {% if is_filtered %}
-                                <p class="mb-0">
-                                    <a href="{% url 'staff:customer_list' %}" class="alert-link">Clear all filters</a> to see all customers.
-                                </p>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                            </tr>
+                            {% empty %}
+                            <tr role="row">
+                                <td colspan="8" class="text-center py-4">
+                                    <p class="mb-0">No customers found matching your criteria.</p>
+                                    {% if is_filtered %}
+                                    <p class="mb-0">
+                                        <a href="{% url 'staff:customer_list' %}" class="alert-link">Clear all filters</a> to see all customers.
+                                    </p>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>                {% if is_paginated %}
+                <nav aria-label="Customer list pagination" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link"
+                               href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+                               aria-label="Go to first page">
+                                First
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link"
+                               href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+                               aria-label="Go to previous page">
+                                Previous
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        <li class="page-item active">
+                            <span class="page-link" aria-current="page"
+                                  aria-label="Current page, page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}">
+                                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                            </span>
+                        </li>
+
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link"
+                               href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+                               aria-label="Go to next page">
+                                Next
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link"
+                               href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+                               aria-label="Go to last page">
+                                Last
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
             </div>
-
-            {% if is_paginated %}
-            <nav aria-label="Customer pagination" class="mt-4">
-                <ul class="pagination justify-content-center">
-                    {% if page_obj.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
-                            First
-                        </a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
-                            Previous
-                        </a>
-                    </li>
-                    {% endif %}
-
-                    <li class="page-item active">
-                        <span class="page-link">
-                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-                        </span>
-                    </li>
-
-                    {% if page_obj.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
-                            Next
-                        </a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
-                            Last
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </nav>
-            {% endif %}
         </div>
-    </div>
+    </section>
 </div>
 
 <!-- Email Customer Modal -->
-<div class="modal fade" id="emailCustomerModal" tabindex="-1" aria-labelledby="emailCustomerModalLabel" aria-hidden="true">
+<div class="modal fade" id="emailCustomerModal" tabindex="-1"
+     aria-labelledby="emailCustomerModalLabel" aria-hidden="true"
+     aria-describedby="email-modal-desc">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="emailCustomerModalLabel">Send Email to Customer</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h3 class="modal-title h5" id="emailCustomerModalLabel">Send Email to Customer</h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close email modal"></button>
             </div>
-            <form action="{% url 'staff:email_customer' %}" method="post">
+            <form action="{% url 'staff:email_customer' %}" method="post"
+                  aria-labelledby="emailCustomerModalLabel">
                 {% csrf_token %}
                 <div class="modal-body">
+                    <div id="email-modal-desc" class="visually-hidden">
+                        Form to send an email to a customer with subject, message, and option to record in history.
+                    </div>
                     <input type="hidden" name="customer_id" id="modal_customer_id">
 
                     <div class="mb-3">
                         <label for="recipient" class="form-label">To:</label>
-                        <input type="email" class="form-control" id="recipient" readonly>
+                        <input type="email" class="form-control" id="recipient" readonly
+                               aria-describedby="recipient-help">
+                        <div id="recipient-help" class="visually-hidden">The customer's email address (read-only)</div>
                     </div>
 
                     <div class="mb-3">
                         <label for="email_subject" class="form-label">Subject:</label>
-                        <input type="text" class="form-control" id="email_subject" name="subject" required>
+                        <input type="text" class="form-control" id="email_subject" name="subject"
+                               required aria-describedby="subject-help">
+                        <div id="subject-help" class="form-text">Enter the email subject line</div>
                     </div>
 
                     <div class="mb-3">
                         <label for="email_message" class="form-label">Message:</label>
-                        <textarea class="form-control" id="email_message" name="message" rows="5" required></textarea>
+                        <textarea class="form-control" id="email_message" name="message"
+                                  rows="5" required aria-describedby="message-help"></textarea>
+                        <div id="message-help" class="form-text">Enter your message to the customer</div>
                     </div>
 
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="add_to_history" name="add_to_history" checked>
+                        <input class="form-check-input" type="checkbox" id="add_to_history"
+                               name="add_to_history" checked aria-describedby="history-help">
                         <label class="form-check-label" for="add_to_history">
                             Record this email in customer history
                         </label>
+                        <div id="history-help" class="form-text">Check to save this email in the customer's communication history</div>
                     </div>
                 </div>
                 <div class="modal-footer">

@@ -4,17 +4,17 @@
 {% load staff_filters %}
 
 {% block staff_actions %}
-<div class="btn-group">
-    <a href="{% url 'staff:product_update' product.id %}" class="btn btn-sm btn-outline-primary">
-        <i class="bi bi-pencil"></i> Edit
+<nav aria-label="Product detail actions" class="btn-group" role="group">
+    <a href="{% url 'staff:product_update' product.id %}" class="btn btn-sm btn-outline-primary" aria-label="Edit {{ product.name }}">
+        <i class="bi bi-pencil" aria-hidden="true"></i> Edit
     </a>
-    <a href="{% url 'staff:product_list' %}" class="btn btn-sm btn-outline-secondary">
-        <i class="bi bi-arrow-left"></i> Back to Products
+    <a href="{% url 'staff:product_list' %}" class="btn btn-sm btn-outline-secondary" aria-label="Back to product list">
+        <i class="bi bi-arrow-left" aria-hidden="true"></i> Back to Products
     </a>
-    <a href="{{ product.get_absolute_url }}" class="btn btn-sm btn-outline-info" target="_blank">
-        <i class="bi bi-eye"></i> View on Site
+    <a href="{{ product.get_absolute_url }}" class="btn btn-sm btn-outline-info" target="_blank" rel="noopener" aria-label="View {{ product.name }} on storefront (opens in new tab)">
+        <i class="bi bi-eye" aria-hidden="true"></i> View on Site
     </a>
-</div>
+</nav>
 {% endblock %}
 
 {% block staff_content %}
@@ -23,100 +23,125 @@
 {% get_safe_context 'sales_history' as sales_history %}
 
 <div class="container-fluid px-4">
+    <header>
+        <h1 class="visually-hidden">Product Details: {{ product.name }}</h1>
+    </header>
     <div class="row">
         <!-- Left column: Main product info -->
-        <div class="col-lg-4">
+        <section class="col-lg-4" aria-labelledby="product-info-heading">
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                    <h6 class="m-0 fw-bold">Product Information</h6>
-                    <span class="badge {% if product.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                    <h2 id="product-info-heading" class="m-0 fw-bold h6">Product Information</h2>
+                    <span class="badge {% if product.is_active %}bg-success{% else %}bg-danger{% endif %}"
+                          aria-label="Product status: {% if product.is_active %}Active{% else %}Inactive{% endif %}">
                         {% if product.is_active %}Active{% else %}Inactive{% endif %}
                     </span>
                 </div>
                 <div class="card-body">
                     <div class="text-center mb-4">
                         {% if product.image %}
-                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded mb-3" style="max-height: 200px;">
+                        <img src="{{ product.image.url }}" alt="Main product image for {{ product.name }}"
+                             class="img-fluid rounded mb-3" style="max-height: 200px;">
                         {% else %}
-                        <div class="bg-light text-center p-5 rounded mb-3">
-                            <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                        <div class="bg-light text-center p-5 rounded mb-3" role="img" aria-label="No product image available">
+                            <i class="bi bi-image text-muted" style="font-size: 3rem;" aria-hidden="true"></i>
                             <p class="text-muted mb-0">No image available</p>
                         </div>
                         {% endif %}
                     </div>
 
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">
-                            <strong>Name:</strong> {{ product.name }}
-                        </li>
-                        <li class="list-group-item">
-                            <strong>Category:</strong> {{ product.category.name }}
-                        </li>
-                        <li class="list-group-item">
-                            <strong>SKU:</strong> {{ product.sku|default:"Not set" }}
-                        </li>
-                        <li class="list-group-item">
-                            <strong>Price:</strong> £{{ product.price }}
-                        </li>
-                        <li class="list-group-item">
-                            <strong>Stock Quantity:</strong>
-                            {% if product.stock_quantity > 0 %}
-                                <span class="{% if product.stock_quantity <= 5 %}text-warning{% endif %}">
-                                    {{ product.stock_quantity }}
-                                </span>
-                            {% else %}
-                                <span class="badge bg-danger">Out of stock</span>
-                            {% endif %}
-                        </li>
-                        <li class="list-group-item">
-                            <strong>Date Added:</strong> {{ product.created_at|date:"d M Y" }}
-                        </li>
-                        <li class="list-group-item">
-                            <strong>Last Updated:</strong> {{ product.updated_at|date:"d M Y H:i" }}
-                        </li>
-                    </ul>
+                    <dl class="list-group list-group-flush">
+                        <div class="list-group-item">
+                            <dt class="fw-bold">Name:</dt>
+                            <dd class="mb-0">{{ product.name }}</dd>
+                        </div>
+                        <div class="list-group-item">
+                            <dt class="fw-bold">Category:</dt>
+                            <dd class="mb-0">{{ product.category.name }}</dd>
+                        </div>
+                        <div class="list-group-item">
+                            <dt class="fw-bold">SKU:</dt>
+                            <dd class="mb-0">{{ product.sku|default:"Not set" }}</dd>
+                        </div>
+                        <div class="list-group-item">
+                            <dt class="fw-bold">Price:</dt>
+                            <dd class="mb-0">£{{ product.price }}</dd>
+                        </div>
+                        <div class="list-group-item">
+                            <dt class="fw-bold">Stock Quantity:</dt>
+                            <dd class="mb-0">
+                                {% if product.stock_quantity > 0 %}
+                                    <span class="{% if product.stock_quantity <= 5 %}text-warning{% endif %}"
+                                          aria-label="{% if product.stock_quantity <= 5 %}Low stock: {% endif %}{{ product.stock_quantity }} units in stock">
+                                        {{ product.stock_quantity }}
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-danger" aria-label="Out of stock">Out of stock</span>
+                                {% endif %}
+                            </dd>
+                        </div>
+                        <div class="list-group-item">
+                            <dt class="fw-bold">Date Added:</dt>
+                            <dd class="mb-0">
+                                <time datetime="{{ product.created_at|date:'c' }}">{{ product.created_at|date:"d M Y" }}</time>
+                            </dd>
+                        </div>
+                        <div class="list-group-item">
+                            <dt class="fw-bold">Last Updated:</dt>
+                            <dd class="mb-0">
+                                <time datetime="{{ product.updated_at|date:'c' }}">{{ product.updated_at|date:"d M Y H:i" }}</time>
+                            </dd>
+                        </div>
+                    </dl>
                 </div>
             </div>
 
             <!-- Additional Images -->
             {% if product_images %}
-            <div class="card shadow mb-4">
+            <section class="card shadow mb-4" aria-labelledby="additional-images-heading">
                 <div class="card-header py-3">
-                    <h6 class="m-0 fw-bold">Additional Images</h6>
+                    <h3 id="additional-images-heading" class="m-0 fw-bold h6">Additional Images</h3>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         {% for image in product_images %}
                         <div class="col-6 mb-3">
-                            <img src="{{ image.image.url }}" alt="{{ product.name }} - Image {{ forloop.counter }}" class="img-thumbnail" style="width: 100%; height: 100px; object-fit: cover;">
-                            <div class="mt-2 d-flex justify-content-between">
+                            <img src="{{ image.image.url }}" alt="{{ product.name }} - Additional image {{ forloop.counter }}"
+                                 class="img-thumbnail" style="width: 100%; height: 100px; object-fit: cover;">
+                            <div class="mt-2 d-flex justify-content-between align-items-center">
                                 <small class="text-muted">Image {{ forloop.counter }}</small>
-                                <button class="btn btn-sm btn-outline-danger delete-image-btn" data-image-id="{{ image.id }}">
-                                    <i class="bi bi-trash"></i>
+                                <button class="btn btn-sm btn-outline-danger delete-image-btn"
+                                        data-image-id="{{ image.id }}"
+                                        aria-label="Delete image {{ forloop.counter }} for {{ product.name }}"
+                                        title="Delete this image">
+                                    <i class="bi bi-trash" aria-hidden="true"></i>
                                 </button>
                             </div>
                         </div>
                         {% endfor %}
                     </div>
 
-                    <form method="post" action="{% url 'staff:product_add_image' product.id %}" enctype="multipart/form-data" class="mt-3">
+                    <form method="post" action="{% url 'staff:product_add_image' product.id %}" enctype="multipart/form-data" class="mt-3" aria-label="Add new product image">
                         {% csrf_token %}
                         <div class="input-group">
-                            <input type="file" class="form-control" id="new-image" name="image" accept="image/*">
-                            <button class="btn btn-outline-primary" type="submit">Add</button>
+                            <label for="new-image" class="visually-hidden">Select image file to upload</label>
+                            <input type="file" class="form-control" id="new-image" name="image" accept="image/*" aria-describedby="image-help">
+                            <button class="btn btn-outline-primary" type="submit" aria-describedby="image-help">Add Image</button>
                         </div>
+                        <div id="image-help" class="form-text">Upload additional product images (JPG, PNG, GIF)</div>
                     </form>
                 </div>
-            </div>
+            </section>
             {% endif %}
-        </div>
+        </section>
 
         <!-- Right column: Additional information -->
-        <div class="col-lg-8">
+        <section class="col-lg-8" aria-labelledby="additional-info-heading">
+            <h2 id="additional-info-heading" class="visually-hidden">Additional Product Information</h2>
             <!-- Product Description -->
-            <div class="card shadow mb-4">
+            <section class="card shadow mb-4" aria-labelledby="description-heading">
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                    <h6 class="m-0 fw-bold">Product Description</h6>
+                    <h3 id="description-heading" class="m-0 fw-bold h6">Product Description</h3>
                 </div>
                 <div class="card-body">
                     {% if product.description %}
@@ -127,27 +152,30 @@
                     <p class="text-muted fst-italic">No description provided.</p>
                     {% endif %}
                 </div>
-            </div>
+            </section>
 
             <!-- Stock History -->
-            <div class="card shadow mb-4">
+            <section class="card shadow mb-4" aria-labelledby="inventory-heading">
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                    <h6 class="m-0 fw-bold">Inventory Management</h6>
-                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#adjustStockModal">
-                        <i class="bi bi-plus-circle me-1"></i> Adjust Stock
+                    <h3 id="inventory-heading" class="m-0 fw-bold h6">Inventory Management</h3>
+                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#adjustStockModal"
+                            aria-describedby="adjust-stock-help">
+                        <i class="bi bi-plus-circle me-1" aria-hidden="true"></i> Adjust Stock
                     </button>
+                    <div id="adjust-stock-help" class="visually-hidden">Open dialog to modify stock quantity</div>
                 </div>
                 <div class="card-body">
                     {% if inventory_logs %}
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table class="table table-hover" role="table" aria-label="Stock adjustment history">
+                            <caption class="visually-hidden">History of stock quantity changes for {{ product.name }}</caption>
                             <thead>
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Change</th>
-                                    <th>New Stock</th>
-                                    <th>Staff Member</th>
-                                    <th>Reason</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Change</th>
+                                    <th scope="col">New Stock</th>
+                                    <th scope="col">Staff Member</th>
+                                    <th scope="col">Reason</th>
                                 </tr>
                             </thead>
                             <tbody>

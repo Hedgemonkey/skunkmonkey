@@ -1,100 +1,219 @@
 <!-- Simple Profile Image Manager Component -->
-<div class="card border mb-4">
-    <div class="card-header bg-light">
-        <h5 class="mb-0">Profile Image</h5>
-    </div>
+<section class="card border mb-4"
+         role="region"
+         aria-labelledby="profile-image-heading"
+         aria-describedby="profile-image-description">
+    <header class="card-header bg-light" role="banner">
+        <h3 id="profile-image-heading" class="mb-0 h5">
+            <i class="fas fa-user-circle me-2" aria-hidden="true"></i>
+            Profile Image
+        </h3>
+        <p id="profile-image-description" class="text-muted small mb-0 mt-1">
+            Manage your profile picture - upload, crop, or remove your current image
+        </p>
+    </header>
+
     <div class="card-body">
         <div class="row">
             <!-- Left side: Current image and preview -->
             <div class="col-md-4">
-                <div class="image-container-wrapper d-flex justify-content-center">
-                    <!-- Current profile image or No Image placeholder -->
-                    <div class="me-4">
-                        {% if profile.profile_image %}
-                            <div class="text-center image-option" data-image-type="current">
-                                <div class="image-container mb-1">
-                                    <img src="{{ profile.profile_image.url }}?v={% now 'U' %}_{{ profile.pk }}" alt="Current Profile Image" class="img-thumbnail clickable-image profile-image-size">
-                                </div>
-                                <div class="d-flex flex-column">
-                                    <span class="text-muted small">Current</span>
-                                    <span id="current-image-indicator" class="badge bg-success selection-indicator mt-1">Selected</span>
-                                </div>
-                            </div>
-                        {% else %}
-                            <div class="text-center image-option" data-image-type="none">
-                                <div class="no-image-placeholder clickable-image profile-image-size">
-                                    <i class="fas fa-user fa-2x text-muted"></i>
-                                </div>
-                                <div class="d-flex flex-column">
-                                    <span class="text-muted small">No Image</span>
-                                    <span id="no-image-indicator" class="badge bg-success selection-indicator mt-1">Selected</span>
-                                </div>
-                            </div>
-                        {% endif %}
-                    </div>
+                <fieldset class="border-0 p-0">
+                    <legend class="visually-hidden">Profile Image Options</legend>
 
-                    <!-- Preview container -->
-                    <div id="preview-container" class="d-none">
-                        <div class="text-center image-option" data-image-type="new">
-                            <div class="image-container mb-1">
-                                <img id="preview-image" src="#" alt="Image Preview" class="img-thumbnail clickable-image profile-image-size">
-                            </div>
-                            <div class="d-flex flex-column">
-                                <span class="text-muted small">New</span>
-                                <span id="preview-image-indicator" class="badge bg-success selection-indicator mt-1 d-none">Selected</span>
+                    <div class="image-container-wrapper d-flex justify-content-center"
+                         role="group"
+                         aria-label="Profile image selection">
+                        <!-- Current profile image or No Image placeholder -->
+                        <div class="me-4">
+                            {% if profile.profile_image %}
+                                <div class="text-center image-option"
+                                     data-image-type="current"
+                                     role="button"
+                                     tabindex="0"
+                                     aria-label="Select current profile image"
+                                     aria-describedby="current-image-info">
+                                    <div class="image-container mb-1">
+                                        <img src="{{ profile.profile_image.url }}?v={% now 'U' %}_{{ profile.pk }}"
+                                             alt="Your current profile image"
+                                             class="img-thumbnail clickable-image profile-image-size"
+                                             role="img">
+                                    </div>
+                                    <div class="d-flex flex-column">
+                                        <span class="text-muted small">Current Image</span>
+                                        <span id="current-image-indicator"
+                                              class="badge bg-success selection-indicator mt-1"
+                                              role="status"
+                                              aria-label="Currently selected image option">
+                                            Selected
+                                        </span>
+                                    </div>
+                                    <div id="current-image-info" class="visually-hidden">
+                                        This is your current profile image. Click to select this option.
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="text-center image-option"
+                                     data-image-type="none"
+                                     role="button"
+                                     tabindex="0"
+                                     aria-label="Select no profile image option"
+                                     aria-describedby="no-image-info">
+                                    <div class="no-image-placeholder clickable-image profile-image-size"
+                                         role="img"
+                                         aria-label="No profile image placeholder">
+                                        <i class="fas fa-user fa-2x text-muted" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="d-flex flex-column">
+                                        <span class="text-muted small">No Image</span>
+                                        <span id="no-image-indicator"
+                                              class="badge bg-success selection-indicator mt-1"
+                                              role="status"
+                                              aria-label="Currently selected - no image">
+                                            Selected
+                                        </span>
+                                    </div>
+                                    <div id="no-image-info" class="visually-hidden">
+                                        No profile image is currently set. Click to keep this setting.
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Preview container -->
+                        <div id="preview-container" class="d-none">
+                            <div class="text-center image-option"
+                                 data-image-type="new"
+                                 role="button"
+                                 tabindex="0"
+                                 aria-label="Select new uploaded image"
+                                 aria-describedby="new-image-info">
+                                <div class="image-container mb-1">
+                                    <img id="preview-image"
+                                         src="#"
+                                         alt="Preview of your new profile image"
+                                         class="img-thumbnail clickable-image profile-image-size"
+                                         role="img">
+                                </div>
+                                <div class="d-flex flex-column">
+                                    <span class="text-muted small">New Image</span>
+                                    <span id="preview-image-indicator"
+                                          class="badge bg-success selection-indicator mt-1 d-none"
+                                          role="status"
+                                          aria-label="New image selected">
+                                        Selected
+                                    </span>
+                                </div>
+                                <div id="new-image-info" class="visually-hidden">
+                                    This is your newly uploaded image. Click to select this as your profile image.
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Action buttons container -->
-                <div id="image-action-buttons" class="mt-3 text-center d-none">
-                    <div class="d-inline-flex justify-content-center">
-                        <button id="toggle-selection-button" type="button" class="btn btn-sm btn-outline-primary rounded">
-                            <i class="fas fa-exchange-alt me-1"></i> Toggle Selection
-                        </button>
+                    <!-- Action buttons container -->
+                    <div id="image-action-buttons"
+                         class="mt-3 text-center d-none"
+                         role="group"
+                         aria-label="Image selection actions">
+                        <div class="d-inline-flex justify-content-center">
+                            <button id="toggle-selection-button"
+                                    type="button"
+                                    class="btn btn-sm btn-outline-primary rounded"
+                                    aria-describedby="toggle-help">
+                                <i class="fas fa-exchange-alt me-1" aria-hidden="true"></i>
+                                Toggle Selection
+                            </button>
+                        </div>
+                        <div id="toggle-help" class="visually-hidden">
+                            Switch between your current image and newly uploaded image
+                        </div>
+                        <div id="image-action-hint"
+                             class="text-muted small mt-2"
+                             role="status"
+                             aria-live="polite">
+                            Your changes won't be saved until you submit the form
+                        </div>
                     </div>
-                    <p id="image-action-hint" class="text-muted small mt-2">Your changes won't be saved until you submit the form</p>
-                </div>
+                </fieldset>
             </div>
 
             <!-- Right side: Controls -->
             <div class="col-md-7">
-                <p class="mb-3 small">Upload a square image for best results. You can crop and adjust your image after selecting it.</p>
-
-                <!-- File input with custom styling -->
                 <div class="mb-3">
-                    <div class="d-flex flex-wrap align-items-center">
-                        <label for="profile-image-file" class="btn btn-outline-primary rounded me-2">
-                            <i class="fas fa-upload me-1"></i> Select Image
-                        </label>
-                        <span id="file-name-display" class="small text-muted">No file selected</span>
-                    </div>
+                    <p class="mb-3 small">
+                        <i class="fas fa-info-circle me-1 text-info" aria-hidden="true"></i>
+                        Upload a square image for best results. You can crop and adjust your image after selecting it.
+                    </p>
 
-                    <!-- Hidden file inputs -->
-                    <div class="d-none">
-                        <input type="file" id="profile-image-file" name="profile-image-file" class="form-control" accept="image/*">
-                        {{ profile_form.profile_image }}
-                        <input type="hidden" id="image-selected-flag" name="image_selected" value="0">
-                    </div>
+                    <!-- File input with custom styling -->
+                    <fieldset class="border-0 p-0">
+                        <legend class="form-label fw-bold">Upload New Image</legend>
+
+                        <div class="d-flex flex-wrap align-items-center">
+                            <label for="profile-image-file"
+                                   class="btn btn-outline-primary rounded me-2"
+                                   aria-describedby="file-upload-help">
+                                <i class="fas fa-upload me-1" aria-hidden="true"></i>
+                                Select Image
+                            </label>
+                            <span id="file-name-display"
+                                  class="small text-muted"
+                                  role="status"
+                                  aria-live="polite">
+                                No file selected
+                            </span>
+                        </div>
+
+                        <div id="file-upload-help" class="form-text mt-2">
+                            <i class="fas fa-file-image me-1" aria-hidden="true"></i>
+                            Supported formats: JPG, PNG, GIF. Maximum size: 5MB.
+                        </div>
+
+                        <!-- Hidden file inputs -->
+                        <div class="d-none">
+                            <input type="file"
+                                   id="profile-image-file"
+                                   name="profile-image-file"
+                                   class="form-control"
+                                   accept="image/*"
+                                   aria-label="Select profile image file">
+                            {{ profile_form.profile_image }}
+                            <input type="hidden"
+                                   id="image-selected-flag"
+                                   name="image_selected"
+                                   value="0">
+                        </div>
+                    </fieldset>
                 </div>
 
                 <!-- Remove current image option -->
                 {% if profile.profile_image %}
-                    <div class="form-check mt-3 pt-2 border-top remove-image-option">
-                        <!-- Use a simpler approach with a custom named checkbox -->
-                        <input class="form-check-input" type="checkbox"
+                    <fieldset class="form-check mt-3 pt-2 border-top remove-image-option">
+                        <legend class="visually-hidden">Remove Current Image</legend>
+
+                        <input class="form-check-input"
+                               type="checkbox"
                                id="remove-image-checkbox"
-                               name="remove-image-checkbox">
+                               name="remove-image-checkbox"
+                               aria-describedby="remove-help">
                         <label class="form-check-label" for="remove-image-checkbox">
-                            Remove profile image
+                            <i class="fas fa-trash-alt me-1 text-danger" aria-hidden="true"></i>
+                            Remove current profile image
                         </label>
-                    </div>
+
+                        <div id="remove-help" class="form-text">
+                            <i class="fas fa-exclamation-triangle me-1 text-warning" aria-hidden="true"></i>
+                            This will permanently remove your current profile image
+                        </div>
+                    </fieldset>
                 {% endif %}
 
                 <!-- Hidden cropped image data field -->
-                <input type="hidden" id="cropped-image-data" name="cropped_image_data">
+                <input type="hidden"
+                       id="cropped-image-data"
+                       name="cropped_image_data"
+                       aria-label="Cropped image data">
             </div>
         </div>
     </div>
-</div>
+</section>

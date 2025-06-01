@@ -5,26 +5,28 @@
 {% block head_title %}{% trans "Server Error" %}{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8 text-center">
-            <div class="error-template">
-                <h1>{% trans "500" %}</h1>
-                <h2>{% trans "Server Error" %}</h2>
-                <div class="error-details mb-4">
-                    <p>{% trans "Sorry, something went wrong on our end." %}</p>
-                    <p class="text-muted">{% trans "Our technical team has been notified and we're working to fix the issue." %}</p>
-                </div>
-                <div class="error-actions">
-                    <a href="{% url 'home' %}" class="btn btn-primary">
-                        <i class="bi bi-house"></i> {% trans "Back to Home" %}
-                    </a>
-                    <a href="{% url 'users:contact' %}" class="btn btn-outline-secondary">
-                        <i class="bi bi-chat-dots"></i> {% trans "Contact Support" %}
-                    </a>
+<main role="main" aria-labelledby="error-heading">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <div class="error-template">
+                    <h1 id="error-heading" class="display-1" aria-label="Error 500">500</h1>
+                    <h2 class="h3">{% trans "Server Error" %}</h2>
+                    <div class="error-details mb-4" role="alert" aria-live="polite">
+                        <p>{% trans "Sorry, something went wrong on our end." %}</p>
+                        <p class="text-muted">{% trans "Our technical team has been notified and we're working to fix the issue." %}</p>
+                    </div>
+                    <nav aria-label="Error page actions" class="error-actions">
+                        <a href="{% url 'home' %}" class="btn btn-primary" aria-label="Go back to home page">
+                            <i class="bi bi-house" aria-hidden="true"></i> {% trans "Back to Home" %}
+                        </a>
+                        <a href="{% url 'users:contact' %}" class="btn btn-outline-secondary" aria-label="Contact support for assistance">
+                            <i class="bi bi-chat-dots" aria-hidden="true"></i> {% trans "Contact Support" %}
+                        </a>
+                    </nav>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</main>
 {% endblock %}

@@ -5,71 +5,129 @@
 {% block title %}Manage Addresses - SkunkMonkey{% endblock %}
 
 {% block profile_content %}
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3>Manage Addresses</h3>
-        <a href="{% url 'users:add_address' %}" class="btn btn-primary">
-            <i class="fas fa-plus me-2"></i>Add New Address
+<main role="main" aria-labelledby="address-list-heading">
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 id="address-list-heading" class="h3 mb-1">Manage Addresses</h1>
+            <p class="text-muted mb-0" aria-live="polite">
+                {% if addresses %}
+                    {{ addresses|length }} address{{ addresses|length|pluralize }} in your account
+                {% else %}
+                    No addresses found
+                {% endif %}
+            </p>
+        </div>
+        <a href="{% url 'users:add_address' %}"
+           class="btn btn-primary"
+           aria-label="Add a new address to your account">
+            <i class="fas fa-plus me-2" aria-hidden="true"></i>Add New Address
         </a>
-    </div>
+    </header>
 
     {% if addresses %}
-        <div class="row address-list-container">
+        <section class="row address-list-container"
+                 role="list"
+                 aria-label="Your saved addresses">
             {% for address in addresses %}
-                <div class="col-12 col-md-6 mb-4">
-                    <div class="card h-100 {% if address.id == default_address_id %}border-success{% endif %}">
-                        <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">
+                <div class="col-12 col-md-6 mb-4" role="listitem">
+                    <article class="card h-100 {% if address.id == default_address_id %}border-success{% endif %}"
+                             aria-labelledby="address-{{ address.id }}-title">
+                        <header class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                            <h2 id="address-{{ address.id }}-title" class="mb-0 h5">
                                 {{ address.address_line_1 }}
                                 {% if address.id == default_address_id %}
-                                    <span class="badge bg-success ms-2">Default</span>
+                                    <span class="badge bg-success ms-2"
+                                          role="status"
+                                          aria-label="This is your default address">
+                                        <i class="fas fa-star me-1" aria-hidden="true"></i>
+                                        Default
+                                    </span>
                                 {% endif %}
-                            </h5>
-                            <small class="text-muted">Added: {{ address.created_at|date:"d M Y" }}</small>
-                        </div>
+                            </h2>
+                            <small class="text-muted">
+                                <time datetime="{{ address.created_at|date:'c' }}"
+                                      aria-label="Address added on {{ address.created_at|date:'F j, Y' }}">
+                                    Added: {{ address.created_at|date:"d M Y" }}
+                                </time>
+                            </small>
+                        </header>
                         <div class="card-body">
-                            <address class="mb-3">
+                            <address class="mb-3" aria-label="Full address details">
                                 {{ address.get_full_address|linebreaksbr }}
                                 {% if address.phone_number %}
-                                    <br><i class="fas fa-phone me-1"></i> {{ address.phone_number }}
+                                    <br>
+                                    <span aria-label="Phone number">
+                                        <i class="fas fa-phone me-1" aria-hidden="true"></i>
+                                        {{ address.phone_number }}
+                                    </span>
                                 {% endif %}
                             </address>
-                            <div class="d-flex flex-wrap justify-content-between mt-auto">
+                            <div class="d-flex flex-wrap justify-content-between mt-auto"
+                                 role="group"
+                                 aria-label="Address actions">
                                 <div>
-                                    <a href="{% url 'users:edit_address' address.id %}" class="btn btn-sm btn-outline-secondary me-2 mb-2" aria-label="Edit address">
-                                        <i class="fas fa-edit me-1"></i>Edit
+                                    <a href="{% url 'users:edit_address' address.id %}"
+                                       class="btn btn-sm btn-outline-secondary me-2 mb-2"
+                                       aria-label="Edit address at {{ address.get_short_address }}">
+                                        <i class="fas fa-edit me-1" aria-hidden="true"></i>Edit
                                     </a>
-                                    <button type="button" class="btn btn-sm btn-outline-danger me-2 mb-2 btn-delete-address"
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-danger me-2 mb-2 btn-delete-address"
                                             data-address-id="{{ address.id }}"
                                             data-delete-url="{% url 'users:delete_address' address.id %}"
-                                            data-address-info="{{ address.get_short_address }}">
-                                        <i class="fas fa-trash-alt me-1"></i>Delete
+                                            data-address-info="{{ address.get_short_address }}"
+                                            aria-label="Delete address at {{ address.get_short_address }}"
+                                            aria-describedby="delete-warning-{{ address.id }}">
+                                        <i class="fas fa-trash-alt me-1" aria-hidden="true"></i>Delete
                                     </button>
+                                    <div id="delete-warning-{{ address.id }}" class="visually-hidden">
+                                        Warning: This action will permanently remove this address from your account
+                                    </div>
                                 </div>
                                 {% if address.id != default_address_id %}
-                                <button type="button" class="btn btn-sm btn-outline-success mb-2 btn-set-default"
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-success mb-2 btn-set-default"
                                         data-address-id="{{ address.id }}"
                                         data-setdefault-url="{% url 'users:set_default_address' address.id %}"
-                                        data-address-info="{{ address.get_short_address }}">
-                                    <i class="fas fa-check-circle me-1"></i>Set as Default
+                                        data-address-info="{{ address.get_short_address }}"
+                                        aria-label="Set {{ address.get_short_address }} as default address"
+                                        aria-describedby="default-help-{{ address.id }}">
+                                    <i class="fas fa-check-circle me-1" aria-hidden="true"></i>Set as Default
                                 </button>
+                                <div id="default-help-{{ address.id }}" class="visually-hidden">
+                                    This will make this address your default for future orders
+                                </div>
                                 {% endif %}
                             </div>
                         </div>
-                    </div>
+                    </article>
                 </div>
             {% endfor %}
-        </div>
+        </section>
     {% else %}
-        <div class="alert alert-info">
-            <i class="fas fa-info-circle me-2"></i>
-            <span>You haven't added any addresses yet. Click the "Add New Address" button to get started.</span>
-        </div>
+        <section class="text-center py-5" aria-labelledby="no-addresses-heading">
+            <i class="fas fa-map-marker-alt fa-4x mb-3 text-muted" aria-hidden="true"></i>
+            <h2 id="no-addresses-heading" class="h4">No Addresses Yet</h2>
+            <div class="alert alert-info d-inline-block">
+                <i class="fas fa-info-circle me-2" aria-hidden="true"></i>
+                <span>You haven't added any addresses yet. Click the "Add New Address" button to get started.</span>
+            </div>
+            <div class="mt-3">
+                <a href="{% url 'users:add_address' %}"
+                   class="btn btn-primary"
+                   aria-label="Add your first address">
+                    <i class="fas fa-plus me-2" aria-hidden="true"></i>
+                    Add Your First Address
+                </a>
+            </div>
+        </section>
     {% endif %}
 
     <!-- Hidden form for CSRF token for AJAX requests -->
-    <form id="address-action-form" method="post" style="display: none;">
+    <form id="address-action-form" method="post" style="display: none;" aria-hidden="true">
         {% csrf_token %}
     </form>
+</main>
 {% endblock %}
 
 {% block postloadjs %}

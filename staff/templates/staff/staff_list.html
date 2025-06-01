@@ -8,27 +8,29 @@
 {% block staff_content %}
 <div class="row">
     <div class="col-12 mb-4">
-        <div class="card shadow">
+        <section class="card shadow" aria-labelledby="staff-heading">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Staff Members</h5>
+                <h1 id="staff-heading" class="h5 mb-0">Staff Members</h1>
                 <div>
-                    <a href="{% url 'admin:auth_user_add' %}" class="btn btn-sm btn-primary" target="_blank">
-                        <i class="fa fa-user-plus me-1"></i> Add New Staff
+                    <a href="{% url 'admin:auth_user_add' %}" class="btn btn-sm btn-primary" target="_blank"
+                       aria-label="Add new staff member (opens in new tab)">
+                        <i class="fa fa-user-plus me-1" aria-hidden="true"></i> Add New Staff
                     </a>
                 </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-hover">
+                    <table class="table table-hover" aria-labelledby="staff-heading">
+                        <caption class="visually-hidden">List of staff members with their details and available actions</caption>
                         <thead>
                             <tr>
-                                <th>Username</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Department</th>
-                                <th>Role</th>
-                                <th>Last Login</th>
-                                <th>Actions</th>
+                                <th scope="col">Username</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Department</th>
+                                <th scope="col">Role</th>
+                                <th scope="col">Last Login</th>
+                                <th scope="col">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -42,49 +44,67 @@
                                         <span class="text-muted">Not provided</span>
                                     {% endif %}
                                 </td>
-                                <td>{{ staff_member.email }}</td>
+                                <td>
+                                    {% if staff_member.email %}
+                                        <a href="mailto:{{ staff_member.email }}" aria-label="Send email to {{ staff_member.email }}">
+                                            {{ staff_member.email }}
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted">Not provided</span>
+                                    {% endif %}
+                                </td>
                                 <td>
                                     {% if staff_profiles|get_item:staff_member.id %}
                                         {{ staff_profiles|get_item:staff_member.id|get_attr:"get_department_display" }}
                                     {% else %}
                                         <span class="text-muted">Not assigned</span>
                                     {% endif %}
-                                </td>
+                                                </td>
                                 <td>
                                     {% if staff_member.is_superuser %}
-                                        <span class="badge bg-danger">Administrator</span>
+                                        <span class="badge bg-danger" aria-label="Role: Administrator">Administrator</span>
                                     {% elif staff_profiles|get_item:staff_member.id and staff_profiles|get_item:staff_member.id|get_attr:"is_manager" %}
-                                        <span class="badge bg-primary">Manager</span>
+                                        <span class="badge bg-primary" aria-label="Role: Manager">Manager</span>
                                     {% else %}
-                                        <span class="badge bg-secondary">Staff</span>
+                                        <span class="badge bg-secondary" aria-label="Role: Staff">Staff</span>
                                     {% endif %}
                                 </td>
                                 <td>
                                     {% if staff_member.last_login %}
-                                        {{ staff_member.last_login|date:"M d, Y H:i" }}
+                                        <time datetime="{{ staff_member.last_login|date:'c' }}">{{ staff_member.last_login|date:"M d, Y H:i" }}</time>
                                     {% else %}
                                         <span class="text-muted">Never</span>
                                     {% endif %}
                                 </td>
                                 <td>
-                                    <div class="btn-group">
-                                        <a href="{% url 'admin:auth_user_change' staff_member.id %}" class="btn btn-sm btn-outline-secondary" target="_blank" title="Edit user">
-                                            <i class="fa fa-pencil-alt"></i>
+                                    <div class="btn-group" role="group" aria-label="Actions for {{ staff_member.username }}">
+                                        <a href="{% url 'admin:auth_user_change' staff_member.id %}"
+                                           class="btn btn-sm btn-outline-secondary" target="_blank"
+                                           aria-label="Edit {{ staff_member.username }} (opens in new tab)">
+                                            <i class="fa fa-pencil-alt" aria-hidden="true"></i>
                                         </a>
                                         {% if not staff_member.is_superuser %}
                                             {% if staff_profiles|get_item:staff_member.id and staff_profiles|get_item:staff_member.id|get_attr:"is_manager" %}
-                                                <a href="{% url 'staff:toggle_manager' staff_member.id %}" class="btn btn-sm btn-outline-danger" title="Remove manager role">
-                                                    <i class="fa fa-arrow-circle-down"></i>
+                                                <a href="{% url 'staff:toggle_manager' staff_member.id %}"
+                                                   class="btn btn-sm btn-outline-danger"
+                                                   aria-label="Remove manager role from {{ staff_member.username }}">
+                                                    <i class="fa fa-arrow-circle-down" aria-hidden="true"></i>
                                                 </a>
                                             {% else %}
-                                                <a href="{% url 'staff:toggle_manager' staff_member.id %}" class="btn btn-sm btn-outline-primary" title="Make manager">
-                                                    <i class="fa fa-arrow-circle-up"></i>
+                                                <a href="{% url 'staff:toggle_manager' staff_member.id %}"
+                                                   class="btn btn-sm btn-outline-primary"
+                                                   aria-label="Make {{ staff_member.username }} a manager">
+                                                    <i class="fa fa-arrow-circle-up" aria-hidden="true"></i>
                                                 </a>
                                             {% endif %}
                                         {% endif %}
                                         {% if not staff_member.is_superuser %}
-                                            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteStaffModal" data-staff-id="{{ staff_member.id }}" data-staff-name="{{ staff_member.get_full_name|default:staff_member.username }}">
-                                                <i class="fa fa-trash"></i>
+                                            <button type="button" class="btn btn-sm btn-outline-danger"
+                                                    data-bs-toggle="modal" data-bs-target="#deleteStaffModal"
+                                                    data-staff-id="{{ staff_member.id }}"
+                                                    data-staff-name="{{ staff_member.get_full_name|default:staff_member.username }}"
+                                                    aria-label="Delete {{ staff_member.get_full_name|default:staff_member.username }}">
+                                                <i class="fa fa-trash" aria-hidden="true"></i>
                                             </button>
                                         {% endif %}
                                     </div>

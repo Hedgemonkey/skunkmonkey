@@ -21,13 +21,13 @@
     <!-- Filters Section -->
     <div class="card mb-4">
         <div class="card-header">
-            {% trans "Filter Messages" %}
+            <h2 class="h5 mb-0">{% trans "Filter Messages" %}</h2>
         </div>
         <div class="card-body">
-            <form method="get" class="row g-3">
+            <form method="get" class="row g-3" role="search" aria-label="{% trans 'Filter contact messages' %}" id="message-filters-form">
                 <div class="col-md-2">
                     <label for="status" class="form-label">{% trans "Status" %}</label>
-                    <select class="form-select" id="status" name="status">
+                    <select class="form-select" id="status" name="status" aria-describedby="status-help">
                         <option value="">{% trans "All" %}</option>
                         {% for status_val, status_name in status_choices %}
                         <option value="{{ status_val }}" {% if status_filter == status_val %}selected{% endif %}>
@@ -35,11 +35,12 @@
                         </option>
                         {% endfor %}
                     </select>
+                    <div id="status-help" class="visually-hidden">{% trans "Filter messages by their current status" %}</div>
                 </div>
 
                 <div class="col-md-2">
                     <label for="priority" class="form-label">{% trans "Priority" %}</label>
-                    <select class="form-select" id="priority" name="priority">
+                    <select class="form-select" id="priority" name="priority" aria-describedby="priority-help">
                         <option value="">{% trans "All" %}</option>
                         {% for priority_val, priority_name in priority_choices %}
                         <option value="{{ priority_val }}" {% if priority_filter == priority_val %}selected{% endif %}>
@@ -47,11 +48,12 @@
                         </option>
                         {% endfor %}
                     </select>
+                    <div id="priority-help" class="visually-hidden">{% trans "Filter messages by their priority level" %}</div>
                 </div>
 
                 <div class="col-md-2">
                     <label for="category" class="form-label">{% trans "Category" %}</label>
-                    <select class="form-select" id="category" name="category">
+                    <select class="form-select" id="category" name="category" aria-describedby="category-help">
                         <option value="">{% trans "All" %}</option>
                         {% for category_val, category_name in category_choices %}
                         <option value="{{ category_val }}" {% if category_filter == category_val %}selected{% endif %}>
@@ -59,11 +61,12 @@
                         </option>
                         {% endfor %}
                     </select>
+                    <div id="category-help" class="visually-hidden">{% trans "Filter messages by their category type" %}</div>
                 </div>
 
                 <div class="col-md-2">
                     <label for="is_read" class="form-label">{% trans "Read Status" %}</label>
-                    <select class="form-select" id="is_read" name="is_read">
+                    <select class="form-select" id="is_read" name="is_read" aria-describedby="read-status-help">
                         <option value="">{% trans "All" %}</option>
                         <option value="true" {% if is_read_filter == 'true' %}selected{% endif %}>
                             {% trans "Read" %}
@@ -72,11 +75,12 @@
                             {% trans "Unread" %}
                         </option>
                     </select>
+                    <div id="read-status-help" class="visually-hidden">{% trans "Filter messages by whether they have been read or not" %}</div>
                 </div>
 
                 <div class="col-md-2">
                     <label for="assigned" class="form-label">{% trans "Assigned To" %}</label>
-                    <select class="form-select" id="assigned" name="assigned">
+                    <select class="form-select" id="assigned" name="assigned" aria-describedby="assigned-help">
                         <option value="">{% trans "All" %}</option>
                         <option value="me" {% if assigned_filter == 'me' %}selected{% endif %}>
                             {% trans "Me" %}
@@ -85,11 +89,12 @@
                             {% trans "Unassigned" %}
                         </option>
                     </select>
+                    <div id="assigned-help" class="visually-hidden">{% trans "Filter messages by assignment status" %}</div>
                 </div>
 
                 <div class="col-md-2">
                     <label for="order_by" class="form-label">{% trans "Sort By" %}</label>
-                    <select class="form-select" id="order_by" name="order_by">
+                    <select class="form-select" id="order_by" name="order_by" aria-describedby="order-help">
                         <option value="-timestamp" {% if order_by == '-timestamp' %}selected{% endif %}>
                             {% trans "Newest First" %}
                         </option>
@@ -103,11 +108,16 @@
                             {% trans "Status" %}
                         </option>
                     </select>
+                    <div id="order-help" class="visually-hidden">{% trans "Choose how to sort the message list" %}</div>
                 </div>
 
                 <div class="col-md-8">
                     <label for="search" class="form-label">{% trans "Search" %}</label>
-                    <input type="text" class="form-control" id="search" name="search" placeholder="{% trans 'Search in subject, message, or email...' %}" value="{{ search_query|default:'' }}">
+                    <input type="text" class="form-control" id="search" name="search"
+                           placeholder="{% trans 'Search in subject, message, or email...' %}"
+                           value="{{ search_query|default:'' }}"
+                           aria-describedby="search-help">
+                    <div id="search-help" class="visually-hidden">{% trans "Search through message subjects, content, and sender emails" %}</div>
                 </div>
 
                 <div class="col-md-4 d-flex align-items-end">
@@ -119,16 +129,20 @@
     </div>
 
     <!-- Bulk Actions -->
-    <form method="post" action="{% url 'users:staff_message_bulk_action' %}" id="bulk-actions-form">
+    <form method="post" action="{% url 'users:staff_message_bulk_action' %}" id="bulk-actions-form"
+          aria-label="{% trans 'Bulk actions for contact messages' %}">
         {% csrf_token %}
         <div class="card mb-4">
             <div class="card-header">
-                {% trans "Bulk Actions" %}
+                <h2 class="h5 mb-0">{% trans "Bulk Actions" %}</h2>
             </div>
             <div class="card-body">
-                <div class="row">
+                <div class="row" role="group" aria-labelledby="bulk-actions-heading">
+                    <div id="bulk-actions-heading" class="visually-hidden">{% trans "Bulk actions controls" %}</div>
                     <div class="col-md-3">
-                        <select class="form-select" name="bulk_action" id="bulk-action-select">
+                        <label for="bulk-action-select" class="form-label">{% trans "Action" %}</label>
+                        <select class="form-select" name="bulk_action" id="bulk-action-select"
+                                aria-describedby="bulk-action-help">
                             <option value="">{% trans "Select Action" %}</option>
                             <option value="mark_read">{% trans "Mark as Read" %}</option>
                             <option value="mark_unread">{% trans "Mark as Unread" %}</option>
@@ -136,28 +150,38 @@
                             <option value="set_status">{% trans "Change Status" %}</option>
                             <option value="set_priority">{% trans "Change Priority" %}</option>
                         </select>
+                        <div id="bulk-action-help" class="visually-hidden">{% trans "Choose an action to apply to selected messages" %}</div>
                     </div>
 
-                    <div class="col-md-3" id="status-select-container" style="display: none;">
-                        <select class="form-select" name="status" id="status-select">
+                    <div class="col-md-3" id="status-select-container" style="display: none;" aria-hidden="true">
+                        <label for="status-select" class="form-label">{% trans "New Status" %}</label>
+                        <select class="form-select" name="status" id="status-select"
+                                aria-describedby="status-select-help">
                             {% for status_val, status_name in status_choices %}
                             <option value="{{ status_val }}">{{ status_name }}</option>
                             {% endfor %}
                         </select>
+                        <div id="status-select-help" class="visually-hidden">{% trans "Select the new status to apply" %}</div>
                     </div>
 
-                    <div class="col-md-3" id="priority-select-container" style="display: none;">
-                        <select class="form-select" name="priority" id="priority-select">
+                    <div class="col-md-3" id="priority-select-container" style="display: none;" aria-hidden="true">
+                        <label for="priority-select" class="form-label">{% trans "New Priority" %}</label>
+                        <select class="form-select" name="priority" id="priority-select"
+                                aria-describedby="priority-select-help">
                             {% for priority_val, priority_name in priority_choices %}
                             <option value="{{ priority_val }}">{{ priority_name }}</option>
                             {% endfor %}
                         </select>
+                        <div id="priority-select-help" class="visually-hidden">{% trans "Select the new priority level to apply" %}</div>
                     </div>
 
                     <div class="col-md-3">
-                        <button type="submit" class="btn btn-primary" id="apply-bulk-action" disabled>
+                        <label for="apply-bulk-action" class="form-label visually-hidden">{% trans "Apply Action" %}</label>
+                        <button type="submit" class="btn btn-primary" id="apply-bulk-action" disabled
+                                aria-describedby="apply-bulk-help">
                             {% trans "Apply" %}
                         </button>
+                        <div id="apply-bulk-help" class="visually-hidden">{% trans "Apply the selected action to all checked messages" %}</div>
                     </div>
                 </div>
             </div>
@@ -167,43 +191,67 @@
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <div>
-                    {% trans "Messages" %}
-                    <span class="badge bg-secondary">{{ contact_messages|length }}</span>
+                    <h2 class="h5 mb-0">{% trans "Messages" %}</h2>
+                    <span class="badge bg-secondary" aria-label="{% trans 'Total message count' %}">{{ contact_messages|length }}</span>
                 </div>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover table-striped mb-0">
+                    <table class="table table-hover table-striped mb-0"
+                           role="table"
+                           aria-label="{% trans 'Contact messages list' %}"
+                           aria-describedby="table-description">
+                        <caption id="table-description" class="visually-hidden">
+                            {% trans "A table of contact messages with options to select, filter, and manage them. Use checkboxes to select messages for bulk actions." %}
+                        </caption>
                         <thead>
-                            <tr>
-                                <th>
-                                    <input type="checkbox" id="select-all" class="form-check-input">
+                            <tr role="row">
+                                <th scope="col" class="text-center">
+                                    <input type="checkbox" id="select-all" class="form-check-input"
+                                           aria-label="{% trans 'Select all messages on this page' %}"
+                                           aria-describedby="select-all-help">
+                                    <div id="select-all-help" class="visually-hidden">{% trans "Check this to select or deselect all messages on the current page" %}</div>
                                 </th>
-                                <th>{% trans "Subject" %}</th>
-                                <th>{% trans "From" %}</th>
-                                <th>{% trans "Category" %}</th>
-                                <th>{% trans "Priority" %}</th>
-                                <th>{% trans "Status" %}</th>
-                                <th>{% trans "Assigned To" %}</th>
-                                <th>{% trans "Date" %}</th>
-                                <th>{% trans "Actions" %}</th>
+                                <th scope="col">{% trans "Subject" %}</th>
+                                <th scope="col">{% trans "From" %}</th>
+                                <th scope="col">{% trans "Category" %}</th>
+                                <th scope="col">{% trans "Priority" %}</th>
+                                <th scope="col">{% trans "Status" %}</th>
+                                <th scope="col">{% trans "Assigned To" %}</th>
+                                <th scope="col">{% trans "Date" %}</th>
+                                <th scope="col">{% trans "Actions" %}</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for contact_message in contact_messages %}
-                            <tr class="{% if not contact_message.is_read %}table-active fw-bold{% endif %}">
-                                <td>
-                                    <input type="checkbox" name="message_ids" value="{{ contact_message.id }}" class="form-check-input message-checkbox">
+                            <tr class="{% if not contact_message.is_read %}table-active fw-bold{% endif %}"
+                                role="row"
+                                aria-describedby="message-{{ contact_message.id }}-desc">
+                                <td class="text-center">
+                                    <input type="checkbox" name="message_ids" value="{{ contact_message.id }}"
+                                           class="form-check-input message-checkbox"
+                                           aria-label="{% trans 'Select message from' %} {{ contact_message.email }}: {{ contact_message.subject|truncatechars:30 }}">
                                 </td>
                                 <td>
-                                    <a href="{% url 'users:staff_message_detail' contact_message.id %}">
-                                        {% if not contact_message.is_read %}<i class="fa fa-envelope-fill me-1"></i>{% endif %}
+                                    <a href="{% url 'users:staff_message_detail' contact_message.id %}"
+                                       aria-describedby="message-{{ contact_message.id }}-status">
+                                        {% if not contact_message.is_read %}<i class="fa fa-envelope-fill me-1" aria-hidden="true"></i>{% endif %}
                                         {{ contact_message.subject|truncatechars:40 }}
                                     </a>
+                                    <div id="message-{{ contact_message.id }}-desc" class="visually-hidden">
+                                        {% if not contact_message.is_read %}{% trans "Unread message" %}. {% endif %}
+                                        {% trans "Subject:" %} {{ contact_message.subject }}.
+                                        {% trans "From:" %} {{ contact_message.email }}.
+                                        {% trans "Priority:" %} {{ contact_message.get_priority_display }}.
+                                        {% trans "Status:" %} {{ contact_message.get_status_display }}.
+                                    </div>
                                 </td>
-                                <td>{{ contact_message.email }}</td>
                                 <td>
-                                    <span class="badge bg-secondary">
+                                    <span aria-label="{% trans 'Sender email address' %}">{{ contact_message.email }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary"
+                                          aria-label="{% trans 'Message category:' %} {{ contact_message.get_category_display }}">
                                         {{ contact_message.get_category_display }}
                                     </span>
                                 </td>
@@ -213,7 +261,8 @@
                                         {% elif contact_message.priority == 'high' %}bg-warning text-dark
                                         {% elif contact_message.priority == 'medium' %}bg-info text-dark
                                         {% else %}bg-secondary
-                                        {% endif %}">
+                                        {% endif %}"
+                                        aria-label="{% trans 'Priority level:' %} {{ contact_message.get_priority_display }}">
                                         {{ contact_message.get_priority_display }}
                                     </span>
                                 </td>
@@ -223,30 +272,38 @@
                                         {% elif contact_message.status == 'in_progress' %}bg-warning text-dark
                                         {% elif contact_message.status == 'resolved' %}bg-success
                                         {% else %}bg-secondary
-                                        {% endif %}">
+                                        {% endif %}"
+                                        id="message-{{ contact_message.id }}-status"
+                                        aria-label="{% trans 'Message status:' %} {{ contact_message.get_status_display }}">
                                         {{ contact_message.get_status_display }}
                                     </span>
                                 </td>
                                 <td>
                                     {% if contact_message.assigned_to %}
-                                        {{ contact_message.assigned_to.get_full_name|default:contact_message.assigned_to.username }}
+                                        <span aria-label="{% trans 'Assigned to:' %} {{ contact_message.assigned_to.get_full_name|default:contact_message.assigned_to.username }}">
+                                            {{ contact_message.assigned_to.get_full_name|default:contact_message.assigned_to.username }}
+                                        </span>
                                     {% else %}
-                                        <span class="text-muted">{% trans "Unassigned" %}</span>
+                                        <span class="text-muted" aria-label="{% trans 'Not assigned to anyone' %}">{% trans "Unassigned" %}</span>
                                     {% endif %}
                                 </td>
                                 <td>
-                                    <span title="{{ contact_message.timestamp }}">
+                                    <time datetime="{{ contact_message.timestamp|date:'c' }}"
+                                          title="{{ contact_message.timestamp }}"
+                                          aria-label="{% trans 'Message received:' %} {{ contact_message.timestamp }}">
                                         {{ contact_message.timestamp|timesince }} {% trans "ago" %}
-                                    </span>
+                                    </time>
                                 </td>
                                 <td>
-                                    <a href="{% url 'users:staff_message_detail' contact_message.id %}" class="btn btn-sm btn-primary">
+                                    <a href="{% url 'users:staff_message_detail' contact_message.id %}"
+                                       class="btn btn-sm btn-primary"
+                                       aria-label="{% trans 'View message details from' %} {{ contact_message.email }}">
                                         {% trans "View" %}
                                     </a>
                                 </td>
                             </tr>
                             {% empty %}
-                            <tr>
+                            <tr role="row">
                                 <td colspan="9" class="text-center py-4">
                                     <p class="mb-0">{% trans "No messages found matching your criteria." %}</p>
                                 </td>
@@ -318,12 +375,38 @@
         const statusSelectContainer = document.getElementById('status-select-container');
         const prioritySelectContainer = document.getElementById('priority-select-container');
 
+        // Create live region for announcements
+        const liveRegion = document.createElement('div');
+        liveRegion.setAttribute('aria-live', 'polite');
+        liveRegion.setAttribute('aria-atomic', 'true');
+        liveRegion.className = 'visually-hidden';
+        liveRegion.id = 'live-announcements';
+        document.body.appendChild(liveRegion);
+
+        // Function to announce to screen readers
+        function announceToScreenReader(message) {
+            liveRegion.textContent = message;
+            // Clear after announcement
+            setTimeout(() => {
+                liveRegion.textContent = '';
+            }, 1000);
+        }
+
         // Select all checkbox
         selectAll.addEventListener('change', function() {
+            const isChecked = selectAll.checked;
             messageCheckboxes.forEach(checkbox => {
-                checkbox.checked = selectAll.checked;
+                checkbox.checked = isChecked;
             });
             updateApplyButton();
+
+            // Announce selection change
+            const selectedCount = isChecked ? messageCheckboxes.length : 0;
+            if (isChecked) {
+                announceToScreenReader(`All ${messageCheckboxes.length} messages selected`);
+            } else {
+                announceToScreenReader('All messages deselected');
+            }
         });
 
         // Individual checkboxes
@@ -331,18 +414,40 @@
             checkbox.addEventListener('change', function() {
                 updateSelectAllCheckbox();
                 updateApplyButton();
+
+                // Announce selection count
+                const selectedCount = Array.from(messageCheckboxes).filter(cb => cb.checked).length;
+                announceToScreenReader(`${selectedCount} message${selectedCount !== 1 ? 's' : ''} selected`);
             });
         });
 
         // Bulk action select
         bulkActionSelect.addEventListener('change', function() {
             const action = bulkActionSelect.value;
+            const actionText = bulkActionSelect.options[bulkActionSelect.selectedIndex].text;
 
             // Show/hide conditional fields based on action
-            statusSelectContainer.style.display = (action === 'set_status') ? 'block' : 'none';
-            prioritySelectContainer.style.display = (action === 'set_priority') ? 'block' : 'none';
+            const showStatus = action === 'set_status';
+            const showPriority = action === 'set_priority';
+
+            statusSelectContainer.style.display = showStatus ? 'block' : 'none';
+            statusSelectContainer.setAttribute('aria-hidden', !showStatus);
+
+            prioritySelectContainer.style.display = showPriority ? 'block' : 'none';
+            prioritySelectContainer.setAttribute('aria-hidden', !showPriority);
 
             updateApplyButton();
+
+            // Announce action selection and additional controls
+            if (action) {
+                let announcement = `Bulk action selected: ${actionText}`;
+                if (showStatus) {
+                    announcement += '. Status selection is now available';
+                } else if (showPriority) {
+                    announcement += '. Priority selection is now available';
+                }
+                announceToScreenReader(announcement);
+            }
         });
 
         // Helper function to update the "Select All" checkbox state
@@ -359,8 +464,36 @@
             const anyChecked = Array.from(messageCheckboxes).some(checkbox => checkbox.checked);
             const actionSelected = bulkActionSelect.value !== '';
 
-            applyBulkActionBtn.disabled = !(anyChecked && actionSelected);
+            const shouldEnable = anyChecked && actionSelected;
+            applyBulkActionBtn.disabled = !shouldEnable;
+
+            // Update ARIA attributes
+            applyBulkActionBtn.setAttribute('aria-disabled', !shouldEnable);
         }
+
+        // Keyboard navigation enhancement for table
+        const tableRows = document.querySelectorAll('tbody tr[role="row"]');
+        tableRows.forEach((row, index) => {
+            row.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    const checkbox = row.querySelector('.message-checkbox');
+                    if (checkbox && e.target !== checkbox) {
+                        checkbox.checked = !checkbox.checked;
+                        checkbox.dispatchEvent(new Event('change'));
+                    }
+                }
+            });
+
+            // Make rows focusable
+            if (row.querySelector('.message-checkbox')) {
+                row.setAttribute('tabindex', '0');
+            }
+        });
+
+        // Initialize accessibility state
+        updateSelectAllCheckbox();
+        updateApplyButton();
     });
 </script>
 {% endblock %}

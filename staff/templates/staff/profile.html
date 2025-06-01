@@ -9,106 +9,146 @@
 <div class="row">
     <!-- Profile Information -->
     <div class="col-md-8 mb-4">
-        <div class="card shadow">
+        <section class="card shadow" aria-labelledby="profile-heading">
             <div class="card-header">
-                <h5 class="mb-0">Profile Settings</h5>
+                <h1 id="profile-heading" class="h5 mb-0">Profile Settings</h1>
             </div>
             <div class="card-body">
-                <form method="post">
+                <form method="post" id="profile-form" novalidate>
                     {% csrf_token %}
 
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label>Username</label>
-                            <input type="text" class="form-control" value="{{ user.username }}" disabled>
+                    <fieldset>
+                        <legend class="h6 mb-3">Account Information</legend>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Username</label>
+                                <input type="text" class="form-control" value="{{ user.username }}" disabled
+                                       aria-describedby="username-help">
+                                <div id="username-help" class="form-text">Your username cannot be changed</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" value="{{ user.email }}" disabled
+                                       aria-describedby="email-help">
+                                <div id="email-help" class="form-text">Contact IT to change your email address</div>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <label>Email</label>
-                            <input type="email" class="form-control" value="{{ user.email }}" disabled>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend class="h6 mb-3">Department Information</legend>
+                        <div class="mb-3">
+                            <label for="id_department" class="form-label">Department</label>
+                            {{ form.department }}
+                            <div class="form-text">Your department determines which areas of the system you can access.</div>
+                            {% if form.department.errors %}
+                                <div class="invalid-feedback d-block" role="alert">
+                                    {{ form.department.errors.0 }}
+                                </div>
+                            {% endif %}
                         </div>
-                    </div>
 
-                    <div class="mb-3">
-                        <label for="id_department">Department</label>
-                        {{ form.department }}
-                        <div class="form-text">Your department determines which areas of the system you can access.</div>
-                    </div>
+                        <div class="mb-3">
+                            <label for="id_phone_extension" class="form-label">Phone Extension</label>
+                            {{ form.phone_extension }}
+                            <div class="form-text">Optional internal phone extension for other staff to contact you.</div>
+                            {% if form.phone_extension.errors %}
+                                <div class="invalid-feedback d-block" role="alert">
+                                    {{ form.phone_extension.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
 
-                    <div class="mb-3">
-                        <label for="id_phone_extension">Phone Extension</label>
-                        {{ form.phone_extension }}
-                        <div class="form-text">Optional internal phone extension for other staff to contact you.</div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="id_notes">Notes</label>
-                        {{ form.notes }}
-                        <div class="form-text">Any additional information about your role or responsibilities.</div>
-                    </div>
+                        <div class="mb-3">
+                            <label for="id_notes" class="form-label">Notes</label>
+                            {{ form.notes }}
+                            <div class="form-text">Any additional information about your role or responsibilities.</div>
+                            {% if form.notes.errors %}
+                                <div class="invalid-feedback d-block" role="alert">
+                                    {{ form.notes.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </fieldset>
 
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="submit" class="btn btn-primary" aria-describedby="save-help">
+                            Save Changes
+                        </button>
+                        <div id="save-help" class="visually-hidden">Save your profile changes</div>
                     </div>
                 </form>
             </div>
-        </div>
+        </section>
     </div>
 
     <!-- Role Information -->
     <div class="col-md-4">
-        <div class="card shadow mb-4">
+        <section class="card shadow mb-4" aria-labelledby="role-heading">
             <div class="card-header">
-                <h5 class="mb-0">Role Information</h5>
+                <h2 id="role-heading" class="h5 mb-0">Role Information</h2>
             </div>
             <div class="card-body">
-                <div class="mb-3">
-                    <label class="fw-bold d-block">User Type</label>
-                    {% if user.is_superuser %}
-                        <span class="badge bg-danger">Administrator</span>
-                    {% elif object.is_manager %}
-                        <span class="badge bg-primary">Manager</span>
-                    {% else %}
-                        <span class="badge bg-secondary">Staff</span>
-                    {% endif %}
-                </div>
+                <dl>
+                    <dt class="fw-bold">User Type</dt>
+                    <dd>
+                        {% if user.is_superuser %}
+                            <span class="badge bg-danger" aria-label="User type: Administrator">Administrator</span>
+                        {% elif object.is_manager %}
+                            <span class="badge bg-primary" aria-label="User type: Manager">Manager</span>
+                        {% else %}
+                            <span class="badge bg-secondary" aria-label="User type: Staff">Staff</span>
+                        {% endif %}
+                    </dd>
 
-                <div class="mb-3">
-                    <label class="fw-bold d-block">Department</label>
-                    <span>{{ object.get_department_display }}</span>
-                </div>
+                    <dt class="fw-bold">Department</dt>
+                    <dd>{{ object.get_department_display }}</dd>
 
-                <div class="mb-3">
-                    <label class="fw-bold d-block">Staff Since</label>
-                    <span>{{ user.date_joined|date:"F j, Y" }}</span>
-                </div>
+                    <dt class="fw-bold">Staff Since</dt>
+                    <dd>
+                        <time datetime="{{ user.date_joined|date:'c' }}">{{ user.date_joined|date:"F j, Y" }}</time>
+                    </dd>
 
-                <div>
-                    <label class="fw-bold d-block">Last Login</label>
-                    <span>{{ user.last_login|date:"F j, Y H:i" }}</span>
-                </div>
+                    <dt class="fw-bold">Last Login</dt>
+                    <dd>
+                        {% if user.last_login %}
+                            <time datetime="{{ user.last_login|date:'c' }}">{{ user.last_login|date:"F j, Y H:i" }}</time>
+                        {% else %}
+                            <span class="text-muted">Never</span>
+                        {% endif %}
+                    </dd>
+                </dl>
             </div>
-        </div>
+        </section>
 
         <!-- Account Links -->
-        <div class="card shadow">
+        <section class="card shadow" aria-labelledby="actions-heading">
             <div class="card-header">
-                <h5 class="mb-0">Account Actions</h5>
+                <h2 id="actions-heading" class="h5 mb-0">Account Actions</h2>
             </div>
-            <div class="list-group list-group-flush">
-                <a href="{% url 'account_change_password' %}" class="list-group-item list-group-item-action d-flex align-items-center">
-                    <i class="fa fa-lock me-3"></i> Change Password
+            <nav class="list-group list-group-flush" aria-labelledby="actions-heading">
+                <a href="{% url 'account_change_password' %}"
+                   class="list-group-item list-group-item-action d-flex align-items-center"
+                   aria-label="Change your password">
+                    <i class="fa fa-lock me-3" aria-hidden="true"></i> Change Password
                 </a>
-                <a href="{% url 'account_email' %}" class="list-group-item list-group-item-action d-flex align-items-center">
-                    <i class="fa fa-envelope me-3"></i> Manage Email Addresses
+                <a href="{% url 'account_email' %}"
+                   class="list-group-item list-group-item-action d-flex align-items-center"
+                   aria-label="Manage your email addresses">
+                    <i class="fa fa-envelope me-3" aria-hidden="true"></i> Manage Email Addresses
                 </a>
-                <a href="{% url 'home' %}" class="list-group-item list-group-item-action d-flex align-items-center">
-                    <i class="fa fa-house me-3"></i> Return to Shop
+                <a href="{% url 'home' %}"
+                   class="list-group-item list-group-item-action d-flex align-items-center"
+                   aria-label="Return to main shop">
+                    <i class="fa fa-house me-3" aria-hidden="true"></i> Return to Shop
                 </a>
-                <a href="{% url 'account_logout' %}" class="list-group-item list-group-item-action d-flex align-items-center text-danger">
-                    <i class="fa fa-right-from-bracket me-3"></i> Sign Out
+                <a href="{% url 'account_logout' %}"
+                   class="list-group-item list-group-item-action d-flex align-items-center text-danger"
+                   aria-label="Sign out of your account">
+                    <i class="fa fa-right-from-bracket me-3" aria-hidden="true"></i> Sign Out
                 </a>
-            </div>
-        </div>
+            </nav>
+        </section>
     </div>
 </div>
 {% endblock %}

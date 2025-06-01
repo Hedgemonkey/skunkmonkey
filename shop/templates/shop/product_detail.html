@@ -15,33 +15,47 @@
 
 {% block content %}
 {% get_wishlist_items as wishlist_product_ids %}
-<div class="container my-5">
-    <nav aria-label="breadcrumb" class="mb-4">
+<main class="container my-5" role="main">
+    <nav aria-label="Breadcrumb navigation" class="mb-4">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'shop:product_list' %}">Shop</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'shop:product_list_by_category' product.category.slug %}">{{ product.category.name }}</a></li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'home' %}" aria-label="Go to home page">Home</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'shop:product_list' %}" aria-label="Go to shop page">Shop</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'shop:product_list_by_category' product.category.slug %}"
+                   aria-label="Browse {{ product.category.name }} category">
+                    {{ product.category.name }}
+                </a>
+            </li>
             <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
         </ol>
     </nav>
 
     <div class="row">
         <!-- Product Gallery -->
-        <div class="col-md-6 mb-4">
+        <section class="col-md-6 mb-4" aria-labelledby="product-image-heading">
+            <h2 id="product-image-heading" class="visually-hidden">Product Images</h2>
             <div class="product-gallery">
                 {% if product.image %}
-                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded shadow">
+                    <img src="{{ product.image.url }}"
+                         alt="{{ product.name }} - Main product image"
+                         class="img-fluid rounded shadow">
                 {% else %}
-                    <img src="{{ MEDIA_URL }}noimage.png" alt="No image available" class="img-fluid rounded shadow">
+                    <img src="{{ MEDIA_URL }}noimage.png"
+                         alt="No image available for {{ product.name }}"
+                         class="img-fluid rounded shadow">
                 {% endif %}
             </div>
-        </div>
+        </section>
 
         <!-- Product Info -->
-        <div class="col-md-6">
+        <section class="col-md-6" aria-labelledby="product-info-heading">
             <div class="product-info">
                 <div class="d-flex justify-content-between align-items-start mb-3">
-                    <h1 class="mb-0">{{ product.name }}</h1>
+                    <h1 id="product-info-heading" class="mb-0">{{ product.name }}</h1>
 
                     <div class="d-flex">
                         <!-- Compare button - updated to use toggle endpoint -->
@@ -50,35 +64,51 @@
                            data-product-id="{{ product.id }}"
                            data-product-name="{{ product.name }}"
                            data-bs-toggle="tooltip"
+                           aria-label="Add {{ product.name }} to comparison list"
                            title="Add to comparison">
-                            <i class="fas fa-balance-scale"></i>
+                            <i class="fas fa-balance-scale" aria-hidden="true"></i>
                         </a>
                     </div>
                 </div>
 
-                <p class="product-price mb-3">£{{ product.price }}</p>
+                <div class="product-price mb-3" aria-label="Price: £{{ product.price }}">
+                    <span class="h4 text-success">£{{ product.price }}</span>
+                </div>
 
                 <div class="mb-4">
                     <p class="lead">{{ product.description }}</p>
                 </div>
 
                 <!-- Stock Status -->
-                <div class="mb-4">
+                <div class="mb-4" role="status" aria-live="polite">
                     <p class="mb-2">
-                        Stock Status:
+                        <strong>Stock Status:</strong>
                         {% if product.stock_quantity > 10 %}
-                            <span class="stock-status in-stock">In Stock ({{ product.stock_quantity }} available)</span>
+                            <span class="stock-status in-stock"
+                                  role="img"
+                                  aria-label="In stock with {{ product.stock_quantity }} items available">
+                                ✅ In Stock ({{ product.stock_quantity }} available)
+                            </span>
                         {% elif product.stock_quantity > 0 %}
-                            <span class="stock-status low-stock">Low Stock (Only {{ product.stock_quantity }} left)</span>
+                            <span class="stock-status low-stock"
+                                  role="img"
+                                  aria-label="Low stock warning, only {{ product.stock_quantity }} items remaining">
+                                ⚠️ Low Stock (Only {{ product.stock_quantity }} left)
+                            </span>
                         {% else %}
-                            <span class="stock-status out-of-stock">Out of Stock</span>
+                            <span class="stock-status out-of-stock"
+                                  role="img"
+                                  aria-label="Out of stock - currently unavailable">
+                                ❌ Out of Stock
+                            </span>
                         {% endif %}
                     </p>
                 </div>
 
                 <!-- Add to Cart Button -->
                 {% if product.stock_quantity > 0 %}
-                    <div class="product-actions d-flex gap-2 my-4">
+                    <section class="product-actions d-flex gap-2 my-4" aria-labelledby="product-actions-heading">
+                        <h3 id="product-actions-heading" class="visually-hidden">Product Actions</h3>
                         <div class="flex-grow-1">
                             <button type="button"
                                     class="btn btn-primary btn-lg add-to-cart-modal-btn"
@@ -89,9 +119,14 @@
                                     data-stock-quantity="{{ product.stock_quantity }}"
                                     data-cart-add-url="{% url 'shop:cart_add' product.id %}"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#quantityModal">
-                                <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+                                    data-bs-target="#quantityModal"
+                                    aria-describedby="add-to-cart-description"
+                                    aria-label="Add {{ product.name }} to shopping cart - opens quantity selection">
+                                <i class="fas fa-shopping-cart me-2" aria-hidden="true"></i> Add to Cart
                             </button>
+                            <div id="add-to-cart-description" class="visually-hidden">
+                                This will open a dialog to select quantity and add {{ product.name }} to your shopping cart.
+                            </div>
                         </div>
 
                         <!-- Wishlist button -->
@@ -100,78 +135,121 @@
                                class="btn wishlist-btn {% if product.id in wishlist_product_ids %}remove-wishlist-btn btn-danger{% else %}add-to-wishlist-btn btn-outline-danger{% endif %} align-self-end"
                                data-product-id="{{ product.id }}"
                                data-product-name="{{ product.name }}"
-                               title="{% if product.id in wishlist_product_ids %}Remove from{% else %}Add to{% endif %} wishlist">
-                                <i class="{% if product.id in wishlist_product_ids %}fas{% else %}far{% endif %} fa-heart me-2"></i>
+                               aria-label="{% if product.id in wishlist_product_ids %}Remove {{ product.name }} from{% else %}Add {{ product.name }} to{% endif %} wishlist"
+                               role="button">
+                                <i class="{% if product.id in wishlist_product_ids %}fas{% else %}far{% endif %} fa-heart me-2" aria-hidden="true"></i>
                                 {% if product.id in wishlist_product_ids %}Remove from{% else %}Add to{% endif %} Wishlist
                             </a>
                         {% endif %}
-                    </div>
+                    </section>
                 {% else %}
-                    <div class="alert alert-danger">
-                        This product is currently out of stock.
+                    <div class="alert alert-danger" role="alert" aria-live="assertive">
+                        <strong>Out of Stock:</strong> This product is currently unavailable.
                     </div>
                 {% endif %}
 
                 <!-- Product Meta -->
-                <div class="product-meta mt-4">
-                    <p class="mb-1"><strong>Category:</strong> <a href="{% url 'shop:product_list_by_category' product.category.slug %}">{{ product.category.name }}</a></p>
-                    <p class="mb-0"><strong>Last Updated:</strong> {{ product.updated_at|date:"F j, Y" }}</p>
-                </div>
+                <section class="product-meta mt-4" aria-labelledby="product-meta-heading">
+                    <h3 id="product-meta-heading" class="visually-hidden">Product Information</h3>
+                    <dl class="row">
+                        <dt class="col-sm-3">Category:</dt>
+                        <dd class="col-sm-9">
+                            <a href="{% url 'shop:product_list_by_category' product.category.slug %}"
+                               aria-label="Browse all products in {{ product.category.name }} category">
+                                {{ product.category.name }}
+                            </a>
+                        </dd>
+                        <dt class="col-sm-3">Last Updated:</dt>
+                        <dd class="col-sm-9">
+                            <time datetime="{{ product.updated_at|date:'c' }}">
+                                {{ product.updated_at|date:"F j, Y" }}
+                            </time>
+                        </dd>
+                    </dl>
+                </section>
             </div>
         </div>
     </div>
 
     <!-- Related Products -->
     {% if related_products %}
-    <div class="mt-5">
-        <h3 class="mb-4">You Might Also Like</h3>
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+    <section class="mt-5" aria-labelledby="related-products-heading">
+        <h2 id="related-products-heading" class="mb-4">You Might Also Like</h2>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4" role="list" aria-label="Related products">
             {% for related in related_products %}
-            <div class="col">
-                <div class="card related-product-card h-100">
-                    {% if related.image %}
-                        <img src="{{ related.image.url }}" class="card-img-top" alt="{{ related.name }}">
-                    {% else %}
-                        <img src="{{ MEDIA_URL }}noimage.png" class="card-img-top" alt="No image available">
-                    {% endif %}
+            <div class="col" role="listitem">
+                <article class="card related-product-card h-100">
+                    <div class="card-img-wrapper">
+                        {% if related.image %}
+                            <img src="{{ related.image.url }}"
+                                 class="card-img-top"
+                                 alt="{{ related.name }} - Product image"
+                                 loading="lazy">
+                        {% else %}
+                            <img src="{{ MEDIA_URL }}noimage.png"
+                                 class="card-img-top"
+                                 alt="No image available for {{ related.name }}"
+                                 loading="lazy">
+                        {% endif %}
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title">{{ related.name }}</h5>
-                        <p class="card-text text-success fw-bold">£{{ related.price }}</p>
+                        <h3 class="card-title h5">{{ related.name }}</h3>
+                        <p class="card-text text-success fw-bold" aria-label="Price: £{{ related.price }}">
+                            £{{ related.price }}
+                        </p>
                     </div>
                     <div class="card-footer bg-transparent border-top-0">
-                        <a href="{% url 'shop:product_detail' related.slug %}" class="btn btn-outline-primary btn-sm d-block">View Details</a>
+                        <a href="{% url 'shop:product_detail' related.slug %}"
+                           class="btn btn-outline-primary btn-sm d-block"
+                           aria-label="View details for {{ related.name }}">
+                            View Details
+                        </a>
                     </div>
-                </div>
+                </article>
             </div>
             {% endfor %}
         </div>
-    </div>
+    </section>
     {% endif %}
 
     {% if recently_viewed %}
-    <div class="mt-5">
-        <h3 class="mb-4">Recently Viewed</h3>
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-5 g-4">
+    <section class="mt-5" aria-labelledby="recently-viewed-heading">
+        <h2 id="recently-viewed-heading" class="mb-4">Recently Viewed</h2>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-5 g-4" role="list" aria-label="Recently viewed products">
             {% for viewed_product in recently_viewed %}
-            <div class="col">
-                <div class="card h-100">
-                    {% if viewed_product.image %}
-                        <img src="{{ viewed_product.image.url }}" class="card-img-top" alt="{{ viewed_product.name }}" loading="lazy">
-                    {% else %}
-                        <img src="{{ MEDIA_URL }}noimage.png" class="card-img-top" alt="No image available" loading="lazy">
-                    {% endif %}
+            <div class="col" role="listitem">
+                <article class="card h-100">
+                    <div class="card-img-wrapper">
+                        {% if viewed_product.image %}
+                            <img src="{{ viewed_product.image.url }}"
+                                 class="card-img-top"
+                                 alt="{{ viewed_product.name }} - Product image"
+                                 loading="lazy">
+                        {% else %}
+                            <img src="{{ MEDIA_URL }}noimage.png"
+                                 class="card-img-top"
+                                 alt="No image available for {{ viewed_product.name }}"
+                                 loading="lazy">
+                        {% endif %}
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title">{{ viewed_product.name }}</h5>
-                        <p class="card-text text-success fw-bold">£{{ viewed_product.price }}</p>
+                        <h3 class="card-title h5">{{ viewed_product.name }}</h3>
+                        <p class="card-text text-success fw-bold" aria-label="Price: £{{ viewed_product.price }}">
+                            £{{ viewed_product.price }}
+                        </p>
                     </div>
                     <div class="card-footer bg-transparent border-top-0">
-                        <a href="{% url 'shop:product_detail' viewed_product.slug %}" class="btn btn-outline-primary btn-sm d-block">View Details</a>
+                        <a href="{% url 'shop:product_detail' viewed_product.slug %}"
+                           class="btn btn-outline-primary btn-sm d-block"
+                           aria-label="View details for {{ viewed_product.name }}">
+                            View Details
+                        </a>
                     </div>
-                </div>
+                </article>
             </div>
             {% endfor %}
         </div>
-    </div>
+    </section>
     {% endif %}
 </div>
 

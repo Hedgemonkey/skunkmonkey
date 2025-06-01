@@ -10,164 +10,226 @@
 {% endblock %}
 
 {% block staff_content %}
-<div class="row mb-4">
-    <div class="col-md-3 mb-3">
-        <div class="card">
-            <div class="card-body text-center">
-                <h5 class="card-title">Total Users</h5>
-                <h3>{{ total_users }}</h3>
+<section aria-labelledby="user-stats-heading">
+    <h2 id="user-stats-heading" class="visually-hidden">User Statistics Overview</h2>
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h3 class="card-title h5">Total Users</h3>
+                    <p class="display-4 mb-0" aria-label="Total users: {{ total_users }}">{{ total_users }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h3 class="card-title h5">Active Users</h3>
+                    <p class="display-4 mb-0" aria-label="Active users: {{ active_users }}">{{ active_users }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h3 class="card-title h5">Staff</h3>
+                    <p class="display-4 mb-0" aria-label="Staff users: {{ staff_users }}">{{ staff_users }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h3 class="card-title h5">New (30 days)</h3>
+                    <p class="display-4 mb-0" aria-label="New users in last 30 days: {{ new_users_30d }}">{{ new_users_30d }}</p>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-3 mb-3">
-        <div class="card">
-            <div class="card-body text-center">
-                <h5 class="card-title">Active Users</h5>
-                <h3>{{ active_users }}</h3>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3 mb-3">
-        <div class="card">
-            <div class="card-body text-center">
-                <h5 class="card-title">Staff</h5>
-                <h3>{{ staff_users }}</h3>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3 mb-3">
-        <div class="card">
-            <div class="card-body text-center">
-                <h5 class="card-title">New (30 days)</h5>
-                <h3>{{ new_users_30d }}</h3>
-            </div>
-        </div>
-    </div>
-</div>
+</section>
 
-<div class="card">
-    <div class="card-header">
-        <h5 class="card-title mb-0">User Filter</h5>
+<section aria-labelledby="user-filter-heading">
+    <div class="card">
+        <div class="card-header">
+            <h2 id="user-filter-heading" class="card-title h5 mb-0">User Filter</h2>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3" role="search" aria-label="Filter users">
+                <div class="col-md-4">
+                    {{ filter_form.query.label_tag }}
+                    {{ filter_form.query }}
+                    {% if filter_form.query.help_text %}
+                    <div class="form-text">{{ filter_form.query.help_text }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-2">
+                    {{ filter_form.is_active.label_tag }}
+                    {{ filter_form.is_active }}
+                </div>
+                <div class="col-md-2">
+                    {{ filter_form.is_staff.label_tag }}
+                    {{ filter_form.is_staff }}
+                </div>
+                <div class="col-md-2">
+                    <label for="{{ filter_form.date_joined_from.id_for_label }}">
+                        Joined From
+                    </label>
+                    {{ filter_form.date_joined_from }}
+                </div>
+                <div class="col-md-2">
+                    <label for="{{ filter_form.date_joined_to.id_for_label }}">
+                        Joined To
+                    </label>
+                    {{ filter_form.date_joined_to }}
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary" aria-describedby="filter-help">
+                        <i class="fa fa-filter" aria-hidden="true"></i> Filter
+                    </button>
+                    <a href="{% url 'staff:user_list' %}" class="btn btn-light" aria-describedby="clear-help">
+                        <i class="fa fa-times-circle" aria-hidden="true"></i> Clear
+                    </a>
+                    <div id="filter-help" class="visually-hidden">Apply the selected filters to the user list</div>
+                    <div id="clear-help" class="visually-hidden">Clear all filters and show all users</div>
+                </div>
+            </form>
+        </div>
     </div>
-    <div class="card-body">
-        <form method="get" class="row g-3">
-            <div class="col-md-4">
-                {{ filter_form.query.label_tag }}
-                {{ filter_form.query }}
-            </div>
-            <div class="col-md-2">
-                {{ filter_form.is_active.label_tag }}
-                {{ filter_form.is_active }}
-            </div>
-            <div class="col-md-2">
-                {{ filter_form.is_staff.label_tag }}
-                {{ filter_form.is_staff }}
-            </div>
-            <div class="col-md-2">
-                <label for="{{ filter_form.date_joined_from.id_for_label }}">
-                    Joined From
-                </label>
-                {{ filter_form.date_joined_from }}
-            </div>
-            <div class="col-md-2">
-                <label for="{{ filter_form.date_joined_to.id_for_label }}">
-                    Joined To
-                </label>
-                {{ filter_form.date_joined_to }}
-            </div>
-            <div class="col-12">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fa fa-filter"></i> Filter
-                </button>
-                <a href="{% url 'staff:user_list' %}" class="btn btn-light">
-                    <i class="fa fa-times-circle"></i> Clear
-                </a>
-            </div>
-        </form>
-    </div>
-</div>
+</section>
 
-<div class="card mt-4">
-    <div class="card-header">
-        <h5 class="card-title mb-0">User List</h5>
-    </div>
-    <div class="table-responsive">
-        <table class="table table-hover table-striped">
-            <thead>
-                <tr>
-                    <th>Username</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Date Joined</th>
-                    <th>Last Login</th>
-                    <th>Status</th>
-                    <th>Type</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
-                <tr>
-                    <td>{{ user.username }}</td>
-                    <td>{{ user.get_full_name|default:"-" }}</td>
-                    <td>{{ user.email|default:"-" }}</td>
-                    <td>{{ user.date_joined|date:"M d, Y" }}</td>
-                    <td>{{ user.last_login|date:"M d, Y"|default:"Never" }}</td>
-                    <td>
-                        {% if user.is_active %}
-                        <span class="badge bg-success">Active</span>
-                        {% else %}
-                        <span class="badge bg-danger">Inactive</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if user.is_superuser %}
-                        <span class="badge bg-danger">Superuser</span>
-                        {% elif user.is_staff %}
-                        <span class="badge bg-primary">Staff</span>
-                        {% else %}
-                        <span class="badge bg-secondary">Customer</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <a href="{% url 'staff:user_detail' user.id %}" class="btn btn-sm btn-outline-primary">
-                            <i class="fa fa-eye"></i> View
-                        </a>
-                        <a href="{% url 'staff:user_update' user.id %}" class="btn btn-sm btn-outline-secondary">
-                            <i class="fa fa-pencil"></i> Edit
-                        </a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+<section aria-labelledby="user-list-heading">
+    <div class="card mt-4">
+        <div class="card-header">
+            <h2 id="user-list-heading" class="card-title h5 mb-0">User List</h2>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover table-striped"
+                   role="table"
+                   aria-label="List of users in the system"
+                   aria-describedby="user-table-description">
+                <caption id="user-table-description" class="visually-hidden">
+                    A table showing all users with their details including username, name, email, join date, last login, status, and user type. Actions are available to view or edit each user.
+                </caption>
+                <thead>
+                    <tr role="row">
+                        <th scope="col">Username</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Date Joined</th>
+                        <th scope="col">Last Login</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr role="row" aria-describedby="user-{{ user.id }}-desc">
+                        <td>
+                            <span aria-label="Username: {{ user.username }}">{{ user.username }}</span>
+                        </td>
+                        <td>
+                            <span aria-label="Full name: {{ user.get_full_name|default:'No name provided' }}">{{ user.get_full_name|default:"-" }}</span>
+                        </td>
+                        <td>
+                            <span aria-label="Email address: {{ user.email|default:'No email provided' }}">{{ user.email|default:"-" }}</span>
+                        </td>
+                        <td>
+                            <time datetime="{{ user.date_joined|date:'c' }}"
+                                  aria-label="Joined on {{ user.date_joined|date:'F d, Y' }}">
+                                {{ user.date_joined|date:"M d, Y" }}
+                            </time>
+                        </td>
+                        <td>
+                            {% if user.last_login %}
+                            <time datetime="{{ user.last_login|date:'c' }}"
+                                  aria-label="Last login on {{ user.last_login|date:'F d, Y' }}">
+                                {{ user.last_login|date:"M d, Y" }}
+                            </time>
+                            {% else %}
+                            <span aria-label="Never logged in">Never</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.is_active %}
+                            <span class="badge bg-success" aria-label="User status: Active">Active</span>
+                            {% else %}
+                            <span class="badge bg-danger" aria-label="User status: Inactive">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.is_superuser %}
+                            <span class="badge bg-danger" aria-label="User type: Superuser">Superuser</span>
+                            {% elif user.is_staff %}
+                            <span class="badge bg-primary" aria-label="User type: Staff">Staff</span>
+                            {% else %}
+                            <span class="badge bg-secondary" aria-label="User type: Customer">Customer</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group" aria-label="Actions for {{ user.username }}">
+                                <a href="{% url 'staff:user_detail' user.id %}"
+                                   class="btn btn-sm btn-outline-primary"
+                                   aria-label="View details for {{ user.username }}">
+                                    <i class="fa fa-eye" aria-hidden="true"></i> View
+                                </a>
+                                <a href="{% url 'staff:user_update' user.id %}"
+                                   class="btn btn-sm btn-outline-secondary"
+                                   aria-label="Edit user {{ user.username }}">
+                                    <i class="fa fa-pencil" aria-hidden="true"></i> Edit
+                                </a>
+                            </div>
+                        </td>
+                        <div id="user-{{ user.id }}-desc" class="visually-hidden">
+                            User {{ user.username }}.
+                            {% if user.get_full_name %}Full name: {{ user.get_full_name }}. {% endif %}
+                            {% if user.email %}Email: {{ user.email }}. {% endif %}
+                            Status: {% if user.is_active %}Active{% else %}Inactive{% endif %}.
+                            Type: {% if user.is_superuser %}Superuser{% elif user.is_staff %}Staff{% else %}Customer{% endif %}.
+                            Joined: {{ user.date_joined|date:"F d, Y" }}.
+                            {% if user.last_login %}Last login: {{ user.last_login|date:"F d, Y" }}{% else %}Never logged in{% endif %}.
+                        </div>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
     {% if users %}
     <!-- Pagination -->
     {% if is_paginated %}
-    <nav aria-label="User pagination" class="mt-4">
+    <nav aria-label="User list pagination" class="mt-4">
         <ul class="pagination justify-content-center">
             {% if page_obj.has_previous %}
             <li class="page-item">
-                <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">First</a>
+                <a class="page-link"
+                   href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+                   aria-label="Go to first page">First</a>
             </li>
             <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Previous</a>
+                <a class="page-link"
+                   href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+                   aria-label="Go to previous page">Previous</a>
             </li>
             {% endif %}
 
             <!-- Current page -->
             <li class="page-item active">
-                <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                <span class="page-link" aria-current="page" aria-label="Current page, page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </span>
             </li>
 
             {% if page_obj.has_next %}
             <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Next</a>
+                <a class="page-link"
+                   href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+                   aria-label="Go to next page">Next</a>
             </li>
             <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Last</a>
+                <a class="page-link"
+                   href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+                   aria-label="Go to last page">Last</a>
             </li>
             {% endif %}
         </ul>
@@ -175,12 +237,13 @@
     {% endif %}
 
     {% else %}
-    <div class="alert alert-info text-center">
+    <div class="alert alert-info text-center" role="alert">
+        <h3 class="h5">No users found</h3>
         <p class="mb-0">No users found matching your criteria.</p>
         <p class="mb-0">
             <a href="{% url 'staff:user_list' %}" class="alert-link">Clear all filters</a> to see all users.
         </p>
     </div>
     {% endif %}
-</div>
+</section>
 {% endblock %}

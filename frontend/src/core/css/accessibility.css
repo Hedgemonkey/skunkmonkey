@@ -1,0 +1,306 @@
+/**
+ * Accessibility Enhancement Styles
+ * Provides enhanced focus indicators, high contrast support,
+ * and accessibility utilities for the SkunkMonkey application
+ */
+
+/* Enhanced Focus Indicators */
+.keyboard-focus *:focus {
+    outline: 3px solid #007bff !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.25) !important;
+}
+
+/* Focus visible for modern browsers */
+*:focus-visible {
+    outline: 3px solid #007bff;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.25);
+}
+
+/* Remove focus for mouse users */
+*:focus:not(:focus-visible) {
+    outline: none;
+    box-shadow: none;
+}
+
+/* Skip Links */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: #000;
+    color: #fff;
+    padding: 8px 12px;
+    text-decoration: none;
+    z-index: 100000;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+    top: 6px;
+    color: #fff;
+}
+
+/* Screen Reader Only Content */
+.visually-hidden,
+.sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+.visually-hidden-focusable:focus,
+.sr-only-focusable:focus {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    padding: inherit !important;
+    margin: inherit !important;
+    overflow: visible !important;
+    clip: auto !important;
+    white-space: normal !important;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    .btn {
+        border-width: 2px !important;
+    }
+
+    .form-control,
+    .form-select {
+        border-width: 2px !important;
+    }
+
+    .card {
+        border-width: 2px !important;
+    }
+
+    .table {
+        border-width: 2px !important;
+    }
+
+    .table th,
+    .table td {
+        border-width: 1px !important;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .carousel {
+        transition: none !important;
+    }
+
+    .fade {
+        transition: none !important;
+    }
+
+    .modal.fade .modal-dialog {
+        transition: none !important;
+        transform: none !important;
+    }
+}
+
+/* Loading States Accessibility */
+.loading {
+    position: relative;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    z-index: 10;
+    pointer-events: none;
+}
+
+.loading[aria-busy="true"] {
+    cursor: wait;
+}
+
+/* Form Validation Accessibility */
+.invalid-feedback {
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    color: #dc3545;
+}
+
+.form-control[aria-invalid="true"],
+.form-select[aria-invalid="true"] {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.form-control[aria-invalid="false"],
+.form-select[aria-invalid="false"] {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+/* Enhanced Button States */
+.btn:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
+}
+
+.btn[aria-expanded="true"] {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+}
+
+/* Table Accessibility */
+.table th[scope="col"],
+.table th[scope="row"] {
+    font-weight: 600;
+}
+
+.table caption {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    color: #6c757d;
+    text-align: left;
+    caption-side: top;
+}
+
+/* Modal Accessibility */
+.modal[aria-hidden="true"] {
+    display: none !important;
+}
+
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+/* Pagination Accessibility */
+.page-link[aria-current="page"] {
+    z-index: 3;
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.page-item.disabled .page-link {
+    color: #6c757d;
+    background-color: #fff;
+    border-color: #dee2e6;
+    cursor: not-allowed;
+}
+
+/* Toast/Notification Accessibility */
+.toast[role="alert"] {
+    position: relative;
+}
+
+.toast[role="status"] {
+    position: relative;
+}
+
+/* Quick Edit Form Accessibility */
+.quick-edit-container {
+    background: #f8f9fa;
+    border: 2px solid #007bff;
+    border-radius: 4px;
+    padding: 0.75rem;
+    margin: 0.25rem 0;
+}
+
+.quick-edit-container:focus-within {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Batch Actions Accessibility */
+.batch-actions-container[aria-hidden="true"] {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Product Grid Accessibility */
+.product-thumbnail {
+    border-radius: 4px;
+}
+
+.product-thumbnail:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+}
+
+/* Status Indicators */
+.badge {
+    font-size: 0.75em;
+    font-weight: 600;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
+
+.text-warning {
+    color: #ffc107 !important;
+}
+
+.text-success {
+    color: #28a745 !important;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .skip-link {
+        background: #fff;
+        color: #000;
+    }
+
+    .skip-link:focus {
+        color: #000;
+    }
+
+    .loading::after {
+        background: rgba(0, 0, 0, 0.8);
+    }
+
+    .quick-edit-container {
+        background: #343a40;
+        border-color: #6c757d;
+        color: #fff;
+    }
+}
+
+/* Print Styles for Accessibility */
+@media print {
+    .skip-link,
+    .visually-hidden,
+    .sr-only {
+        display: none !important;
+    }
+
+    .btn {
+        border: 1px solid #000 !important;
+    }
+
+    .table {
+        border-collapse: collapse !important;
+    }
+
+    .table th,
+    .table td {
+        border: 1px solid #000 !important;
+    }
+}

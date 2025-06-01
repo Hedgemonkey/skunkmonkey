@@ -9,37 +9,44 @@
 
 {% block staff_content %}
 <div class="container-fluid px-4">
-    <!-- Stats Row -->
-    <div class="row mb-4">
-        <div class="col-xl-3 col-md-6">
-            <div class="card border-left-primary card-hover shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs fw-bold text-primary text-uppercase mb-1">
-                                Total Orders
+    <!-- Live region for dashboard updates -->
+    <div id="dashboard-status" aria-live="polite" class="visually-hidden"></div>
+
+    <section aria-labelledby="stats-heading">
+        <h2 id="stats-heading" class="h5 mb-4">Dashboard Statistics</h2>
+        <!-- Stats Row -->
+        <div class="row mb-4">
+            <div class="col-xl-3 col-md-6">
+                <div class="card border-left-primary card-hover shadow h-100 py-2" role="region" aria-labelledby="total-orders-label" aria-describedby="total-orders-desc">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs fw-bold text-primary text-uppercase mb-1" id="total-orders-label">
+                                    Total Orders
+                                </div>
+                                <div class="h5 mb-0 fw-bold text-gray-800" aria-describedby="total-orders-label">{{ total_orders }}</div>
+                                <div id="total-orders-desc" class="visually-hidden">Total number of orders in the system: {{ total_orders }}</div>
                             </div>
-                            <div class="h5 mb-0 fw-bold text-gray-800">{{ total_orders }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fa fa-shopping-cart fa-2x text-gray-300"></i>
+                            <div class="col-auto" aria-hidden="true">
+                                <i class="fa fa-shopping-cart fa-2x text-gray-300"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
         <div class="col-xl-3 col-md-6">
-            <div class="card border-left-success card-hover shadow h-100 py-2">
+            <div class="card border-left-success card-hover shadow h-100 py-2" role="region" aria-labelledby="paid-orders-label" aria-describedby="paid-orders-desc">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs fw-bold text-success text-uppercase mb-1">
+                            <div class="text-xs fw-bold text-success text-uppercase mb-1" id="paid-orders-label">
                                 Paid Orders
                             </div>
                             <div class="h5 mb-0 fw-bold text-gray-800">{{ paid_orders }}</div>
+                            <div id="paid-orders-desc" class="visually-hidden">Number of paid orders: {{ paid_orders }}</div>
                         </div>
-                        <div class="col-auto">
+                        <div class="col-auto" aria-hidden="true">
                             <i class="fa fa-money-bill-wave fa-2x text-gray-300"></i>
                         </div>
                     </div>
@@ -48,16 +55,17 @@
         </div>
 
         <div class="col-xl-3 col-md-6">
-            <div class="card border-left-info card-hover shadow h-100 py-2">
+            <div class="card border-left-info card-hover shadow h-100 py-2" role="region" aria-labelledby="processing-orders-label" aria-describedby="processing-orders-desc">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs fw-bold text-info text-uppercase mb-1">
+                            <div class="text-xs fw-bold text-info text-uppercase mb-1" id="processing-orders-label">
                                 Processing Orders
                             </div>
                             <div class="h5 mb-0 fw-bold text-gray-800">{{ processing_orders }}</div>
+                            <div id="processing-orders-desc" class="visually-hidden">Number of orders currently being processed: {{ processing_orders }}</div>
                         </div>
-                        <div class="col-auto">
+                        <div class="col-auto" aria-hidden="true">
                             <i class="fa fa-cogs fa-2x text-gray-300"></i>
                         </div>
                     </div>
@@ -66,16 +74,17 @@
         </div>
 
         <div class="col-xl-3 col-md-6">
-            <div class="card border-left-warning card-hover shadow h-100 py-2">
+            <div class="card border-left-warning card-hover shadow h-100 py-2" role="region" aria-labelledby="pending-orders-label" aria-describedby="pending-orders-desc">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs fw-bold text-warning text-uppercase mb-1">
+                            <div class="text-xs fw-bold text-warning text-uppercase mb-1" id="pending-orders-label">
                                 Pending Orders
                             </div>
                             <div class="h5 mb-0 fw-bold text-gray-800">{{ pending_orders }}</div>
+                            <div id="pending-orders-desc" class="visually-hidden">Number of pending orders awaiting processing: {{ pending_orders }}</div>
                         </div>
-                        <div class="col-auto">
+                        <div class="col-auto" aria-hidden="true">
                             <i class="fa fa-clock fa-2x text-gray-300"></i>
                         </div>
                     </div>
@@ -88,136 +97,195 @@
     <div class="row">
         <!-- Recent Orders -->
         <div class="col-lg-8">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 fw-bold">Recent Orders</h6>
-                    <a href="{% url 'staff:order_list' %}" class="btn btn-sm btn-primary">
-                        View All Orders
-                    </a>
-                </div>
-                <div class="card-body">
-                    {% if recent_orders %}
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Order #</th>
-                                    <th>Date</th>
-                                    <th>Customer</th>
-                                    <th>Status</th>
-                                    <th>Total</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for order in recent_orders %}
-                                <tr>
-                                    <td>{{ order.order_number }}</td>
-                                    <td>{{ order.created_at|date:"d M Y" }}</td>
-                                    <td>{{ order.full_name }}</td>
-                                    <td>
-                                        <span class="badge {% if order.status == 'created' %}bg-warning
-                                                          {% elif order.status == 'processing' %}bg-info
-                                                          {% elif order.status == 'shipped' %}bg-primary
-                                                          {% elif order.status == 'delivered' %}bg-success
-                                                          {% elif order.status == 'cancelled' %}bg-danger
-                                                          {% else %}bg-secondary{% endif %}">
-                                            {{ order.get_status_display }}
-                                        </span>
-                                    </td>
-                                    <td>£{{ order.grand_total }}</td>
-                                    <td>
-                                        <a href="{% url 'staff:order_detail' order.id %}" class="btn btn-sm btn-outline-primary">
-                                            <i class="fa fa-eye"></i> View
-                                        </a>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+            <section aria-labelledby="recent-orders-heading">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <h3 id="recent-orders-heading" class="h6 m-0 fw-bold">Recent Orders</h3>
+                        <a href="{% url 'staff:order_list' %}" class="btn btn-sm btn-primary" aria-describedby="recent-orders-heading">
+                            <span aria-hidden="true">View All Orders</span>
+                            <span class="visually-hidden">View all orders list</span>
+                        </a>
                     </div>
-                    {% else %}
-                    <p class="text-center">No recent orders found.</p>
-                    {% endif %}
+                    <div class="card-body">
+                        {% if recent_orders %}
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped" role="table" aria-label="Recent orders table" aria-describedby="recent-orders-desc">
+                                <caption id="recent-orders-desc" class="visually-hidden">
+                                    Table showing the most recent {{ recent_orders|length }} orders with their details and action buttons
+                                </caption>
+                                <thead>
+                                    <tr role="row">
+                                        <th scope="col">Order #</th>
+                                        <th scope="col">Date</th>
+                                        <th scope="col">Customer</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Total</th>
+                                        <th scope="col">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order in recent_orders %}
+                                    <tr role="row">
+                                        <td>
+                                            <a href="{% url 'staff:order_detail' order.id %}" aria-label="View details for order {{ order.order_number }}">
+                                                {{ order.order_number }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <time datetime="{{ order.created_at|date:'c' }}">
+                                                {{ order.created_at|date:"d M Y" }}
+                                            </time>
+                                        </td>
+                                        <td>{{ order.full_name }}</td>
+                                        <td>
+                                            <span class="badge {% if order.status == 'created' %}bg-warning
+                                                              {% elif order.status == 'processing' %}bg-info
+                                                              {% elif order.status == 'shipped' %}bg-primary
+                                                              {% elif order.status == 'delivered' %}bg-success
+                                                              {% elif order.status == 'cancelled' %}bg-danger
+                                                              {% else %}bg-secondary{% endif %}"
+                                                  aria-label="Order status: {{ order.get_status_display }}">
+                                                {{ order.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span aria-label="Order total: £{{ order.grand_total }}">
+                                                £{{ order.grand_total }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'staff:order_detail' order.id %}"
+                                               class="btn btn-sm btn-outline-primary"
+                                               aria-label="View details for order {{ order.order_number }}">
+                                                <i class="fa fa-eye" aria-hidden="true"></i>
+                                                <span class="visually-hidden">View order details</span>
+                                                View
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <p class="text-center" role="status" aria-live="polite">No recent orders found.</p>
+                        {% endif %}
+                    </div>
                 </div>
-            </div>
+            </section>
         </div>
 
         <!-- Notifications -->
         <div class="col-lg-4">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 fw-bold">Unread Notifications</h6>
-                    <a href="{% url 'staff:notifications' %}" class="btn btn-sm btn-primary">
-                        View All
-                    </a>
-                </div>
-                <div class="card-body">
-                    {% if notifications %}
-                    <div class="list-group">
-                        {% for notification in notifications %}
-                        <a href="{% url 'staff:mark_notification_read' notification.id %}?next={% url 'staff:dashboard' %}"
-                           class="list-group-item list-group-item-action unread {% if notification.priority == 'urgent' %}priority-urgent
-                                                                               {% elif notification.priority == 'high' %}priority-high
-                                                                               {% elif notification.priority == 'medium' %}priority-medium{% endif %}">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h6 class="mb-1">{{ notification.title }}</h6>
-                                <small>{{ notification.created_at|timesince }} ago</small>
-                            </div>
-                            <p class="mb-1 small">{{ notification.message|truncatechars:100 }}</p>
-                            {% if notification.related_order %}
-                            <small>
-                                <i class="fa fa-box"></i>
-                                Order #{{ notification.related_order.order_number }}
-                            </small>
-                            {% endif %}
+            <section aria-labelledby="notifications-heading">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <h3 id="notifications-heading" class="h6 m-0 fw-bold">Unread Notifications</h3>
+                        <a href="{% url 'staff:notifications' %}"
+                           class="btn btn-sm btn-primary"
+                           aria-describedby="notifications-heading">
+                            <span aria-hidden="true">View All</span>
+                            <span class="visually-hidden">View all notifications</span>
                         </a>
-                        {% endfor %}
                     </div>
-                    {% else %}
-                    <p class="text-center">No unread notifications.</p>
-                    {% endif %}
+                    <div class="card-body">
+                        {% if notifications %}
+                        <div class="list-group" role="list" aria-label="Unread notifications list">
+                            {% for notification in notifications %}
+                            <a href="{% url 'staff:mark_notification_read' notification.id %}?next={% url 'staff:dashboard' %}"
+                               class="list-group-item list-group-item-action unread {% if notification.priority == 'urgent' %}priority-urgent
+                                                                                   {% elif notification.priority == 'high' %}priority-high
+                                                                                   {% elif notification.priority == 'medium' %}priority-medium{% endif %}"
+                               role="listitem"
+                               aria-label="{% if notification.priority == 'urgent' %}Urgent notification: {% elif notification.priority == 'high' %}High priority notification: {% elif notification.priority == 'medium' %}Medium priority notification: {% endif %}{{ notification.title }}"
+                               aria-describedby="notification-{{ forloop.counter }}-desc">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h4 class="h6 mb-1">{{ notification.title }}</h4>
+                                    <small>
+                                        <time datetime="{{ notification.created_at|date:'c' }}">
+                                            {{ notification.created_at|timesince }} ago
+                                        </time>
+                                    </small>
+                                </div>
+                                <p class="mb-1 small" id="notification-{{ forloop.counter }}-desc">
+                                    {{ notification.message|truncatechars:100 }}
+                                </p>
+                                {% if notification.related_order %}
+                                <small>
+                                    <i class="fa fa-box" aria-hidden="true"></i>
+                                    <span class="visually-hidden">Related to </span>Order #{{ notification.related_order.order_number }}
+                                </small>
+                                {% endif %}
+                            </a>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <p class="text-center" role="status" aria-live="polite">No unread notifications.</p>
+                        {% endif %}
+                    </div>
                 </div>
-            </div>
+            </section>
         </div>
     </div>
 
     <!-- Quick Links -->
     <div class="row">
         <div class="col-12">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 fw-bold">Quick Actions</h6>
-                </div>
-                <div class="card-body">
-                    <div class="row justify-content-center">
-                        <div class="col-md-3 mb-3">
-                            <a href="{% url 'staff:order_list' %}?status=created" class="btn btn-lg btn-outline-warning w-100 h-100 py-4">
-                                <i class="fa fa-clock d-block mb-2" style="font-size: 2rem;"></i>
-                                Process Pending Orders
-                            </a>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <a href="{% url 'staff:order_list' %}?status=processing" class="btn btn-lg btn-outline-info w-100 h-100 py-4">
-                                <i class="fa fa-truck d-block mb-2" style="font-size: 2rem;"></i>
-                                Update Shipping Info
-                            </a>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <a href="{% url 'staff:notifications' %}?unread_only=true" class="btn btn-lg btn-outline-primary w-100 h-100 py-4">
-                                <i class="fa fa-bell d-block mb-2" style="font-size: 2rem;"></i>
-                                Check Notifications
-                            </a>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <a href="{% url 'staff:profile' %}" class="btn btn-lg btn-outline-secondary w-100 h-100 py-4">
-                                <i class="fa fa-cog d-block mb-2" style="font-size: 2rem;"></i>
-                                Staff Settings
-                            </a>
+            <section aria-labelledby="quick-actions-heading">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h3 id="quick-actions-heading" class="h6 m-0 fw-bold">Quick Actions</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row justify-content-center" role="group" aria-labelledby="quick-actions-heading">
+                            <div class="col-md-3 mb-3">
+                                <a href="{% url 'staff:order_list' %}?status=created"
+                                   class="btn btn-lg btn-outline-warning w-100 h-100 py-4"
+                                   aria-describedby="pending-orders-action-desc">
+                                    <i class="fa fa-clock d-block mb-2" style="font-size: 2rem;" aria-hidden="true"></i>
+                                    <span>Process Pending Orders</span>
+                                    <div id="pending-orders-action-desc" class="visually-hidden">
+                                        View and process orders that are pending and need attention
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <a href="{% url 'staff:order_list' %}?status=processing"
+                                   class="btn btn-lg btn-outline-info w-100 h-100 py-4"
+                                   aria-describedby="shipping-action-desc">
+                                    <i class="fa fa-truck d-block mb-2" style="font-size: 2rem;" aria-hidden="true"></i>
+                                    <span>Update Shipping Info</span>
+                                    <div id="shipping-action-desc" class="visually-hidden">
+                                        Update shipping information for orders currently being processed
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <a href="{% url 'staff:notifications' %}?unread_only=true"
+                                   class="btn btn-lg btn-outline-primary w-100 h-100 py-4"
+                                   aria-describedby="notifications-action-desc">
+                                    <i class="fa fa-bell d-block mb-2" style="font-size: 2rem;" aria-hidden="true"></i>
+                                    <span>Check Notifications</span>
+                                    <div id="notifications-action-desc" class="visually-hidden">
+                                        View unread notifications and important system alerts
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <a href="{% url 'staff:profile' %}"
+                                   class="btn btn-lg btn-outline-secondary w-100 h-100 py-4"
+                                   aria-describedby="settings-action-desc">
+                                    <i class="fa fa-cog d-block mb-2" style="font-size: 2rem;" aria-hidden="true"></i>
+                                    <span>Staff Settings</span>
+                                    <div id="settings-action-desc" class="visually-hidden">
+                                        Manage your staff profile settings and preferences
+                                    </div>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
         </div>
     </div>
 </div>

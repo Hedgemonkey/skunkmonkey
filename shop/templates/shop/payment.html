@@ -5,60 +5,145 @@
 {% block title %}Payment - {{ block.super }}{% endblock %}
 
 {% block content %}
-<div class="container my-5">
+<main class="container my-5" role="main">
     <div class="row">
         <div class="col-md-8 offset-md-2">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="mb-0">Complete Your Payment</h3>
-                </div>
+            <div class="card" role="form" aria-labelledby="payment-heading">
+                <header class="card-header bg-primary text-white" role="banner">
+                    <h1 id="payment-heading" class="mb-0 h3">Complete Your Payment</h1>
+                    <p class="mb-0 mt-1" aria-live="polite">
+                        Secure payment processing
+                    </p>
+                </header>
                 <div class="card-body">
-                    <div class="row mb-4">
+                    <section class="row mb-4" aria-labelledby="order-summary-heading">
                         <div class="col-md-6">
-                            <h5>Order Summary</h5>
-                            <p><strong>Order ID:</strong> {{ order.id }}</p>
-                            <p><strong>Total Amount:</strong> ${{ order.total_price }}</p>
+                            <h2 id="order-summary-heading" class="h5">Order Summary</h2>
+                            <dl class="mb-0">
+                                <dt>Order ID:</dt>
+                                <dd>
+                                    <strong aria-label="Order identifier {{ order.id }}">{{ order.id }}</strong>
+                                </dd>
+                                <dt>Total Amount:</dt>
+                                <dd>
+                                    <strong aria-label="Total amount ${{ order.total_price }}">${{ order.total_price }}</strong>
+                                </dd>
+                            </dl>
                         </div>
-                    </div>
+                    </section>
 
-                    <form id="payment-form">
-                        <div class="mb-3">
-                            <label for="subscription-plan" class="form-label">Subscription Plan</label>
-                            <select class="form-select" id="subscription-plan">
-                                <option value="basic">Basic - $10/month</option>
-                                <option value="premium">Premium - $20/month</option>
-                                <option value="pro">Pro - $30/month</option>
-                            </select>
+                    <form id="payment-form"
+                          novalidate
+                          aria-describedby="payment-form-description"
+                          role="form">
+                        <div id="payment-form-description" class="visually-hidden">
+                            Payment form to complete your order. All fields are required for secure processing.
                         </div>
-                        <div class="mb-3">
-                            <label for="billing-frequency" class="form-label">Billing Frequency</label>
-                            <select class="form-select" id="billing-frequency">
-                                <option value="monthly">Monthly</option>
-                                <option value="yearly">Yearly</option>
-                            </select>
+
+                        <fieldset class="mb-4" aria-labelledby="subscription-fieldset-legend">
+                            <legend id="subscription-fieldset-legend" class="h6">Subscription Details</legend>
+
+                            <div class="mb-3">
+                                <label for="subscription-plan" class="form-label">
+                                    <strong>Subscription Plan</strong>
+                                    <span class="text-danger" aria-label="required">*</span>
+                                </label>
+                                <select class="form-select"
+                                        id="subscription-plan"
+                                        name="subscription-plan"
+                                        required
+                                        aria-describedby="subscription-plan-help"
+                                        aria-invalid="false">
+                                    <option value="basic" aria-label="Basic plan at $10 per month">Basic - $10/month</option>
+                                    <option value="premium" aria-label="Premium plan at $20 per month">Premium - $20/month</option>
+                                    <option value="pro" aria-label="Pro plan at $30 per month">Pro - $30/month</option>
+                                </select>
+                                <div id="subscription-plan-help" class="form-text">
+                                    Choose the subscription plan that best fits your needs
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="billing-frequency" class="form-label">
+                                    <strong>Billing Frequency</strong>
+                                    <span class="text-danger" aria-label="required">*</span>
+                                </label>
+                                <select class="form-select"
+                                        id="billing-frequency"
+                                        name="billing-frequency"
+                                        required
+                                        aria-describedby="billing-frequency-help"
+                                        aria-invalid="false">
+                                    <option value="monthly" aria-label="Monthly billing">Monthly</option>
+                                    <option value="yearly" aria-label="Yearly billing with discount">Yearly</option>
+                                </select>
+                                <div id="billing-frequency-help" class="form-text">
+                                    Select how often you want to be charged
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <fieldset class="mb-4" aria-labelledby="payment-fieldset-legend">
+                            <legend id="payment-fieldset-legend" class="h6">Payment Information</legend>
+
+                            <div id="payment-element"
+                                 class="mb-3"
+                                 role="group"
+                                 aria-label="Payment details"
+                                 aria-describedby="payment-element-help">
+                                <!-- Stripe Elements will be inserted here -->
+                            </div>
+                            <div id="payment-element-help" class="form-text">
+                                Enter your payment card details. All information is securely encrypted.
+                            </div>
+                        </fieldset>
+
+                        <div id="error-message"
+                             class="text-danger mt-2"
+                             role="alert"
+                             aria-live="assertive"
+                             aria-atomic="true"
+                             style="min-height: 1.5rem;">
                         </div>
-                        <div id="payment-element" class="mb-3">
-                            <!-- Stripe Elements will be inserted here -->
-                        </div>
-                        <div id="error-message" class="text-danger mt-2"></div>
-                        <button id="submit-button" class="btn btn-primary mt-4">
-                            <span id="button-text">Pay Now</span>
-                            <span id="spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+
+                        <button id="submit-button"
+                                class="btn btn-primary mt-4"
+                                type="submit"
+                                aria-describedby="submit-button-help">
+                            <span id="button-text">
+                                <i class="fas fa-lock me-2" aria-hidden="true"></i>
+                                Pay Now
+                            </span>
+                            <span id="spinner"
+                                  class="spinner-border spinner-border-sm d-none"
+                                  role="status"
+                                  aria-label="Processing payment">
+                                <span class="visually-hidden">Processing...</span>
+                            </span>
                         </button>
+                        <div id="submit-button-help" class="form-text mt-2">
+                            Click to securely process your payment
+                        </div>
                     </form>
-                    <div class="mt-3 text-center">
-                        <p class="text-muted">Secure payment powered by Stripe</p>
-                    </div>
+
+                    <footer class="mt-3 text-center">
+                        <p class="text-muted">
+                            <i class="fas fa-shield-alt me-2" aria-hidden="true"></i>
+                            <span aria-label="Payment security information">
+                                Secure payment powered by Stripe - Your payment information is encrypted and secure
+                            </span>
+                        </p>
+                    </footer>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</main>
 
 <!-- Hidden data for the stripeIntegration.js script -->
-<input type="hidden" id="stripe_public_key" value="{{ stripe_publishable_key }}">
-<input type="hidden" id="client_secret" value="{{ client_secret }}">
-<input type="hidden" id="order_complete_url" value="{% url 'shop:order_complete' order_id=order.id %}">
+<input type="hidden" id="stripe_public_key" value="{{ stripe_publishable_key }}" aria-hidden="true">
+<input type="hidden" id="client_secret" value="{{ client_secret }}" aria-hidden="true">
+<input type="hidden" id="order_complete_url" value="{% url 'shop:order_complete' order_id=order.id %}" aria-hidden="true">
 {% endblock %}
 
 {% block extra_js %}
